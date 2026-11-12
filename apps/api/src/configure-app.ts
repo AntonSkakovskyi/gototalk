@@ -1,6 +1,7 @@
 import type { INestApplication } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import cookieParser from 'cookie-parser';
 import { Logger } from 'nestjs-pino';
 import { AllExceptionsFilter } from './errors/all-exceptions.filter.js';
 
@@ -8,6 +9,7 @@ export const GLOBAL_PREFIX = 'api';
 
 export function configureApp(app: INestApplication): void {
   app.setGlobalPrefix(GLOBAL_PREFIX);
+  app.use(cookieParser());
   app.useGlobalFilters(
     new AllExceptionsFilter(app.get(HttpAdapterHost), app.get(Logger)),
   );
@@ -18,6 +20,7 @@ export function configureApp(app: INestApplication): void {
       .setTitle('GoToTalk API')
       .setDescription('English speaking trainer API')
       .setVersion('0.0.0')
+      .addBearerAuth()
       .build(),
   );
   SwaggerModule.setup('docs', app, document, { useGlobalPrefix: true });

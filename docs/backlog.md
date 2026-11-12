@@ -30,7 +30,7 @@
 | У лозі фільтра лише path без query (зараз `getRequestUrl` віддає повний URL) | 00-08, на потім | будь-яка |
 | `.catch` на `i18n.init` у `apps/web/src/i18n/index.ts` | 00-14, на потім | будь-яка |
 | `NODE_ENV=production` у контейнері api (pino-pretty – devDependency, вмикається для будь-якого `NODE_ENV` крім `production`); контейнера api ще немає | 00-07, рев'ю на майбутнє; Відкладене після PR #1 | деплой |
-| Swagger (`/api/docs`, `/api/docs-json`) вимкнути або закрити за прапорцем у production | 00-08, на потім; Відкладене після PR #1 | деплой |
+| Swagger (`/api/docs`, `/api/docs-json`) вимкнути або закрити за прапорцем у production (глобальний guard його не покриває; додати `addSecurityRequirements('bearer')`) | 00-08, на потім; Відкладене після PR #1 | деплой |
 | e2e у CI (зараз `ci.yml` запускає лише lint, typecheck, test) | 00-16, для 00-17 | деплой |
 | Після `git push`: CI зелений (`pnpm/action-setup@v6` без `version`, `cache: pnpm` з Node 26) | 00-17, відхилення | Антон |
 | Ручна перевірка `[TC-00-03]`: відкриття й встановлення PWA на Android (емулятор, `adb reverse`) | 00-15, 00-18 | Антон |

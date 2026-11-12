@@ -10,6 +10,7 @@ import { ErrorResponseSchema } from '@gototalk/shared';
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { z } from 'zod';
+import { Public } from '../src/auth/public.decorator.js';
 import { createTestApp } from './support/test-app.js';
 
 // Test-only controller: production code has no routes that throw these errors.
@@ -18,6 +19,7 @@ const BodySchema = z.object({
   count: z.number().int(),
 });
 
+@Public()
 @Controller('test-errors')
 class TestErrorsController {
   @Post('validate')
@@ -62,14 +64,15 @@ describe('error format and Swagger', () => {
   it('[TC-00-07] invalid body: 400 VALIDATION_ERROR listing fields without values', async () => {
     const res = await request(app.getHttpServer())
       .post('/api/test-errors/validate')
-      .send({ title: '', count: 'leaky-value' });
+      .send({ title: '', count: 'SECRET-VALUE-xyz' });
 
     expect(res.status).toBe(400);
     const { error } = ErrorResponseSchema.parse(res.body);
     expect(error.code).toBe('VALIDATION_ERROR');
-    expect(error.message).toContain('title');
-    expect(error.message).toContain('count');
-    expect(error.message).not.toContain('leaky-value');
+    expect(error.message).toBe(
+      'Validation failed: title: too_small; count: invalid_type',
+    );
+    expect(JSON.stringify(res.body)).not.toContain('SECRET-VALUE-xyz');
   });
 
   it('[TC-00-07] valid body passes without error', async () => {

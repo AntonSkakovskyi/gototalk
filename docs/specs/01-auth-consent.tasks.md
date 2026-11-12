@@ -76,10 +76,11 @@
   - Перевірка: unit `[TC-01-01]`: rotate видає новий токен і відкликає старий; повторний rotate старого → помилка `TokenReused` і всі токени користувача відкликані; протермінований → помилка; у репозиторії лише хеш (немає сирого значення).
   - Відхилення: до інтерфейсу репозиторію додано `rotateActive(oldHash, next, now)` (відкликання й вставка однією транзакцією); `CLOCK` оголошено в сервісі, його варто перенести в спільний файл при складанні AuthModule. Відкликаний через logout токен при повторному пред'явленні теж вважається reuse (затверджене рішення).
 
-- [ ] **01-07. Guard, декоратори, cookie-parser, фільтр**
+- [x] **01-07. Guard, декоратори, cookie-parser, фільтр**
   - Що: `JwtModule.registerAsync` (секрет із ConfigService, HS256, 15 хв); `AuthGuard` (APP_GUARD) + `@Public()` + `@CurrentUser()`; `@Public()` на health; `cookie-parser` у `configureApp`; `ZodBodyPipe`; поле `code` у фільтрі; `addBearerAuth` у Swagger.
   - context7: `@nestjs/jwt` 12, NestJS 12 guards і cookies.
   - Перевірка: unit фільтра `[TC-00-07]` (кастомний `code`); integration `[TC-01-04]` з тестовим контролером: без токена 401, з невалідним, протермінованим, `alg: none` або чужим секретом 401, з валідним 200; `/api/health` лишається відкритим (`[TC-00-02]` зелений).
+  - Відхилення: `CLOCK` у `src/auth/clock.ts`; `AuthModule` поки без `RefreshTokenService` (прив'язка в 01-08); власний код у тілі `HttpException` береться лише для статусів < 500; guard вимагає `exp`; `AuthenticatedRequest` локальний інтерфейс (`@types/express` не резолвиться напряму під pnpm). У 01-09 Swagger-обхід: операції треба позначити `@ApiBearerAuth`.
 
 - [ ] **01-08. Ендпоінти register, login, refresh, logout**
   - Що: `UsersRepository`, Drizzle-реалізація `RefreshTokensRepository` (атомарна ротація), `AuthService`, `AuthController` (`/auth/*`), установка й очищення cookie з атрибутами з рішень, опис у Swagger. Drizzle-репозиторій використовує переданий `now` (не SQL `now()`) і мапить рядкові timestamps Drizzle (`mode: 'string'`) у `Date`; `rotateActive` одним `db.transaction`; TTL cookie Max-Age беремо з `REFRESH_TOKEN_TTL_MS`; `PasswordHasher` і `CLOCK` надаємо єдиними провайдерами. Інтеграційний тест: два паралельні refresh одного токена дають рівно один успіх.

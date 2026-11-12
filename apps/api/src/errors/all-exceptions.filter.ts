@@ -21,6 +21,17 @@ function clientErrorStatus(exception: unknown): number | undefined {
     : undefined;
 }
 
+function httpExceptionCode(exception: HttpException, status: number): string {
+  // Custom codes are client-facing only: 5xx bodies may carry driver or library codes
+  if (status >= 500) return codeFromStatus(status);
+  const response = exception.getResponse();
+  if (typeof response === 'object' && response !== null) {
+    const code = (response as { code?: unknown }).code;
+    if (typeof code === 'string' && code !== '') return code;
+  }
+  return codeFromStatus(status);
+}
+
 function httpExceptionMessage(exception: HttpException): string {
   const response = exception.getResponse();
   if (typeof response === 'string') return response;
@@ -80,7 +91,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
           status,
           body: {
             error: {
-              code: codeFromStatus(status),
+              code: httpExceptionCode(exception, status),
               message: httpExceptionMessage(exception),
             },
           },
@@ -91,7 +102,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
         status,
         body: {
           error: {
-            code: codeFromStatus(status),
+            code: httpExceptionCode(exception, status),
             message:
               status === 500
                 ? GENERIC_SERVER_MESSAGE

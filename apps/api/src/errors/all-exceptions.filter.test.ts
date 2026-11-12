@@ -92,7 +92,10 @@ describe('AllExceptionsFilter', () => {
       title: z.string().regex(/^d+$/),
       count: z.number().int(),
     });
-    const parsed = schema.safeParse({ title: 'leaky-title', count: 'secret' });
+    const parsed = schema.safeParse({
+      title: 'SECRET-VALUE-xyz',
+      count: 'SECRET-VALUE-xyz',
+    });
     if (parsed.success) throw new Error('expected a validation error');
 
     const { status, body } = run(parsed.error);
@@ -100,10 +103,10 @@ describe('AllExceptionsFilter', () => {
     expect(status).toBe(400);
     const { error } = ErrorResponseSchema.parse(body);
     expect(error.code).toBe('VALIDATION_ERROR');
-    expect(error.message).toContain('title');
-    expect(error.message).toContain('count');
-    expect(error.message).not.toContain('secret');
-    expect(error.message).not.toContain('leaky-title');
+    expect(error.message).toBe(
+      'Validation failed: title: invalid_format; count: invalid_type',
+    );
+    expect(JSON.stringify(body)).not.toContain('SECRET-VALUE-xyz');
     expect(logger.error).not.toHaveBeenCalled();
   });
 
@@ -170,6 +173,47 @@ describe('AllExceptionsFilter', () => {
     expect(status).toBe(500);
     expect(ErrorResponseSchema.parse(body).error.code).toBe('INTERNAL_ERROR');
     expect(JSON.stringify(body)).not.toContain('details');
+  });
+
+  it('[TC-00-07] HttpException with a string code in the body: the code replaces the status-derived one', () => {
+    const { run } = setup();
+
+    const { status, body } = run(
+      new ConflictException({ code: 'EMAIL_TAKEN', message: 'Email is taken' }),
+    );
+
+    expect(status).toBe(409);
+    expect(ErrorResponseSchema.parse(body).error).toEqual({
+      code: 'EMAIL_TAKEN',
+      message: 'Email is taken',
+    });
+  });
+
+  it('[TC-00-07] HttpException with a non-string code in the body falls back to the status code', () => {
+    const { run } = setup();
+
+    const { body } = run(new ConflictException({ code: 42, message: 'x' }));
+
+    expect(ErrorResponseSchema.parse(body).error.code).toBe('CONFLICT');
+  });
+
+  it('[TC-00-07] 5xx HttpException with a custom code: code derived from status, message sanitised', () => {
+    const { run, logger } = setup();
+
+    const { status, body } = run(
+      new ServiceUnavailableException({
+        code: '57P01',
+        message: 'pg pool exhausted: host=10.0.0.5',
+      }),
+    );
+
+    expect(status).toBe(503);
+    expect(ErrorResponseSchema.parse(body).error).toEqual({
+      code: 'SERVICE_UNAVAILABLE',
+      message: 'Service Unavailable',
+    });
+    expect(JSON.stringify(body)).not.toContain('10.0.0.5');
+    expect(logger.error).toHaveBeenCalledTimes(1);
   });
 
   it('[TC-00-07] body parser error (http-errors, 4xx) becomes a response built from the status code', () => {

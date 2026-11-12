@@ -6,6 +6,7 @@ import { AppConfigModule } from './config/app-config.module.js';
 import type { AppConfigOptions } from './config/app-config.module.js';
 import type { Env } from './config/env.schema.js';
 import { AnalysisModule } from './analysis/analysis.module.js';
+import { AuthModule } from './auth/auth.module.js';
 import { DbModule } from './db/db.module.js';
 import { DialogueModule } from './dialogue/dialogue.module.js';
 import { HealthModule } from './health/health.module.js';
@@ -22,6 +23,7 @@ export class AppModule {
       imports: [
         AppConfigModule.forRoot(options),
         DbModule,
+        AuthModule,
         HealthModule,
         ProvidersModule,
         ProfileModule,
