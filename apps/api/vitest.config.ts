@@ -11,7 +11,7 @@ export default defineConfig({
         plugins,
         test: {
           name: 'unit',
-          include: ['src/**/*.test.ts'],
+          include: ['src/**/*.test.ts', 'test/support/**/*.test.ts'],
         },
       },
       {
@@ -19,6 +19,8 @@ export default defineConfig({
         test: {
           name: 'integration',
           include: ['test/**/*.test.ts'],
+          exclude: ['test/support/**'],
+          fileParallelism: false,
           globalSetup: ['test/global-setup.ts'],
         },
       },

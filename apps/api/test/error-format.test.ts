@@ -1,4 +1,3 @@
-import 'reflect-metadata';
 import {
   Body,
   Controller,
@@ -7,13 +6,11 @@ import {
   ServiceUnavailableException,
 } from '@nestjs/common';
 import type { INestApplication } from '@nestjs/common';
-import { Test } from '@nestjs/testing';
 import { ErrorResponseSchema } from '@gototalk/shared';
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { z } from 'zod';
-import { AppModule } from '../src/app.module.js';
-import { configureApp } from '../src/configure-app.js';
+import { createTestApp } from './support/test-app.js';
 
 // Test-only controller: production code has no routes that throw these errors.
 const BodySchema = z.object({
@@ -40,24 +37,11 @@ class TestErrorsController {
   }
 }
 
-const env = {
-  NODE_ENV: 'production',
-  DATABASE_URL: 'postgres://user:pass@localhost:5432/gototalk_test',
-  PORT: '3456',
-  LOG_LEVEL: 'silent',
-};
-
 describe('error format and Swagger', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({
-      imports: [AppModule.register({ env })],
-      controllers: [TestErrorsController],
-    }).compile();
-    app = moduleRef.createNestApplication();
-    configureApp(app);
-    await app.init();
+    app = await createTestApp({ controllers: [TestErrorsController] });
   });
 
   afterAll(async () => {
