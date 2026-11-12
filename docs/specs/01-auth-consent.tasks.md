@@ -65,10 +65,11 @@
   - Що: `packages/shared/src/auth.ts` (схеми й коди з «Технічних рішень»), експорт з `index.ts`.
   - Перевірка: unit `[TC-01-02]`: email нормалізується (`' A@B.com '` → `a@b.com`), пароль 7 символів відхилено, 8 прийнято, 129 відхилено; `AuthResponseSchema` приймає `consentAt: null`.
 
-- [ ] **01-05. PasswordHasher (argon2)**
+- [x] **01-05. PasswordHasher (argon2)**
   - Що: `apps/api/src/auth/password-hasher.ts` на `@node-rs/argon2` з параметрами seed; `hash`, `verify` (некоректний PHC-рядок → `false`, не виняток); фіктивний хеш для вирівнювання часу входу. TDD.
   - context7: `@node-rs/argon2` (hash/verify/parseOptions).
   - Перевірка: unit `[TC-01-01]`: хеш ≠ паролю й починається з `$argon2id$v=19$m=65536,t=3,p=4$`; verify правильного й хибного пароля; хеш демо-користувача з `db/seed.sql` проходить з `demo-password-1`; два хеші одного пароля різні (сіль). `pnpm install` не вимагає `allowBuilds`.
+  - Відхилення: `algorithm: 2` числом (ambient const enum не імпортується при `verbatimModuleSyntax`). `PasswordHasher` рахує фіктивний хеш у кожному екземплярі (~100 мс): у AuthModule (01-07/01-08) надавати як єдиний провайдер.
 
 - [ ] **01-06. RefreshTokenService (домен)**
   - Що: `apps/api/src/auth/refresh-token.service.ts` + інтерфейс `RefreshTokensRepository`; генерація (32 байти base64url), SHA-256, `issue`, `rotate` (reuse → відкликати всі токени користувача), `revoke`; in-memory репозиторій лише для тестів. TDD.
