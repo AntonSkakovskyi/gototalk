@@ -1,0 +1,14 @@
+node_modules/
+dist/
+coverage/
+.env
+.env.*
+!.env.example
+# dev-аудіо (DEV_KEEP_AUDIO=true), тека поза репозиторієм, але на випадок відносного шляху
+.dev-audio/
+# тимчасова тека db:pull
+apps/api/.drizzle-pull/
+playwright-report/
+test-results/
+*.log
+*.tsbuildinfo

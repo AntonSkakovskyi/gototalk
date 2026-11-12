@@ -26,11 +26,12 @@
 - Нижня навігація: «Сесія», «Слова», «Історія», «Профіль» (поки порожні).
 - ESLint: `no-restricted-imports` для SDK провайдерів поза `apps/api/src/adapters/**`; `i18next/no-literal-string` (JSX) у web.
 - `.gitattributes` з `eol=lf`, Prettier `endOfLine: lf`.
+- TypeScript закріплено на 6.0.3 (точна версія): typescript-eslint 8.x має peer `<6.1.0` і не підтримує TS 7. Кореневий `lint` – один `eslint .` на весь монорепо, у пакетах окремих `lint`-скриптів не додаємо. `types`/`lib` (node, DOM) і декоратори (`experimentalDecorators`, `emitDecoratorMetadata` у api) задаємо в tsconfig пакетів, не в базовому.
 - `pnpm test` включає інтеграційні тести API, тому локально потрібен `podman compose up -d`. Очищення тестової БД між тестами вирішуємо в spec 01.
 
 ## Задачі
 
-- [ ] **00-01. Кореневий монорепо**
+- [x] **00-01. Кореневий монорепо**
   - Що: `package.json` (private, `"type": "module"`, `engines.node >=26`, `packageManager: pnpm@<pnpm -v>`), `pnpm-workspace.yaml` (`apps/*`, `packages/*`), `tsconfig.base.json` (strict, `noUncheckedIndexedAccess`), `eslint.config.js` (flat, typescript-eslint), Prettier (`endOfLine: lf`), `.gitignore` (`.env`, `.env.*` крім `.env.example`, тека dev-аудіо, `dist`, тимчасова тека pull, `node_modules`, звіти Playwright), `.gitattributes`, `.editorconfig`, `.node-version`. Скрипти `dev`, `test`, `test:e2e`, `lint`, `typecheck`, `db:migrate`, `db:pull`, `db:seed` через `pnpm -r --if-present`.
   - Перевірка: `pnpm install`, `pnpm lint`, `pnpm typecheck`, `pnpm test` завершуються з кодом 0; `pnpm exec prettier --check .` без помилок.
 

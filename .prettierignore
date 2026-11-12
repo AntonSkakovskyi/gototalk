@@ -1,0 +1,12 @@
+node_modules
+dist
+coverage
+pnpm-lock.yaml
+db/migrations
+docs
+.claude
+.drizzle-pull
+playwright-report
+test-results
+CLAUDE.md
+KICKOFF.md
