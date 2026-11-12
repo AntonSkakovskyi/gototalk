@@ -37,6 +37,10 @@ export default defineConfig(
     },
   },
   {
+    files: ['apps/web/**/*.{ts,tsx}'],
+    languageOptions: { globals: { ...globals.browser } },
+  },
+  {
     files: ['apps/api/src/adapters/**/*.ts'],
     rules: { 'no-restricted-imports': 'off' },
   },

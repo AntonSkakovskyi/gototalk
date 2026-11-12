@@ -89,10 +89,11 @@
   - Перевірка: тест `[TC-00-04]`: AppModule резолвить усі 4 сервіси з Fake-провайдерами; тимчасовий імпорт `@google/genai` у `src/analysis` дає помилку `pnpm lint` (перевірити й відкотити).
   - Відхилення: правило ESLint діє на весь репозиторій (не лише apps/api), виняток `apps/api/src/adapters/**`; `weakAreas(limit = 3)` – spec 02 передає 5 явно; посилання в NotImplementedException: 02 (weakAreas, vocabularyStats), 03 (planSession), 04 (решта); справжні адаптери Deepgram/Gemini мають лежати в `src/adapters/<name>/`; `WordState` у profile дублює CHECK – перенести в shared у spec 02.
 
-- [ ] **00-13. Бутстрап web**
+- [x] **00-13. Бутстрап web**
   - Що: `apps/web`: Vite 8 + React 19 + TS, Mantine 9 (`postcss-preset-mantine`, `@mantine/core/styles.css`, `MantineProvider`), `src/theme.ts`, `sass-embedded` і хоча б один `*.module.scss`, проксі `/api` → `http://localhost:3000`, Vitest + Testing Library (jsdom, mock `matchMedia`).
   - context7: Vite 8, Mantine 9.
   - Перевірка: `pnpm --filter web dev` → сторінка на `http://localhost:5173`; `curl http://localhost:5173/api/health` → ok через проксі (api запущено); тест `[TC-00-04]` рендерить App.
+  - Відхилення: заголовок тимчасово з `src/strings.ts` (замінить i18n у 00-14); додано `postcss-simple-vars`, `@types/node`; `@parcel/watcher: false` в allowBuilds; `vite build` перевірено оркестратором (ок); глобали vitest у tsconfig web; на 00-14: спільний `renderWithProviders`; на 00-15: `theme-color` meta = маніфест, `preview.proxy` через `API_TARGET`.
 
 - [ ] **00-14. Роутинг, i18n і мобільний layout**
   - Що: React Router (4 маршрути-вкладки), `QueryClientProvider` (TanStack Query), react-i18next з `src/i18n/uk.json`, AppShell з нижньою навігацією «Сесія», «Слова», «Історія», «Профіль» (Mantine + `*.module.scss`), порожні сторінки із заголовком з i18n. ESLint `i18next/no-literal-string` для JSX.

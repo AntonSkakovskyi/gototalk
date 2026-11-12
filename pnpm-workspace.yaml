@@ -9,3 +9,5 @@ allowBuilds:
   '@swc/core': false
   # @scarf/scarf (через swagger-ui-dist): лише телеметрія в postinstall, не потрібна.
   '@scarf/scarf': false
+  # @parcel/watcher (через sass-embedded): бінарник приходить пакетом платформи (optionalDependencies), postinstall не потрібен.
+  '@parcel/watcher': false
