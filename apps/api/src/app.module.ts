@@ -5,12 +5,16 @@ import { LoggerModule } from 'nestjs-pino';
 import { AppConfigModule } from './config/app-config.module.js';
 import type { AppConfigOptions } from './config/app-config.module.js';
 import type { Env } from './config/env.schema.js';
+import { AnalysisModule } from './analysis/analysis.module.js';
 import { DbModule } from './db/db.module.js';
+import { DialogueModule } from './dialogue/dialogue.module.js';
 import { HealthModule } from './health/health.module.js';
 import { buildPinoHttpOptions } from './logger/pino-options.js';
+import { ProfileModule } from './profile/profile.module.js';
 import { ProvidersModule } from './providers/providers.module.js';
+import { SessionModule } from './session/session.module.js';
 
-// Корінь застосунку; доменні модулі додаються в наступних задачах.
+// Корінь застосунку; решта доменних модулів додається в наступних задачах.
 @Module({})
 export class AppModule {
   static register(options: AppConfigOptions = {}): DynamicModule {
@@ -21,6 +25,10 @@ export class AppModule {
         DbModule,
         HealthModule,
         ProvidersModule,
+        ProfileModule,
+        SessionModule,
+        AnalysisModule,
+        DialogueModule,
         LoggerModule.forRootAsync({
           inject: [ConfigService],
           useFactory: (config: ConfigService<Env, true>) => ({

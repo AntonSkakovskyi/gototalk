@@ -84,9 +84,10 @@
   - Перевірка: тести `[TC-00-05]`: два виклики з тим самим входом дають ідентичний результат; результат проходить Zod-схему; `text.slice(start, end) === original`; `STT_PROVIDER=fake` і `LLM_PROVIDER=fake` дають Fake-адаптери.
   - Відхилення: Fake `analyzeUtterance` шукає фрази через `indexOf` (а не фіксовані позиції), тож інваріант slice працює на довільному тексті; методи LLM-порту приймають об'єкти, `hint` – union за `kind` (відрізняється від заголовків stubs.md, звірити в spec 03–05 і оновити stubs.md); `clean` транскрипту №0 без коми перед «uh». На потім (spec 04/05): регістронезалежні RegExp, словник перекладів, шаблон `summarizeSession`.
 
-- [ ] **00-12. Скелети сервісів ядра**
+- [x] **00-12. Скелети сервісів ядра**
   - Що: модулі `profile`, `session`, `analysis`, `dialogue`: `LearnerModelService` (`weakAreas`, `vocabularyStats`, `applyAnalysis`), `SessionPlannerService.planSession`, `MistakeAnalyzerService` (`analyzeUtterance`, `groupIntoPatterns`), `DialogueService.nextTurn`. Залежності лише від портів і `LearnerModelService`; методи кидають `NotImplementedException` з посиланням на spec, де їх реалізують. ESLint `no-restricted-imports` для SDK провайдерів (`@deepgram/*`, `@google/genai`, `@google/generative-ai`) поза `src/adapters/**`.
   - Перевірка: тест `[TC-00-04]`: AppModule резолвить усі 4 сервіси з Fake-провайдерами; тимчасовий імпорт `@google/genai` у `src/analysis` дає помилку `pnpm lint` (перевірити й відкотити).
+  - Відхилення: правило ESLint діє на весь репозиторій (не лише apps/api), виняток `apps/api/src/adapters/**`; `weakAreas(limit = 3)` – spec 02 передає 5 явно; посилання в NotImplementedException: 02 (weakAreas, vocabularyStats), 03 (planSession), 04 (решта); справжні адаптери Deepgram/Gemini мають лежати в `src/adapters/<name>/`; `WordState` у profile дублює CHECK – перенести в shared у spec 02.
 
 - [ ] **00-13. Бутстрап web**
   - Що: `apps/web`: Vite 8 + React 19 + TS, Mantine 9 (`postcss-preset-mantine`, `@mantine/core/styles.css`, `MantineProvider`), `src/theme.ts`, `sass-embedded` і хоча б один `*.module.scss`, проксі `/api` → `http://localhost:3000`, Vitest + Testing Library (jsdom, mock `matchMedia`).
