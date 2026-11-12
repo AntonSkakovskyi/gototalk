@@ -8,8 +8,9 @@ import type { Env } from './config/env.schema.js';
 import { DbModule } from './db/db.module.js';
 import { HealthModule } from './health/health.module.js';
 import { buildPinoHttpOptions } from './logger/pino-options.js';
+import { ProvidersModule } from './providers/providers.module.js';
 
-// Корінь застосунку; доменні модулі (ports…) додаються в наступних задачах.
+// Корінь застосунку; доменні модулі додаються в наступних задачах.
 @Module({})
 export class AppModule {
   static register(options: AppConfigOptions = {}): DynamicModule {
@@ -19,6 +20,7 @@ export class AppModule {
         AppConfigModule.forRoot(options),
         DbModule,
         HealthModule,
+        ProvidersModule,
         LoggerModule.forRootAsync({
           inject: [ConfigService],
           useFactory: (config: ConfigService<Env, true>) => ({
