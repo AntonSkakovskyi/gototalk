@@ -12,6 +12,8 @@ export default defineConfig(
       '**/dev-dist/**',
       '**/coverage/**',
       '**/.drizzle-pull/**',
+      '**/playwright-report/**',
+      '**/test-results/**',
       '**/node_modules/**',
     ],
   },

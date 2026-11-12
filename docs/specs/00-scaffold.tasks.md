@@ -106,9 +106,10 @@
   - Перевірка: `pnpm --filter web build` створює `sw.js` і `manifest.webmanifest`; Chrome DevTools → Application → Manifest без помилок, застосунок можна встановити на десктопі.
   - Відхилення: Chrome немає, перевірено в Edge через `playwright-core` (маніфест парситься, SW активний і контролює сторінку, `/api/*` не кешується); іконки згенеровано CLI (`generate-pwa-assets`) у `public/` і підключено вручну (не опцією `pwaAssets`); `theme-color` статичний у index.html, збіг із маніфестом і темою Mantine перевіряє тест; `dev-dist` додано в `.gitignore`, `.prettierignore`, ESLint; `preview.proxy` ділить `apiProxy` із `server.proxy`, порт preview 4173. Тести PWA теж позначені `[TC-00-03]`. Ручна перевірка встановлення на Android – 00-18.
 
-- [ ] **00-16. Кореневий pnpm dev і e2e**
+- [x] **00-16. Кореневий pnpm dev і e2e**
   - Що: `pnpm dev` паралельно запускає shared (watch), api і web; Playwright (`@playwright/test`, проєкт з мобільним в'юпортом 360 px, `webServer`), smoke e2e `[TC-00-02]`: layout українською і `/api/health` через проксі повертає ok.
   - Перевірка: `pnpm dev` піднімає обидва застосунки; `pnpm test:e2e` зелений.
+  - Відхилення: Chrome немає, e2e локально в Edge (`channel: msedge`); у CI канал порожній за замовчуванням (Chromium від Playwright, `pnpm exec playwright install --with-deps chromium`), перевизначається `PW_CHANNEL`; вкладка «Сесія» має шлях `/`; e2e потребує БД (`podman compose up -d` + `pnpm db:migrate`); три тести `[TC-00-02]` в одному spec; кореневий tsconfig.json для typecheck e2e. Для 00-17: e2e у CI поки не входить (за tasks.md), за потреби додати окремою задачею.
 
 - [ ] **00-17. CI на GitHub Actions**
   - Що: `.github/workflows/ci.yml`: `pnpm/action-setup`, `actions/setup-node` з Node 26 і кешем pnpm, Postgres 17 як service (`gototalk_test`), `pnpm install --frozen-lockfile`, `pnpm lint`, `pnpm typecheck`, `pnpm test`.
