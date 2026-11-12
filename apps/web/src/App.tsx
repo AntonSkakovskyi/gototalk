@@ -1,11 +1,20 @@
-import { Title } from '@mantine/core';
-import classes from './App.module.scss';
-import { APP_TITLE } from './strings.js';
+import { Navigate, Route, Routes } from 'react-router';
+import { AppLayout } from './app/AppLayout.js';
+import { HistoryPage } from './pages/HistoryPage.js';
+import { ProfilePage } from './pages/ProfilePage.js';
+import { SessionPage } from './pages/SessionPage.js';
+import { WordsPage } from './pages/WordsPage.js';
 
 export function App() {
   return (
-    <main className={classes.root}>
-      <Title order={1}>{APP_TITLE}</Title>
-    </main>
+    <Routes>
+      <Route element={<AppLayout />}>
+        <Route index element={<SessionPage />} />
+        <Route path="words" element={<WordsPage />} />
+        <Route path="history" element={<HistoryPage />} />
+        <Route path="profile" element={<ProfilePage />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Route>
+    </Routes>
   );
 }

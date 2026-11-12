@@ -1,0 +1,13 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// Контент по центру й обмежений по ширині, щоб десктоп не ламався.
+.content {
+  width: 100%;
+  max-width: 480px;
+  margin-inline: auto;
+  padding: var(--mantine-spacing-md);
+}

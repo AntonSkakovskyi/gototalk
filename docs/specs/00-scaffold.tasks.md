@@ -95,9 +95,10 @@
   - Перевірка: `pnpm --filter web dev` → сторінка на `http://localhost:5173`; `curl http://localhost:5173/api/health` → ok через проксі (api запущено); тест `[TC-00-04]` рендерить App.
   - Відхилення: заголовок тимчасово з `src/strings.ts` (замінить i18n у 00-14); додано `postcss-simple-vars`, `@types/node`; `@parcel/watcher: false` в allowBuilds; `vite build` перевірено оркестратором (ок); глобали vitest у tsconfig web; на 00-14: спільний `renderWithProviders`; на 00-15: `theme-color` meta = маніфест, `preview.proxy` через `API_TARGET`.
 
-- [ ] **00-14. Роутинг, i18n і мобільний layout**
+- [x] **00-14. Роутинг, i18n і мобільний layout**
   - Що: React Router (4 маршрути-вкладки), `QueryClientProvider` (TanStack Query), react-i18next з `src/i18n/uk.json`, AppShell з нижньою навігацією «Сесія», «Слова», «Історія», «Профіль» (Mantine + `*.module.scss`), порожні сторінки із заголовком з i18n. ESLint `i18next/no-literal-string` для JSX.
   - Перевірка: тест `[TC-00-02]`: підписи вкладок українською, клік перемикає маршрут; Playwright MCP на 360×800: навігація внизу екрана, без горизонтального скролу.
+  - Відхилення: Playwright MCP не запустився (немає Chrome), перевірку 360×800 виконано через `playwright-core` на Edge (`channel: msedge`) поза репозиторієм: навігація внизу (y 745–800), `scrollWidth` = `clientWidth`, клік по вкладках змінює маршрут. Для 00-16 потрібен браузер: Edge-канал або `playwright install chromium`. `react-router` v8 (declarative API, `BrowserRouter`); без іконок; `strings.ts` видалено. ESLint `i18next/no-literal-string` у режимі `jsx-only` (ловить і `aria-label`, `label`, `placeholder`) з винятками для службових атрибутів. На потім: вкладки на Mantine `NavLink`/`UnstyledButton` замість голого `NavLink` react-router, `.catch` на `i18n.init`.
 
 - [ ] **00-15. PWA**
   - Що: vite-plugin-pwa (`registerType: 'autoUpdate'`, `devOptions.enabled: true`), маніфест (name і short_name GoToTalk, `lang: 'uk'`, description, `theme_color` = `<meta name="theme-color">`, `display: standalone`), іконки 192, 512 і maskable із SVG через `@vite-pwa/assets-generator`, `preview.proxy` для `/api`.
