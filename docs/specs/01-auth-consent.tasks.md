@@ -53,8 +53,8 @@
 - [x] **01-02. Тестова БД: захист і очищення**
   - Що: `apps/api/test/support/test-db.ts`: `assertTestDatabaseUrl`, `resetUserData(pool)`; виклик assert у `global-setup.ts` перед міграціями; `fileParallelism: false` для integration у `vitest.config.ts`; `test/support/test-app.ts`: `createTestApp(overrides?)` (спільний `buildEnv`, зараз дубльований у тестах); `db-schema.test.ts`: кількість рядків журналу = кількість `entries` у `db/migrations/meta/_journal.json`, `ORDER BY ... COLLATE "C"`.
   - Перевірка: unit `[TC-00-04]` для `assertTestDatabaseUrl` (`gototalk` → помилка з поясненням, `gototalk_test` → ок, невалідний URL → помилка); `[TC-00-01]` зелений; тимчасово `TEST_DATABASE_URL=…/gototalk` у процесі → globalSetup падає до міграцій (перевірити й відкотити).
-
   - Відхилення: unit-тест лежить поруч із хелпером (`test/support`), `unit.include` розширено; `resetUserData` і globalSetup додатково перевіряють `current_database()`, а не лише URL; `createTestApp({ env?, controllers?, providers? })`.
+
 - [ ] **01-03. Конфіг JWT, redact set-cookie, .env.example** **[Антон]**
   - Що: `JWT_ACCESS_SECRET` (обов'язковий, ≥ 32) в `env.schema.ts`; `res.headers["set-cookie"]` у `REDACT_PATHS`; `.env.example`: нова змінна + коментарі англійською; `ci.yml`: тестове значення секрету в `env` (з коментарем, що це не секрет); `createTestApp` передає секрет.
   - Перевірка: `[TC-00-06]` відсутній чи короткий секрет називає змінну; `[TC-00-04]` лог із `res.headers['set-cookie']` не містить значення cookie.
