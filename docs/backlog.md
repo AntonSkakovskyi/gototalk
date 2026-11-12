@@ -37,3 +37,5 @@
 | Мігровані кириличні коментарі в `db/migrations/0000`–`0002`: не редагуємо, нові міграції англійською | Відкладене після PR #1 | не робимо |
 | Переліки провайдерів `fake/deepgram` і `fake/gemini` дубльовані в `packages/shared/src/auth.ts` та `apps/api/src/config/env.schema.ts`: винести `SttProviderSchema`/`LlmProviderSchema` у shared | рев'ю 01-04 | будь-яка |
 | Register is not atomic: if session start fails after the user insert, a retry gives 409 EMAIL_TAKEN; wrap user and token insert in one transaction | рев'ю 01-08 | будь-яка |
+| Нема rate limiting: `POST /api/auth/login` і `DELETE /api/me` (перевірка пароля) придатні для перебору паролів, зокрема з краденим access-токеном | рев'ю 01-10 | деплой |
+| Захищені маршрути не повинні довіряти лише JWT: access-токен діє до 15 хв після видалення акаунта; кожен сервіс, що читає дані користувача, має працювати з існуючим рядком `users` | рев'ю 01-10 | 02–05 |

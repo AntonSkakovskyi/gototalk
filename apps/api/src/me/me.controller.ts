@@ -1,20 +1,28 @@
 import {
+  Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
   Post,
+  Res,
   UnauthorizedException,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiOperation,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import type { ConsentInfo, Me } from '@gototalk/shared';
+import { DeleteAccountRequestSchema } from '@gototalk/shared';
+import type { ConsentInfo, DeleteAccountRequest, Me } from '@gototalk/shared';
 import { CurrentUser } from '../auth/current-user.decorator.js';
 import type { AuthenticatedUser } from '../auth/current-user.decorator.js';
+import { clearRefreshCookie } from '../auth/refresh-cookie.js';
+import type { CookieResponse } from '../auth/refresh-cookie.js';
+import { ZodBodyPipe } from '../common/zod-body.pipe.js';
 import { MeService } from './me.service.js';
 
 function requireUser(user: AuthenticatedUser | undefined): string {
@@ -64,5 +72,38 @@ export class MeController {
     @CurrentUser() user: AuthenticatedUser | undefined,
   ): Promise<Me> {
     return this.me.grantConsent(requireUser(user));
+  }
+
+  @Delete()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({
+    summary: 'Delete the account',
+    description:
+      'Requires the current password. Deletes the user; the database cascade removes all of their data. Clears the refresh cookie.',
+  })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      required: ['password'],
+      properties: {
+        password: { type: 'string', minLength: 1, maxLength: 128 },
+      },
+    },
+  })
+  @ApiResponse({ status: 204, description: 'Account deleted' })
+  @ApiResponse({ status: 400, description: 'VALIDATION_ERROR' })
+  @ApiResponse({ status: 401, description: 'UNAUTHORIZED' })
+  @ApiResponse({
+    status: 403,
+    description: 'INVALID_PASSWORD (403, not 401, so clients do not refresh)',
+  })
+  async deleteAccount(
+    @CurrentUser() user: AuthenticatedUser | undefined,
+    @Body(new ZodBodyPipe(DeleteAccountRequestSchema))
+    body: DeleteAccountRequest,
+    @Res({ passthrough: true }) res: CookieResponse,
+  ): Promise<void> {
+    await this.me.deleteAccount(requireUser(user), body.password);
+    clearRefreshCookie(res);
   }
 }

@@ -1,7 +1,13 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { ERROR_CODES } from '@gototalk/shared';
 import type { ConsentInfo, Me } from '@gototalk/shared';
 import { toMe } from '../auth/auth.service.js';
+import { PasswordHasher } from '../auth/password-hasher.js';
 import { UsersRepository } from '../auth/users.repository.js';
 import type { UserRecord } from '../auth/users.repository.js';
 import type { Env } from '../config/env.schema.js';
@@ -10,6 +16,7 @@ import type { Env } from '../config/env.schema.js';
 export class MeService {
   constructor(
     private readonly users: UsersRepository,
+    private readonly hasher: PasswordHasher,
     private readonly config: ConfigService<Env, true>,
   ) {}
 
@@ -30,6 +37,17 @@ export class MeService {
 
   async grantConsent(userId: string): Promise<Me> {
     return toMe(await this.requireUser(await this.users.grantConsent(userId)));
+  }
+
+  async deleteAccount(userId: string, password: string): Promise<void> {
+    const user = this.requireUser(await this.users.findById(userId));
+    if (!(await this.hasher.verify(user.passwordHash, password))) {
+      throw new ForbiddenException({
+        code: ERROR_CODES.INVALID_PASSWORD,
+        message: 'The password is incorrect',
+      });
+    }
+    await this.users.deleteById(userId);
   }
 
   private requireUser(user: UserRecord | null): UserRecord {

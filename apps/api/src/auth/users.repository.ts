@@ -72,6 +72,10 @@ export class UsersRepository {
     return row ? toRecord(row) : this.findById(id);
   }
 
+  async deleteById(id: string): Promise<void> {
+    await this.db.delete(users).where(eq(users.id, id));
+  }
+
   async create(input: {
     email: string;
     passwordHash: string;

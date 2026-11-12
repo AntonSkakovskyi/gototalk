@@ -92,9 +92,10 @@
   - Перевірка: integration `[TC-01-02]`: новий користувач має `consentAt: null`, після POST – дату, повторний POST її не змінює; тестовий маршрут з `@RequiresConsent()` дає 403 `CONSENT_REQUIRED` до згоди й 200 після. `[TC-01-04]`: Swagger-обхід усіх операцій без токена → 401 (крім відкритих).
   - Відхилення: `AuthModule` став `@Global()` (залежності `ConsentGuard` мають резолвитись поза ним; знадобиться в 03); Swagger-обхід читає `/api/docs-json`, відкриті операції перелічено явно, тож нові маршрути перевіряються автоматично (маршрути з `@ApiExcludeEndpoint` обхід не бачить).
 
-- [ ] **01-10. Видалення акаунта й ізоляція**
+- [x] **01-10. Видалення акаунта й ізоляція**
   - Що: `DELETE /me` з повторним паролем, очищення cookie; тестова фікстура `test/support/user-data.ts`, що вставляє по рядку в кожну таблицю користувача (profiles, goals, sessions, utterances, mistakes, mistake_patterns, words, hints, cards, exercises, session_reports, refresh_tokens).
   - Перевірка: integration `[TC-01-02]`: хибний пароль → 403 `INVALID_PASSWORD`, нічого не видалено; правильний → 204, у всіх 12 таблицях 0 рядків користувача, старий access-токен на `/api/me` → 401. `[TC-01-06]`: два користувачі з фікстурами; `GET /api/me` кожного повертає свої дані; видалення B не зачіпає жодного рядка A; logout B не відкликає токени A.
+  - Відхилення: немає. Додано захисні тести: кожен FK на `users` має бути CASCADE і покритий фікстурою, FK між власними таблицями лише за явним allowlist (`mistakes.pattern_id`, `hints.utterance_id`, `hints.word_id` = SET NULL).
 
 - [ ] **01-11. Фронтенд: сесія й HTTP-клієнт**
   - Що: `src/api/http.ts`, `src/auth/session-store.ts`, `src/auth/refresh.ts`, `src/auth/auth-api.ts`, `AuthBootstrap` (тихий refresh при старті, лоадер до відповіді); розширити `renderWithProviders` (початковий стан сесії).
