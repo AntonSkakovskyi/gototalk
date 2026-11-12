@@ -7,8 +7,6 @@ const plugins = [swc.vite({ module: { type: 'es6' } })];
 
 export default defineConfig({
   test: {
-    // Інтеграційні тести з'являються в задачі 00-09
-    passWithNoTests: true,
     projects: [
       {
         plugins,
@@ -22,6 +20,8 @@ export default defineConfig({
         test: {
           name: 'integration',
           include: ['test/**/*.test.ts'],
+          // Міграції до TEST_DATABASE_URL (потрібен `podman compose up -d`)
+          globalSetup: ['test/global-setup.ts'],
         },
       },
     ],

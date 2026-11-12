@@ -69,9 +69,10 @@
   - Перевірка: інтеграційний тест `[TC-00-07]` (неіснуючий маршрут і невалідне тіло дають `{ error: { code, message } }`) і unit-тести фільтра на три гілки; `GET /api/nope` → 404 `{ "error": { "code": "NOT_FOUND", … } }`; `/api/docs` відкривається.
   - Відхилення: додатково оброблені 4xx від body-parser і 5xx `HttpException` (узагальнене повідомлення); `configureApp(app)` спільна для main.ts і тестів; `@scarf/scarf: false` в allowBuilds; нові залежності `@nestjs/swagger`, dev `supertest`. На потім: у лозі лише path без query; Swagger вимкнути/обмежити перед публічним деплоєм; прибрати `passWithNoTests` у 00-09.
 
-- [ ] **00-09. DB-модуль і інтеграційна обв'язка**
+- [x] **00-09. DB-модуль і інтеграційна обв'язка**
   - Що: провайдер Drizzle (`pg` Pool, закриття на shutdown); Vitest globalSetup застосовує міграції до `TEST_DATABASE_URL` (мігратор drizzle-orm); інтеграційний тест `[TC-00-01]`: 15 таблиць у `public` і повний очікуваний список CHECK-обмежень з `pg_constraint` (список виписати з 0001 і 0002).
   - Перевірка: `pnpm --filter api test` зелений при піднятому Podman.
+  - Відхилення: globalSetup парсить кореневий `.env` через `util.parseEnv` (не `loadEnvFile`, щоб не засмічувати `process.env` воркерів), URL передається тестам через `project.provide`; `passWithNoTests` прибрано. На потім (рев'ю): `pool.on('error')` з логуванням, `@Injectable()` на `PoolShutdown`, захист від `TEST_DATABASE_URL` = dev-БД перед очищенням таблиць у тестах (spec 01), `COLLATE "C"` у ORDER BY тесту, `count === 3` у журналі зламається з міграцією 0003.
 
 - [ ] **00-10. Health-ендпоінт**
   - Що: `GET /api/health` робить `select 1`: 200 `{ "status": "ok", "db": "ok" }`; БД недоступна → 503 у форматі помилки. Відповідь відповідає `HealthResponseSchema`; опис у Swagger.

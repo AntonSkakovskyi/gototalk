@@ -5,9 +5,10 @@ import { LoggerModule } from 'nestjs-pino';
 import { AppConfigModule } from './config/app-config.module.js';
 import type { AppConfigOptions } from './config/app-config.module.js';
 import type { Env } from './config/env.schema.js';
+import { DbModule } from './db/db.module.js';
 import { buildPinoHttpOptions } from './logger/pino-options.js';
 
-// Корінь застосунку; доменні модулі (db, health, ports…) додаються в наступних задачах.
+// Корінь застосунку; доменні модулі (health, ports…) додаються в наступних задачах.
 @Module({})
 export class AppModule {
   static register(options: AppConfigOptions = {}): DynamicModule {
@@ -15,6 +16,7 @@ export class AppModule {
       module: AppModule,
       imports: [
         AppConfigModule.forRoot(options),
+        DbModule,
         LoggerModule.forRootAsync({
           inject: [ConfigService],
           useFactory: (config: ConfigService<Env, true>) => ({
