@@ -35,3 +35,4 @@
 | Після `git push`: CI зелений (`pnpm/action-setup@v6` без `version`, `cache: pnpm` з Node 26) | 00-17, відхилення | Антон |
 | Ручна перевірка `[TC-00-03]`: відкриття й встановлення PWA на Android (емулятор, `adb reverse`) | 00-15, 00-18 | Антон |
 | Мігровані кириличні коментарі в `db/migrations/0000`–`0002`: не редагуємо, нові міграції англійською | Відкладене після PR #1 | не робимо |
+| Переліки провайдерів `fake/deepgram` і `fake/gemini` дубльовані в `packages/shared/src/auth.ts` та `apps/api/src/config/env.schema.ts`: винести `SttProviderSchema`/`LlmProviderSchema` у shared | рев'ю 01-04 | будь-яка |

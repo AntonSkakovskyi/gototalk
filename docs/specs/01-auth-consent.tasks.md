@@ -61,7 +61,7 @@
   - Ручна дія: Антон додає `JWT_ACCESS_SECRET` у свій `.env` (згенерувати, наприклад, `node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"`), інакше `pnpm dev` не стартує.
   - Стан: код і тести готові; `.env.example` (змінна `JWT_ACCESS_SECRET=` і переклад коментарів англійською) чекає на дозвіл доступу до файлу.
 
-- [ ] **01-04. Контракти auth у shared**
+- [x] **01-04. Контракти auth у shared**
   - Що: `packages/shared/src/auth.ts` (схеми й коди з «Технічних рішень»), експорт з `index.ts`.
   - Перевірка: unit `[TC-01-02]`: email нормалізується (`' A@B.com '` → `a@b.com`), пароль 7 символів відхилено, 8 прийнято, 129 відхилено; `AuthResponseSchema` приймає `consentAt: null`.
 
@@ -84,7 +84,7 @@
   - Перевірка: integration `[TC-01-02]`: register → login → refresh (нова cookie, старий токен у БД відкликаний) → logout (401 на наступний refresh); повторний відкликаний токен → 401 і всі токени користувача відкликані; атрибути Set-Cookie (`HttpOnly; Secure; SameSite=Strict; Path=/api/auth`); у `refresh_tokens.token_hash` немає сирого токена; дубль email → 409 `EMAIL_TAKEN`. `[TC-01-05]`: неіснуючий email і хибний пароль дають однаковий статус і тіло.
 
 - [ ] **01-09. /api/me і згода**
-  - Що: `MeController`: `GET /me`, `GET /me/consent` (провайдери з конфігу), `POST /me/consent`; `ConsentGuard` + `@RequiresConsent()`.
+  - Що: `MeController`: `GET /me`, `GET /me/consent` (провайдери з конфігу), `POST /me/consent`; `ConsentGuard` + `@RequiresConsent()`. Drizzle віддає `consent_at` рядком Postgres (`2026-11-13 10:00:00+00`), тож перед побудовою `Me` конвертувати через `new Date(v).toISOString()` (схема приймає лише ISO з `Z`).
   - Перевірка: integration `[TC-01-02]`: новий користувач має `consentAt: null`, після POST – дату, повторний POST її не змінює; тестовий маршрут з `@RequiresConsent()` дає 403 `CONSENT_REQUIRED` до згоди й 200 після. `[TC-01-04]`: Swagger-обхід усіх операцій без токена → 401 (крім відкритих).
 
 - [ ] **01-10. Видалення акаунта й ізоляція**
