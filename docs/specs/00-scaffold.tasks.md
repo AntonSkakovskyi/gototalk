@@ -116,9 +116,10 @@
   - Перевірка: YAML проходить локальну валідацію (`pnpm dlx @action-validator/cli .github/workflows/ci.yml`); остаточно – зелений прогін після `git push` (робить Антон).
   - Відхилення: немає. YAML пройшов `@action-validator/cli` (на зламаному файлі валідатор помилку ловить); CI емульовано локально на чистому `postgres:17` (lint, typecheck, test зелені без `.env`). Версії actions звірено через GitHub API (checkout v7, pnpm/action-setup v6, setup-node v7); `persist-credentials: false`. Після push перевірити: job зелений, зокрема `pnpm/action-setup@v6` без `version` і `cache: pnpm` з Node 26.
 
-- [ ] **00-18. README і фінальна перевірка**
+- [x] **00-18. README і фінальна перевірка**
   - Що: README: вимоги (Node 26, pnpm, Podman), команди для PowerShell (install, `podman compose up -d`, `pnpm db:migrate`, `pnpm db:seed`, `pnpm dev`, тести, e2e, `adb reverse tcp:5173 tcp:5173`), примітка про HTTPS/localhost для мікрофона. Прогін усіх пунктів «Готово, коли» spec 00.
   - Перевірка: зелені `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm test:e2e`; Антон вручну перевіряє `[TC-00-03]` на емуляторі (відкриття й встановлення PWA); `reviewer` дає `REVIEW: PASS`.
+  - Відхилення: немає. Автоматичні перевірки зелені, `reviewer` дав PASS; `[TC-00-03]` (Android) лишається ручною перевіркою Антона.
 
 ## Покриття spec 00
 
