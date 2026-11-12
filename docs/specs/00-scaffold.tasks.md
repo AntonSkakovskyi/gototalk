@@ -71,7 +71,7 @@
 
 - [ ] **00-10. Health-ендпоінт**
   - Що: `GET /api/health` робить `select 1`: 200 `{ "status": "ok", "db": "ok" }`; БД недоступна → 503 у форматі помилки. Відповідь відповідає `HealthResponseSchema`; опис у Swagger.
-  - Перевірка: інтеграційні тести через supertest: `[TC-00-02]` 200; `[TC-00-04]` 503 з підміненим провайдером БД; `curl http://localhost:3000/api/health` → ok.
+  - Перевірка: інтеграційні тести через supertest: `[TC-00-02]` 200; `[TC-00-07]` 503 з підміненим провайдером БД; `curl http://localhost:3000/api/health` → ok.
 
 - [ ] **00-11. Порти й Fake-адаптери (мінімум)**
   - Що: `apps/api/src/ports/speech-recognition.port.ts`, `language-model.port.ts` (DI-токени; методи зі specs 03–05 і stubs.md: `transcribe(audio, mime, index?)` → `{ verbatim, clean, words? }`, `analyzeUtterance`, `planSession`, `nextTurn`, `hint`, `summarizeSession`). Zod-схеми результатів у shared: Mistake `{ start, end, original, suggestion, category, explanation_en, translation_uk }`, AnalysisResult (mistakes + better `{ original, better }`), мінімальні Plan, Turn, Hint, Summary. `apps/api/src/adapters/fake/`: одна фіксована відповідь на метод (STT – транскрипт №0 зі stubs.md; analyze – помилки verb_tense і word_order з коректними позиціями в verbatim); `reset()` і режими `FAKE_*_FAIL` не робимо. `ProvidersModule` обирає адаптер за env.

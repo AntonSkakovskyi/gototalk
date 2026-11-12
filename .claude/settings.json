@@ -9,6 +9,9 @@
       "Bash(pnpm typecheck:*)",
       "Bash(pnpm db:migrate:*)",
       "Bash(pnpm db:pull:*)",
+      "Bash(pnpm db:seed:*)",
+      "Bash(pnpm build:*)",
+      "Bash(pnpm exec:*)",
       "Bash(pnpm --filter:*)",
       "Bash(git status:*)",
       "Bash(git diff:*)",
@@ -19,7 +22,8 @@
       "Bash(git checkout -b:*)",
       "Bash(podman compose ps:*)",
       "Bash(podman compose up:*)",
-      "Bash(podman compose logs:*)"
+      "Bash(podman compose logs:*)",
+      "Bash(podman compose exec:*)"
     ],
     "deny": [
       "Read(./.env)",
