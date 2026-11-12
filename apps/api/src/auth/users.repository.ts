@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { eq } from 'drizzle-orm';
+import { and, eq, isNull, sql } from 'drizzle-orm';
 import { DRIZZLE } from '../db/db.tokens.js';
 import type { Database } from '../db/db.tokens.js';
 import { pgTimestampToDate } from '../db/pg-timestamp.js';
@@ -61,6 +61,15 @@ export class UsersRepository {
       .where(eq(users.id, id))
       .limit(1);
     return row ? toRecord(row) : null;
+  }
+
+  async grantConsent(id: string): Promise<UserRecord | null> {
+    const [row] = await this.db
+      .update(users)
+      .set({ consentAt: sql`now()` })
+      .where(and(eq(users.id, id), isNull(users.consentAt)))
+      .returning();
+    return row ? toRecord(row) : this.findById(id);
   }
 
   async create(input: {

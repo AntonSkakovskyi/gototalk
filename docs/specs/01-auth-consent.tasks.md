@@ -87,9 +87,10 @@
   - Перевірка: integration `[TC-01-02]`: register → login → refresh (нова cookie, старий токен у БД відкликаний) → logout (401 на наступний refresh); повторний відкликаний токен → 401 і всі токени користувача відкликані; атрибути Set-Cookie (`HttpOnly; Secure; SameSite=Strict; Path=/api/auth`); у `refresh_tokens.token_hash` немає сирого токена; дубль email → 409 `EMAIL_TAKEN`. `[TC-01-05]`: неіснуючий email і хибний пароль дають однаковий статус і тіло.
   - Відхилення: недійсний або повторно використаний refresh дає один і той самий `UNAUTHORIZED` з однаковим повідомленням (reuse не розкривається); переможець паралельного refresh отримує cookie, яку вже відкликано (програвший запит рахується як reuse, затверджене рішення), тож клієнт мусить робити single-flight (01-11); фільтр логує DrizzleQueryError без query/params (`sanitizeForLog`); `toMe(user)` в `auth.service.ts` перевикористати в 01-09; Swagger-обхід у 01-09 має вважати чотири auth-операції відкритими.
 
-- [ ] **01-09. /api/me і згода**
+- [x] **01-09. /api/me і згода**
   - Що: `MeController`: `GET /me`, `GET /me/consent` (провайдери з конфігу), `POST /me/consent`; `ConsentGuard` + `@RequiresConsent()`. Drizzle віддає `consent_at` рядком Postgres (`2026-11-13 10:00:00+00`), тож перед побудовою `Me` конвертувати через `new Date(v).toISOString()` (схема приймає лише ISO з `Z`).
   - Перевірка: integration `[TC-01-02]`: новий користувач має `consentAt: null`, після POST – дату, повторний POST її не змінює; тестовий маршрут з `@RequiresConsent()` дає 403 `CONSENT_REQUIRED` до згоди й 200 після. `[TC-01-04]`: Swagger-обхід усіх операцій без токена → 401 (крім відкритих).
+  - Відхилення: `AuthModule` став `@Global()` (залежності `ConsentGuard` мають резолвитись поза ним; знадобиться в 03); Swagger-обхід читає `/api/docs-json`, відкриті операції перелічено явно, тож нові маршрути перевіряються автоматично (маршрути з `@ApiExcludeEndpoint` обхід не бачить).
 
 - [ ] **01-10. Видалення акаунта й ізоляція**
   - Що: `DELETE /me` з повторним паролем, очищення cookie; тестова фікстура `test/support/user-data.ts`, що вставляє по рядку в кожну таблицю користувача (profiles, goals, sessions, utterances, mistakes, mistake_patterns, words, hints, cards, exercises, session_reports, refresh_tokens).

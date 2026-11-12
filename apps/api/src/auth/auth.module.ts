@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
@@ -15,6 +15,8 @@ import { UsersRepository } from './users.repository.js';
 
 export const ACCESS_TOKEN_TTL_SECONDS = 15 * 60;
 
+// Global: guard dependencies must resolve outside AuthModule for @RequiresConsent()
+@Global()
 @Module({
   imports: [
     JwtModule.registerAsync({

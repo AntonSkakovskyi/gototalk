@@ -10,6 +10,7 @@ import { AuthModule } from './auth/auth.module.js';
 import { DbModule } from './db/db.module.js';
 import { DialogueModule } from './dialogue/dialogue.module.js';
 import { HealthModule } from './health/health.module.js';
+import { MeModule } from './me/me.module.js';
 import { buildPinoHttpOptions } from './logger/pino-options.js';
 import { ProfileModule } from './profile/profile.module.js';
 import { ProvidersModule } from './providers/providers.module.js';
@@ -24,6 +25,7 @@ export class AppModule {
         AppConfigModule.forRoot(options),
         DbModule,
         AuthModule,
+        MeModule,
         HealthModule,
         ProvidersModule,
         ProfileModule,
