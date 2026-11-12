@@ -39,7 +39,7 @@
   - Що: `@gototalk/shared`: Zod, `ErrorResponseSchema` (`{ error: { code, message } }`), `HealthResponseSchema`, `MistakeCategoryCodeSchema` (13 кодів із 0002), збірка tsc у `dist` (`exports` з `types`), Vitest. `@gototalk/prompts`: `package.json` + README (призначення, формат назв `<name>.vN.md`).
   - Перевірка: тест `[TC-00-04]` на схеми зелений; `pnpm --filter @gototalk/shared build` створює `dist`.
 
-- [ ] **00-03. compose.yaml і .env.example**
+- [x] **00-03. compose.yaml і .env.example**
   - Що: Postgres 17, named volume, порт 5432, healthcheck; `db/init/01-test-db.sql` (`CREATE DATABASE gototalk_test`) у `/docker-entrypoint-initdb.d`; `.env.example` з усіма змінними без значень секретів (`DATABASE_URL`, `TEST_DATABASE_URL`, `PORT`, `LOG_LEVEL`, `STT_PROVIDER`, `LLM_PROVIDER`, `FAKE_STT_FAIL`, `FAKE_LLM_FAIL`, `DEV_KEEP_AUDIO`, `DEV_AUDIO_DIR`, `POSTGRES_*`).
   - Перевірка: `podman compose up -d` → контейнер healthy; `podman compose exec db psql -U <user> -c '\l'` показує `gototalk` і `gototalk_test`; `podman volume ls` показує named volume.
 
