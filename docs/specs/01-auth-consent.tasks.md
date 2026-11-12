@@ -71,9 +71,10 @@
   - Перевірка: unit `[TC-01-01]`: хеш ≠ паролю й починається з `$argon2id$v=19$m=65536,t=3,p=4$`; verify правильного й хибного пароля; хеш демо-користувача з `db/seed.sql` проходить з `demo-password-1`; два хеші одного пароля різні (сіль). `pnpm install` не вимагає `allowBuilds`.
   - Відхилення: `algorithm: 2` числом (ambient const enum не імпортується при `verbatimModuleSyntax`). `PasswordHasher` рахує фіктивний хеш у кожному екземплярі (~100 мс): у AuthModule (01-07/01-08) надавати як єдиний провайдер.
 
-- [ ] **01-06. RefreshTokenService (домен)**
+- [x] **01-06. RefreshTokenService (домен)**
   - Що: `apps/api/src/auth/refresh-token.service.ts` + інтерфейс `RefreshTokensRepository`; генерація (32 байти base64url), SHA-256, `issue`, `rotate` (reuse → відкликати всі токени користувача), `revoke`; in-memory репозиторій лише для тестів. TDD.
   - Перевірка: unit `[TC-01-01]`: rotate видає новий токен і відкликає старий; повторний rotate старого → помилка `TokenReused` і всі токени користувача відкликані; протермінований → помилка; у репозиторії лише хеш (немає сирого значення).
+  - Відхилення: до інтерфейсу репозиторію додано `rotateActive(oldHash, next, now)` (відкликання й вставка однією транзакцією); `CLOCK` оголошено в сервісі, його варто перенести в спільний файл при складанні AuthModule. Відкликаний через logout токен при повторному пред'явленні теж вважається reuse (затверджене рішення).
 
 - [ ] **01-07. Guard, декоратори, cookie-parser, фільтр**
   - Що: `JwtModule.registerAsync` (секрет із ConfigService, HS256, 15 хв); `AuthGuard` (APP_GUARD) + `@Public()` + `@CurrentUser()`; `@Public()` на health; `cookie-parser` у `configureApp`; `ZodBodyPipe`; поле `code` у фільтрі; `addBearerAuth` у Swagger.
@@ -81,7 +82,7 @@
   - Перевірка: unit фільтра `[TC-00-07]` (кастомний `code`); integration `[TC-01-04]` з тестовим контролером: без токена 401, з невалідним, протермінованим, `alg: none` або чужим секретом 401, з валідним 200; `/api/health` лишається відкритим (`[TC-00-02]` зелений).
 
 - [ ] **01-08. Ендпоінти register, login, refresh, logout**
-  - Що: `UsersRepository`, Drizzle-реалізація `RefreshTokensRepository` (атомарна ротація), `AuthService`, `AuthController` (`/auth/*`), установка й очищення cookie з атрибутами з рішень, опис у Swagger.
+  - Що: `UsersRepository`, Drizzle-реалізація `RefreshTokensRepository` (атомарна ротація), `AuthService`, `AuthController` (`/auth/*`), установка й очищення cookie з атрибутами з рішень, опис у Swagger. Drizzle-репозиторій використовує переданий `now` (не SQL `now()`) і мапить рядкові timestamps Drizzle (`mode: 'string'`) у `Date`; `rotateActive` одним `db.transaction`; TTL cookie Max-Age беремо з `REFRESH_TOKEN_TTL_MS`; `PasswordHasher` і `CLOCK` надаємо єдиними провайдерами. Інтеграційний тест: два паралельні refresh одного токена дають рівно один успіх.
   - Перевірка: integration `[TC-01-02]`: register → login → refresh (нова cookie, старий токен у БД відкликаний) → logout (401 на наступний refresh); повторний відкликаний токен → 401 і всі токени користувача відкликані; атрибути Set-Cookie (`HttpOnly; Secure; SameSite=Strict; Path=/api/auth`); у `refresh_tokens.token_hash` немає сирого токена; дубль email → 409 `EMAIL_TAKEN`. `[TC-01-05]`: неіснуючий email і хибний пароль дають однаковий статус і тіло.
 
 - [ ] **01-09. /api/me і згода**
