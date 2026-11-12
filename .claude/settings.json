@@ -33,6 +33,10 @@
     ],
     "defaultMode": "acceptEdits"
   },
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
   "model": "opusplan",
   "hooks": {
     "Stop": [

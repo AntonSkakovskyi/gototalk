@@ -6,9 +6,9 @@
 
 ```powershell
 # 1. Середовище
-node -v                                   # очікуємо v24.22.2 або новіше
-corepack enable
-corepack prepare pnpm@latest --activate
+node -v                                          # очікуємо v26.x (Active LTS)
+npm install -g --allow-scripts=pnpm pnpm@latest  # corepack у Node 26 немає
+pnpm -v
 podman machine init; podman machine start # якщо машина ще не створена
 podman compose version                    # якщо "looking up compose provider failed":
 pip install podman-compose
@@ -42,7 +42,7 @@ claude plugin list
 | Модель | `/model` показує `opusplan` |
 | MCP | `/mcp` — context7 і playwright у стані connected |
 | Плагіни | після `/` в автодоповненні є `/feature-dev`, `/code-review` |
-| Сабагент | `/agents` показує `reviewer` |
+| Сабагент | майстер `/agents` прибрано з Claude Code; запит «Які сабагенти доступні в цьому проєкті?» — у відповіді має бути `reviewer` |
 | Скіл | `/db-migration` є в автодоповненні |
 | Хук | `/hooks` показує Stop-хук; повноцінно перевіряється після каркаса: зламати тест і попросити завершити задачу |
 | Ліміти | `/usage` — поточне використання 5-годинного й тижневого ліміту |

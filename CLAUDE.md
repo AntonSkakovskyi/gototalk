@@ -9,7 +9,7 @@ PWA-тренер говоріння англійською для україно
 - `KICKOFF.md` — порядок старту проєкту.
 
 ## Стек (не змінювати без погодження)
-- Node 24 LTS (не нижче 24.22.2), pnpm workspaces, TypeScript strict.
+- Node 26 LTS (Active LTS з 28.10.2026), pnpm (встановлений окремо, без corepack), pnpm workspaces, TypeScript strict.
 - `apps/api`: NestJS 12 (ESM), Vitest, Drizzle ORM (стабільна гілка), PostgreSQL 17.
 - `apps/web`: React 19 + Vite 8 + vite-plugin-pwa, Mantine 9 + CSS-модулі на SCSS (`*.module.scss`), TanStack Query, React Router, react-hook-form + Zod, react-i18next. Tailwind не використовуємо.
 - `packages/shared`: Zod-схеми й типи — єдине джерело контрактів API для фронту й бекенду.
