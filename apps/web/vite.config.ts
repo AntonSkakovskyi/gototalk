@@ -13,11 +13,15 @@ const apiProxy = {
 export default defineConfig({
   plugins: [react(), VitePWA(pwaOptions)],
   server: {
+    // Явний IPv4-loopback: на Windows `localhost` у Vite лишається лише на [::1],
+    // а `adb reverse` стукає на 127.0.0.1 і отримує ERR_EMPTY_RESPONSE.
+    host: '127.0.0.1',
     port: 5173,
     strictPort: true,
     proxy: apiProxy,
   },
   preview: {
+    host: '127.0.0.1',
     port: 4173,
     strictPort: true,
     proxy: apiProxy,
