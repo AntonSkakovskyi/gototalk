@@ -48,9 +48,10 @@
   - context7: Drizzle 0.x (custom migrations, `migrate`).
   - Перевірка: на чистій `gototalk_test` (з `DATABASE_URL` тестової БД) і на dev-БД `pnpm db:migrate` створює 15 таблиць у `public`, у `drizzle.__drizzle_migrations` 3 рядки; повторний запуск нічого не змінює; `pnpm db:seed` двічі поспіль без помилок.
 
-- [ ] **00-05. db:pull → apps/api/src/db/schema.ts**
+- [x] **00-05. db:pull → apps/api/src/db/schema.ts**
   - Що: `apps/api/drizzle.pull.config.ts`, `apps/api/scripts/db-pull.mjs`; файли `schema.ts` і `relations.ts` згенеровані, вручну не правити.
   - Перевірка: `schema.ts` має 15 `pgTable` і `check(...)` для кожного CHECK з міграцій; повторний `pnpm db:pull` не дає diff; `pnpm typecheck` зелений.
+  - Відхилення: скрипт замінює `./schema` на `./schema.js` у relations.ts (NodeNext); drizzle-kit і Prettier викликаються через node без shell; 16 `check(...)` (17 CHECK у SQL мінус замінений `words_state_check`); `typecheck` схему охопить з 00-06 (tsconfig у api).
 
 - [ ] **00-06. Бутстрап NestJS**
   - Що: ESM `src/main.ts`, `src/app.module.ts`, `nest-cli.json`, `tsconfig.json`/`tsconfig.build.json`, Vitest з двома проєктами (unit, integration), глобальний префікс `api`, скрипти `dev`, `build`, `test`, `typecheck`, `lint`.

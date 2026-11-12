@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "db:migrate": "node scripts/db-migrate.mjs",
+    "db:pull": "node scripts/db-pull.mjs",
     "db:seed": "node scripts/db-seed.mjs"
   },
   "dependencies": {
