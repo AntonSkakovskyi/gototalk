@@ -43,7 +43,7 @@
   - Що: Postgres 17, named volume, порт 5432, healthcheck; `db/init/01-test-db.sql` (`CREATE DATABASE gototalk_test`) у `/docker-entrypoint-initdb.d`; `.env.example` з усіма змінними без значень секретів (`DATABASE_URL`, `TEST_DATABASE_URL`, `PORT`, `LOG_LEVEL`, `STT_PROVIDER`, `LLM_PROVIDER`, `FAKE_STT_FAIL`, `FAKE_LLM_FAIL`, `DEV_KEEP_AUDIO`, `DEV_AUDIO_DIR`, `POSTGRES_*`).
   - Перевірка: `podman compose up -d` → контейнер healthy; `podman compose exec db psql -U <user> -c '\l'` показує `gototalk` і `gototalk_test`; `podman volume ls` показує named volume.
 
-- [ ] **00-04. Міграції drizzle-kit, db:migrate, db:seed**
+- [x] **00-04. Міграції drizzle-kit, db:migrate, db:seed**
   - Що: мінімальний `apps/api/package.json` (drizzle-orm, drizzle-kit, pg), `apps/api/drizzle.config.ts`; `drizzle-kit generate --custom --name=baseline|init|mvp_adjustments` (команду для 0.x звірити з context7), перенести SQL із наявних файлів (у 0002 прибрати `BEGIN;`/`COMMIT;` після перевірки мігратора), старі файли видалити, щоб лишились лише файли з журналу. Скрипт `db:seed` (Node + `pg`, застосовує `db/seed.sql`).
   - context7: Drizzle 0.x (custom migrations, `migrate`).
   - Перевірка: на чистій `gototalk_test` (з `DATABASE_URL` тестової БД) і на dev-БД `pnpm db:migrate` створює 15 таблиць у `public`, у `drizzle.__drizzle_migrations` 3 рядки; повторний запуск нічого не змінює; `pnpm db:seed` двічі поспіль без помилок.
