@@ -39,3 +39,6 @@
 | Register is not atomic: if session start fails after the user insert, a retry gives 409 EMAIL_TAKEN; wrap user and token insert in one transaction | рев'ю 01-08 | будь-яка |
 | Нема rate limiting: `POST /api/auth/login` і `DELETE /api/me` (перевірка пароля) придатні для перебору паролів, зокрема з краденим access-токеном | рев'ю 01-10 | деплой |
 | Захищені маршрути не повинні довіряти лише JWT: access-токен діє до 15 хв після видалення акаунта; кожен сервіс, що читає дані користувача, має працювати з існуючим рядком `users` | рев'ю 01-10 | 02–05 |
+| Помилка 5xx або мережі при тихому refresh на старті зараз переводить у `anonymous` (офлайн-старт PWA веде на вхід): додати екран/повтор для такої помилки | рев'ю 01-11 | 02 |
+| `BroadcastChannel` для синхронізації виходу між вкладками; водночас вкладка, що чекає на `navigator.locks`, робить зайву ротацію токена | рев'ю 01-11 | деплой |
+| e2e у справжньому браузері для `navigator.locks` і single-flight refresh (у jsdom є лише заглушка) | 01-11 | 01 (задача 01-15) |

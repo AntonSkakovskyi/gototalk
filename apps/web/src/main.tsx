@@ -7,6 +7,8 @@ import { createRoot } from 'react-dom/client';
 import { I18nextProvider } from 'react-i18next';
 import { BrowserRouter } from 'react-router';
 import { App } from './App.js';
+import { AuthBootstrap } from './auth/AuthBootstrap.js';
+import { clearQueryCacheOnSessionEnd } from './auth/query-cache.js';
 import i18n from './i18n/index.js';
 import { theme } from './theme.js';
 
@@ -16,6 +18,7 @@ if (!container) {
 }
 
 const queryClient = new QueryClient();
+clearQueryCacheOnSessionEnd(queryClient);
 
 createRoot(container).render(
   <StrictMode>
@@ -23,7 +26,9 @@ createRoot(container).render(
       <I18nextProvider i18n={i18n}>
         <QueryClientProvider client={queryClient}>
           <BrowserRouter>
-            <App />
+            <AuthBootstrap>
+              <App />
+            </AuthBootstrap>
           </BrowserRouter>
         </QueryClientProvider>
       </I18nextProvider>

@@ -97,9 +97,10 @@
   - Перевірка: integration `[TC-01-02]`: хибний пароль → 403 `INVALID_PASSWORD`, нічого не видалено; правильний → 204, у всіх 12 таблицях 0 рядків користувача, старий access-токен на `/api/me` → 401. `[TC-01-06]`: два користувачі з фікстурами; `GET /api/me` кожного повертає свої дані; видалення B не зачіпає жодного рядка A; logout B не відкликає токени A.
   - Відхилення: немає. Додано захисні тести: кожен FK на `users` має бути CASCADE і покритий фікстурою, FK між власними таблицями лише за явним allowlist (`mistakes.pattern_id`, `hints.utterance_id`, `hints.word_id` = SET NULL).
 
-- [ ] **01-11. Фронтенд: сесія й HTTP-клієнт**
+- [x] **01-11. Фронтенд: сесія й HTTP-клієнт**
   - Що: `src/api/http.ts`, `src/auth/session-store.ts`, `src/auth/refresh.ts`, `src/auth/auth-api.ts`, `AuthBootstrap` (тихий refresh при старті, лоадер до відповіді); розширити `renderWithProviders` (початковий стан сесії).
   - Перевірка: unit `[TC-01-03]` (mock fetch): Bearer додається; 401 → один refresh → повтор запиту; два паралельні 401 дають один refresh; невдалий refresh → стан `anonymous`; токен ніде не пишеться в `localStorage`/`sessionStorage`.
+  - Відхилення: у web додано залежності `@gototalk/shared` і `zod` (dev); `apiFetch` має опцію `auth: false` (вхід, реєстрація, вихід не запускають refresh); лічильник «покоління» в session-store не дає refresh воскресити сесію після виходу; помилка 5xx або мережі при старті веде в `anonymous` (екран повтору в backlog).
 
 - [ ] **01-12. Маршрути, вхід і реєстрація**
   - Що: `RequireAuth`, `RequireConsent`, `PublicOnly`; `LoginPage`, `RegisterPage` (Mantine + react-hook-form + zodResolver зі схемами shared; помилки з i18n за `code`); тексти в `uk.json`.

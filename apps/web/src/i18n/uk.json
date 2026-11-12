@@ -2,6 +2,9 @@
   "app": {
     "title": "GoToTalk"
   },
+  "auth": {
+    "loading": "Завантаження"
+  },
   "nav": {
     "label": "Основна навігація",
     "session": "Сесія",
