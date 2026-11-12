@@ -1,6 +1,5 @@
 import { STATUS_CODES } from 'node:http';
 
-// Стабільні коди для найчастіших статусів; решта береться зі стандартної назви статусу.
 const KNOWN_CODES: Readonly<Record<number, string>> = {
   400: 'BAD_REQUEST',
   401: 'UNAUTHORIZED',
@@ -12,7 +11,6 @@ const KNOWN_CODES: Readonly<Record<number, string>> = {
   500: 'INTERNAL_ERROR',
 };
 
-/** Машинний код помилки за HTTP-статусом: `404` → `NOT_FOUND`, `503` → `SERVICE_UNAVAILABLE`. */
 export function codeFromStatus(status: number): string {
   const known = KNOWN_CODES[status];
   if (known) return known;

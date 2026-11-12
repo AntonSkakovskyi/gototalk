@@ -6,11 +6,9 @@ import { LearnerModelService } from '../profile/learner-model.service.js';
 
 export interface PlanSessionRequest {
   userId: string;
-  /** Власна тема (`topic_source = custom`). */
   customTopic?: string;
 }
 
-/** Планувальник сесії. Скелет: реалізація в spec 03. */
 @Injectable()
 export class SessionPlannerService {
   constructor(
@@ -19,11 +17,10 @@ export class SessionPlannerService {
     protected readonly learnerModel: LearnerModelService,
   ) {}
 
-  /** Пропонує тему й 5 питань (рівень, сцени, цілі, топ-3 патерни → `LanguageModelPort.planSession`). */
   async planSession(request: PlanSessionRequest): Promise<Plan> {
     void request;
     throw new NotImplementedException(
-      'SessionPlannerService.planSession: реалізація в spec 03 (docs/specs/03-session-start.md)',
+      'Not implemented: SessionPlannerService.planSession (see docs/specs/03-session-start.md)',
     );
   }
 }

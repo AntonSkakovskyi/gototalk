@@ -1,20 +1,20 @@
 # GoToTalk
 
-PWA-тренер говоріння англійською для україномовних користувачів (рівень від A2): відповідь голосом, дослівний транскрипт із підсвіченими помилками й модель учня (патерни помилок, слова зі станами new / partial / passive / active).
+A PWA speaking trainer for Ukrainian-speaking learners of English (level A2 and above): the user answers by voice, sees a verbatim transcript with highlighted mistakes, and the system maintains a learner model (error patterns and words with the states new / partial / passive / active).
 
-## Вимоги
+## Requirements
 
 - Node 26 (`.node-version`)
-- pnpm (версія в `packageManager` кореневого `package.json`), встановлений окремо, без corepack
-- Podman з `podman compose` (Docker не використовуємо)
-- Для e2e локально: Microsoft Edge (див. нижче)
-- Для Android: Android Studio (емулятор) або телефон через USB, `adb`
+- pnpm (version in `packageManager` of the root `package.json`), installed separately, without corepack
+- Podman with `podman compose` (Docker is not used)
+- For e2e locally: Microsoft Edge (see below)
+- For Android: Android Studio (emulator) or a phone over USB, `adb`
 
-## Швидкий старт (PowerShell)
+## Quick start (PowerShell)
 
 ```powershell
 Copy-Item .env.example .env
-# Заповни у .env усі змінні, що в .env.example без значення (POSTGRES_*, DATABASE_URL, TEST_DATABASE_URL)
+# Fill in every variable in .env that has no value in .env.example (POSTGRES_*, DATABASE_URL, TEST_DATABASE_URL)
 pnpm install
 podman compose up -d
 pnpm db:migrate
@@ -22,11 +22,11 @@ pnpm db:seed
 pnpm dev
 ```
 
-Відкрий `http://localhost:5173`. `pnpm dev` збирає `packages/shared` і запускає api (порт 3000) та web (порт 5173) разом; web проксує `/api` на бекенд. Перевірка бекенда: `http://localhost:3000/api/health`, Swagger: `http://localhost:3000/api/docs`.
+Open `http://localhost:5173`. `pnpm dev` builds `packages/shared` and starts the api (port 3000) and web (port 5173) together; web proxies `/api` to the backend. Backend check: `http://localhost:3000/api/health`, Swagger: `http://localhost:3000/api/docs`.
 
-Файл `.env` не потрапляє в git. База `gototalk_test` для інтеграційних тестів створюється init-скриптом `db/init` під час першого запуску контейнера.
+The `.env` file is not committed to git. The `gototalk_test` database for integration tests is created by the `db/init` script when the container starts for the first time.
 
-## Перевірки
+## Checks
 
 ```powershell
 pnpm lint
@@ -35,40 +35,40 @@ pnpm test
 pnpm test:e2e
 ```
 
-- `pnpm test` включає інтеграційні тести API, тому потрібні піднятий `podman compose up -d` і заданий `TEST_DATABASE_URL`; міграції до тестової БД застосовує сам Vitest (globalSetup), а `pnpm db:migrate` потрібен для dev-БД.
-- `pnpm test:e2e` (Playwright, мобільний в'юпорт 360×800) потребує піднятої БД: `/api/health` перевіряє з'єднання з нею. Застосунки Playwright запускає сам (або використовує вже запущені `pnpm dev`). Локально тести йдуть у встановленому Edge; інший канал задає змінна `PW_CHANNEL`. У CI використовується Chromium від Playwright: `pnpm exec playwright install --with-deps chromium`.
+- `pnpm test` includes the API integration tests, so `podman compose up -d` must be running and `TEST_DATABASE_URL` must be set; Vitest applies migrations to the test database itself (globalSetup), while `pnpm db:migrate` is needed for the dev database.
+- `pnpm test:e2e` (Playwright, mobile viewport 360×800) needs the database up: `/api/health` checks the connection to it. Playwright starts the apps itself (or reuses an already running `pnpm dev`). Locally the tests run in the installed Edge; another channel can be set with the `PW_CHANNEL` variable. CI uses Playwright Chromium: `pnpm exec playwright install --with-deps chromium`.
 
-## Android і PWA
+## Android and PWA
 
-Мікрофон у браузері працює лише на HTTPS або на `localhost`, тому застосунок відкривається через `localhost` з прокиданням порту:
+The browser microphone works only over HTTPS or on `localhost`, so the app is opened through `localhost` with a forwarded port:
 
 ```powershell
 adb reverse tcp:5173 tcp:5173
 ```
 
-Після цього відкрий `http://localhost:5173` у Chrome на емуляторі чи телефоні (`pnpm dev` має працювати на ПК). Окремий порт для бекенда не потрібен: фронт звертається до нього через проксі Vite `/api`. Встановлення PWA: меню браузера, «Установити застосунок» / «Додати на головний екран».
+Then open `http://localhost:5173` in Chrome on the emulator or phone (`pnpm dev` must be running on the PC). No separate port is needed for the backend: the frontend reaches it through the Vite `/api` proxy. To install the PWA, use the browser menu: "Install app" / "Add to home screen".
 
-Vite слухає `127.0.0.1` (див. `server.host` у `apps/web/vite.config.ts`): на Windows типове `localhost` лишається лише на IPv6 `[::1]`, а `adb reverse` стукає на IPv4, і Chrome показує `ERR_EMPTY_RESPONSE` або чорний екран. Якщо після зміни порту чи перезапуску емулятора сторінка порожня, повтори `adb reverse tcp:5173 tcp:5173`.
+Vite listens on `127.0.0.1` (see `server.host` in `apps/web/vite.config.ts`): on Windows the default `localhost` is bound only to IPv6 `[::1]` while `adb reverse` connects over IPv4, and Chrome shows `ERR_EMPTY_RESPONSE` or a black screen. If the page is empty after a port change or an emulator restart, run `adb reverse tcp:5173 tcp:5173` again.
 
-## Структура репозиторію
+## Repository structure
 
 ```
 apps/api         NestJS 12 (ESM), Vitest, Drizzle ORM
 apps/web         React 19 + Vite 8, Mantine 9, vite-plugin-pwa
-packages/shared  Zod-схеми й типи контрактів API
-packages/prompts Версіоновані промпти до мовної моделі
-db/              SQL-міграції (db/migrations), init-скрипти Postgres (db/init), seed.sql
-e2e/             Playwright-тести
-docs/            продукт, технічні рішення, специфікації
+packages/shared  Zod schemas and types of the API contracts
+packages/prompts Versioned prompts for the language model
+db/              SQL migrations (db/migrations), Postgres init scripts (db/init), seed.sql
+e2e/             Playwright tests
+docs/            product, technical decisions, specifications
 ```
 
-## База даних і міграції
+## Database and migrations
 
-Джерело правди – SQL-міграції в `db/migrations` (drizzle-kit, кастомні міграції). Їх пишуть вручну, застосовують `pnpm db:migrate`, після цього `pnpm db:pull` оновлює TS-схему `apps/api/src/db/schema.ts` (вручну не правити). Заборонено: `drizzle-kit push`, редагування вже застосованих міграцій, `podman compose down -v`. Повна процедура – скіл `/db-migration` (`.claude/skills/db-migration/SKILL.md`).
+The source of truth is the SQL migrations in `db/migrations` (drizzle-kit, custom migrations). They are written by hand and applied with `pnpm db:migrate`; afterwards `pnpm db:pull` updates the TS schema `apps/api/src/db/schema.ts` (do not edit it manually). Forbidden: `drizzle-kit push`, editing already applied migrations, `podman compose down -v`. The full procedure is the `/db-migration` skill (`.claude/skills/db-migration/SKILL.md`).
 
-## Документація
+## Documentation
 
-- [docs/product.md](docs/product.md): що будуємо, хід сесії, обсяг MVP
-- [docs/tech-decisions.md](docs/tech-decisions.md): ухвалені технічні рішення
-- [docs/specs](docs/specs): специфікації сценаріїв і тест-кейси
-- [CLAUDE.md](CLAUDE.md): правила роботи з Claude Code
+- [docs/product.md](docs/product.md): what we are building, session flow, MVP scope
+- [docs/tech-decisions.md](docs/tech-decisions.md): accepted technical decisions
+- [docs/specs](docs/specs): scenario specifications and test cases
+- [CLAUDE.md](CLAUDE.md): rules for working with Claude Code

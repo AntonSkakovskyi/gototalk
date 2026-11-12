@@ -9,12 +9,11 @@ import type { Env } from './config/env.schema.js';
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule.register(), {
     bufferLogs: true,
-    // Помилку запуску (напр. невалідний env) обробляє catch нижче, а не вбудований ExceptionHandler
+    // With abortOnError false the catch below reports startup errors (e.g. invalid env)
     abortOnError: false,
   });
   app.useLogger(app.get(Logger));
   configureApp(app);
-  // SIGTERM/SIGINT запускають onApplicationShutdown (закриття пулу БД)
   app.enableShutdownHooks();
 
   const config = app.get<ConfigService<Env, true>>(ConfigService);
@@ -22,9 +21,9 @@ async function bootstrap(): Promise<void> {
 }
 
 bootstrap().catch((error: unknown) => {
-  // Логер міг ще не піднятися (помилка конфігу), тому пишемо напряму в stderr
+  // The logger may not exist yet (config error), so write straight to stderr
   console.error(
-    'Не вдалося запустити застосунок:',
+    'Failed to start the application:',
     error instanceof Error ? error.message : error,
   );
   process.exit(1);

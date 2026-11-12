@@ -22,7 +22,7 @@ jobs:
       postgres:
         image: postgres:17
         env:
-          # Тестові значення для одноразового контейнера CI, не секрети
+          # Throwaway test credentials for the CI container, not secrets
           POSTGRES_USER: gototalk
           POSTGRES_PASSWORD: gototalk_ci
           POSTGRES_DB: gototalk_test
@@ -35,7 +35,7 @@ jobs:
           --health-retries 10
 
     env:
-      # Файлу .env у CI немає: конфіг API і globalSetup беруть змінні з процесу
+      # No .env file in CI: the API config and globalSetup read variables from the process
       DATABASE_URL: postgres://gototalk:gototalk_ci@localhost:5432/gototalk_test
       TEST_DATABASE_URL: postgres://gototalk:gototalk_ci@localhost:5432/gototalk_test
       STT_PROVIDER: fake
@@ -46,7 +46,7 @@ jobs:
         with:
           persist-credentials: false
 
-      # Версія pnpm береться з поля packageManager у package.json
+      # The pnpm version comes from packageManager in package.json
       - uses: pnpm/action-setup@v6
 
       - uses: actions/setup-node@v7

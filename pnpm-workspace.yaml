@@ -2,12 +2,10 @@ packages:
   - 'apps/*'
   - 'packages/*'
 
-# esbuild приходить транзитивно через drizzle-kit; його postinstall лише перевіряє бінарник, скрипти збірки не потрібні.
-# @swc/core: бінарник приходить пакетом платформи (optionalDependencies), postinstall лише допоміжний.
 allowBuilds:
+  # esbuild, @swc/core, @parcel/watcher: binaries come as optional platform packages, so postinstall is not needed.
   esbuild: false
   '@swc/core': false
-  # @scarf/scarf (через swagger-ui-dist): лише телеметрія в postinstall, не потрібна.
-  '@scarf/scarf': false
-  # @parcel/watcher (через sass-embedded): бінарник приходить пакетом платформи (optionalDependencies), postinstall не потрібен.
   '@parcel/watcher': false
+  # @scarf/scarf: postinstall only sends telemetry.
+  '@scarf/scarf': false

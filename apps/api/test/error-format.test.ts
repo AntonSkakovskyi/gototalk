@@ -15,7 +15,7 @@ import { z } from 'zod';
 import { AppModule } from '../src/app.module.js';
 import { configureApp } from '../src/configure-app.js';
 
-// Контролер існує лише в тесті: у production-коді немає маршрутів, що викидають ці помилки
+// Test-only controller: production code has no routes that throw these errors.
 const BodySchema = z.object({
   title: z.string().min(1),
   count: z.number().int(),
@@ -40,7 +40,6 @@ class TestErrorsController {
   }
 }
 
-// Тести передають env явно, БД на цьому етапі не потрібна
 const env = {
   NODE_ENV: 'production',
   DATABASE_URL: 'postgres://user:pass@localhost:5432/gototalk_test',
@@ -48,7 +47,7 @@ const env = {
   LOG_LEVEL: 'silent',
 };
 
-describe('формат помилок і Swagger', () => {
+describe('error format and Swagger', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
@@ -65,7 +64,7 @@ describe('формат помилок і Swagger', () => {
     await app.close();
   });
 
-  it('[TC-00-07] неіснуючий маршрут: 404 NOT_FOUND у форматі помилки', async () => {
+  it('[TC-00-07] unknown route: 404 NOT_FOUND in the error format', async () => {
     const res = await request(app.getHttpServer()).get('/api/nope');
 
     expect(res.status).toBe(404);
@@ -76,7 +75,7 @@ describe('формат помилок і Swagger', () => {
     });
   });
 
-  it('[TC-00-07] невалідне тіло: 400 VALIDATION_ERROR з переліком полів без значень', async () => {
+  it('[TC-00-07] invalid body: 400 VALIDATION_ERROR listing fields without values', async () => {
     const res = await request(app.getHttpServer())
       .post('/api/test-errors/validate')
       .send({ title: '', count: 'leaky-value' });
@@ -89,7 +88,7 @@ describe('формат помилок і Swagger', () => {
     expect(error.message).not.toContain('leaky-value');
   });
 
-  it('[TC-00-07] валідне тіло проходить без помилки', async () => {
+  it('[TC-00-07] valid body passes without error', async () => {
     const res = await request(app.getHttpServer())
       .post('/api/test-errors/validate')
       .send({ title: 'x', count: 1 });
@@ -98,7 +97,7 @@ describe('формат помилок і Swagger', () => {
     expect(res.body).toEqual({ ok: true });
   });
 
-  it('[TC-00-07] зламаний JSON: 400 у форматі помилки без деталей парсера', async () => {
+  it('[TC-00-07] malformed JSON: 400 in the error format without parser details', async () => {
     const res = await request(app.getHttpServer())
       .post('/api/test-errors/validate')
       .set('Content-Type', 'application/json')
@@ -109,7 +108,7 @@ describe('формат помилок і Swagger', () => {
     expect(error.code).toBe('BAD_REQUEST');
   });
 
-  it('[TC-00-07] неочікувана помилка: 500 INTERNAL_ERROR без деталей', async () => {
+  it('[TC-00-07] unexpected error: 500 INTERNAL_ERROR without details', async () => {
     const res = await request(app.getHttpServer()).get('/api/test-errors/boom');
 
     expect(res.status).toBe(500);
@@ -118,7 +117,7 @@ describe('формат помилок і Swagger', () => {
     expect(JSON.stringify(res.body)).not.toContain('hunter2');
   });
 
-  it('[TC-00-07] 5xx HttpException: код зі статусу без деталей', async () => {
+  it('[TC-00-07] 5xx HttpException: code derived from status without details', async () => {
     const res = await request(app.getHttpServer()).get(
       '/api/test-errors/unavailable',
     );
@@ -129,7 +128,7 @@ describe('формат помилок і Swagger', () => {
     expect(JSON.stringify(res.body)).not.toContain('10.0.0.5');
   });
 
-  it('Swagger UI відкривається на /api/docs, а JSON-опис на /api/docs-json', async () => {
+  it('Swagger UI is served at /api/docs and the JSON spec at /api/docs-json', async () => {
     const ui = await request(app.getHttpServer()).get('/api/docs');
     expect(ui.status).toBe(200);
     expect(ui.headers['content-type']).toContain('text/html');

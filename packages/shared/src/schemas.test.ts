@@ -8,19 +8,19 @@ import {
 } from './index.js';
 
 describe('shared schemas', () => {
-  it('[TC-00-04] ErrorResponseSchema приймає { error: { code, message } }', () => {
+  it('[TC-00-04] ErrorResponseSchema accepts { error: { code, message } }', () => {
     const value = { error: { code: 'NOT_FOUND', message: 'Cannot GET /x' } };
     expect(ErrorResponseSchema.parse(value)).toEqual(value);
   });
 
-  it('[TC-00-04] ErrorResponseSchema відхиляє відповідь без error.code', () => {
+  it('[TC-00-04] ErrorResponseSchema rejects a response without error.code', () => {
     expect(
       ErrorResponseSchema.safeParse({ error: { message: 'x' } }).success,
     ).toBe(false);
     expect(ErrorResponseSchema.safeParse({ message: 'x' }).success).toBe(false);
   });
 
-  it('[TC-00-04] HealthResponseSchema приймає ok/ok і відхиляє інші значення', () => {
+  it('[TC-00-04] HealthResponseSchema accepts ok/ok and rejects other values', () => {
     expect(HealthResponseSchema.parse({ status: 'ok', db: 'ok' })).toEqual({
       status: 'ok',
       db: 'ok',
@@ -33,7 +33,7 @@ describe('shared schemas', () => {
     );
   });
 
-  it('[TC-00-04] MistakeCategoryCodeSchema збігається з INSERT у міграції 0002', () => {
+  it('[TC-00-04] MistakeCategoryCodeSchema matches the INSERT in migration 0002', () => {
     const sql = readFileSync(
       new URL(
         '../../../db/migrations/0002_mvp_adjustments.sql',
@@ -50,7 +50,7 @@ describe('shared schemas', () => {
     expect(MistakeCategoryCodeSchema.options).toEqual(codes);
   });
 
-  it('[TC-00-04] MistakeCategoryCodeSchema відхиляє невідомий код', () => {
+  it('[TC-00-04] MistakeCategoryCodeSchema rejects an unknown code', () => {
     expect(MistakeCategoryCodeSchema.safeParse('spelling').success).toBe(false);
   });
 });

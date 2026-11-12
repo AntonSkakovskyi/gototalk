@@ -1,16 +1,13 @@
 import type { ManifestOptions, VitePWAOptions } from 'vite-plugin-pwa';
 
-// Єдине джерело кольору PWA: значення для <meta name="theme-color"> в index.html
-// і theme_color у маніфесті. Збігається з primaryColor ('blue', відтінок 6) теми
-// Mantine; збіг з темою й з index.html перевіряє pwa-config.test.ts.
+// Single source of the PWA colour; pwa-config.test.ts checks it against the Mantine theme and index.html.
 export const THEME_COLOR = '#228be6';
 export const BACKGROUND_COLOR = '#ffffff';
 
-// Іконки генерує pnpm --filter web generate-pwa-assets (pwa-assets.config.ts) у public/.
 export const manifest: Partial<ManifestOptions> = {
   name: 'GoToTalk',
   short_name: 'GoToTalk',
-  description: 'Тренер говоріння англійською для україномовних користувачів',
+  description: 'English speaking trainer for Ukrainian-speaking users',
   lang: 'uk',
   start_url: '/',
   scope: '/',
@@ -35,12 +32,10 @@ export const pwaOptions: Partial<VitePWAOptions> = {
   includeAssets: ['favicon.ico', 'favicon.svg', 'apple-touch-icon-180x180.png'],
   manifest,
   workbox: {
-    // /api (REST, Swagger) не підміняється на index.html; runtime-кешу для API немає.
     navigateFallbackDenylist: [/^\/api\//],
   },
   devOptions: {
     enabled: true,
-    // У dev service worker віддає лише index.html для навігації.
     navigateFallbackAllowlist: [/^\/$/],
   },
 };

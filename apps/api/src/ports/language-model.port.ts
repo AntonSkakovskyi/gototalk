@@ -7,21 +7,18 @@ import type {
   Turn,
 } from '@gototalk/shared';
 
-/** DI-токен LanguageModelPort (інтерфейс не існує в рантаймі). */
 export const LANGUAGE_MODEL_PORT = Symbol('LANGUAGE_MODEL_PORT');
 
 export interface AnalyzeUtteranceInput {
-  /** text_verbatim: позиції помилок рахуються в ньому. */
+  /** text_verbatim: mistake positions are offsets in it. */
   text: string;
 }
 
 export interface PlanSessionInput {
   level: string;
   scenes: string[];
-  /** Топ патернів помилок учня за частотою. */
   patterns: MistakeCategoryCode[];
   previousTopics: string[];
-  /** Власна тема (`topic_source = custom`). */
   customTopic?: string;
 }
 

@@ -5,13 +5,13 @@ import uk from './i18n/uk.json';
 import { renderWithProviders } from './test-utils.js';
 
 describe('App', () => {
-  it('[TC-00-04] рендерить кореневий елемент застосунку', () => {
+  it('[TC-00-04] renders the root element of the app', () => {
     renderWithProviders(<App />);
 
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
   });
 
-  it('[TC-00-02] показує вкладки нижньої навігації українською', () => {
+  it('[TC-00-02] shows the bottom navigation tabs in Ukrainian', () => {
     renderWithProviders(<App />);
 
     const nav = screen.getByRole('navigation');
@@ -28,7 +28,7 @@ describe('App', () => {
     ]);
   });
 
-  it('[TC-00-02] індекс відкриває сторінку «Сесія», вкладка активна', () => {
+  it('[TC-00-02] index opens the Session page and its tab is active', () => {
     renderWithProviders(<App />);
 
     expect(
@@ -40,7 +40,7 @@ describe('App', () => {
     );
   });
 
-  it('[TC-00-02] клік по вкладці перемикає маршрут', async () => {
+  it('[TC-00-02] clicking a tab switches the route', async () => {
     const user = userEvent.setup();
     renderWithProviders(<App />);
 
@@ -64,7 +64,7 @@ describe('App', () => {
     }
   });
 
-  it('[TC-00-02] прямий перехід на маршрут відкриває відповідну сторінку', () => {
+  it('[TC-00-02] direct navigation to a route opens the matching page', () => {
     renderWithProviders(<App />, { route: '/history' });
 
     expect(
@@ -72,7 +72,7 @@ describe('App', () => {
     ).toBeInTheDocument();
   });
 
-  it('[TC-00-02] невідомий шлях перенаправляє на «Сесія»', () => {
+  it('[TC-00-02] unknown path redirects to Session', () => {
     renderWithProviders(<App />, { route: '/no-such-page' });
 
     expect(

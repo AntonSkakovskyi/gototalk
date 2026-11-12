@@ -14,9 +14,7 @@ import type {
 
 type MistakeTemplate = Omit<Mistake, 'start' | 'end'>;
 
-// Мінімум: дві фіксовані помилки з транскрипту №0 (stubs.md, правила 5 і 9).
-// Позиції не зашиті, а шукаються в тексті, щоб `slice(start, end) === original`
-// виконувалось для будь-якого входу. Повні правила – у spec 04.
+// Positions are found at runtime so slice(start, end) === original holds for any input
 const TEMPLATES: MistakeTemplate[] = [
   {
     original: 'yesterday I go',

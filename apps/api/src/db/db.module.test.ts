@@ -6,7 +6,7 @@ import { AppModule } from '../app.module.js';
 import { DRIZZLE, PG_POOL } from './db.tokens.js';
 import type { Database } from './db.tokens.js';
 
-// Фіктивний DATABASE_URL: пул створюється ліниво, тож живий Postgres не потрібен
+// The pool connects lazily, so a dummy DATABASE_URL needs no live Postgres
 const env = {
   NODE_ENV: 'production',
   DATABASE_URL: 'postgres://user:pass@localhost:5432/gototalk_test',
@@ -14,7 +14,7 @@ const env = {
 };
 
 describe('DbModule', () => {
-  it('віддає пул pg і Drizzle без підключення до БД', async () => {
+  it('provides the pg pool and Drizzle without connecting to the DB', async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule.register({ env })],
     }).compile();
@@ -29,7 +29,7 @@ describe('DbModule', () => {
     await moduleRef.close();
   });
 
-  it('закриває пул при завершенні застосунку', async () => {
+  it('closes the pool on application shutdown', async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule.register({ env })],
     }).compile();

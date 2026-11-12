@@ -8,13 +8,11 @@ import type { LanguageModelPort } from '../ports/language-model.port.js';
 import { SPEECH_RECOGNITION_PORT } from '../ports/speech-recognition.port.js';
 import type { SpeechRecognitionPort } from '../ports/speech-recognition.port.js';
 
-// Конфіг відхиляє deepgram/gemini, тому тип провайдера зараз лише 'fake'. Коли з'явиться реальний
-// адаптер, тип розшириться, і ця exhaustive-перевірка не скомпілюється, доки не додано гілку.
+// Adding a real provider widens the type, so this exhaustive check fails to compile until a branch is added
 function unsupported(name: string, value: never): never {
   throw new Error(`${name}="${String(value)}" has no adapter registered`);
 }
 
-/** Обирає адаптери портів за STT_PROVIDER / LLM_PROVIDER; токени доступні всюди. */
 @Global()
 @Module({
   providers: [

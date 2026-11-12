@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-// Порожнє значення (`NAME=` у .env.example) трактується як «не задано».
+// An empty value (`NAME=` in .env.example) means "not set".
 const emptyToUndefined = (value: unknown): unknown =>
   value === '' ? undefined : value;
 
@@ -17,7 +17,6 @@ const LOG_LEVELS = [
   'silent',
 ] as const;
 
-// Реальні адаптери з'являться в окремих специфікаціях; до того їх вибір зупиняє запуск.
 const notImplemented = (real: string) => ({
   error: `provider "${real}" is not implemented yet, use "fake"`,
 });
@@ -86,7 +85,6 @@ export class EnvValidationError extends Error {
   }
 }
 
-/** Перевіряє env-об'єкт за схемою; помилка називає кожну невалідну змінну. */
 export function parseEnv(source: Record<string, unknown>): Env {
   const result = EnvSchema.safeParse(source);
   if (!result.success) {

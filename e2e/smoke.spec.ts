@@ -7,8 +7,8 @@ const TABS = [
   { label: 'Сесія', path: '/' },
 ] as const;
 
-test.describe('[TC-00-02] smoke: мобільний layout і health', () => {
-  test('[TC-00-02] нижня навігація українською, клік змінює URL', async ({
+test.describe('[TC-00-02] smoke: mobile layout and health', () => {
+  test('[TC-00-02] bottom navigation in Ukrainian, click changes the URL', async ({
     page,
   }) => {
     await page.goto('/');
@@ -27,7 +27,7 @@ test.describe('[TC-00-02] smoke: мобільний layout і health', () => {
     }
   });
 
-  test('[TC-00-02] без горизонтального скролу, навігація внизу екрана', async ({
+  test('[TC-00-02] no horizontal scroll, navigation at the bottom of the screen', async ({
     page,
   }) => {
     await page.goto('/');
@@ -44,13 +44,12 @@ test.describe('[TC-00-02] smoke: мобільний layout і health', () => {
     const viewport = page.viewportSize();
     expect(box).not.toBeNull();
     expect(viewport).not.toBeNull();
-    // Нижня межа навігації збігається з низом в'юпорту (допуск на дробові значення).
     expect(
       Math.abs(box!.y + box!.height - viewport!.height),
     ).toBeLessThanOrEqual(1);
   });
 
-  test('[TC-00-02] /api/health через проксі Vite повертає ok', async ({
+  test('[TC-00-02] /api/health through the Vite proxy returns ok', async ({
     page,
   }) => {
     const response = await page.request.get('/api/health');

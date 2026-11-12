@@ -4,19 +4,16 @@ import {
 } from '@vite-pwa/assets-generator/config';
 import { THEME_COLOR } from './pwa-config.js';
 
-// Генерує PNG-іконки й favicon.ico з public/favicon.svg у public/.
-// Запуск: pnpm --filter web generate-pwa-assets; результат комітиться.
 export default defineConfig({
   preset: {
     ...minimal2023Preset,
     transparent: {
       ...minimal2023Preset.transparent,
-      // Логотип займає весь квадрат: фон SVG і так суцільний.
       padding: 0,
     },
     maskable: {
       ...minimal2023Preset.maskable,
-      // Безпечна зона maskable: логотип зменшується, поля заливаються кольором теми.
+      // Maskable safe zone: the logo shrinks and the margins are filled with the theme colour.
       padding: 0.2,
       resizeOptions: { background: THEME_COLOR, fit: 'contain' },
     },

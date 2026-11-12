@@ -5,7 +5,6 @@ import { pwaOptions } from './pwa-config.js';
 
 const API_TARGET = 'http://localhost:3000';
 
-// Бекенд доступний фронту через проксі, окремий порт на пристрій не прокидаємо.
 const apiProxy = {
   '/api': { target: API_TARGET, changeOrigin: true },
 };
@@ -13,8 +12,7 @@ const apiProxy = {
 export default defineConfig({
   plugins: [react(), VitePWA(pwaOptions)],
   server: {
-    // Явний IPv4-loopback: на Windows `localhost` у Vite лишається лише на [::1],
-    // а `adb reverse` стукає на 127.0.0.1 і отримує ERR_EMPTY_RESPONSE.
+    // Explicit IPv4: on Windows Vite binds localhost only to [::1], while adb reverse connects to 127.0.0.1.
     host: '127.0.0.1',
     port: 5173,
     strictPort: true,

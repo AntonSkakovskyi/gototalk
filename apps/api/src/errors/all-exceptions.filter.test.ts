@@ -47,7 +47,7 @@ function setup() {
 }
 
 describe('AllExceptionsFilter', () => {
-  it('[TC-00-07] HttpException: код зі статусу, повідомлення з винятку', () => {
+  it('[TC-00-07] HttpException: code from status, message from the exception', () => {
     const { run, logger } = setup();
 
     const { status, body } = run(new NotFoundException('Cannot GET /api/nope'));
@@ -59,7 +59,7 @@ describe('AllExceptionsFilter', () => {
     expect(logger.error).not.toHaveBeenCalled();
   });
 
-  it('[TC-00-07] HttpException: масив повідомлень склеюється', () => {
+  it('[TC-00-07] HttpException: an array of messages is joined', () => {
     const { run } = setup();
 
     const { body } = run(
@@ -74,7 +74,7 @@ describe('AllExceptionsFilter', () => {
     });
   });
 
-  it('[TC-00-07] HttpException: рядкове тіло відповіді', () => {
+  it('[TC-00-07] HttpException: string response body', () => {
     const { run } = setup();
 
     const { status, body } = run(new HttpException('Nope', 409));
@@ -86,14 +86,14 @@ describe('AllExceptionsFilter', () => {
     });
   });
 
-  it('[TC-00-07] ZodError: 400 VALIDATION_ERROR з переліком полів без введених значень', () => {
+  it('[TC-00-07] ZodError: 400 VALIDATION_ERROR listing fields without the submitted values', () => {
     const { run, logger } = setup();
     const schema = z.object({
       title: z.string().regex(/^d+$/),
       count: z.number().int(),
     });
     const parsed = schema.safeParse({ title: 'leaky-title', count: 'secret' });
-    if (parsed.success) throw new Error('очікувалась помилка валідації');
+    if (parsed.success) throw new Error('expected a validation error');
 
     const { status, body } = run(parsed.error);
 
@@ -107,17 +107,17 @@ describe('AllExceptionsFilter', () => {
     expect(logger.error).not.toHaveBeenCalled();
   });
 
-  it('[TC-00-07] ZodError на корені: позначається як (root)', () => {
+  it('[TC-00-07] ZodError at the root is reported as (root)', () => {
     const { run } = setup();
     const parsed = z.string().safeParse(42);
-    if (parsed.success) throw new Error('очікувалась помилка валідації');
+    if (parsed.success) throw new Error('expected a validation error');
 
     const { body } = run(parsed.error);
 
     expect(ErrorResponseSchema.parse(body).error.message).toContain('(root)');
   });
 
-  it('[TC-00-07] невідома помилка: 500 INTERNAL_ERROR без деталей, стек у логі', () => {
+  it('[TC-00-07] unknown error: 500 INTERNAL_ERROR without details, stack in the log', () => {
     const { run, logger } = setup();
     const failure = new Error(
       'connection to db-host:5432 refused, password=hunter2',
@@ -136,7 +136,7 @@ describe('AllExceptionsFilter', () => {
     );
   });
 
-  it('[TC-00-07] не-Error значення (рядок, null) теж дають 500 INTERNAL_ERROR', () => {
+  it('[TC-00-07] non-Error values (string, null) also give 500 INTERNAL_ERROR', () => {
     for (const thrown of ['boom', null, undefined, { secret: 1 }]) {
       const { run, logger } = setup();
       const { status, body } = run(thrown);
@@ -146,7 +146,7 @@ describe('AllExceptionsFilter', () => {
     }
   });
 
-  it('[TC-00-07] 5xx HttpException: код зі статусу, але без деталей винятку, деталі в лог', () => {
+  it('[TC-00-07] 5xx HttpException: code from status, no exception details in the response, details in the log', () => {
     const { run, logger } = setup();
 
     const { status, body } = run(
@@ -160,7 +160,7 @@ describe('AllExceptionsFilter', () => {
     expect(logger.error).toHaveBeenCalledTimes(1);
   });
 
-  it('[TC-00-07] HttpException зі статусом 500 дає INTERNAL_ERROR', () => {
+  it('[TC-00-07] HttpException with status 500 gives INTERNAL_ERROR', () => {
     const { run } = setup();
 
     const { status, body } = run(new HttpException('details', 500));
@@ -170,7 +170,7 @@ describe('AllExceptionsFilter', () => {
     expect(JSON.stringify(body)).not.toContain('details');
   });
 
-  it('[TC-00-07] помилка парсера тіла (http-errors, 4xx) стає відповіддю з коду статусу', () => {
+  it('[TC-00-07] body parser error (http-errors, 4xx) becomes a response built from the status code', () => {
     const { run } = setup();
     const parserError = Object.assign(
       new SyntaxError('Unexpected token } in JSON'),
@@ -191,7 +191,7 @@ describe('AllExceptionsFilter', () => {
 });
 
 describe('codeFromStatus', () => {
-  it('[TC-00-07] стабільна мапа відомих статусів', () => {
+  it('[TC-00-07] stable map of known statuses', () => {
     expect(codeFromStatus(400)).toBe('BAD_REQUEST');
     expect(codeFromStatus(401)).toBe('UNAUTHORIZED');
     expect(codeFromStatus(403)).toBe('FORBIDDEN');
@@ -202,18 +202,18 @@ describe('codeFromStatus', () => {
     expect(codeFromStatus(500)).toBe('INTERNAL_ERROR');
   });
 
-  it('[TC-00-07] інші статуси: стандартна назва в UPPER_SNAKE_CASE', () => {
+  it('[TC-00-07] other statuses: standard name in UPPER_SNAKE_CASE', () => {
     expect(codeFromStatus(405)).toBe('METHOD_NOT_ALLOWED');
     expect(codeFromStatus(503)).toBe('SERVICE_UNAVAILABLE');
     expect(codeFromStatus(418)).toBe('IM_A_TEAPOT');
   });
 
-  it('[TC-00-07] невідомий статус: запасний код за класом', () => {
+  it('[TC-00-07] unknown status: fallback code by class', () => {
     expect(codeFromStatus(499)).toBe('CLIENT_ERROR');
     expect(codeFromStatus(599)).toBe('INTERNAL_ERROR');
   });
 
-  it('[TC-00-07] ConflictException дає CONFLICT через фільтр', () => {
+  it('[TC-00-07] ConflictException gives CONFLICT through the filter', () => {
     const { run } = setup();
     const { status, body } = run(new ConflictException('exists'));
     expect(status).toBe(409);

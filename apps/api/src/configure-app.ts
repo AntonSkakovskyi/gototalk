@@ -6,10 +6,6 @@ import { AllExceptionsFilter } from './errors/all-exceptions.filter.js';
 
 export const GLOBAL_PREFIX = 'api';
 
-/**
- * Спільне налаштування застосунку для main.ts та інтеграційних тестів:
- * глобальний префікс, фільтр помилок, Swagger (фактичний URL `/api/docs`).
- */
 export function configureApp(app: INestApplication): void {
   app.setGlobalPrefix(GLOBAL_PREFIX);
   app.useGlobalFilters(
@@ -20,7 +16,7 @@ export function configureApp(app: INestApplication): void {
     app,
     new DocumentBuilder()
       .setTitle('GoToTalk API')
-      .setDescription('API тренера говоріння англійською')
+      .setDescription('English speaking trainer API')
       .setVersion('0.0.0')
       .build(),
   );

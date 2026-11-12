@@ -16,9 +16,8 @@ const migrationsFolder = fileURLToPath(
   new URL('../../../db/migrations', import.meta.url),
 );
 
-// Єдиний .env у корені репозиторію. Відсутній файл не помилка (у CI змінні приходять із середовища).
-// Файл лише розбирається (не loadEnvFile): інакше змінні потрапили б у process.env воркерів і
-// ConfigService у unit-тестах віддавав би їх замість явно переданого env.
+// The .env is parsed, not loaded, to keep it out of worker process.env: otherwise
+// ConfigService in unit tests would return it instead of the explicitly passed env.
 function readRootEnv(): Record<string, string | undefined> {
   try {
     const file = readFileSync(
@@ -34,14 +33,13 @@ function readRootEnv(): Record<string, string | undefined> {
   }
 }
 
-/** Застосовує міграції до TEST_DATABASE_URL і передає URL тестам через `inject('testDatabaseUrl')`. */
 export default async function setup(project: TestProject): Promise<void> {
-  // Змінні процесу (CI, ручне перевизначення) мають пріоритет над .env
+  // Process env takes priority over .env (CI, manual override).
   const url =
     process.env['TEST_DATABASE_URL'] ?? readRootEnv()['TEST_DATABASE_URL'];
   if (!url) {
     throw new Error(
-      'TEST_DATABASE_URL не задано: інтеграційним тестам потрібна окрема БД gototalk_test (див. .env.example, `podman compose up -d`).',
+      'TEST_DATABASE_URL is not set: integration tests need a separate gototalk_test database (see .env.example, `podman compose up -d`).',
     );
   }
 

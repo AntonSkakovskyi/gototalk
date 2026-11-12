@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-/** Коди таблиці mistake_categories (db/migrations/0002_mvp_adjustments.sql). */
+/** Must match the mistake_categories rows in db/migrations/0002_mvp_adjustments.sql. */
 export const MISTAKE_CATEGORY_CODES = [
   'articles',
   'verb_tense',

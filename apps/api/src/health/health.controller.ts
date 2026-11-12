@@ -14,9 +14,11 @@ export class HealthController {
   constructor(private readonly health: HealthService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Перевірка стану застосунку та з’єднання з БД' })
+  @ApiOperation({
+    summary: 'Check application health and database connectivity',
+  })
   @ApiOkResponse({
-    description: 'Застосунок працює, БД відповідає на select 1',
+    description: 'The application is running and the database answers select 1',
     schema: {
       type: 'object',
       required: ['status', 'db'],
@@ -28,7 +30,7 @@ export class HealthController {
     },
   })
   @ApiServiceUnavailableResponse({
-    description: 'БД недоступна або не відповіла вчасно',
+    description: 'The database is unavailable or did not respond in time',
     schema: {
       type: 'object',
       required: ['error'],

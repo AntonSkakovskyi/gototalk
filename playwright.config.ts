@@ -1,11 +1,10 @@
 import { defineConfig } from '@playwright/test';
 
-// Локально e2e працює в встановленому Microsoft Edge (завантаження браузерів не потрібне).
-// У CI за замовчуванням використовується Chromium від Playwright (`pnpm exec playwright install --with-deps chromium`);
-// канал можна задати змінною PW_CHANNEL (наприклад chrome).
+// Locally e2e runs in Microsoft Edge (preinstalled on Windows, no browser download); CI uses Playwright Chromium.
+// Override the channel with PW_CHANNEL.
 const channel = process.env.PW_CHANNEL ?? (process.env.CI ? '' : 'msedge');
 
-// e2e потребує піднятої БД (`podman compose up -d` + `pnpm db:migrate`): /api/health перевіряє з'єднання з нею.
+// e2e needs the database up because /api/health checks the connection.
 export default defineConfig({
   testDir: './e2e',
   testMatch: '**/*.spec.ts',
@@ -23,7 +22,6 @@ export default defineConfig({
       use: {
         ...(channel ? { channel } : {}),
         browserName: 'chromium',
-        // Мобільний в'юпорт 360×800 заданий вручну, щоб не залежати від пресетів devices.
         viewport: { width: 360, height: 800 },
         deviceScaleFactor: 2,
         isMobile: true,

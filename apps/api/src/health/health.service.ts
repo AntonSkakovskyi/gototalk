@@ -9,7 +9,6 @@ import { sql } from 'drizzle-orm';
 import { DRIZZLE } from '../db/db.tokens.js';
 import type { Database } from '../db/db.tokens.js';
 
-/** Скільки чекати відповіді БД, перш ніж вважати її недоступною. */
 export const HEALTH_DB_TIMEOUT_MS = 2000;
 
 @Injectable()
@@ -18,7 +17,6 @@ export class HealthService {
 
   constructor(@Inject(DRIZZLE) private readonly db: Database) {}
 
-  /** `select 1` до БД; будь-яка помилка або timeout дають 503 без деталей у відповіді. */
   async check(): Promise<HealthResponse> {
     let timer: NodeJS.Timeout | undefined;
     try {
@@ -33,7 +31,7 @@ export class HealthService {
       });
       await Promise.race([this.db.execute(sql`select 1`), timeout]);
     } catch (error) {
-      // Деталі з'єднання лише в лог
+      // Connection details go only to the log, never to the response
       this.logger.error(
         'Health check: database is unavailable',
         error instanceof Error ? error.stack : String(error),

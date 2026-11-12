@@ -11,10 +11,10 @@ const pool = new pg.Pool({ connectionString: requireEnv('DATABASE_URL') });
 
 try {
   await migrate(drizzle(pool), { migrationsFolder });
-  console.log('Міграції застосовано.');
+  console.log('Migrations applied.');
 } catch (error) {
   console.error(
-    'Не вдалося застосувати міграції:',
+    'Failed to apply migrations:',
     error instanceof Error ? error.message : error,
   );
   process.exitCode = 1;

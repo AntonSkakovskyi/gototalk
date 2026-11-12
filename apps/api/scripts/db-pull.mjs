@@ -4,8 +4,7 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { requireEnv } from './load-env.mjs';
 
-// Інтроспекція БД (з уже застосованими міграціями) → apps/api/src/db/{schema,relations}.ts.
-// Згенеровані файли вручну не правимо: змінюємо SQL-міграцію й повторюємо db:pull.
+// Generated files are never edited by hand: change the SQL migration and rerun db:pull.
 requireEnv('DATABASE_URL');
 
 const apiDir = fileURLToPath(new URL('..', import.meta.url));
@@ -23,14 +22,14 @@ const prettierBin = join(
 );
 const files = ['schema.ts', 'relations.ts'];
 
-// Бінарники викликаємо напряму через node, без shell (на Windows pnpm є .cmd-обгорткою).
+// Binaries run through node without a shell because pnpm is a .cmd wrapper on Windows.
 function run(script, args) {
   const result = spawnSync(process.execPath, [script, ...args], {
     cwd: apiDir,
     stdio: 'inherit',
   });
   if (result.status !== 0) {
-    console.error(`Команда ${script} завершилась з помилкою.`);
+    console.error(`Command ${script} failed.`);
     process.exit(result.status ?? 1);
   }
 }
@@ -40,7 +39,7 @@ run(drizzleKitBin, ['pull', '--config=drizzle.pull.config.ts']);
 
 mkdirSync(targetDir, { recursive: true });
 for (const file of files) {
-  // NodeNext-резолюція вимагає розширення у відносних імпортах; drizzle-kit його не ставить.
+  // NodeNext needs .js extensions in relative imports; drizzle-kit omits them.
   const code = readFileSync(join(pullDir, file), 'utf8').replace(
     /from (['"])\.\/schema\1/g,
     'from $1./schema.js$1',
@@ -49,6 +48,6 @@ for (const file of files) {
 }
 rmSync(pullDir, { recursive: true, force: true });
 
-// Формат Prettier робить вивід стабільним, повторний pull не дає diff.
+// Prettier keeps the output stable, so a repeated pull produces no diff.
 run(prettierBin, ['--write', ...files.map((f) => `src/db/${f}`)]);
-console.log('Схему оновлено: apps/api/src/db/schema.ts, relations.ts');
+console.log('Schema updated: apps/api/src/db/schema.ts, relations.ts');

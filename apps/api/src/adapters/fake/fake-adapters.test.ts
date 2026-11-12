@@ -14,11 +14,10 @@ import { FakeSpeechRecognition } from './fake-speech-recognition.js';
 
 const audio = Buffer.from([1, 2, 3]);
 
-// Через інтерфейс порту, як це робить доменний код
 const fakeStt = (): SpeechRecognitionPort => new FakeSpeechRecognition();
 
 describe('FakeSpeechRecognition', () => {
-  it('[TC-00-05] transcribe: однаковий вхід дає ідентичний результат', async () => {
+  it('[TC-00-05] transcribe: the same input gives an identical result', async () => {
     const stt = fakeStt();
     const first = await stt.transcribe(audio, 'audio/webm');
     const second = await stt.transcribe(audio, 'audio/webm');
@@ -27,7 +26,7 @@ describe('FakeSpeechRecognition', () => {
     expect(TranscriptSchema.parse(first)).toEqual(first);
   });
 
-  it('[TC-00-05] transcribe повертає транскрипт №0 зі stubs.md і ігнорує вміст аудіо та index', async () => {
+  it('[TC-00-05] transcribe returns transcript #0 from stubs.md and ignores the audio content and index', async () => {
     const stt = fakeStt();
     const result = await stt.transcribe(Buffer.alloc(0), 'audio/ogg', 3);
 
@@ -43,7 +42,7 @@ describe('FakeSpeechRecognition', () => {
 describe('FakeLanguageModel', () => {
   const llm: LanguageModelPort = new FakeLanguageModel();
 
-  it('[TC-00-05] analyzeUtterance: детермінований, проходить Zod, verb_tense і word_order', async () => {
+  it('[TC-00-05] analyzeUtterance: deterministic, passes Zod, verb_tense and word_order', async () => {
     const { verbatim } = await fakeStt().transcribe(audio, 'audio/webm');
     const first = await llm.analyzeUtterance({ text: verbatim });
     const second = await llm.analyzeUtterance({ text: verbatim });
@@ -67,12 +66,12 @@ describe('FakeLanguageModel', () => {
     }
   });
 
-  it('[TC-00-05] analyzeUtterance: на тексті без збігів повертає порожній список, а не хибні позиції', async () => {
+  it('[TC-00-05] analyzeUtterance: text without matches gives an empty list, not false positions', async () => {
     const result = await llm.analyzeUtterance({ text: 'Hello there.' });
     expect(result).toEqual({ mistakes: [], better: [] });
   });
 
-  it('[TC-00-05] planSession, nextTurn, hint, summarizeSession: детерміновані й проходять Zod', async () => {
+  it('[TC-00-05] planSession, nextTurn, hint, summarizeSession: deterministic and pass Zod', async () => {
     const plan = await llm.planSession({
       level: 'A2',
       scenes: ['work'],
@@ -114,7 +113,7 @@ describe('FakeLanguageModel', () => {
     expect(SummarySchema.parse(summary)).toEqual(summary);
   });
 
-  it('[TC-00-05] виклик не змінює наступні відповіді (мутація результату не протікає)', async () => {
+  it('[TC-00-05] a call does not affect later answers (mutating a result does not leak)', async () => {
     const first = await llm.planSession({
       level: 'A2',
       scenes: [],

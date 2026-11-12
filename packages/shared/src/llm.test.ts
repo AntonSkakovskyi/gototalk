@@ -20,11 +20,11 @@ const mistake = {
 };
 
 describe('LLM/STT result schemas', () => {
-  it('[TC-00-05] MistakeSchema приймає коректну помилку', () => {
+  it('[TC-00-05] MistakeSchema accepts a valid mistake', () => {
     expect(MistakeSchema.parse(mistake)).toEqual(mistake);
   });
 
-  it('[TC-00-05] MistakeSchema відхиляє невідому категорію й end <= start', () => {
+  it('[TC-00-05] MistakeSchema rejects an unknown category and end <= start', () => {
     expect(
       MistakeSchema.safeParse({ ...mistake, category: 'spelling' }).success,
     ).toBe(false);
@@ -34,7 +34,7 @@ describe('LLM/STT result schemas', () => {
     );
   });
 
-  it('[TC-00-05] AnalysisResultSchema: помилки й кращі формулювання', () => {
+  it('[TC-00-05] AnalysisResultSchema: mistakes and better phrasings', () => {
     const value = {
       mistakes: [mistake],
       better: [{ original: 'I go', better: 'I went' }],

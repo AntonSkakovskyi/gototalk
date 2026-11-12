@@ -19,7 +19,7 @@ const env = {
 
 const userId = '00000000-0000-4000-8000-000000000001';
 
-describe('Скелети сервісів ядра', () => {
+describe('Core service skeletons', () => {
   let moduleRef: TestingModule;
 
   beforeAll(async () => {
@@ -32,7 +32,7 @@ describe('Скелети сервісів ядра', () => {
     await moduleRef.close();
   });
 
-  it('[TC-00-04] AppModule резолвить усі 4 сервіси з Fake-провайдерами', () => {
+  it('[TC-00-04] AppModule resolves all 4 services with the fake providers', () => {
     expect(moduleRef.get(LearnerModelService)).toBeInstanceOf(
       LearnerModelService,
     );
@@ -45,14 +45,14 @@ describe('Скелети сервісів ядра', () => {
     expect(moduleRef.get(DialogueService)).toBeInstanceOf(DialogueService);
   });
 
-  it('[TC-00-04] LearnerModelService: методи кидають NotImplementedException з посиланням на spec', async () => {
+  it('[TC-00-04] LearnerModelService: methods throw NotImplementedException pointing to the spec', async () => {
     const service = moduleRef.get(LearnerModelService);
 
     await expect(service.weakAreas(userId)).rejects.toThrow(
       NotImplementedException,
     );
-    await expect(service.weakAreas(userId)).rejects.toThrow(/spec 02/);
-    await expect(service.vocabularyStats(userId)).rejects.toThrow(/spec 02/);
+    await expect(service.weakAreas(userId)).rejects.toThrow(/02-profile/);
+    await expect(service.vocabularyStats(userId)).rejects.toThrow(/02-profile/);
     await expect(
       service.applyAnalysis({
         userId,
@@ -60,34 +60,36 @@ describe('Скелети сервісів ядра', () => {
         textClean: 'I go there yesterday.',
         analysis: { mistakes: [], better: [] },
       }),
-    ).rejects.toThrow(/spec 04/);
+    ).rejects.toThrow(/04-dialog/);
   });
 
-  it('[TC-00-04] SessionPlannerService.planSession посилається на spec 03', async () => {
+  it('[TC-00-04] SessionPlannerService.planSession points to spec 03', async () => {
     const service = moduleRef.get(SessionPlannerService);
 
     await expect(service.planSession({ userId })).rejects.toThrow(
       NotImplementedException,
     );
-    await expect(service.planSession({ userId })).rejects.toThrow(/spec 03/);
+    await expect(service.planSession({ userId })).rejects.toThrow(
+      /03-session-start/,
+    );
   });
 
-  it('[TC-00-04] MistakeAnalyzerService: analyzeUtterance і groupIntoPatterns посилаються на spec 04', async () => {
+  it('[TC-00-04] MistakeAnalyzerService: analyzeUtterance and groupIntoPatterns point to spec 04', async () => {
     const service = moduleRef.get(MistakeAnalyzerService);
 
     await expect(service.analyzeUtterance('I go there.')).rejects.toThrow(
       NotImplementedException,
     );
     await expect(service.analyzeUtterance('I go there.')).rejects.toThrow(
-      /spec 04/,
+      /04-dialog/,
     );
     expect(() => service.groupIntoPatterns([])).toThrow(
       NotImplementedException,
     );
-    expect(() => service.groupIntoPatterns([])).toThrow(/spec 04/);
+    expect(() => service.groupIntoPatterns([])).toThrow(/04-dialog/);
   });
 
-  it('[TC-00-04] DialogueService.nextTurn посилається на spec 04', async () => {
+  it('[TC-00-04] DialogueService.nextTurn points to spec 04', async () => {
     const service = moduleRef.get(DialogueService);
     const input = {
       plan: {
@@ -100,6 +102,6 @@ describe('Скелети сервісів ядра', () => {
     await expect(service.nextTurn(input)).rejects.toThrow(
       NotImplementedException,
     );
-    await expect(service.nextTurn(input)).rejects.toThrow(/spec 04/);
+    await expect(service.nextTurn(input)).rejects.toThrow(/04-dialog/);
   });
 });

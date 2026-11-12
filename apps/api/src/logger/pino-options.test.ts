@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { buildPinoHttpOptions } from './pino-options.js';
 
 describe('buildPinoHttpOptions', () => {
-  it('[TC-00-04] redact приховує authorization і cookie запиту', () => {
+  it('[TC-00-04] redact hides the request authorization and cookie', () => {
     const options = buildPinoHttpOptions({
       NODE_ENV: 'production',
       LOG_LEVEL: 'info',
@@ -17,7 +17,6 @@ describe('buildPinoHttpOptions', () => {
       ]),
     });
 
-    // Перевірка на справжньому pino, що ці шляхи справді замасковано
     let output = '';
     const stream = new Writable({
       write(chunk, _encoding, callback) {
@@ -40,13 +39,13 @@ describe('buildPinoHttpOptions', () => {
     expect(output).toContain('[REDACTED]');
   });
 
-  it('[TC-00-04] рівень логів береться з LOG_LEVEL', () => {
+  it('[TC-00-04] log level comes from LOG_LEVEL', () => {
     expect(
       buildPinoHttpOptions({ NODE_ENV: 'production', LOG_LEVEL: 'warn' }).level,
     ).toBe('warn');
   });
 
-  it('[TC-00-04] pino-pretty підключається поза production', () => {
+  it('[TC-00-04] pino-pretty is enabled outside production', () => {
     for (const nodeEnv of ['development', 'test'] as const) {
       expect(
         buildPinoHttpOptions({ NODE_ENV: nodeEnv, LOG_LEVEL: 'info' })
@@ -55,7 +54,7 @@ describe('buildPinoHttpOptions', () => {
     }
   });
 
-  it('[TC-00-04] у production лог лишається JSON без pino-pretty', () => {
+  it('[TC-00-04] in production the log stays JSON without pino-pretty', () => {
     expect(
       buildPinoHttpOptions({ NODE_ENV: 'production', LOG_LEVEL: 'info' })
         .transport,

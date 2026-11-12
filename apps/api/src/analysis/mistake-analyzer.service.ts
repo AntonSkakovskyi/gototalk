@@ -5,7 +5,6 @@ import type { LanguageModelPort } from '../ports/language-model.port.js';
 import { LearnerModelService } from '../profile/learner-model.service.js';
 import type { PatternGroup } from './mistake-pattern.types.js';
 
-/** Аналіз реплік учня. Скелет: реалізація в spec 04. */
 @Injectable()
 export class MistakeAnalyzerService {
   constructor(
@@ -14,19 +13,17 @@ export class MistakeAnalyzerService {
     protected readonly learnerModel: LearnerModelService,
   ) {}
 
-  /** Аналізує `text_verbatim`: виклик моделі, Zod-валідація, один повтор, відкидання невалідних позицій. */
   async analyzeUtterance(text: string): Promise<AnalysisResult> {
     void text;
     throw new NotImplementedException(
-      'MistakeAnalyzerService.analyzeUtterance: реалізація в spec 04 (docs/specs/04-dialog.md)',
+      'Not implemented: MistakeAnalyzerService.analyzeUtterance (see docs/specs/04-dialog.md)',
     );
   }
 
-  /** Групує помилки за категоріями для оновлення `mistake_patterns` (spec 04, крок 6). */
   groupIntoPatterns(mistakes: Mistake[]): PatternGroup[] {
     void mistakes;
     throw new NotImplementedException(
-      'MistakeAnalyzerService.groupIntoPatterns: реалізація в spec 04 (docs/specs/04-dialog.md)',
+      'Not implemented: MistakeAnalyzerService.groupIntoPatterns (see docs/specs/04-dialog.md)',
     );
   }
 }

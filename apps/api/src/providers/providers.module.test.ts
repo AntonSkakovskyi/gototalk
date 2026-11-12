@@ -16,7 +16,7 @@ const env = {
 };
 
 describe('ProvidersModule', () => {
-  it('[TC-00-05] STT_PROVIDER=fake і LLM_PROVIDER=fake дають Fake-адаптери', async () => {
+  it('[TC-00-05] STT_PROVIDER=fake and LLM_PROVIDER=fake give the fake adapters', async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [
         AppModule.register({
@@ -35,7 +35,7 @@ describe('ProvidersModule', () => {
     await moduleRef.close();
   });
 
-  it('[TC-00-05] без змінних провайдерів за замовчуванням обираються Fake-адаптери', async () => {
+  it('[TC-00-05] without provider variables the fake adapters are chosen by default', async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule.register({ env })],
     }).compile();

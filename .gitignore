@@ -4,14 +4,14 @@ coverage/
 .env
 .env.*
 !.env.example
-# dev-аудіо (DEV_KEEP_AUDIO=true), тека поза репозиторієм, але на випадок відносного шляху
+# Dev audio (DEV_KEEP_AUDIO=true) is stored outside the repo; this covers a relative path
 .dev-audio/
-# тимчасова тека db:pull
+# Scratch directory of db:pull
 apps/api/.drizzle-pull/
 playwright-report/
 test-results/
 *.log
 *.tsbuildinfo
 
-# dev service worker vite-plugin-pwa
+# vite-plugin-pwa dev service worker
 dev-dist/

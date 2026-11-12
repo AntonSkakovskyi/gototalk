@@ -6,7 +6,6 @@ import type {
   NextTurnInput,
 } from '../ports/language-model.port.js';
 
-/** Ведення діалогу. Скелет: реалізація в spec 04. */
 @Injectable()
 export class DialogueService {
   constructor(
@@ -14,11 +13,10 @@ export class DialogueService {
     protected readonly languageModel: LanguageModelPort,
   ) {}
 
-  /** Наступне питання: з плану або уточнення до сказаного (`nextQuestion` з лабораторної 7). */
   async nextTurn(input: NextTurnInput): Promise<Turn> {
     void input;
     throw new NotImplementedException(
-      'DialogueService.nextTurn: реалізація в spec 04 (docs/specs/04-dialog.md)',
+      'Not implemented: DialogueService.nextTurn (see docs/specs/04-dialog.md)',
     );
   }
 }

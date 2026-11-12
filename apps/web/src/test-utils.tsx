@@ -11,7 +11,6 @@ interface RenderOptions {
   route?: string;
 }
 
-// Спільна обгортка для тестів: тема, i18n (uk), TanStack Query і MemoryRouter.
 export function renderWithProviders(
   ui: ReactElement,
   { route = '/' }: RenderOptions = {},

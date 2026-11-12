@@ -23,7 +23,7 @@ export default defineConfig(
     languageOptions: { globals: { ...globals.node } },
   },
   {
-    // Доменний код не імпортує SDK провайдерів: вони доступні лише адаптерам портів.
+    // Provider SDKs are reserved for port adapters so domain code stays provider-agnostic.
     files: ['**/*.{ts,tsx,js,mjs}'],
     rules: {
       'no-restricted-imports': [
@@ -33,7 +33,7 @@ export default defineConfig(
             {
               group: ['@deepgram/*', '@google/genai', '@google/generative-ai'],
               message:
-                'SDK провайдерів імпортуються лише в apps/api/src/adapters/**; решта коду працює через порти.',
+                'Provider SDKs may only be imported in apps/api/src/adapters/**; everything else goes through ports.',
             },
           ],
         },
@@ -45,7 +45,6 @@ export default defineConfig(
     languageOptions: { globals: { ...globals.browser } },
   },
   {
-    // Жодного тексту інтерфейсу прямо в JSX: лише через i18n (uk.json).
     files: ['apps/web/src/**/*.tsx'],
     ignores: ['**/*.test.tsx', 'apps/web/src/test-utils.tsx'],
     plugins: { i18next },
@@ -54,8 +53,7 @@ export default defineConfig(
         'error',
         {
           mode: 'jsx-only',
-          // Службові атрибути, що не є текстом інтерфейсу. aria-label, label,
-          // placeholder, title, alt та інші текстові пропси лишаються під контролем.
+          // Excluded attributes carry no UI text; text props (aria-label, label, placeholder, title, alt) stay checked.
           'jsx-attributes': {
             exclude: [
               'className',

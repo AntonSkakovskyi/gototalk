@@ -14,7 +14,6 @@ import { ProfileModule } from './profile/profile.module.js';
 import { ProvidersModule } from './providers/providers.module.js';
 import { SessionModule } from './session/session.module.js';
 
-// Корінь застосунку; решта доменних модулів додається в наступних задачах.
 @Module({})
 export class AppModule {
   static register(options: AppConfigOptions = {}): DynamicModule {

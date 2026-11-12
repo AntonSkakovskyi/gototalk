@@ -5,7 +5,6 @@ import { describe, expect, it } from 'vitest';
 import type { Env } from './config/env.schema.js';
 import { AppModule } from './app.module.js';
 
-// Тести передають env явно, а не читають .env чи process.env
 const env = {
   NODE_ENV: 'production',
   DATABASE_URL: 'postgres://user:pass@localhost:5432/gototalk_test',
@@ -14,7 +13,7 @@ const env = {
 };
 
 describe('AppModule', () => {
-  it('[TC-00-04] AppModule компілюється', async () => {
+  it('[TC-00-04] AppModule compiles', async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule.register({ env })],
     }).compile();
@@ -24,7 +23,7 @@ describe('AppModule', () => {
     await moduleRef.close();
   });
 
-  it('[TC-00-06] ConfigService віддає типізовані значення з Zod-схеми', async () => {
+  it('[TC-00-06] ConfigService returns typed values from the Zod schema', async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule.register({ env })],
     }).compile();
@@ -38,7 +37,7 @@ describe('AppModule', () => {
     await moduleRef.close();
   });
 
-  it('[TC-00-06] без DATABASE_URL застосунок не стартує й називає змінну', async () => {
+  it('[TC-00-06] without DATABASE_URL the app does not start and names the variable', async () => {
     const withoutDatabaseUrl: Record<string, unknown> = { ...env };
     delete withoutDatabaseUrl['DATABASE_URL'];
 
@@ -49,7 +48,7 @@ describe('AppModule', () => {
     ).rejects.toThrow(/DATABASE_URL/);
   });
 
-  it('[TC-00-06] deepgram і gemini зупиняють запуск із «not implemented»', async () => {
+  it('[TC-00-06] deepgram and gemini stop startup with "not implemented"', async () => {
     await expect(
       Test.createTestingModule({
         imports: [

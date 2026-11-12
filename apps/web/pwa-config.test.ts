@@ -8,7 +8,7 @@ import { theme } from './src/theme.js';
 const root = import.meta.dirname;
 
 describe('PWA', () => {
-  it('[TC-00-03] theme_color збігається з основним кольором теми Mantine', () => {
+  it('[TC-00-03] theme_color matches the Mantine primary colour', () => {
     const merged = mergeMantineTheme(DEFAULT_THEME, theme);
     const shade = merged.primaryShade;
     const light = typeof shade === 'number' ? shade : shade.light;
@@ -17,14 +17,14 @@ describe('PWA', () => {
     expect(manifest.theme_color).toBe(THEME_COLOR);
   });
 
-  it('[TC-00-03] <meta name="theme-color"> в index.html збігається з theme_color', () => {
+  it('[TC-00-03] <meta name="theme-color"> in index.html matches theme_color', () => {
     const html = readFileSync(resolve(root, 'index.html'), 'utf8');
     const match = /<meta\s+name="theme-color"\s+content="([^"]+)"/.exec(html);
 
     expect(match?.[1]).toBe(manifest.theme_color);
   });
 
-  it('[TC-00-03] маніфест: назва, мова, режим показу й кольори', () => {
+  it('[TC-00-03] manifest: name, language, display mode and colours', () => {
     expect(manifest).toMatchObject({
       name: 'GoToTalk',
       short_name: 'GoToTalk',
@@ -35,7 +35,7 @@ describe('PWA', () => {
     expect(manifest.background_color).toMatch(/^#[0-9a-f]{6}$/i);
   });
 
-  it('[TC-00-03] маніфест: іконки 192, 512 і maskable існують у public', () => {
+  it('[TC-00-03] manifest: 192, 512 and maskable icons exist in public', () => {
     const icons = manifest.icons ?? [];
 
     expect(
@@ -58,12 +58,12 @@ describe('PWA', () => {
     ).toBe(true);
   });
 
-  it('[TC-00-03] плагін: autoUpdate і service worker у dev', () => {
+  it('[TC-00-03] plugin: autoUpdate and service worker in dev', () => {
     expect(pwaOptions.registerType).toBe('autoUpdate');
     expect(pwaOptions.devOptions?.enabled).toBe(true);
   });
 
-  it('[TC-00-03] service worker не перехоплює /api', () => {
+  it('[TC-00-03] service worker does not intercept /api', () => {
     const denylist = pwaOptions.workbox?.navigateFallbackDenylist ?? [];
 
     expect(denylist.some((re) => re.test('/api/health'))).toBe(true);
@@ -72,7 +72,7 @@ describe('PWA', () => {
     expect(pwaOptions.workbox?.runtimeCaching ?? []).toEqual([]);
   });
 
-  it('[TC-00-03] preview.proxy повторює server.proxy для /api', () => {
+  it('[TC-00-03] preview.proxy mirrors server.proxy for /api', () => {
     expect(viteConfig.preview?.proxy).toBeDefined();
     expect(viteConfig.preview?.proxy).toEqual(viteConfig.server?.proxy);
     expect(viteConfig.preview?.proxy?.['/api']).toMatchObject({

@@ -4,7 +4,7 @@ import { Outlet } from 'react-router';
 import classes from './AppLayout.module.scss';
 import { BottomNav } from './BottomNav.js';
 
-// Висота футера з урахуванням вирізів екрана (safe area) на мобільних.
+// Footer height plus the bottom safe-area inset of notched phones.
 const FOOTER_HEIGHT = 'calc(56px + env(safe-area-inset-bottom, 0px))';
 
 export function AppLayout() {

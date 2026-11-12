@@ -1,8 +1,7 @@
 import swc from 'unplugin-swc';
 import { defineConfig } from 'vitest/config';
 
-// Esbuild не емітить метадані декораторів, тому, як радить документація Nest (recipes/swc),
-// файли збираються через SWC.
+// esbuild does not emit decorator metadata, so tests are compiled with SWC (Nest recipe).
 const plugins = [swc.vite({ module: { type: 'es6' } })];
 
 export default defineConfig({
@@ -20,7 +19,6 @@ export default defineConfig({
         test: {
           name: 'integration',
           include: ['test/**/*.test.ts'],
-          // Міграції до TEST_DATABASE_URL (потрібен `podman compose up -d`)
           globalSetup: ['test/global-setup.ts'],
         },
       },

@@ -1,17 +1,15 @@
 # @gototalk/prompts
 
-Промпти до мовної моделі, по одному версіонованому файлу на промпт.
+Language model prompts, one versioned file per prompt.
 
-## Формат назв
+## Naming format
 
-`<name>.vN.md`, наприклад `error-analysis.v1.md`. Існуючий файл не редагується після того, як за ним
-збережено результати: зміна промпту створює нову версію (`error-analysis.v2.md`).
+`<name>.vN.md`, for example `error-analysis.v1.md`. An existing file is not edited once results have been stored against it: changing a prompt creates a new version (`error-analysis.v2.md`).
 
-## Версія в даних
+## Version in data
 
-Версія промпту й модель записуються на репліку: `utterances.analysis_prompt_version`
-(наприклад, `error-analysis.v1`) і `utterances.analysis_model`.
+The prompt version and the model are recorded on the utterance: `utterances.analysis_prompt_version` (for example, `error-analysis.v1`) and `utterances.analysis_model`.
 
-## Вміст
+## Contents
 
-Поки порожньо: перші промпти з'являться в специфікаціях 03–05.
+Empty for now: the first prompts will appear in specs 03–05.

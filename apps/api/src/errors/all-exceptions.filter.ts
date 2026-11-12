@@ -12,7 +12,7 @@ import { codeFromStatus } from './error-code.js';
 
 const GENERIC_SERVER_MESSAGE = 'Internal server error';
 
-/** Помилки body-parser та інших http-errors: не HttpException, але мають 4xx statusCode. */
+// body-parser and other http-errors are not HttpException but carry a 4xx statusCode
 function clientErrorStatus(exception: unknown): number | undefined {
   if (!(exception instanceof Error)) return undefined;
   const status = (exception as { statusCode?: unknown }).statusCode;
@@ -30,7 +30,7 @@ function httpExceptionMessage(exception: HttpException): string {
   return exception.message;
 }
 
-/** Перелік проблем лише за шляхом поля й типом проблеми: введені користувачем значення не потрапляють у відповідь. */
+// Only field path and issue code are reported: user-supplied values never reach the response
 function zodMessage(error: ZodError): string {
   const problems = error.issues.map((issue) => {
     const path =
@@ -40,10 +40,6 @@ function zodMessage(error: ZodError): string {
   return `Validation failed: ${problems.join('; ')}`;
 }
 
-/**
- * Єдиний обробник помилок: усе перетворюється на `{ error: { code, message } }`.
- * Деталі неочікуваних помилок і 5xx лишаються в лозі, у відповідь вони не потрапляють.
- */
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
   constructor(
@@ -131,7 +127,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     exception: unknown,
     request: { method: string; url: string },
   ): void {
-    // Об'єкт зі стеком (поле err) пише pino-логер; у відповідь клієнту це не потрапляє
+    // The stack goes only to the log, never to the response
     this.logger.error({ err: exception, ...request }, 'Unhandled exception');
   }
 }

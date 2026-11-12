@@ -2,8 +2,7 @@ import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'drizzle-kit';
 
-// Конфіг лише для db:pull: інтроспекція БД у тимчасову теку (в .gitignore),
-// звідки scripts/db-pull.mjs копіює schema.ts і relations.ts у src/db/.
+// Introspects into a git-ignored temp dir; scripts/db-pull.mjs copies the result into src/db/.
 const envPath = fileURLToPath(new URL('../../.env', import.meta.url));
 if (existsSync(envPath)) {
   process.loadEnvFile(envPath);

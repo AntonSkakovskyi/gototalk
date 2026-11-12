@@ -33,7 +33,7 @@ describe('GET /api/health', () => {
     await app.close();
   });
 
-  it('[TC-00-02] повертає 200 { status: ok, db: ok } за доступної БД', async () => {
+  it('[TC-00-02] returns 200 { status: ok, db: ok } when the DB is available', async () => {
     const res = await request(app.getHttpServer()).get('/api/health');
 
     expect(res.status).toBe(200);
@@ -43,7 +43,7 @@ describe('GET /api/health', () => {
     });
   });
 
-  it('[TC-00-02] опис ендпоінта є у Swagger-документі', async () => {
+  it('[TC-00-02] the endpoint is described in the Swagger document', async () => {
     const res = await request(app.getHttpServer()).get('/api/docs-json');
 
     expect(res.status).toBe(200);
@@ -59,7 +59,7 @@ describe('GET /api/health', () => {
   });
 });
 
-describe('GET /api/health, БД недоступна', () => {
+describe('GET /api/health, DB unavailable', () => {
   const secret = 'ECONNREFUSED 10.0.0.5:5432 password=hunter2';
   let app: INestApplication;
 
@@ -81,7 +81,7 @@ describe('GET /api/health, БД недоступна', () => {
     await app.close();
   });
 
-  it('[TC-00-07] повертає 503 у форматі помилки без деталей з’єднання', async () => {
+  it('[TC-00-07] returns 503 in the error format without connection details', async () => {
     const res = await request(app.getHttpServer()).get('/api/health');
 
     expect(res.status).toBe(503);
@@ -92,7 +92,7 @@ describe('GET /api/health, БД недоступна', () => {
   });
 });
 
-describe('GET /api/health, БД не відповідає', () => {
+describe('GET /api/health, DB not responding', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
@@ -101,7 +101,6 @@ describe('GET /api/health, БД не відповідає', () => {
     })
       .overrideProvider(DRIZZLE)
       .useValue({
-        // Запит ніколи не завершується
         execute: () => new Promise(() => undefined),
       })
       .compile();
@@ -114,7 +113,7 @@ describe('GET /api/health, БД не відповідає', () => {
     await app.close();
   });
 
-  it('[TC-00-07] повертає 503 за timeout, а не висить', async () => {
+  it('[TC-00-07] returns 503 on timeout instead of hanging', async () => {
     const res = await request(app.getHttpServer()).get('/api/health');
 
     expect(res.status).toBe(503);

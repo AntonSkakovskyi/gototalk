@@ -1,11 +1,9 @@
 import { z } from 'zod';
 import { MistakeCategoryCodeSchema } from './mistake-categories.js';
 
-/** Результат розпізнавання мовлення (SpeechRecognitionPort.transcribe). */
 export const TranscriptSchema = z.object({
-  /** Дослівний текст з ваганнями й помилками; позиції помилок рахуються в ньому. */
+  /** Mistake positions are offsets in this text. */
   verbatim: z.string(),
-  /** Той самий текст без вагань. */
   clean: z.string(),
   words: z
     .array(
@@ -21,7 +19,7 @@ export const TranscriptSchema = z.object({
 
 export type Transcript = z.infer<typeof TranscriptSchema>;
 
-/** Помилка в text_verbatim: 0-based, `end` не включно (`text.slice(start, end) === original`). */
+/** Offsets in text_verbatim: 0-based, `end` is exclusive (`text.slice(start, end) === original`). */
 export const MistakeSchema = z
   .object({
     start: z.int().nonnegative(),
@@ -46,7 +44,6 @@ export const BetterPhrasingSchema = z.object({
 
 export type BetterPhrasing = z.infer<typeof BetterPhrasingSchema>;
 
-/** Відповідь LanguageModelPort.analyzeUtterance. */
 export const AnalysisResultSchema = z.object({
   mistakes: z.array(MistakeSchema),
   better: z.array(BetterPhrasingSchema).max(2),
@@ -54,7 +51,6 @@ export const AnalysisResultSchema = z.object({
 
 export type AnalysisResult = z.infer<typeof AnalysisResultSchema>;
 
-/** План сесії: тема й 5 питань (LanguageModelPort.planSession). */
 export const PlanSchema = z.object({
   topic: z.string().min(1),
   questions: z.array(z.string().min(1)).length(5),
@@ -62,17 +58,13 @@ export const PlanSchema = z.object({
 
 export type Plan = z.infer<typeof PlanSchema>;
 
-/** Наступне питання діалогу (LanguageModelPort.nextTurn). */
 export const TurnSchema = z.object({
   question: z.string().min(1),
 });
 
 export type Turn = z.infer<typeof TurnSchema>;
 
-/**
- * Підказка (LanguageModelPort.hint): початок фрази або переклад слова.
- * Для невідомого слова `word` = null і є `message`.
- */
+/** For an unknown word, `word` is null and `message` is set. */
 export const HintSchema = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('phrase_start'), text: z.string().min(1) }),
   z.object({
@@ -84,7 +76,6 @@ export const HintSchema = z.discriminatedUnion('kind', [
 
 export type Hint = z.infer<typeof HintSchema>;
 
-/** Самарі сесії (LanguageModelPort.summarizeSession). */
 export const SummarySchema = z.object({
   summary: z.string().min(1),
   top_categories: z.array(MistakeCategoryCodeSchema).max(3),
