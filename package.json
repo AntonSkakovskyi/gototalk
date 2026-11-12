@@ -1,0 +1,32 @@
+{
+  "name": "gototalk",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=26"
+  },
+  "packageManager": "pnpm@12.18.0",
+  "scripts": {
+    "dev": "pnpm build:shared && pnpm -r --if-present --parallel dev",
+    "test": "pnpm build:shared && pnpm -r --if-present test",
+    "test:e2e": "pnpm build:shared && playwright test",
+    "lint": "eslint .",
+    "build:shared": "pnpm --filter @gototalk/shared build",
+    "typecheck": "pnpm build:shared && pnpm -r --if-present typecheck && tsc -p tsconfig.json --noEmit",
+    "db:migrate": "pnpm -r --if-present db:migrate",
+    "db:pull": "pnpm -r --if-present db:pull",
+    "db:seed": "pnpm -r --if-present db:seed"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.65.0",
+    "@types/node": "^26.6.6",
+    "eslint": "^10.14.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-i18next": "^6.1.5",
+    "globals": "^17.14.0",
+    "prettier": "^3.10.0",
+    "typescript": "6.0.3",
+    "typescript-eslint": "^8.72.2"
+  }
+}

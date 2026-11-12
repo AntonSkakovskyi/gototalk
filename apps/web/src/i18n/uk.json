@@ -1,0 +1,18 @@
+{
+  "app": {
+    "title": "GoToTalk"
+  },
+  "nav": {
+    "label": "Основна навігація",
+    "session": "Сесія",
+    "words": "Слова",
+    "history": "Історія",
+    "profile": "Профіль"
+  },
+  "pages": {
+    "session": { "title": "Сесія" },
+    "words": { "title": "Слова" },
+    "history": { "title": "Історія" },
+    "profile": { "title": "Профіль" }
+  }
+}

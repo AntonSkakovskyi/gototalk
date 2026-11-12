@@ -1,0 +1,17 @@
+node_modules/
+dist/
+coverage/
+.env
+.env.*
+!.env.example
+# Dev audio (DEV_KEEP_AUDIO=true) is stored outside the repo; this covers a relative path
+.dev-audio/
+# Scratch directory of db:pull
+apps/api/.drizzle-pull/
+playwright-report/
+test-results/
+*.log
+*.tsbuildinfo
+
+# vite-plugin-pwa dev service worker
+dev-dist/

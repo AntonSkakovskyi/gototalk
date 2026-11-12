@@ -1,0 +1,11 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+
+allowBuilds:
+  # esbuild, @swc/core, @parcel/watcher: binaries come as optional platform packages, so postinstall is not needed.
+  esbuild: false
+  '@swc/core': false
+  '@parcel/watcher': false
+  # @scarf/scarf: postinstall only sends telemetry.
+  '@scarf/scarf': false

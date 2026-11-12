@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "types": ["node"],
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "isolatedModules": true,
+    "strictPropertyInitialization": false
+  },
+  "include": [
+    "src",
+    "test",
+    "vitest.config.ts",
+    "drizzle.config.ts",
+    "drizzle.pull.config.ts"
+  ]
+}

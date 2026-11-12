@@ -1,6 +1,6 @@
--- Демо-дані для розробки й демонстрації. Застосовувати після 0001 + 0002; повторний запуск безпечний.
--- Демо-користувач: demo@gototalk.local, пароль demo-password-1 (лише для локальної розробки).
--- Усі категорії помилок беруться з mistake_categories (0002). Позиції помилок рахуються в text_verbatim.
+-- Demo data for development. Apply after 0001 + 0002; safe to re-run.
+-- Demo user: demo@gototalk.local, password demo-password-1 (local development only).
+-- Mistake categories come from mistake_categories (0002); mistake positions are offsets in text_verbatim.
 
 BEGIN;
 

@@ -3,8 +3,6 @@
 -- Схема 0001 лишається як є (на ній побудовано лабораторну); MVP = 0001 + 0002.
 -- Застосовується на порожній БД одразу після 0001.
 
-BEGIN;
-
 -- 1. Refresh-токени (рішення 9: access JWT + refresh у httpOnly cookie, з можливістю відкликання)
 CREATE TABLE refresh_tokens (
     id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -82,5 +80,3 @@ CREATE INDEX idx_exercises_card  ON exercises (card_id);
 ALTER TABLE words
     DROP CONSTRAINT words_state_check,
     ADD CONSTRAINT words_state_check CHECK (state IN ('new', 'partial', 'passive', 'active'));
-
-COMMIT;
