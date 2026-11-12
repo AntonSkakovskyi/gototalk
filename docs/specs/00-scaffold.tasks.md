@@ -53,10 +53,11 @@
   - Перевірка: `schema.ts` має 15 `pgTable` і `check(...)` для кожного CHECK з міграцій; повторний `pnpm db:pull` не дає diff; `pnpm typecheck` зелений.
   - Відхилення: скрипт замінює `./schema` на `./schema.js` у relations.ts (NodeNext); drizzle-kit і Prettier викликаються через node без shell; 16 `check(...)` (17 CHECK у SQL мінус замінений `words_state_check`); `typecheck` схему охопить з 00-06 (tsconfig у api).
 
-- [ ] **00-06. Бутстрап NestJS**
+- [x] **00-06. Бутстрап NestJS**
   - Що: ESM `src/main.ts`, `src/app.module.ts`, `nest-cli.json`, `tsconfig.json`/`tsconfig.build.json`, Vitest з двома проєктами (unit, integration), глобальний префікс `api`, скрипти `dev`, `build`, `test`, `typecheck`, `lint`.
   - context7: NestJS 12 (ESM, Vitest).
   - Перевірка: `pnpm --filter api dev` стартує на порту 3000; тест-«димок» `[TC-00-04]` (AppModule компілюється) зелений.
+  - Відхилення: скрипта `lint` у api немає (кореневий `eslint .`, за технічними рішеннями); `@swc/core: false` в allowBuilds (бінарник з optional-пакета); integration-проєкт Vitest з `passWithNoTests` до 00-09 (тоді прибрати); порт тимчасово з `process.env.PORT` до 00-07.
 
 - [ ] **00-07. Конфіг з Zod і логер Pino**
   - Що: `ConfigModule` з `validate` через Zod-схему env, типізований доступ до конфігу; `nestjs-pino` (pino-pretty у dev, redact `authorization` і `cookie`). `STT_PROVIDER`/`LLM_PROVIDER` приймають `fake|deepgram` / `fake|gemini`, реальні значення поки дають помилку «not implemented».

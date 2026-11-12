@@ -2,6 +2,8 @@ packages:
   - 'apps/*'
   - 'packages/*'
 
-# esbuild приходить транзитивно через drizzle-kit; його postinstall лише перевіряє бінарник, скрипти збірки не потрібні
+# esbuild приходить транзитивно через drizzle-kit; його postinstall лише перевіряє бінарник, скрипти збірки не потрібні.
+# @swc/core: бінарник приходить пакетом платформи (optionalDependencies), postinstall лише допоміжний.
 allowBuilds:
   esbuild: false
+  '@swc/core': false
