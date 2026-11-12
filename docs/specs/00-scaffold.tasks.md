@@ -59,9 +59,10 @@
   - Перевірка: `pnpm --filter api dev` стартує на порту 3000; тест-«димок» `[TC-00-04]` (AppModule компілюється) зелений.
   - Відхилення: скрипта `lint` у api немає (кореневий `eslint .`, за технічними рішеннями); `@swc/core: false` в allowBuilds (бінарник з optional-пакета); integration-проєкт Vitest з `passWithNoTests` до 00-09 (тоді прибрати); порт тимчасово з `process.env.PORT` до 00-07.
 
-- [ ] **00-07. Конфіг з Zod і логер Pino**
+- [x] **00-07. Конфіг з Zod і логер Pino**
   - Що: `ConfigModule` з `validate` через Zod-схему env, типізований доступ до конфігу; `nestjs-pino` (pino-pretty у dev, redact `authorization` і `cookie`). `STT_PROVIDER`/`LLM_PROVIDER` приймають `fake|deepgram` / `fake|gemini`, реальні значення поки дають помилку «not implemented».
   - Перевірка: тести `[TC-00-06]`: невалідний env → помилка з назвою змінної; `deepgram`/`gemini` → помилка «not implemented»; без `DATABASE_URL` застосунок не стартує й називає змінну.
+  - Відхилення: `AppModule` став динамічним (`AppModule.register({ env? })`, тести передають env явно); додано `NODE_ENV` і правило `DEV_KEEP_AUDIO=true` ⇒ потрібен `DEV_AUDIO_DIR`; `FAKE_*_FAIL` лише як необов'язкові рядки. Рев'ю на майбутнє: `res.headers["set-cookie"]` у redact (разом з auth), `NODE_ENV=production` у контейнері api (pino-pretty – devDependency).
 
 - [ ] **00-08. Глобальний фільтр помилок і Swagger**
   - Що: фільтр: `HttpException` → код зі статусу (`NOT_FOUND`, `BAD_REQUEST`…), `ZodError` → 400 `VALIDATION_ERROR`, невідома помилка → 500 `INTERNAL_ERROR` без деталей у відповіді (деталі в лог). Формат – `ErrorResponseSchema` із shared. Swagger на `/api/docs`.
