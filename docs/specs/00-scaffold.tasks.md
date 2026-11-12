@@ -111,9 +111,10 @@
   - Перевірка: `pnpm dev` піднімає обидва застосунки; `pnpm test:e2e` зелений.
   - Відхилення: Chrome немає, e2e локально в Edge (`channel: msedge`); у CI канал порожній за замовчуванням (Chromium від Playwright, `pnpm exec playwright install --with-deps chromium`), перевизначається `PW_CHANNEL`; вкладка «Сесія» має шлях `/`; e2e потребує БД (`podman compose up -d` + `pnpm db:migrate`); три тести `[TC-00-02]` в одному spec; кореневий tsconfig.json для typecheck e2e. Для 00-17: e2e у CI поки не входить (за tasks.md), за потреби додати окремою задачею.
 
-- [ ] **00-17. CI на GitHub Actions**
+- [x] **00-17. CI на GitHub Actions**
   - Що: `.github/workflows/ci.yml`: `pnpm/action-setup`, `actions/setup-node` з Node 26 і кешем pnpm, Postgres 17 як service (`gototalk_test`), `pnpm install --frozen-lockfile`, `pnpm lint`, `pnpm typecheck`, `pnpm test`.
   - Перевірка: YAML проходить локальну валідацію (`pnpm dlx @action-validator/cli .github/workflows/ci.yml`); остаточно – зелений прогін після `git push` (робить Антон).
+  - Відхилення: немає. YAML пройшов `@action-validator/cli` (на зламаному файлі валідатор помилку ловить); CI емульовано локально на чистому `postgres:17` (lint, typecheck, test зелені без `.env`). Версії actions звірено через GitHub API (checkout v7, pnpm/action-setup v6, setup-node v7); `persist-credentials: false`. Після push перевірити: job зелений, зокрема `pnpm/action-setup@v6` без `version` і `cache: pnpm` з Node 26.
 
 - [ ] **00-18. README і фінальна перевірка**
   - Що: README: вимоги (Node 26, pnpm, Podman), команди для PowerShell (install, `podman compose up -d`, `pnpm db:migrate`, `pnpm db:seed`, `pnpm dev`, тести, e2e, `adb reverse tcp:5173 tcp:5173`), примітка про HTTPS/localhost для мікрофона. Прогін усіх пунктів «Готово, коли» spec 00.
