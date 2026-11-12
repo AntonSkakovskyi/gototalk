@@ -1,0 +1,222 @@
+import 'reflect-metadata';
+import {
+  BadRequestException,
+  ConflictException,
+  HttpException,
+  NotFoundException,
+  ServiceUnavailableException,
+} from '@nestjs/common';
+import type { ArgumentsHost, LoggerService } from '@nestjs/common';
+import type { HttpAdapterHost } from '@nestjs/core';
+import { ErrorResponseSchema } from '@gototalk/shared';
+import { describe, expect, it, vi } from 'vitest';
+import { z } from 'zod';
+import { AllExceptionsFilter } from './all-exceptions.filter.js';
+import { codeFromStatus } from './error-code.js';
+
+function setup() {
+  const reply = vi.fn();
+  const adapterHost = {
+    httpAdapter: {
+      reply,
+      getRequestMethod: () => 'POST',
+      getRequestUrl: () => '/api/things',
+    },
+  } as unknown as HttpAdapterHost;
+  const logger = {
+    log: vi.fn(),
+    error: vi.fn(),
+    warn: vi.fn(),
+  } as unknown as LoggerService;
+  const host = {
+    switchToHttp: () => ({
+      getRequest: () => ({}),
+      getResponse: () => ({ marker: 'response' }),
+    }),
+  } as unknown as ArgumentsHost;
+  const filter = new AllExceptionsFilter(adapterHost, logger);
+
+  function run(exception: unknown): { status: number; body: unknown } {
+    filter.catch(exception, host);
+    expect(reply).toHaveBeenCalledTimes(1);
+    const [, body, status] = reply.mock.calls[0] as [unknown, unknown, number];
+    return { status, body };
+  }
+
+  return { run, logger, reply };
+}
+
+describe('AllExceptionsFilter', () => {
+  it('[TC-00-07] HttpException: код зі статусу, повідомлення з винятку', () => {
+    const { run, logger } = setup();
+
+    const { status, body } = run(new NotFoundException('Cannot GET /api/nope'));
+
+    expect(status).toBe(404);
+    expect(ErrorResponseSchema.parse(body)).toEqual({
+      error: { code: 'NOT_FOUND', message: 'Cannot GET /api/nope' },
+    });
+    expect(logger.error).not.toHaveBeenCalled();
+  });
+
+  it('[TC-00-07] HttpException: масив повідомлень склеюється', () => {
+    const { run } = setup();
+
+    const { body } = run(
+      new BadRequestException(['name must be a string', 'age is required']),
+    );
+
+    expect(ErrorResponseSchema.parse(body)).toEqual({
+      error: {
+        code: 'BAD_REQUEST',
+        message: 'name must be a string; age is required',
+      },
+    });
+  });
+
+  it('[TC-00-07] HttpException: рядкове тіло відповіді', () => {
+    const { run } = setup();
+
+    const { status, body } = run(new HttpException('Nope', 409));
+
+    expect(status).toBe(409);
+    expect(ErrorResponseSchema.parse(body).error).toEqual({
+      code: 'CONFLICT',
+      message: 'Nope',
+    });
+  });
+
+  it('[TC-00-07] ZodError: 400 VALIDATION_ERROR з переліком полів без введених значень', () => {
+    const { run, logger } = setup();
+    const schema = z.object({
+      title: z.string().regex(/^d+$/),
+      count: z.number().int(),
+    });
+    const parsed = schema.safeParse({ title: 'leaky-title', count: 'secret' });
+    if (parsed.success) throw new Error('очікувалась помилка валідації');
+
+    const { status, body } = run(parsed.error);
+
+    expect(status).toBe(400);
+    const { error } = ErrorResponseSchema.parse(body);
+    expect(error.code).toBe('VALIDATION_ERROR');
+    expect(error.message).toContain('title');
+    expect(error.message).toContain('count');
+    expect(error.message).not.toContain('secret');
+    expect(error.message).not.toContain('leaky-title');
+    expect(logger.error).not.toHaveBeenCalled();
+  });
+
+  it('[TC-00-07] ZodError на корені: позначається як (root)', () => {
+    const { run } = setup();
+    const parsed = z.string().safeParse(42);
+    if (parsed.success) throw new Error('очікувалась помилка валідації');
+
+    const { body } = run(parsed.error);
+
+    expect(ErrorResponseSchema.parse(body).error.message).toContain('(root)');
+  });
+
+  it('[TC-00-07] невідома помилка: 500 INTERNAL_ERROR без деталей, стек у логі', () => {
+    const { run, logger } = setup();
+    const failure = new Error(
+      'connection to db-host:5432 refused, password=hunter2',
+    );
+
+    const { status, body } = run(failure);
+
+    expect(status).toBe(500);
+    const parsed = ErrorResponseSchema.parse(body);
+    expect(parsed.error.code).toBe('INTERNAL_ERROR');
+    expect(JSON.stringify(body)).not.toContain('hunter2');
+    expect(JSON.stringify(body)).not.toContain('db-host');
+    expect(logger.error).toHaveBeenCalledTimes(1);
+    expect((logger.error as ReturnType<typeof vi.fn>).mock.calls[0]).toEqual(
+      expect.arrayContaining([expect.objectContaining({ err: failure })]),
+    );
+  });
+
+  it('[TC-00-07] не-Error значення (рядок, null) теж дають 500 INTERNAL_ERROR', () => {
+    for (const thrown of ['boom', null, undefined, { secret: 1 }]) {
+      const { run, logger } = setup();
+      const { status, body } = run(thrown);
+      expect(status).toBe(500);
+      expect(ErrorResponseSchema.parse(body).error.code).toBe('INTERNAL_ERROR');
+      expect(logger.error).toHaveBeenCalledTimes(1);
+    }
+  });
+
+  it('[TC-00-07] 5xx HttpException: код зі статусу, але без деталей винятку, деталі в лог', () => {
+    const { run, logger } = setup();
+
+    const { status, body } = run(
+      new ServiceUnavailableException('pg pool exhausted: host=10.0.0.5'),
+    );
+
+    expect(status).toBe(503);
+    const parsed = ErrorResponseSchema.parse(body);
+    expect(parsed.error.code).toBe('SERVICE_UNAVAILABLE');
+    expect(JSON.stringify(body)).not.toContain('10.0.0.5');
+    expect(logger.error).toHaveBeenCalledTimes(1);
+  });
+
+  it('[TC-00-07] HttpException зі статусом 500 дає INTERNAL_ERROR', () => {
+    const { run } = setup();
+
+    const { status, body } = run(new HttpException('details', 500));
+
+    expect(status).toBe(500);
+    expect(ErrorResponseSchema.parse(body).error.code).toBe('INTERNAL_ERROR');
+    expect(JSON.stringify(body)).not.toContain('details');
+  });
+
+  it('[TC-00-07] помилка парсера тіла (http-errors, 4xx) стає відповіддю з коду статусу', () => {
+    const { run } = setup();
+    const parserError = Object.assign(
+      new SyntaxError('Unexpected token } in JSON'),
+      {
+        statusCode: 400,
+        status: 400,
+        type: 'entity.parse.failed',
+      },
+    );
+
+    const { status, body } = run(parserError);
+
+    expect(status).toBe(400);
+    const parsed = ErrorResponseSchema.parse(body);
+    expect(parsed.error.code).toBe('BAD_REQUEST');
+    expect(parsed.error.message).not.toContain('Unexpected token');
+  });
+});
+
+describe('codeFromStatus', () => {
+  it('[TC-00-07] стабільна мапа відомих статусів', () => {
+    expect(codeFromStatus(400)).toBe('BAD_REQUEST');
+    expect(codeFromStatus(401)).toBe('UNAUTHORIZED');
+    expect(codeFromStatus(403)).toBe('FORBIDDEN');
+    expect(codeFromStatus(404)).toBe('NOT_FOUND');
+    expect(codeFromStatus(409)).toBe('CONFLICT');
+    expect(codeFromStatus(422)).toBe('UNPROCESSABLE_ENTITY');
+    expect(codeFromStatus(429)).toBe('TOO_MANY_REQUESTS');
+    expect(codeFromStatus(500)).toBe('INTERNAL_ERROR');
+  });
+
+  it('[TC-00-07] інші статуси: стандартна назва в UPPER_SNAKE_CASE', () => {
+    expect(codeFromStatus(405)).toBe('METHOD_NOT_ALLOWED');
+    expect(codeFromStatus(503)).toBe('SERVICE_UNAVAILABLE');
+    expect(codeFromStatus(418)).toBe('IM_A_TEAPOT');
+  });
+
+  it('[TC-00-07] невідомий статус: запасний код за класом', () => {
+    expect(codeFromStatus(499)).toBe('CLIENT_ERROR');
+    expect(codeFromStatus(599)).toBe('INTERNAL_ERROR');
+  });
+
+  it('[TC-00-07] ConflictException дає CONFLICT через фільтр', () => {
+    const { run } = setup();
+    const { status, body } = run(new ConflictException('exists'));
+    expect(status).toBe(409);
+    expect(ErrorResponseSchema.parse(body).error.code).toBe('CONFLICT');
+  });
+});

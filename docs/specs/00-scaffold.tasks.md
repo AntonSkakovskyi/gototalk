@@ -64,9 +64,10 @@
   - Перевірка: тести `[TC-00-06]`: невалідний env → помилка з назвою змінної; `deepgram`/`gemini` → помилка «not implemented»; без `DATABASE_URL` застосунок не стартує й називає змінну.
   - Відхилення: `AppModule` став динамічним (`AppModule.register({ env? })`, тести передають env явно); додано `NODE_ENV` і правило `DEV_KEEP_AUDIO=true` ⇒ потрібен `DEV_AUDIO_DIR`; `FAKE_*_FAIL` лише як необов'язкові рядки. Рев'ю на майбутнє: `res.headers["set-cookie"]` у redact (разом з auth), `NODE_ENV=production` у контейнері api (pino-pretty – devDependency).
 
-- [ ] **00-08. Глобальний фільтр помилок і Swagger**
+- [x] **00-08. Глобальний фільтр помилок і Swagger**
   - Що: фільтр: `HttpException` → код зі статусу (`NOT_FOUND`, `BAD_REQUEST`…), `ZodError` → 400 `VALIDATION_ERROR`, невідома помилка → 500 `INTERNAL_ERROR` без деталей у відповіді (деталі в лог). Формат – `ErrorResponseSchema` із shared. Swagger на `/api/docs`.
   - Перевірка: інтеграційний тест `[TC-00-07]` (неіснуючий маршрут і невалідне тіло дають `{ error: { code, message } }`) і unit-тести фільтра на три гілки; `GET /api/nope` → 404 `{ "error": { "code": "NOT_FOUND", … } }`; `/api/docs` відкривається.
+  - Відхилення: додатково оброблені 4xx від body-parser і 5xx `HttpException` (узагальнене повідомлення); `configureApp(app)` спільна для main.ts і тестів; `@scarf/scarf: false` в allowBuilds; нові залежності `@nestjs/swagger`, dev `supertest`. На потім: у лозі лише path без query; Swagger вимкнути/обмежити перед публічним деплоєм; прибрати `passWithNoTests` у 00-09.
 
 - [ ] **00-09. DB-модуль і інтеграційна обв'язка**
   - Що: провайдер Drizzle (`pg` Pool, закриття на shutdown); Vitest globalSetup застосовує міграції до `TEST_DATABASE_URL` (мігратор drizzle-orm); інтеграційний тест `[TC-00-01]`: 15 таблиць у `public` і повний очікуваний список CHECK-обмежень з `pg_constraint` (список виписати з 0001 і 0002).

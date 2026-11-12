@@ -7,3 +7,5 @@ packages:
 allowBuilds:
   esbuild: false
   '@swc/core': false
+  # @scarf/scarf (через swagger-ui-dist): лише телеметрія в postinstall, не потрібна.
+  '@scarf/scarf': false
