@@ -1,4 +1,4 @@
-import { Global, Inject, Module } from '@nestjs/common';
+import { Global, Inject, Logger, Module } from '@nestjs/common';
 import type { OnApplicationShutdown } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { drizzle } from 'drizzle-orm/node-postgres';
@@ -25,10 +25,20 @@ class PoolShutdown implements OnApplicationShutdown {
       provide: PG_POOL,
       inject: [ConfigService],
       // The pool connects lazily, on the first query
-      useFactory: (config: ConfigService<Env, true>): pg.Pool =>
-        new pg.Pool({
+      useFactory: (config: ConfigService<Env, true>): pg.Pool => {
+        const pool = new pg.Pool({
           connectionString: config.get('DATABASE_URL', { infer: true }),
-        }),
+          connectionTimeoutMillis: 5_000,
+        });
+        // Without a listener, an idle client error (DB restart) would crash the process
+        pool.on('error', (error) => {
+          new Logger('Database').error(
+            'Idle database client error',
+            error.stack,
+          );
+        });
+        return pool;
+      },
     },
     {
       provide: DRIZZLE,
