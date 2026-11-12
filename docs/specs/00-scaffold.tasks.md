@@ -35,7 +35,7 @@
   - Що: `package.json` (private, `"type": "module"`, `engines.node >=26`, `packageManager: pnpm@<pnpm -v>`), `pnpm-workspace.yaml` (`apps/*`, `packages/*`), `tsconfig.base.json` (strict, `noUncheckedIndexedAccess`), `eslint.config.js` (flat, typescript-eslint), Prettier (`endOfLine: lf`), `.gitignore` (`.env`, `.env.*` крім `.env.example`, тека dev-аудіо, `dist`, тимчасова тека pull, `node_modules`, звіти Playwright), `.gitattributes`, `.editorconfig`, `.node-version`. Скрипти `dev`, `test`, `test:e2e`, `lint`, `typecheck`, `db:migrate`, `db:pull`, `db:seed` через `pnpm -r --if-present`.
   - Перевірка: `pnpm install`, `pnpm lint`, `pnpm typecheck`, `pnpm test` завершуються з кодом 0; `pnpm exec prettier --check .` без помилок.
 
-- [ ] **00-02. packages/shared і packages/prompts**
+- [x] **00-02. packages/shared і packages/prompts**
   - Що: `@gototalk/shared`: Zod, `ErrorResponseSchema` (`{ error: { code, message } }`), `HealthResponseSchema`, `MistakeCategoryCodeSchema` (13 кодів із 0002), збірка tsc у `dist` (`exports` з `types`), Vitest. `@gototalk/prompts`: `package.json` + README (призначення, формат назв `<name>.vN.md`).
   - Перевірка: тест `[TC-00-04]` на схеми зелений; `pnpm --filter @gototalk/shared build` створює `dist`.
 

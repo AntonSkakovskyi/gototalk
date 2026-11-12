@@ -1,0 +1,6 @@
+{
+  "name": "@gototalk/prompts",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Версіоновані промпти до мовної моделі GoToTalk"
+}

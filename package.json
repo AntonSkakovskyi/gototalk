@@ -8,10 +8,11 @@
   "packageManager": "pnpm@12.18.0",
   "scripts": {
     "dev": "pnpm -r --if-present --parallel dev",
-    "test": "pnpm -r --if-present test",
+    "test": "pnpm build:shared && pnpm -r --if-present test",
     "test:e2e": "pnpm -r --if-present test:e2e",
     "lint": "eslint .",
-    "typecheck": "pnpm -r --if-present typecheck",
+    "build:shared": "pnpm --filter @gototalk/shared build",
+    "typecheck": "pnpm build:shared && pnpm -r --if-present typecheck",
     "db:migrate": "pnpm -r --if-present db:migrate",
     "db:pull": "pnpm -r --if-present db:pull",
     "db:seed": "pnpm -r --if-present db:seed"
