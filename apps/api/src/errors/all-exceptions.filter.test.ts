@@ -131,9 +131,11 @@ describe('AllExceptionsFilter', () => {
     expect(JSON.stringify(body)).not.toContain('hunter2');
     expect(JSON.stringify(body)).not.toContain('db-host');
     expect(logger.error).toHaveBeenCalledTimes(1);
-    expect((logger.error as ReturnType<typeof vi.fn>).mock.calls[0]).toEqual(
-      expect.arrayContaining([expect.objectContaining({ err: failure })]),
-    );
+    expect((logger.error as ReturnType<typeof vi.fn>).mock.calls[0]).toEqual([
+      expect.objectContaining({ err: failure }),
+      'Unhandled exception',
+      'AllExceptionsFilter',
+    ]);
   });
 
   it('[TC-00-07] non-Error values (string, null) also give 500 INTERNAL_ERROR', () => {

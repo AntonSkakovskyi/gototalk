@@ -29,6 +29,20 @@ describe('DbModule', () => {
     await moduleRef.close();
   });
 
+  it('handles idle client errors instead of crashing the process', async () => {
+    const moduleRef = await Test.createTestingModule({
+      imports: [AppModule.register({ env })],
+    }).compile();
+    const pool = moduleRef.get<Pool>(PG_POOL);
+
+    expect(pool.listenerCount('error')).toBeGreaterThan(0);
+    expect(() =>
+      pool.emit('error', new Error('connection lost')),
+    ).not.toThrow();
+
+    await moduleRef.close();
+  });
+
   it('closes the pool on application shutdown', async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule.register({ env })],

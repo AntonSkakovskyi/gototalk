@@ -128,6 +128,11 @@ export class AllExceptionsFilter implements ExceptionFilter {
     request: { method: string; url: string },
   ): void {
     // The stack goes only to the log, never to the response
-    this.logger.error({ err: exception, ...request }, 'Unhandled exception');
+    // The trailing context name is required: nestjs-pino treats the last extra argument as the context, not the message
+    this.logger.error(
+      { err: exception, ...request },
+      'Unhandled exception',
+      AllExceptionsFilter.name,
+    );
   }
 }
