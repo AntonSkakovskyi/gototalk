@@ -3,6 +3,7 @@ import { parseEnv } from './env.schema.js';
 
 const validEnv = {
   DATABASE_URL: 'postgres://user:pass@localhost:5432/gototalk',
+  JWT_ACCESS_SECRET: 'test-only-access-secret-0123456789abcdef',
 };
 
 function errorOf(env: Record<string, unknown>): string {
@@ -19,6 +20,7 @@ describe('parseEnv', () => {
     expect(parseEnv(validEnv)).toEqual({
       NODE_ENV: 'development',
       DATABASE_URL: validEnv.DATABASE_URL,
+      JWT_ACCESS_SECRET: validEnv.JWT_ACCESS_SECRET,
       PORT: 3000,
       LOG_LEVEL: 'info',
       STT_PROVIDER: 'fake',
@@ -56,6 +58,24 @@ describe('parseEnv', () => {
 
   it('[TC-00-06] non-postgres DATABASE_URL names the variable', () => {
     expect(errorOf({ DATABASE_URL: 'mysql://x' })).toContain('DATABASE_URL');
+  });
+
+  it('[TC-00-06] missing or empty JWT_ACCESS_SECRET names the variable', () => {
+    expect(errorOf({ DATABASE_URL: validEnv.DATABASE_URL })).toContain(
+      'JWT_ACCESS_SECRET',
+    );
+    expect(errorOf({ ...validEnv, JWT_ACCESS_SECRET: '' })).toContain(
+      'JWT_ACCESS_SECRET',
+    );
+  });
+
+  it('[TC-00-06] JWT_ACCESS_SECRET shorter than 32 characters names the variable', () => {
+    const message = errorOf({ ...validEnv, JWT_ACCESS_SECRET: 'x'.repeat(31) });
+    expect(message).toContain('JWT_ACCESS_SECRET');
+    expect(message).toContain('32');
+    expect(() =>
+      parseEnv({ ...validEnv, JWT_ACCESS_SECRET: 'x'.repeat(32) }),
+    ).not.toThrow();
   });
 
   it('[TC-00-06] invalid PORT names the variable', () => {
@@ -97,6 +117,7 @@ describe('parseEnv', () => {
   it('[TC-00-06] all invalid variables are listed in one message', () => {
     const message = errorOf({ PORT: 'abc', LOG_LEVEL: 'loud' });
     expect(message).toContain('DATABASE_URL');
+    expect(message).toContain('JWT_ACCESS_SECRET');
     expect(message).toContain('PORT');
     expect(message).toContain('LOG_LEVEL');
   });

@@ -8,6 +8,7 @@ import { AppModule } from './app.module.js';
 const env = {
   NODE_ENV: 'production',
   DATABASE_URL: 'postgres://user:pass@localhost:5432/gototalk_test',
+  JWT_ACCESS_SECRET: 'test-only-access-secret-0123456789abcdef',
   PORT: '3456',
   LOG_LEVEL: 'silent',
 };

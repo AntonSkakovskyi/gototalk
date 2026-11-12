@@ -14,7 +14,7 @@ A PWA speaking trainer for Ukrainian-speaking learners of English (level A2 and 
 
 ```powershell
 Copy-Item .env.example .env
-# Fill in every variable in .env that has no value in .env.example (POSTGRES_*, DATABASE_URL, TEST_DATABASE_URL)
+# Fill in every variable in .env that has no value in .env.example (POSTGRES_*, DATABASE_URL, TEST_DATABASE_URL, JWT_ACCESS_SECRET)
 pnpm install
 podman compose up -d
 pnpm db:migrate

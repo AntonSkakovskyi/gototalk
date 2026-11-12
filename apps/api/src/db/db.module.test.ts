@@ -10,6 +10,7 @@ import type { Database } from './db.tokens.js';
 const env = {
   NODE_ENV: 'production',
   DATABASE_URL: 'postgres://user:pass@localhost:5432/gototalk_test',
+  JWT_ACCESS_SECRET: 'test-only-access-secret-0123456789abcdef',
   LOG_LEVEL: 'silent',
 };
 

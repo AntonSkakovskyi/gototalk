@@ -4,6 +4,7 @@ import type { Env } from '../config/env.schema.js';
 export const REDACT_PATHS = [
   'req.headers.authorization',
   'req.headers.cookie',
+  'res.headers["set-cookie"]',
 ] as const;
 
 export function buildPinoHttpOptions(

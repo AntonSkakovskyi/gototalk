@@ -31,6 +31,9 @@ export const EnvSchema = z
       .regex(/^postgres(ql)?:\/\/\S+$/, {
         error: 'must be a postgres:// connection string',
       }),
+    JWT_ACCESS_SECRET: z
+      .string({ error: 'is required (at least 32 characters)' })
+      .min(32, { error: 'must be at least 32 characters' }),
     TEST_DATABASE_URL: optional(
       z
         .string()

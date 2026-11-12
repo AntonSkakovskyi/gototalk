@@ -39,6 +39,37 @@ describe('buildPinoHttpOptions', () => {
     expect(output).toContain('[REDACTED]');
   });
 
+  it('[TC-00-04] redact hides the response set-cookie header', () => {
+    const options = buildPinoHttpOptions({
+      NODE_ENV: 'production',
+      LOG_LEVEL: 'info',
+    });
+
+    expect(options.redact).toMatchObject({
+      paths: expect.arrayContaining(['res.headers["set-cookie"]']),
+    });
+
+    let output = '';
+    const stream = new Writable({
+      write(chunk, _encoding, callback) {
+        output += String(chunk);
+        callback();
+      },
+    });
+    const logger = pino(
+      { redact: options.redact as pino.redactOptions },
+      stream,
+    );
+    logger.info({
+      res: {
+        headers: { 'set-cookie': ['gtt_refresh=secret-refresh; HttpOnly'] },
+      },
+    });
+
+    expect(output).not.toContain('secret-refresh');
+    expect(output).toContain('[REDACTED]');
+  });
+
   it('[TC-00-04] log level comes from LOG_LEVEL', () => {
     expect(
       buildPinoHttpOptions({ NODE_ENV: 'production', LOG_LEVEL: 'warn' }).level,

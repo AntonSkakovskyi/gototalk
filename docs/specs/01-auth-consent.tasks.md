@@ -59,6 +59,7 @@
   - Що: `JWT_ACCESS_SECRET` (обов'язковий, ≥ 32) в `env.schema.ts`; `res.headers["set-cookie"]` у `REDACT_PATHS`; `.env.example`: нова змінна + коментарі англійською; `ci.yml`: тестове значення секрету в `env` (з коментарем, що це не секрет); `createTestApp` передає секрет.
   - Перевірка: `[TC-00-06]` відсутній чи короткий секрет називає змінну; `[TC-00-04]` лог із `res.headers['set-cookie']` не містить значення cookie.
   - Ручна дія: Антон додає `JWT_ACCESS_SECRET` у свій `.env` (згенерувати, наприклад, `node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"`), інакше `pnpm dev` не стартує.
+  - Стан: код і тести готові; `.env.example` (змінна `JWT_ACCESS_SECRET=` і переклад коментарів англійською) чекає на дозвіл доступу до файлу.
 
 - [ ] **01-04. Контракти auth у shared**
   - Що: `packages/shared/src/auth.ts` (схеми й коди з «Технічних рішень»), експорт з `index.ts`.

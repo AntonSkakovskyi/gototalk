@@ -17,6 +17,7 @@ export function buildEnv(
   return {
     NODE_ENV: 'production',
     DATABASE_URL: inject('testDatabaseUrl'),
+    JWT_ACCESS_SECRET: 'test-only-access-secret-0123456789abcdef',
     PORT: '3456',
     LOG_LEVEL: 'silent',
     ...overrides,
