@@ -12,3 +12,6 @@ playwright-report/
 test-results/
 *.log
 *.tsbuildinfo
+
+# dev service worker vite-plugin-pwa
+dev-dist/

@@ -100,10 +100,11 @@
   - Перевірка: тест `[TC-00-02]`: підписи вкладок українською, клік перемикає маршрут; Playwright MCP на 360×800: навігація внизу екрана, без горизонтального скролу.
   - Відхилення: Playwright MCP не запустився (немає Chrome), перевірку 360×800 виконано через `playwright-core` на Edge (`channel: msedge`) поза репозиторієм: навігація внизу (y 745–800), `scrollWidth` = `clientWidth`, клік по вкладках змінює маршрут. Для 00-16 потрібен браузер: Edge-канал або `playwright install chromium`. `react-router` v8 (declarative API, `BrowserRouter`); без іконок; `strings.ts` видалено. ESLint `i18next/no-literal-string` у режимі `jsx-only` (ловить і `aria-label`, `label`, `placeholder`) з винятками для службових атрибутів. На потім: вкладки на Mantine `NavLink`/`UnstyledButton` замість голого `NavLink` react-router, `.catch` на `i18n.init`.
 
-- [ ] **00-15. PWA**
+- [x] **00-15. PWA**
   - Що: vite-plugin-pwa (`registerType: 'autoUpdate'`, `devOptions.enabled: true`), маніфест (name і short_name GoToTalk, `lang: 'uk'`, description, `theme_color` = `<meta name="theme-color">`, `display: standalone`), іконки 192, 512 і maskable із SVG через `@vite-pwa/assets-generator`, `preview.proxy` для `/api`.
   - context7: vite-plugin-pwa.
   - Перевірка: `pnpm --filter web build` створює `sw.js` і `manifest.webmanifest`; Chrome DevTools → Application → Manifest без помилок, застосунок можна встановити на десктопі.
+  - Відхилення: Chrome немає, перевірено в Edge через `playwright-core` (маніфест парситься, SW активний і контролює сторінку, `/api/*` не кешується); іконки згенеровано CLI (`generate-pwa-assets`) у `public/` і підключено вручну (не опцією `pwaAssets`); `theme-color` статичний у index.html, збіг із маніфестом і темою Mantine перевіряє тест; `dev-dist` додано в `.gitignore`, `.prettierignore`, ESLint; `preview.proxy` ділить `apiProxy` із `server.proxy`, порт preview 4173. Тести PWA теж позначені `[TC-00-03]`. Ручна перевірка встановлення на Android – 00-18.
 
 - [ ] **00-16. Кореневий pnpm dev і e2e**
   - Що: `pnpm dev` паралельно запускає shared (watch), api і web; Playwright (`@playwright/test`, проєкт з мобільним в'юпортом 360 px, `webServer`), smoke e2e `[TC-00-02]`: layout українською і `/api/health` через проксі повертає ok.

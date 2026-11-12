@@ -11,5 +11,12 @@
     "isolatedModules": true,
     "resolveJsonModule": true
   },
-  "include": ["src", "vite.config.ts", "vitest.setup.ts"]
+  "include": [
+    "src",
+    "vite.config.ts",
+    "pwa-config.ts",
+    "pwa-config.test.ts",
+    "pwa-assets.config.ts",
+    "vitest.setup.ts"
+  ]
 }

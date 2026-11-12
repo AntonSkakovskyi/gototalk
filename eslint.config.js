@@ -9,6 +9,7 @@ export default defineConfig(
   {
     ignores: [
       '**/dist/**',
+      '**/dev-dist/**',
       '**/coverage/**',
       '**/.drizzle-pull/**',
       '**/node_modules/**',
