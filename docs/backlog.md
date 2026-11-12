@@ -36,3 +36,4 @@
 | Ручна перевірка `[TC-00-03]`: відкриття й встановлення PWA на Android (емулятор, `adb reverse`) | 00-15, 00-18 | Антон |
 | Мігровані кириличні коментарі в `db/migrations/0000`–`0002`: не редагуємо, нові міграції англійською | Відкладене після PR #1 | не робимо |
 | Переліки провайдерів `fake/deepgram` і `fake/gemini` дубльовані в `packages/shared/src/auth.ts` та `apps/api/src/config/env.schema.ts`: винести `SttProviderSchema`/`LlmProviderSchema` у shared | рев'ю 01-04 | будь-яка |
+| Register is not atomic: if session start fails after the user insert, a retry gives 409 EMAIL_TAKEN; wrap user and token insert in one transaction | рев'ю 01-08 | будь-яка |

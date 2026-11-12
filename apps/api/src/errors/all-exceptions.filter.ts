@@ -7,6 +7,7 @@ import type {
 } from '@nestjs/common';
 import type { HttpAdapterHost } from '@nestjs/core';
 import type { ErrorResponse } from '@gototalk/shared';
+import { DrizzleQueryError } from 'drizzle-orm';
 import { ZodError } from 'zod';
 import { codeFromStatus } from './error-code.js';
 
@@ -49,6 +50,20 @@ function zodMessage(error: ZodError): string {
     return `${path}: ${issue.code}`;
   });
   return `Validation failed: ${problems.join('; ')}`;
+}
+
+// DrizzleQueryError embeds the SQL text and bound params (emails, hashes) in its message
+function sanitizeForLog(exception: unknown): unknown {
+  if (!(exception instanceof DrizzleQueryError)) return exception;
+  const cause = exception.cause;
+  if (!(cause instanceof Error)) return new Error('Database query failed');
+  // Only driver fields that cannot echo row values: pg's `detail` and `where` can
+  const safe = new Error(cause.message);
+  safe.name = cause.name;
+  if (cause.stack) safe.stack = cause.stack;
+  const { code } = cause as { code?: unknown };
+  if (typeof code === 'string') Object.assign(safe, { code });
+  return safe;
 }
 
 @Catch()
@@ -141,7 +156,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     // The stack goes only to the log, never to the response
     // The trailing context name is required: nestjs-pino treats the last extra argument as the context, not the message
     this.logger.error(
-      { err: exception, ...request },
+      { err: sanitizeForLog(exception), ...request },
       'Unhandled exception',
       AllExceptionsFilter.name,
     );

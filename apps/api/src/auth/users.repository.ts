@@ -1,0 +1,79 @@
+import { Inject, Injectable } from '@nestjs/common';
+import { eq } from 'drizzle-orm';
+import { DRIZZLE } from '../db/db.tokens.js';
+import type { Database } from '../db/db.tokens.js';
+import { pgTimestampToDate } from '../db/pg-timestamp.js';
+import { users } from '../db/schema.js';
+
+const UNIQUE_VIOLATION = '23505';
+
+export interface UserRecord {
+  id: string;
+  email: string;
+  passwordHash: string;
+  consentAt: Date | null;
+}
+
+export class EmailTakenError extends Error {
+  constructor() {
+    super('A user with this email already exists');
+    this.name = 'EmailTakenError';
+  }
+}
+
+type UserRow = typeof users.$inferSelect;
+
+function toRecord(row: UserRow): UserRecord {
+  return {
+    id: row.id,
+    email: row.email,
+    passwordHash: row.passwordHash,
+    consentAt: row.consentAt === null ? null : pgTimestampToDate(row.consentAt),
+  };
+}
+
+// Drizzle wraps driver errors in DrizzleQueryError with the original on `cause`
+function isUniqueViolation(error: unknown): boolean {
+  for (let current = error; current instanceof Error;) {
+    if ((current as { code?: unknown }).code === UNIQUE_VIOLATION) return true;
+    current = current.cause;
+  }
+  return false;
+}
+
+@Injectable()
+export class UsersRepository {
+  constructor(@Inject(DRIZZLE) private readonly db: Database) {}
+
+  async findByEmail(email: string): Promise<UserRecord | null> {
+    const [row] = await this.db
+      .select()
+      .from(users)
+      .where(eq(users.email, email))
+      .limit(1);
+    return row ? toRecord(row) : null;
+  }
+
+  async findById(id: string): Promise<UserRecord | null> {
+    const [row] = await this.db
+      .select()
+      .from(users)
+      .where(eq(users.id, id))
+      .limit(1);
+    return row ? toRecord(row) : null;
+  }
+
+  async create(input: {
+    email: string;
+    passwordHash: string;
+  }): Promise<UserRecord> {
+    try {
+      const [row] = await this.db.insert(users).values(input).returning();
+      if (!row) throw new Error('Insert returned no row');
+      return toRecord(row);
+    } catch (error) {
+      if (isUniqueViolation(error)) throw new EmailTakenError();
+      throw error;
+    }
+  }
+}

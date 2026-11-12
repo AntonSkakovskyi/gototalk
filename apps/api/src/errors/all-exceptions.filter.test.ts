@@ -10,6 +10,7 @@ import type { ArgumentsHost, LoggerService } from '@nestjs/common';
 import type { HttpAdapterHost } from '@nestjs/core';
 import { ErrorResponseSchema } from '@gototalk/shared';
 import { describe, expect, it, vi } from 'vitest';
+import { DrizzleQueryError } from 'drizzle-orm';
 import { z } from 'zod';
 import { AllExceptionsFilter } from './all-exceptions.filter.js';
 import { codeFromStatus } from './error-code.js';
@@ -139,6 +140,50 @@ describe('AllExceptionsFilter', () => {
       'Unhandled exception',
       'AllExceptionsFilter',
     ]);
+  });
+
+  it('[TC-00-07] a failed query is logged without its text and params, keeping the driver cause', () => {
+    const { run, logger } = setup();
+    const driverError = Object.assign(new Error('connection terminated'), {
+      code: '57P01',
+      detail: 'Key (email)=(user@example.com) is involved',
+    });
+    const failure = new DrizzleQueryError(
+      'insert into users (email, password_hash) values ($1, $2)',
+      ['user@example.com', '$argon2id$v=19$secret-hash'],
+      driverError,
+    );
+
+    const { status, body } = run(failure);
+
+    expect(status).toBe(500);
+    expect(ErrorResponseSchema.parse(body).error.code).toBe('INTERNAL_ERROR');
+    const [{ err }] = (logger.error as ReturnType<typeof vi.fn>).mock
+      .calls[0] as [{ err: Error & { code?: string } }];
+    expect(err).toBeInstanceOf(Error);
+    expect(err.message).toBe('connection terminated');
+    expect(err.code).toBe('57P01');
+    const dumped = [
+      err.message,
+      err.stack,
+      ...Object.getOwnPropertyNames(err).map((key) =>
+        JSON.stringify((err as unknown as Record<string, unknown>)[key]),
+      ),
+    ].join(' ');
+    for (const secret of ['user@example.com', 'argon2id', 'insert into']) {
+      expect(dumped).not.toContain(secret);
+    }
+  });
+
+  it('[TC-00-07] a failed query without a cause is logged with a generic message', () => {
+    const { run, logger } = setup();
+
+    run(new DrizzleQueryError('select 1 where email = $1', ['a@b.c']));
+
+    const [{ err }] = (logger.error as ReturnType<typeof vi.fn>).mock
+      .calls[0] as [{ err: Error }];
+    expect(err.message).toBe('Database query failed');
+    expect(err.stack).not.toContain('a@b.c');
   });
 
   it('[TC-00-07] non-Error values (string, null) also give 500 INTERNAL_ERROR', () => {
