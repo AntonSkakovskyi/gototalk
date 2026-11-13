@@ -1,13 +1,9 @@
 import 'reflect-metadata';
-import {
-  BadGatewayException,
-  Logger,
-  ServiceUnavailableException,
-} from '@nestjs/common';
-import { ERROR_CODES } from '@gototalk/shared';
+import { Logger } from '@nestjs/common';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { FakeLanguageModel } from '../../integrations/language-model/fake-language-model.js';
 import { LanguageModelUnavailableError } from '../../integrations/language-model/language-model.errors.js';
+import { LanguageModelInvalidResponseError } from '../../integrations/language-model/validated-call.js';
 import type {
   LanguageModelPort,
   NextTurnInput,
@@ -68,33 +64,24 @@ describe('NextTurnService.nextTurn', () => {
     expect(JSON.stringify(warn.mock.calls)).not.toContain(SENTINEL);
   });
 
-  it('[TC-04-08] answers 502 LANGUAGE_MODEL_INVALID_RESPONSE after two invalid responses', async () => {
+  it('[TC-04-08] throws LanguageModelInvalidResponseError after two invalid responses', async () => {
     const nextTurn = vi.fn().mockResolvedValue({ question: '' });
     silenceWarnings();
 
     const error = await failureOf(serviceWith({ nextTurn }).nextTurn(INPUT));
 
-    expect(error).toBeInstanceOf(BadGatewayException);
-    expect((error as BadGatewayException).getResponse()).toMatchObject({
-      code: ERROR_CODES.LANGUAGE_MODEL_INVALID_RESPONSE,
-    });
+    expect(error).toBeInstanceOf(LanguageModelInvalidResponseError);
     expect(nextTurn).toHaveBeenCalledTimes(2);
   });
 
-  it('[TC-04-08] answers 503 LANGUAGE_MODEL_UNAVAILABLE without a retry', async () => {
-    const nextTurn = vi
-      .fn()
-      .mockRejectedValue(new LanguageModelUnavailableError());
-    const warn = silenceWarnings();
+  it('[TC-04-08] propagates LanguageModelUnavailableError without a retry', async () => {
+    const unavailable = new LanguageModelUnavailableError();
+    const nextTurn = vi.fn().mockRejectedValue(unavailable);
 
     const error = await failureOf(serviceWith({ nextTurn }).nextTurn(INPUT));
 
-    expect(error).toBeInstanceOf(ServiceUnavailableException);
-    expect((error as ServiceUnavailableException).getResponse()).toMatchObject({
-      code: ERROR_CODES.LANGUAGE_MODEL_UNAVAILABLE,
-    });
+    expect(error).toBe(unavailable);
     expect(nextTurn).toHaveBeenCalledTimes(1);
-    expect(warn).toHaveBeenCalledWith('Language model unavailable');
   });
 
   it('[TC-04-08] propagates other errors untouched', async () => {

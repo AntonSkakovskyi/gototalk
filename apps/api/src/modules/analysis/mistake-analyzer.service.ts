@@ -26,6 +26,7 @@ export class MistakeAnalyzerService {
     private readonly languageModel: LanguageModelPort,
   ) {}
 
+  /** `text` is text_verbatim: mistake positions are offsets in it. */
   async analyze(text: string): Promise<AnalysisOutcome> {
     let promptVersion = '';
     let model = '';
@@ -55,10 +56,7 @@ export class MistakeAnalyzerService {
     const { mistakes, dropped } = alignMistakes(text, parsedMistakes.items);
     const invalid = parsedMistakes.invalid + parsedBetter.invalid;
     if (invalid > 0 || dropped > 0) {
-      this.logger.warn(
-        { invalid, unaligned: dropped },
-        'Analysis items dropped',
-      );
+      this.logger.warn({ invalid, dropped }, 'Analysis items dropped');
     }
     return {
       status: 'done',

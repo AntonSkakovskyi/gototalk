@@ -23,8 +23,10 @@ function rawMistake(overrides: Record<string, unknown> = {}) {
   };
 }
 
-function portWith(analyzeUtterance: unknown): LanguageModelPort {
-  return { analyzeUtterance } as unknown as LanguageModelPort;
+function portWith(
+  analyzeUtterance: LanguageModelPort['analyzeUtterance'],
+): LanguageModelPort {
+  return Object.assign(new FakeLanguageModel(), { analyzeUtterance });
 }
 
 function setup(...outputs: unknown[]) {
@@ -74,7 +76,7 @@ describe('MistakeAnalyzerService.analyze', () => {
     if (outcome.status !== 'done') throw new Error('expected done');
     expect(outcome.mistakes).toHaveLength(1);
     expect(warn).toHaveBeenCalledWith(
-      { invalid: 1, unaligned: 0 },
+      { invalid: 1, dropped: 0 },
       expect.any(String),
     );
   });
@@ -108,7 +110,7 @@ describe('MistakeAnalyzerService.analyze', () => {
     if (outcome.status !== 'done') throw new Error('expected done');
     expect(outcome.mistakes).toEqual([]);
     expect(warn).toHaveBeenCalledWith(
-      { invalid: 0, unaligned: 1 },
+      { invalid: 0, dropped: 1 },
       expect.any(String),
     );
   });
@@ -172,7 +174,7 @@ describe('MistakeAnalyzerService.analyze', () => {
     if (outcome.status !== 'done') throw new Error('expected done');
     expect(outcome.better).toEqual([better(1), better(2)]);
     expect(warn).toHaveBeenCalledWith(
-      { invalid: 1, unaligned: 0 },
+      { invalid: 1, dropped: 0 },
       expect.any(String),
     );
   });
