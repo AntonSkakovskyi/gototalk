@@ -1,0 +1,9 @@
+// Browsers give a fieldset a default inline margin.
+.root {
+  margin: 0;
+}
+
+.legend {
+  font-size: var(--mantine-font-size-lg);
+  font-weight: 700;
+}

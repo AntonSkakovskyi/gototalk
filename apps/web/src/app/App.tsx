@@ -7,6 +7,7 @@ import {
   RequireConsent,
   RequireNoConsent,
 } from '@/app/router/guards/guards';
+import { OnboardingPage } from '@/pages/onboarding/OnboardingPage';
 import { LoginPage } from '@/pages/login/LoginPage';
 import { RegisterPage } from '@/pages/register/RegisterPage';
 import { HistoryPage } from '@/pages/history/HistoryPage';
@@ -26,6 +27,7 @@ export function App() {
           <Route path="consent" element={<ConsentPage />} />
         </Route>
         <Route element={<RequireConsent />}>
+          <Route path="onboarding" element={<OnboardingPage />} />
           <Route element={<AppLayout />}>
             <Route index element={<SessionPage />} />
             <Route path="words" element={<WordsPage />} />

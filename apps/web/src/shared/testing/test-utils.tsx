@@ -4,7 +4,7 @@ import type { Me } from '@gototalk/shared';
 import { render, type RenderResult } from '@testing-library/react';
 import type { ReactElement } from 'react';
 import { I18nextProvider } from 'react-i18next';
-import { MemoryRouter } from 'react-router';
+import { MemoryRouter, type InitialEntry } from 'react-router';
 import { createTestQueryClient } from '@/shared/testing/query-wrapper';
 import { clearSession, setSession } from '@/shared/session/session-store';
 import i18n from '@/shared/i18n/index';
@@ -12,7 +12,7 @@ import { theme } from '@/app/theme/theme';
 
 interface RenderOptions {
   queryClient?: QueryClient;
-  route?: string;
+  route?: InitialEntry;
   session?: { user: Me; accessToken: string } | 'anonymous';
 }
 

@@ -1,0 +1,9 @@
+.goal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mantine-spacing-xs);
+}
+
+.remove {
+  align-self: flex-end;
+}

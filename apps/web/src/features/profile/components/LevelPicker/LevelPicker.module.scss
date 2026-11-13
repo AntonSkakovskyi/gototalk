@@ -1,0 +1,11 @@
+.card {
+  width: 100%;
+  padding: var(--mantine-spacing-md);
+  text-align: start;
+}
+
+.content {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--mantine-spacing-md);
+}

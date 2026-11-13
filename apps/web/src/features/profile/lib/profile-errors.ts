@@ -1,7 +1,7 @@
 import { ERROR_CODES, MAX_ACTIVE_GOALS } from '@gototalk/shared';
 import { ApiError } from '@/shared/api/http';
 
-interface ProfileErrorMessage {
+export interface ProfileErrorMessage {
   key: string;
   values?: { max: number };
 }
