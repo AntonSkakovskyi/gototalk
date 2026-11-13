@@ -4,6 +4,7 @@ import uk from '@/shared/i18n/uk.json';
 import type { RenderOptions } from '@/shared/testing/test-utils';
 import { mockApi } from '@/shared/testing/mock-api';
 import {
+  EMPTY_SESSIONS_ROUTE,
   TEST_PROFILE,
   TEST_USER,
   authResponse,
@@ -41,6 +42,7 @@ async function logIn() {
 function stubApi(loggedIn: typeof TEST_USER) {
   mockApi({
     'GET /api/profile': jsonResponse(TEST_PROFILE),
+    ...EMPTY_SESSIONS_ROUTE,
     'POST /api/auth/login': jsonResponse(authResponse('token-1', loggedIn)),
     'GET /api/me/consent': jsonResponse({
       consentAt: null,

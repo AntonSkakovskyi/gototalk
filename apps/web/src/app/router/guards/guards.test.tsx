@@ -3,6 +3,7 @@ import { App } from '@/app/App';
 import uk from '@/shared/i18n/uk.json';
 import { mockApi } from '@/shared/testing/mock-api';
 import {
+  EMPTY_SESSIONS_ROUTE,
   TEST_PROFILE,
   TEST_USER,
   jsonResponse,
@@ -17,7 +18,10 @@ const WITH_CONSENT = {
 const WITHOUT_CONSENT = { accessToken: 'access-1', user: TEST_USER };
 
 beforeEach(() => {
-  mockApi({ 'GET /api/profile': jsonResponse(TEST_PROFILE) });
+  mockApi({
+    'GET /api/profile': jsonResponse(TEST_PROFILE),
+    ...EMPTY_SESSIONS_ROUTE,
+  });
 });
 
 afterEach(() => {

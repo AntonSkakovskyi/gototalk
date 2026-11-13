@@ -80,6 +80,10 @@ export const TOP_FIVE_LEARNER_MODEL: LearnerModel = {
   vocabulary: { new: 12, partial: 5, passive: 3, active: 1 },
 };
 
+export const EMPTY_SESSIONS_ROUTE = {
+  'GET /api/sessions': jsonResponse([]),
+};
+
 export const EMPTY_LEARNER_MODEL: LearnerModel = {
   weakAreas: [],
   vocabulary: { new: 0, partial: 0, passive: 0, active: 0 },

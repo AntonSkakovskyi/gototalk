@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import uk from '@/shared/i18n/uk.json';
 import { mockApi } from '@/shared/testing/mock-api';
 import {
+  EMPTY_SESSIONS_ROUTE,
   TEST_PROFILE,
   errorResponse,
   jsonResponse,
@@ -117,6 +118,7 @@ export function stubNewUserApi() {
       return jsonResponse(TEST_PROFILE);
     },
     {
+      ...EMPTY_SESSIONS_ROUTE,
       'GET /api/profile': () =>
         saved
           ? jsonResponse(TEST_PROFILE)
