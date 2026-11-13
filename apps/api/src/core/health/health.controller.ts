@@ -6,7 +6,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import type { HealthResponse } from '@gototalk/shared';
-import { Public } from '../auth/public.decorator.js';
+import { Public } from '../../common/public.decorator.js';
 import { HealthService } from './health.service.js';
 
 @Public()

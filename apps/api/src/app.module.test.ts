@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import { describe, expect, it } from 'vitest';
-import type { Env } from './config/env.schema.js';
+import type { Env } from './core/config/env.schema.js';
 import { AppModule } from './app.module.js';
 
 const env = {

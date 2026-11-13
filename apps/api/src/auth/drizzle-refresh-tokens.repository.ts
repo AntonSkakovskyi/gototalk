@@ -1,9 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { and, eq, gt, isNull } from 'drizzle-orm';
-import { DRIZZLE } from '../db/db.tokens.js';
-import type { Database } from '../db/db.tokens.js';
-import { pgTimestampToDate } from '../db/pg-timestamp.js';
-import { refreshTokens } from '../db/schema.js';
+import { DRIZZLE } from '../core/db/db.tokens.js';
+import type { Database } from '../core/db/db.tokens.js';
+import { pgTimestampToDate } from '../core/db/pg-timestamp.js';
+import { refreshTokens } from '../core/db/schema.js';
 import type {
   NewRefreshToken,
   RefreshTokenRecord,

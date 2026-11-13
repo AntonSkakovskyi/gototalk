@@ -11,7 +11,7 @@ import {
   it,
 } from 'vitest';
 import { DrizzleRefreshTokensRepository } from '../src/auth/drizzle-refresh-tokens.repository.js';
-import { dbSchema } from '../src/db/db.tokens.js';
+import { dbSchema } from '../src/core/db/db.tokens.js';
 import { resetUserData } from './support/test-db.js';
 
 const NOW = new Date('2026-11-13T10:00:00.000Z');

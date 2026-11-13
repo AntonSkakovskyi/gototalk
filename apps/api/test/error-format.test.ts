@@ -10,7 +10,7 @@ import { ErrorResponseSchema } from '@gototalk/shared';
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { z } from 'zod';
-import { Public } from '../src/auth/public.decorator.js';
+import { Public } from '../src/common/public.decorator.js';
 import { createTestApp } from './support/test-app.js';
 
 // Test-only controller: production code has no routes that throw these errors.

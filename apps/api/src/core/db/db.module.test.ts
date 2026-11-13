@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import { Test } from '@nestjs/testing';
 import type { Pool } from 'pg';
 import { describe, expect, it } from 'vitest';
-import { AppModule } from '../app.module.js';
+import { AppModule } from '../../app.module.js';
 import { DRIZZLE, PG_POOL } from './db.tokens.js';
 import type { Database } from './db.tokens.js';
 

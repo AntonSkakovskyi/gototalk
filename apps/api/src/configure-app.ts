@@ -3,7 +3,7 @@ import { HttpAdapterHost } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
 import { Logger } from 'nestjs-pino';
-import { AllExceptionsFilter } from './errors/all-exceptions.filter.js';
+import { AllExceptionsFilter } from './core/errors/all-exceptions.filter.js';
 
 export const GLOBAL_PREFIX = 'api';
 

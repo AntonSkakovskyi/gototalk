@@ -9,7 +9,7 @@ requireEnv('DATABASE_URL');
 
 const apiDir = fileURLToPath(new URL('..', import.meta.url));
 const pullDir = join(apiDir, '.drizzle-pull');
-const targetDir = join(apiDir, 'src', 'db');
+const targetDir = join(apiDir, 'src', 'core', 'db');
 const drizzleKitBin = join(apiDir, 'node_modules', 'drizzle-kit', 'bin.cjs');
 const prettierBin = join(
   apiDir,
@@ -49,5 +49,5 @@ for (const file of files) {
 rmSync(pullDir, { recursive: true, force: true });
 
 // Prettier keeps the output stable, so a repeated pull produces no diff.
-run(prettierBin, ['--write', ...files.map((f) => `src/db/${f}`)]);
-console.log('Schema updated: apps/api/src/db/schema.ts, relations.ts');
+run(prettierBin, ['--write', ...files.map((f) => `src/core/db/${f}`)]);
+console.log('Schema updated: apps/api/src/core/db/schema.ts, relations.ts');

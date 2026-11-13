@@ -45,7 +45,7 @@
 
 ## Частина 2: api (у тій самій гілці після частини 1)
 
-- [ ] **A1. `core/` і `common/public.decorator.ts`**
+- [x] **A1. `core/` і `common/public.decorator.ts`**
   - `config/`, `db/` (з `pg-timestamp`, `schema`, `relations`), `logger/`, `errors/`, `health/` → `core/`; `auth/public.decorator.ts` → `common/`.
   - `app-config.module.ts`: `'../../../../.env'` → `'../../../../../.env'`.
   - `drizzle.config.ts` (`./src/core/db/schema.ts`), коментар `drizzle.pull.config.ts`, `scripts/db-pull.mjs` (targetDir, шлях Prettier, лог). Імпорти в `apps/api/test/*`.

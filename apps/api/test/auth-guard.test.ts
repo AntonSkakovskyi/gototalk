@@ -7,7 +7,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { z } from 'zod';
 import { CurrentUser } from '../src/auth/current-user.decorator.js';
 import type { AuthenticatedUser } from '../src/auth/current-user.decorator.js';
-import { Public } from '../src/auth/public.decorator.js';
+import { Public } from '../src/common/public.decorator.js';
 import { ZodBodyPipe } from '../src/common/zod-body.pipe.js';
 import { buildEnv, createTestApp } from './support/test-app.js';
 

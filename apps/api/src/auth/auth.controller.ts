@@ -24,7 +24,7 @@ import {
   setRefreshCookie,
 } from './refresh-cookie.js';
 import type { CookieRequest, CookieResponse } from './refresh-cookie.js';
-import { Public } from './public.decorator.js';
+import { Public } from '../common/public.decorator.js';
 
 const REGISTER_BODY: ApiBodyOptions = {
   schema: {

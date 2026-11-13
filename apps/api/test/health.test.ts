@@ -2,7 +2,7 @@ import type { INestApplication } from '@nestjs/common';
 import { ErrorResponseSchema, HealthResponseSchema } from '@gototalk/shared';
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { DRIZZLE } from '../src/db/db.tokens.js';
+import { DRIZZLE } from '../src/core/db/db.tokens.js';
 import { createTestApp } from './support/test-app.js';
 
 describe('GET /api/health', () => {

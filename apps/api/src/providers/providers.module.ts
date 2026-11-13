@@ -1,6 +1,6 @@
 import { Global, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import type { Env } from '../config/env.schema.js';
+import type { Env } from '../core/config/env.schema.js';
 import { FakeLanguageModel } from '../adapters/fake/fake-language-model.js';
 import { FakeSpeechRecognition } from '../adapters/fake/fake-speech-recognition.js';
 import { LANGUAGE_MODEL_PORT } from '../ports/language-model.port.js';

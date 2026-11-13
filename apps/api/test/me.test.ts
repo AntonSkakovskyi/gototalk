@@ -12,7 +12,7 @@ import type pg from 'pg';
 import request from 'supertest';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { RequiresConsent } from '../src/auth/requires-consent.decorator.js';
-import { PG_POOL } from '../src/db/db.tokens.js';
+import { PG_POOL } from '../src/core/db/db.tokens.js';
 import { createTestApp } from './support/test-app.js';
 import { resetUserData } from './support/test-db.js';
 

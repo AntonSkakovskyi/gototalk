@@ -3,7 +3,7 @@ import type { CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import type { AuthenticatedRequest } from './current-user.decorator.js';
-import { IS_PUBLIC_KEY } from './public.decorator.js';
+import { IS_PUBLIC_KEY } from '../common/public.decorator.js';
 
 const BEARER_PREFIX = 'Bearer ';
 
