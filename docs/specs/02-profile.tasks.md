@@ -70,7 +70,8 @@
 
 ## Задачі
 
-- [ ] **02-01. Контракти shared.** `profile.ts` + тест, `index.ts`, `ERROR_CODES`; `WORD_STATES` переноситься з api (backlog), `learner-model.types.ts` імпортує з shared. `[TC-02-01]`.
+- [x] **02-01. Контракти shared.** `profile.ts` + тест, `index.ts`, `ERROR_CODES`; `WORD_STATES` переноситься з api (backlog), `learner-model.types.ts` імпортує з shared. `[TC-02-01]`.
+  - Відхилення: додано `GoalStatusSchema`, `WordStateSchema`, тип `ScenePreset` (type guard `isScenePreset`); у `auth.test.ts` тест `ERROR_CODES` розширено новими кодами. Низькі зауваження рев'ю (тести `GoalSchema`/`ProfileSchema`, `MAX_ACTIVE_GOALS`, відсутній ключ у `vocabulary`) у backlog.
 - [ ] **02-02. Спільні хелпери api.** `core/db/pg-errors.ts` (+тест), `users.repository.ts`, `requireUserId`, `me.controller.ts`. Поведінка auth не змінюється.
 - [ ] **02-03. API профілю.** `ProfilesRepository` (upsert), `ProfileService`, `ProfileController`, модуль, `test/profile.test.ts`. `[TC-02-01]`, `[TC-02-02]`.
 - [ ] **02-04. API цілей.** `GoalsRepository` (транзакція з блокуванням `users`), `GoalsService`, `GoalsController`, `test/goals.test.ts` (ізоляція користувачів, паралельні POST, 401 для видаленого). Закриває backlog «сервіси працюють з існуючим `users`». `[TC-02-01]`, `[TC-02-02]`.

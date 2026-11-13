@@ -1,8 +1,4 @@
-import type { AnalysisResult, MistakeCategoryCode } from '@gototalk/shared';
-
-export const WORD_STATES = ['new', 'partial', 'passive', 'active'] as const;
-
-export type WordState = (typeof WORD_STATES)[number];
+import type { AnalysisResult, MistakeCategoryCode, WordState } from '@gototalk/shared';
 
 export interface WeakArea {
   category: MistakeCategoryCode;
