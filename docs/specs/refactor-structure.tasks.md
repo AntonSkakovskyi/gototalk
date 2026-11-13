@@ -28,7 +28,7 @@
   - `auth/auth-api.ts` (+test) → `features/auth/api/`; `auth-form.ts` → `features/auth/lib/`; `AuthLayout.*` → `features/auth/components/AuthLayout/`; `AccountSection.*` (tsx, scss, test) → `components/AccountSection/`; `DeleteAccountDialog.*` → `components/DeleteAccountDialog/`.
   - Коміт: `refactor(web): group auth feature api, lib and components`
 
-- [ ] **W5. `pages/*`**
+- [x] **W5. `pages/*`**
   - `auth/LoginPage.*` → `pages/login/`; `RegisterPage.*` → `pages/register/`; `ConsentPage.*` (tsx, scss, test) → `pages/consent/`; `pages/SessionPage.tsx` → `pages/session/`, `WordsPage` → `pages/words/`, `HistoryPage` → `pages/history/`, `ProfilePage` → `pages/profile/`.
   - Коміт: `refactor(web): one folder per route page`
 
