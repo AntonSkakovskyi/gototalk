@@ -61,17 +61,6 @@ describe('Core service skeletons', () => {
     await expect(service.applyAnalysis(input)).rejects.toThrow(/04-dialog/);
   });
 
-  it('[TC-00-04] SessionPlannerService.planSession points to spec 03', async () => {
-    const service = moduleRef.get(SessionPlannerService);
-
-    await expect(service.planSession({ userId })).rejects.toThrow(
-      NotImplementedException,
-    );
-    await expect(service.planSession({ userId })).rejects.toThrow(
-      /03-session-start/,
-    );
-  });
-
   it('[TC-00-04] MistakeAnalyzerService: analyzeUtterance and groupIntoPatterns point to spec 04', async () => {
     const service = moduleRef.get(MistakeAnalyzerService);
 

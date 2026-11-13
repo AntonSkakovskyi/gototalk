@@ -1,10 +1,9 @@
 import type { z } from 'zod';
 
-const LOGGER_CONTEXT = 'LanguageModel';
 const MAX_ATTEMPTS = 2;
 
-export interface ValidationLogger {
-  warn(context: object, message: string, loggerName: string): void;
+interface ValidationLogger {
+  warn(context: object, message: string): void;
 }
 
 export class LanguageModelInvalidResponseError extends Error {
@@ -30,7 +29,6 @@ export async function requestValidated<T>(
     logger.warn(
       { attempt, issues },
       'Language model response failed validation',
-      LOGGER_CONTEXT,
     );
   }
   throw new LanguageModelInvalidResponseError();
