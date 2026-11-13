@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { App } from '@/app/App';
 import uk from '@/shared/i18n/uk.json';
 import {
+  TEST_PROFILE,
   TEST_USER,
   authResponse,
   emptyResponse,
@@ -108,6 +109,7 @@ describe('ConsentPage', () => {
     fetchMock.mockResolvedValueOnce(
       jsonResponse({ ...TEST_USER, consentAt: CONSENT_DATE }),
     );
+    fetchMock.mockResolvedValueOnce(jsonResponse(TEST_PROFILE));
     const user = userEvent.setup();
     renderConsent();
     await screen.findAllByRole('listitem');

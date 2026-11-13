@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { AuthLayout } from '@/features/auth/components/AuthLayout/AuthLayout';
 import { OnboardingWizard } from '@/features/profile/components/OnboardingWizard/OnboardingWizard';
-import { onboardingRedirectTarget } from '@/features/profile/lib/onboarding-redirect';
+import { safeRedirectTarget } from '@/shared/router/safe-path';
 
 export function OnboardingPage() {
   const { t } = useTranslation();
@@ -13,7 +13,7 @@ export function OnboardingPage() {
     <AuthLayout title={t('profile.onboarding.title')}>
       <OnboardingWizard
         onCompleted={() =>
-          void navigate(onboardingRedirectTarget(state), { replace: true })
+          void navigate(safeRedirectTarget(state), { replace: true })
         }
       />
     </AuthLayout>

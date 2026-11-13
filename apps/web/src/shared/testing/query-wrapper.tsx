@@ -3,7 +3,7 @@ import type { ReactElement, ReactNode } from 'react';
 
 export function createTestQueryClient(): QueryClient {
   return new QueryClient({
-    defaultOptions: { queries: { retry: false } },
+    defaultOptions: { queries: { retry: false, retryDelay: 0 } },
   });
 }
 

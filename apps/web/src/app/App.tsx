@@ -7,6 +7,10 @@ import {
   RequireConsent,
   RequireNoConsent,
 } from '@/app/router/guards/guards';
+import {
+  RequireNoProfile,
+  RequireProfile,
+} from '@/app/router/guards/profile-guards';
 import { OnboardingPage } from '@/pages/onboarding/OnboardingPage';
 import { LoginPage } from '@/pages/login/LoginPage';
 import { RegisterPage } from '@/pages/register/RegisterPage';
@@ -27,13 +31,17 @@ export function App() {
           <Route path="consent" element={<ConsentPage />} />
         </Route>
         <Route element={<RequireConsent />}>
-          <Route path="onboarding" element={<OnboardingPage />} />
-          <Route element={<AppLayout />}>
-            <Route index element={<SessionPage />} />
-            <Route path="words" element={<WordsPage />} />
-            <Route path="history" element={<HistoryPage />} />
-            <Route path="profile" element={<ProfilePage />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
+          <Route element={<RequireNoProfile />}>
+            <Route path="onboarding" element={<OnboardingPage />} />
+          </Route>
+          <Route element={<RequireProfile />}>
+            <Route element={<AppLayout />}>
+              <Route index element={<SessionPage />} />
+              <Route path="words" element={<WordsPage />} />
+              <Route path="history" element={<HistoryPage />} />
+              <Route path="profile" element={<ProfilePage />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Route>
           </Route>
         </Route>
       </Route>

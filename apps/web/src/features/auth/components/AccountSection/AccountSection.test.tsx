@@ -45,7 +45,9 @@ function renderProfile() {
 }
 
 async function openDeleteDialog(user: ReturnType<typeof userEvent.setup>) {
-  await user.click(screen.getByRole('button', { name: account.delete.open }));
+  await user.click(
+    await screen.findByRole('button', { name: account.delete.open }),
+  );
   return screen.findByRole('dialog', { name: account.delete.title });
 }
 
@@ -66,11 +68,14 @@ afterEach(() => {
 });
 
 describe('AccountSection', () => {
-  it('[TC-01-03] keeps the page heading and shows the email with the account actions', () => {
+  it('[TC-01-03] keeps the page heading and shows the email with the account actions', async () => {
     renderProfile();
 
     expect(
-      screen.getByRole('heading', { level: 1, name: uk.pages.profile.title }),
+      await screen.findByRole('heading', {
+        level: 1,
+        name: uk.pages.profile.title,
+      }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole('heading', { level: 2, name: account.title }),
@@ -89,7 +94,9 @@ describe('AccountSection', () => {
     const user = userEvent.setup();
     renderProfile();
 
-    await user.click(screen.getByRole('button', { name: account.logout }));
+    await user.click(
+      await screen.findByRole('button', { name: account.logout }),
+    );
 
     expect(await loginHeading()).toBeInTheDocument();
     const [url, init] = fetchMock.mock.calls[0]!;
@@ -103,7 +110,9 @@ describe('AccountSection', () => {
     const user = userEvent.setup();
     renderProfile();
 
-    await user.click(screen.getByRole('button', { name: account.logout }));
+    await user.click(
+      await screen.findByRole('button', { name: account.logout }),
+    );
 
     expect(await loginHeading()).toBeInTheDocument();
     expect(getSession().status).toBe('anonymous');

@@ -10,7 +10,7 @@ import { clearSession, setSession } from '@/shared/session/session-store';
 import i18n from '@/shared/i18n/index';
 import { theme } from '@/app/theme/theme';
 
-interface RenderOptions {
+export interface RenderOptions {
   queryClient?: QueryClient;
   route?: InitialEntry;
   session?: { user: Me; accessToken: string } | 'anonymous';

@@ -3,7 +3,12 @@ import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import uk from '@/shared/i18n/uk.json';
 import { mockApi } from '@/shared/testing/mock-api';
-import { jsonResponse, testGoal } from '@/shared/testing/test-fixtures';
+import {
+  TEST_PROFILE,
+  errorResponse,
+  jsonResponse,
+  testGoal,
+} from '@/shared/testing/test-fixtures';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 import { OnboardingWizard } from './OnboardingWizard';
 
@@ -78,7 +83,10 @@ export async function reachGoals(user: User) {
   await user.click(button(text.actions.next));
 }
 
-export function stubGoalsApi(profileReply: () => Response | Promise<Response>) {
+export function stubGoalsApi(
+  profileReply: () => Response | Promise<Response>,
+  extraRoutes: Parameters<typeof mockApi>[0] = {},
+) {
   const goals: Goal[] = [];
   return mockApi({
     'GET /api/goals': () => jsonResponse(goals),
@@ -88,5 +96,31 @@ export function stubGoalsApi(profileReply: () => Response | Promise<Response>) {
       return jsonResponse(goals.at(-1), 201);
     },
     'PUT /api/profile': profileReply,
+    ...extraRoutes,
   });
+}
+
+export async function completeOnboarding(user: User) {
+  await chooseLevel(user, 'B1');
+  await user.click(button(text.actions.next));
+  await user.click(chip(presets.travel));
+  await user.click(button(text.actions.next));
+  await user.type(goalField(1), 'Speak fluently');
+  await user.click(button(text.actions.finish));
+}
+
+export function stubNewUserApi() {
+  let saved = false;
+  return stubGoalsApi(
+    () => {
+      saved = true;
+      return jsonResponse(TEST_PROFILE);
+    },
+    {
+      'GET /api/profile': () =>
+        saved
+          ? jsonResponse(TEST_PROFILE)
+          : errorResponse(404, 'PROFILE_NOT_FOUND'),
+    },
+  );
 }

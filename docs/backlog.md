@@ -59,3 +59,4 @@
 | `profile.errors.generic` дублює `auth.errors.generic`: винести спільний `errors.generic` | рев'ю 02-06 | будь-яка |
 | Редагування профілю використовує валідатори й ключі онбордингу (`goalErrorMessage`, `addCustomScene`, `profile.onboarding.errors.*`): винести у нейтральний `lib/` і групу ключів | рев'ю 02-08 | будь-яка |
 | У `test-cases.md` теги [TC-02-03]/[TC-02-04] означають e2e/inspection, а компонентні тести 02-07/02-08 їх також використовують: узгодити | рев'ю 02-08 | будь-яка |
+| Два гарди профілю (`RequireProfile`/`RequireNoProfile`) повторюють скелет із чотирьох гілок: можна винести `useProfileGate()` | рев'ю 02-10 | будь-яка |

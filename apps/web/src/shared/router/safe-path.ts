@@ -1,7 +1,15 @@
+import type { Location } from 'react-router';
+
 const ONBOARDING_PATH = '/onboarding';
 
 function isSafeTarget(path: string): boolean {
-  if (!path.startsWith('/') || path.startsWith('//') || path.includes('\\')) {
+  if (
+    !path.startsWith('/') ||
+    path.startsWith('//') ||
+    path.includes('\\') ||
+    // browsers strip tab/CR/LF, so '/\t/evil' would become '//evil'
+    /[\s\p{Cc}]/u.test(path)
+  ) {
     return false;
   }
   const [pathname = ''] = path.split(/[?#]/);
@@ -12,7 +20,14 @@ function isSafeTarget(path: string): boolean {
   );
 }
 
-export function onboardingRedirectTarget(state: unknown): string {
+export function redirectState({
+  pathname,
+  search,
+}: Pick<Location, 'pathname' | 'search'>): { from: string } {
+  return { from: `${pathname}${search}` };
+}
+
+export function safeRedirectTarget(state: unknown): string {
   if (
     typeof state === 'object' &&
     state !== null &&
