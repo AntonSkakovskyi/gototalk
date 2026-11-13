@@ -3,7 +3,35 @@
     "title": "GoToTalk"
   },
   "auth": {
-    "loading": "Завантаження"
+    "loading": "Завантаження",
+    "fields": {
+      "email": "Email",
+      "password": "Пароль"
+    },
+    "login": {
+      "title": "Вхід",
+      "submit": "Увійти",
+      "noAccount": "Ще немає акаунта?",
+      "toRegister": "Створити акаунт"
+    },
+    "register": {
+      "title": "Реєстрація",
+      "submit": "Зареєструватися",
+      "haveAccount": "Вже є акаунт?",
+      "toLogin": "Увійти",
+      "passwordHint": "Щонайменше 8 символів"
+    },
+    "validation": {
+      "emailInvalid": "Введіть коректну адресу email",
+      "passwordRequired": "Введіть пароль",
+      "passwordTooShort": "Пароль має містити щонайменше 8 символів",
+      "passwordTooLong": "Пароль має містити не більше 128 символів"
+    },
+    "errors": {
+      "invalidCredentials": "Неправильний email або пароль",
+      "emailTaken": "Акаунт із таким email уже існує",
+      "generic": "Не вдалося виконати запит. Спробуйте ще раз"
+    }
   },
   "nav": {
     "label": "Основна навігація",
@@ -16,6 +44,7 @@
     "session": { "title": "Сесія" },
     "words": { "title": "Слова" },
     "history": { "title": "Історія" },
-    "profile": { "title": "Профіль" }
+    "profile": { "title": "Профіль" },
+    "consent": { "title": "Згода" }
   }
 }

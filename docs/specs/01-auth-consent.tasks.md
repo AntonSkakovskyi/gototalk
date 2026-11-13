@@ -102,10 +102,11 @@
   - Перевірка: unit `[TC-01-03]` (mock fetch): Bearer додається; 401 → один refresh → повтор запиту; два паралельні 401 дають один refresh; невдалий refresh → стан `anonymous`; токен ніде не пишеться в `localStorage`/`sessionStorage`.
   - Відхилення: у web додано залежності `@gototalk/shared` і `zod` (dev); `apiFetch` має опцію `auth: false` (вхід, реєстрація, вихід не запускають refresh); лічильник «покоління» в session-store не дає refresh воскресити сесію після виходу; помилка 5xx або мережі при старті веде в `anonymous` (екран повтору в backlog).
 
-- [ ] **01-12. Маршрути, вхід і реєстрація**
+- [x] **01-12. Маршрути, вхід і реєстрація**
   - Що: `RequireAuth`, `RequireConsent`, `PublicOnly`; `LoginPage`, `RegisterPage` (Mantine + react-hook-form + zodResolver зі схемами shared; помилки з i18n за `code`); тексти в `uk.json`.
   - context7: react-hook-form, `@hookform/resolvers` (Zod 4), Mantine 9 forms inputs.
   - Перевірка: unit `[TC-01-03]`: анонім на `/words` → `/login`; автентифікований без згоди → `/consent`; реєстрація з паролем 7 символів показує помилку валідації без запиту; `[TC-01-05]` 401 при вході показує одне загальне повідомлення. `pnpm lint` без `i18next/no-literal-string`.
+  - Відхилення: додано `react-hook-form`, `@hookform/resolvers`, `zod` повернуто в dependencies; у `eslint.config.js` до винятків `no-literal-string` додано `gap`, `ta`, `autoComplete` (не несуть тексту); гейти `RequireAuth`, `RequireConsent`, `RequireNoConsent`, `PublicOnly`; навігація після входу відбувається через редірект `PublicOnly`; `PasswordInput` Mantine 9.8 не виставляє `aria-invalid`, тож атрибут додано вручну; `ConsentPage` поки заглушка (01-13); у вікні 360 px не перевірялось (01-13/01-15).
 
 - [ ] **01-13. Екран згоди**
   - Що: `ConsentPage`: назви провайдерів з `GET /api/me/consent` через i18n, абзаци «аудіо не зберігається» і «дані можна видалити в профілі», кнопки «Погоджуюсь» (POST, далі `/`) і «Вийти».
