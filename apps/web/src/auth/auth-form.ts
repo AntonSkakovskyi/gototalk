@@ -1,6 +1,6 @@
 import { ERROR_CODES } from '@gototalk/shared';
 import type { FieldError } from 'react-hook-form';
-import { ApiError } from '../api/api-error';
+import { ApiError } from '@/shared/api/api-error';
 
 export function apiErrorKey(error: unknown): string {
   if (error instanceof ApiError) {

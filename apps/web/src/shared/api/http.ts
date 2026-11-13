@@ -1,5 +1,5 @@
-import { getSession } from '../auth/session-store';
-import { refreshSession } from '../auth/refresh';
+import { getSession } from '@/shared/session/session-store';
+import { refreshSession } from './refresh';
 import { toApiError } from './api-error';
 
 export { ApiError } from './api-error';

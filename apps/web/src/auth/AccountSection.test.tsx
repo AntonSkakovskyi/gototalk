@@ -6,8 +6,8 @@ import { App } from '../App';
 import uk from '../i18n/uk.json';
 import { TEST_USER, emptyResponse, errorResponse } from '../test-fixtures';
 import { renderWithProviders } from '../test-utils';
-import { clearQueryCacheOnSessionEnd } from './query-cache';
-import { getSession } from './session-store';
+import { clearQueryCacheOnSessionEnd } from '@/shared/session/query-cache';
+import { getSession } from '@/shared/session/session-store';
 
 const fetchMock = vi.fn<typeof fetch>();
 

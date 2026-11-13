@@ -15,7 +15,7 @@ import {
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { ApiError } from '../api/api-error';
+import { ApiError } from '@/shared/api/api-error';
 import { deleteAccount } from './auth-api';
 import { deleteAccountErrorKey, passwordErrorKey } from './auth-form';
 import classes from './DeleteAccountDialog.module.scss';

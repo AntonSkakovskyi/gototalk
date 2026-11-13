@@ -1,10 +1,10 @@
 import { AuthResponseSchema } from '@gototalk/shared';
-import { toApiError } from '../api/api-error';
+import { toApiError } from './api-error';
 import {
   clearSession,
   getSessionGeneration,
   setSession,
-} from './session-store';
+} from '@/shared/session/session-store';
 
 const REFRESH_LOCK = 'gototalk-refresh';
 

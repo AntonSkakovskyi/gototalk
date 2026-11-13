@@ -2,8 +2,12 @@ import { Center, Loader } from '@mantine/core';
 import { useEffect, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import classes from './AuthBootstrap.module.scss';
-import { refreshSession } from './refresh';
-import { clearSession, getSession, useSession } from './session-store';
+import { refreshSession } from '@/shared/api/refresh';
+import {
+  clearSession,
+  getSession,
+  useSession,
+} from '@/shared/session/session-store';
 
 export function AuthBootstrap({ children }: { children: ReactNode }) {
   const { t } = useTranslation();

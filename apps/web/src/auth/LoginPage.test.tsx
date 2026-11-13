@@ -10,7 +10,7 @@ import {
   jsonResponse,
 } from '../test-fixtures';
 import { renderWithProviders } from '../test-utils';
-import { getSession } from './session-store';
+import { getSession } from '@/shared/session/session-store';
 
 const fetchMock = vi.fn<typeof fetch>();
 

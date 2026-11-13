@@ -9,7 +9,7 @@ import {
 } from '../test-fixtures';
 import { renderWithProviders } from '../test-utils';
 import { AuthBootstrap } from './AuthBootstrap';
-import { getSession } from './session-store';
+import { getSession } from '@/shared/session/session-store';
 
 const fetchMock = vi.fn<typeof fetch>();
 

@@ -1,11 +1,11 @@
 import { z } from 'zod';
-import { getSession, setSession } from '../auth/session-store';
+import { getSession, setSession } from '@/shared/session/session-store';
 import {
   authResponse,
   emptyResponse,
   errorResponse,
   jsonResponse,
-} from '../test-fixtures';
+} from '@/test-fixtures';
 import { ApiError, apiFetch } from './http';
 
 const fetchMock = vi.fn<typeof fetch>();

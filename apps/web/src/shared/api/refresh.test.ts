@@ -1,7 +1,11 @@
-import { authResponse, errorResponse, jsonResponse } from '../test-fixtures';
-import { logout } from './auth-api';
+import { authResponse, errorResponse, jsonResponse } from '@/test-fixtures';
+import { logout } from '@/auth/auth-api';
 import { refreshSession } from './refresh';
-import { clearSession, getSession, setSession } from './session-store';
+import {
+  clearSession,
+  getSession,
+  setSession,
+} from '@/shared/session/session-store';
 
 const fetchMock = vi.fn<typeof fetch>();
 

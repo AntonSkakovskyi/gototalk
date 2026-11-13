@@ -1,6 +1,6 @@
 import { QueryClient } from '@tanstack/react-query';
-import { authResponse, emptyResponse } from '../test-fixtures';
-import { logout } from './auth-api';
+import { authResponse, emptyResponse } from '@/test-fixtures';
+import { logout } from '@/auth/auth-api';
 import { clearQueryCacheOnSessionEnd } from './query-cache';
 import { clearSession, setSession } from './session-store';
 

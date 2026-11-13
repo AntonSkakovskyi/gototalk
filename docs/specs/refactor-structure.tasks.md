@@ -14,7 +14,7 @@
   - Перевірка: typecheck/lint/test зелені; `pnpm --filter web build`.
   - Коміт: `build(web): import-x boundaries, @/ alias and extensionless imports`
 
-- [ ] **W2. `shared/api` і `shared/session`**
+- [x] **W2. `shared/api` і `shared/session`**
   - `api/http.ts`, `http.test.ts`, `api-error.ts`, `auth/refresh.ts`, `refresh.test.ts` → `shared/api/`; `auth/session-store.ts`, `query-cache.ts` (+ тести) → `shared/session/`. Залежності односпрямовані (`api → session`), цикл зникає повністю.
   - Імпорти в `auth/*`, `main.tsx`, `test-utils.tsx`, `vitest.setup.ts` → `@/shared/...`.
   - Коміт: `refactor(web): move http client and session store to shared`
