@@ -1,7 +1,7 @@
 import { Inject, Injectable, NotImplementedException } from '@nestjs/common';
 import type { Plan } from '@gototalk/shared';
-import { LANGUAGE_MODEL_PORT } from '../ports/language-model.port.js';
-import type { LanguageModelPort } from '../ports/language-model.port.js';
+import { LANGUAGE_MODEL_PORT } from '../integrations/language-model/language-model.port.js';
+import type { LanguageModelPort } from '../integrations/language-model/language-model.port.js';
 import { LearnerModelService } from '../profile/learner-model.service.js';
 
 export interface PlanSessionRequest {

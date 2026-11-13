@@ -1,12 +1,12 @@
 import { Global, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { Env } from '../core/config/env.schema.js';
-import { FakeLanguageModel } from '../adapters/fake/fake-language-model.js';
-import { FakeSpeechRecognition } from '../adapters/fake/fake-speech-recognition.js';
-import { LANGUAGE_MODEL_PORT } from '../ports/language-model.port.js';
-import type { LanguageModelPort } from '../ports/language-model.port.js';
-import { SPEECH_RECOGNITION_PORT } from '../ports/speech-recognition.port.js';
-import type { SpeechRecognitionPort } from '../ports/speech-recognition.port.js';
+import { FakeLanguageModel } from './language-model/fake-language-model.js';
+import { FakeSpeechRecognition } from './speech-recognition/fake-speech-recognition.js';
+import { LANGUAGE_MODEL_PORT } from './language-model/language-model.port.js';
+import type { LanguageModelPort } from './language-model/language-model.port.js';
+import { SPEECH_RECOGNITION_PORT } from './speech-recognition/speech-recognition.port.js';
+import type { SpeechRecognitionPort } from './speech-recognition/speech-recognition.port.js';
 
 // Adding a real provider widens the type, so this exhaustive check fails to compile until a branch is added
 function unsupported(name: string, value: never): never {

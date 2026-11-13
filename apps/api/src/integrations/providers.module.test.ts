@@ -2,12 +2,12 @@ import 'reflect-metadata';
 import { Test } from '@nestjs/testing';
 import { describe, expect, it } from 'vitest';
 import { AppModule } from '../app.module.js';
-import { FakeLanguageModel } from '../adapters/fake/fake-language-model.js';
-import { FakeSpeechRecognition } from '../adapters/fake/fake-speech-recognition.js';
-import { LANGUAGE_MODEL_PORT } from '../ports/language-model.port.js';
-import type { LanguageModelPort } from '../ports/language-model.port.js';
-import { SPEECH_RECOGNITION_PORT } from '../ports/speech-recognition.port.js';
-import type { SpeechRecognitionPort } from '../ports/speech-recognition.port.js';
+import { FakeLanguageModel } from './language-model/fake-language-model.js';
+import { FakeSpeechRecognition } from './speech-recognition/fake-speech-recognition.js';
+import { LANGUAGE_MODEL_PORT } from './language-model/language-model.port.js';
+import type { LanguageModelPort } from './language-model/language-model.port.js';
+import { SPEECH_RECOGNITION_PORT } from './speech-recognition/speech-recognition.port.js';
+import type { SpeechRecognitionPort } from './speech-recognition/speech-recognition.port.js';
 
 const env = {
   NODE_ENV: 'production',

@@ -1,5 +1,5 @@
 import type { Transcript } from '@gototalk/shared';
-import type { SpeechRecognitionPort } from '../../ports/speech-recognition.port.js';
+import type { SpeechRecognitionPort } from './speech-recognition.port.js';
 
 const VERBATIM =
   'Um, yesterday I go to the office and, uh, I have a meeting with my team. I very like my job.';

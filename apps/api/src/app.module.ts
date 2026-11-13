@@ -13,7 +13,7 @@ import { HealthModule } from './core/health/health.module.js';
 import { MeModule } from './me/me.module.js';
 import { buildPinoHttpOptions } from './core/logger/pino-options.js';
 import { ProfileModule } from './profile/profile.module.js';
-import { ProvidersModule } from './providers/providers.module.js';
+import { ProvidersModule } from './integrations/providers.module.js';
 import { SessionModule } from './session/session.module.js';
 
 @Module({})

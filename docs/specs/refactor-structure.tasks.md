@@ -52,7 +52,7 @@
   - Перевірка: + `pnpm db:pull` без diff; `pnpm dev` → `/api/health` ok (`.env` знаходиться).
   - Коміт: `refactor(api): move infrastructure into core`
 
-- [ ] **A2. `integrations/`**
+- [x] **A2. `integrations/`**
   - `ports/speech-recognition.port.ts`, `adapters/fake/fake-speech-recognition.ts` → `integrations/speech-recognition/`; `language-model.port.ts`, `fake-language-model.ts` → `integrations/language-model/`; `providers/providers.module.ts` (+test), `adapters/fake/fake-adapters.test.ts` → `integrations/`.
   - `eslint.config.js`: виняток SDK `apps/api/src/adapters/**` → `apps/api/src/integrations/**`, текст повідомлення.
   - Коміт: `refactor(api): ports and adapters under integrations`

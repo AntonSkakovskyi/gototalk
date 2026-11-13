@@ -98,7 +98,7 @@ export default defineConfig(
             {
               group: ['@deepgram/*', '@google/genai', '@google/generative-ai'],
               message:
-                'Provider SDKs may only be imported in apps/api/src/adapters/**; everything else goes through ports.',
+                'Provider SDKs may only be imported in apps/api/src/integrations/**; everything else goes through ports.',
             },
           ],
         },
@@ -175,7 +175,7 @@ export default defineConfig(
     },
   },
   {
-    files: ['apps/api/src/adapters/**/*.ts'],
+    files: ['apps/api/src/integrations/**/*.ts'],
     rules: { 'no-restricted-imports': 'off' },
   },
   prettier,

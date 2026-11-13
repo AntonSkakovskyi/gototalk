@@ -10,7 +10,7 @@ import type {
   AnalyzeUtteranceInput,
   HintRequest,
   LanguageModelPort,
-} from '../../ports/language-model.port.js';
+} from './language-model.port.js';
 
 type MistakeTemplate = Omit<Mistake, 'start' | 'end'>;
 

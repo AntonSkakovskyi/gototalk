@@ -7,10 +7,10 @@ import {
   TranscriptSchema,
   TurnSchema,
 } from '@gototalk/shared';
-import { FakeLanguageModel } from './fake-language-model.js';
-import type { LanguageModelPort } from '../../ports/language-model.port.js';
-import type { SpeechRecognitionPort } from '../../ports/speech-recognition.port.js';
-import { FakeSpeechRecognition } from './fake-speech-recognition.js';
+import { FakeLanguageModel } from './language-model/fake-language-model.js';
+import type { LanguageModelPort } from './language-model/language-model.port.js';
+import type { SpeechRecognitionPort } from './speech-recognition/speech-recognition.port.js';
+import { FakeSpeechRecognition } from './speech-recognition/fake-speech-recognition.js';
 
 const audio = Buffer.from([1, 2, 3]);
 
