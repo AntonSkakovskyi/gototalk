@@ -2,10 +2,9 @@ import { Inject, Injectable } from '@nestjs/common';
 import { and, eq, isNull, sql } from 'drizzle-orm';
 import { DRIZZLE } from '../../../core/db/db.tokens.js';
 import type { Database } from '../../../core/db/db.tokens.js';
+import { isUniqueViolation } from '../../../core/db/pg-errors.js';
 import { pgTimestampToDate } from '../../../core/db/pg-timestamp.js';
 import { users } from '../../../core/db/schema.js';
-
-const UNIQUE_VIOLATION = '23505';
 
 export interface UserRecord {
   id: string;
@@ -30,15 +29,6 @@ function toRecord(row: UserRow): UserRecord {
     passwordHash: row.passwordHash,
     consentAt: row.consentAt === null ? null : pgTimestampToDate(row.consentAt),
   };
-}
-
-// Drizzle wraps driver errors in DrizzleQueryError with the original on `cause`
-function isUniqueViolation(error: unknown): boolean {
-  for (let current = error; current instanceof Error;) {
-    if ((current as { code?: unknown }).code === UNIQUE_VIOLATION) return true;
-    current = current.cause;
-  }
-  return false;
 }
 
 @Injectable()
