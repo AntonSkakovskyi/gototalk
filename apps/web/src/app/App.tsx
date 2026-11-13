@@ -15,6 +15,7 @@ import { OnboardingPage } from '@/pages/onboarding/OnboardingPage';
 import { LoginPage } from '@/pages/login/LoginPage';
 import { RegisterPage } from '@/pages/register/RegisterPage';
 import { HistoryPage } from '@/pages/history/HistoryPage';
+import { NewSessionPage } from '@/pages/new-session/NewSessionPage';
 import { ProfilePage } from '@/pages/profile/ProfilePage';
 import { SessionPage } from '@/pages/session/SessionPage';
 import { WordsPage } from '@/pages/words/WordsPage';
@@ -37,6 +38,7 @@ export function App() {
           <Route element={<RequireProfile />}>
             <Route element={<AppLayout />}>
               <Route index element={<SessionPage />} />
+              <Route path="sessions/new" element={<NewSessionPage />} />
               <Route path="words" element={<WordsPage />} />
               <Route path="history" element={<HistoryPage />} />
               <Route path="profile" element={<ProfilePage />} />

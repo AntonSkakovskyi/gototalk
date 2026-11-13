@@ -73,6 +73,7 @@ describe('session queries', () => {
     const options = sessionPlanQueryOptions({ previousTopics: [] });
 
     expect(options.staleTime).toBe(Infinity);
+    expect(options.gcTime).toBe(0);
     expect(options.refetchOnWindowFocus).toBe(false);
     expect(options.refetchOnReconnect).toBe(false);
   });

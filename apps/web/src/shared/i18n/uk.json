@@ -191,6 +191,19 @@
         "empty": "Ви ще не мали жодної сесії. Натисніть «Почати сесію», щоб почати першу розмову"
       }
     },
+    "proposal": {
+      "topicLabel": "Тема розмови",
+      "questionsLabel": "Про що вас запитають",
+      "anotherTopic": "Інша тема",
+      "rerollsLeft": "Залишилось спроб: {{left}}",
+      "rerollsExhausted": "Спроби вичерпано",
+      "start": "Почати",
+      "feedbackMode": {
+        "label": "Коли показувати розбір помилок",
+        "immediate": "Після кожної відповіді",
+        "deferred": "В кінці"
+      }
+    },
     "errors": {
       "consentRequired": "Щоб почати сесію, потрібна згода на обробку мовлення",
       "planUnavailable": "Не вдалося підібрати тему. Спробуйте ще раз",
@@ -221,6 +234,7 @@
   },
   "pages": {
     "session": { "title": "Сесія" },
+    "newSession": { "title": "Нова сесія" },
     "words": { "title": "Слова" },
     "history": { "title": "Історія" },
     "profile": {

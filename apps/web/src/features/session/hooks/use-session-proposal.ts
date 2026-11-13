@@ -25,13 +25,25 @@ export function useSessionProposal() {
 
   function requestAnotherTopic() {
     if (canReroll && plan.data !== undefined) {
+      mutation.reset();
       setShownTopics([...shownTopics, plan.data.topic]);
     }
   }
 
   function applyCustomTopic(topic: string) {
     const trimmed = topic.trim();
+    mutation.reset();
     setCustomTopic(trimmed === '' ? undefined : trimmed);
+  }
+
+  function clearCustomTopic() {
+    mutation.reset();
+    setCustomTopic(undefined);
+  }
+
+  function changeFeedbackMode(mode: FeedbackMode) {
+    mutation.reset();
+    setFeedbackMode(mode);
   }
 
   function start(onStarted: (details: SessionDetails) => void) {
@@ -41,7 +53,7 @@ export function useSessionProposal() {
     const { topic, topicSource, questions } = plan.data;
     mutation.mutate(
       { topic, topicSource, questions, feedbackMode },
-      { onSuccess: (details) => onStarted(details) },
+      { onSuccess: onStarted },
     );
   }
 
@@ -52,10 +64,10 @@ export function useSessionProposal() {
     canReroll,
     customTopic,
     feedbackMode,
-    setFeedbackMode,
+    setFeedbackMode: changeFeedbackMode,
     requestAnotherTopic,
     applyCustomTopic,
-    clearCustomTopic: () => setCustomTopic(undefined),
+    clearCustomTopic,
     start,
     isStarting: mutation.isPending,
     startError: mutation.error,

@@ -28,11 +28,13 @@ export function sessionDetailsQueryOptions(id: string) {
 }
 
 // A plan costs a model call and is fetched by POST: never refetch it implicitly.
+// gcTime 0 drops a plan as soon as no screen observes it, so each visit gets a fresh one.
 export function sessionPlanQueryOptions(request: PlanSessionRequest) {
   return queryOptions({
     queryKey: sessionKeys.plan(request),
     queryFn: () => planSession(request),
     staleTime: Infinity,
+    gcTime: 0,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     retry: retryUnlessClientError(MAX_PLAN_RETRIES),
