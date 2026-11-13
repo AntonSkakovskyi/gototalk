@@ -52,15 +52,17 @@
 
 ### 2.2 planSession(profile, patterns, previousTopics)
 
-Банк тем за сценою профілю (5 тем × 5 питань). Тема береться за індексом `(кількість раніше запропонованих тем) mod 5` у першій сцені профілю; `Інша тема` бере наступну. Питання англійською.
+Банк тем за сценою профілю (5 тем × 5 питань). Тема береться за індексом `(кількість раніше запропонованих тем) mod 5` у першій сцені профілю; `Інша тема` бере наступну. Питання англійською. Ключі банку – коди пресетів сцен із `SCENE_PRESETS` (`packages/shared`); у `profiles.scenes` зберігаються саме коди або вільний текст.
 
-| Сцена | Теми (за порядком) |
+| Сцена (код) | Теми (за порядком) |
 |---|---|
-| робота й мітинги | My last project at work; A difficult meeting; Planning a week; Working with a team; A skill I want to learn |
-| small talk | Weekend plans; My hometown; Favourite food; A film I watched; Weather and seasons |
-| співбесіди | Why I want this job; My strengths; A challenge I solved; My career goals; Questions for the interviewer |
-| побут і сервіси | At the doctor; Renting a flat; Ordering food; A problem with an order; Using public transport |
-| подорожі | My last trip; Booking a hotel; A dream destination; Getting lost in a city; Travel plans |
+| `work_meetings` | My last project at work; A difficult meeting; Planning a week; Working with a team; A skill I want to learn |
+| `small_talk` | Weekend plans; My hometown; Favourite food; A film I watched; Weather and seasons |
+| `interviews` | Why I want this job; My strengths; A challenge I solved; My career goals; Questions for the interviewer |
+| `daily_services` | At the doctor; Renting a flat; Ordering food; A problem with an order; Using public transport |
+| `travel` | My last trip; Booking a hotel; A dream destination; Getting lost in a city; Travel plans |
+
+Власна сцена (вільний текст, якого немає серед пресетів): береться перша сцена-пресет профілю, а якщо пресетів у профілі немає – `small_talk`. Поведінка Fake-адаптера реалізується в spec 03.
 
 Кожна тема має 5 питань: перші чотири універсальні (мета, досвід, думка, порівняння), п’яте – узагальнююче («What would you do differently next time?»). Якщо в `patterns` є елементи, питання №1 замінюється питанням, що провокує найчастіший патерн:
 

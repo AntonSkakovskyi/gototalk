@@ -9,12 +9,12 @@ INSERT INTO users (id, email, password_hash, consent_at) VALUES
 ON CONFLICT DO NOTHING;
 
 INSERT INTO profiles (user_id, level, scenes, interface_lang) VALUES
-  ('00000000-0000-4000-8000-000000000001', 'B1', ARRAY['робота й мітинги', 'small talk'], 'uk')
+  ('00000000-0000-4000-8000-000000000001', 'B1', ARRAY['work_meetings', 'small_talk'], 'uk')
 ON CONFLICT DO NOTHING;
 
 INSERT INTO goals (id, user_id, title, scene, status) VALUES
-  ('00000000-0000-4000-8000-000000000101', '00000000-0000-4000-8000-000000000001', 'Вільно говорити на мітингах', 'робота й мітинги', 'active'),
-  ('00000000-0000-4000-8000-000000000102', '00000000-0000-4000-8000-000000000001', 'Підтримувати small talk з колегами', 'small talk', 'active')
+  ('00000000-0000-4000-8000-000000000101', '00000000-0000-4000-8000-000000000001', 'Вільно говорити на мітингах', 'work_meetings', 'active'),
+  ('00000000-0000-4000-8000-000000000102', '00000000-0000-4000-8000-000000000001', 'Підтримувати small talk з колегами', 'small_talk', 'active')
 ON CONFLICT DO NOTHING;
 
 INSERT INTO theory_links (id, category, title, url) VALUES
