@@ -5,12 +5,12 @@ import {
   text,
   timestamp,
   index,
+  uniqueIndex,
   foreignKey,
   check,
-  integer,
   jsonb,
+  integer,
   boolean,
-  uniqueIndex,
 } from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm';
 
@@ -26,6 +26,54 @@ export const users = pgTable(
       .notNull(),
   },
   (table) => [unique('users_email_key').on(table.email)],
+);
+
+export const sessions = pgTable(
+  'sessions',
+  {
+    id: uuid().defaultRandom().primaryKey().notNull(),
+    userId: uuid('user_id').notNull(),
+    topic: text().notNull(),
+    topicSource: text('topic_source').default('suggested').notNull(),
+    feedbackMode: text('feedback_mode').default('immediate').notNull(),
+    status: text().default('active').notNull(),
+    startedAt: timestamp('started_at', { withTimezone: true, mode: 'string' })
+      .defaultNow()
+      .notNull(),
+    endedAt: timestamp('ended_at', { withTimezone: true, mode: 'string' }),
+    plan: jsonb(),
+  },
+  (table) => [
+    index('idx_sessions_user_start').using(
+      'btree',
+      table.userId.asc().nullsLast().op('timestamptz_ops'),
+      table.startedAt.desc().nullsFirst().op('timestamptz_ops'),
+    ),
+    uniqueIndex('sessions_one_active_per_user')
+      .using('btree', table.userId.asc().nullsLast().op('uuid_ops'))
+      .where(sql`(status = 'active'::text)`),
+    foreignKey({
+      columns: [table.userId],
+      foreignColumns: [users.id],
+      name: 'sessions_user_id_fkey',
+    }).onDelete('cascade'),
+    check(
+      'sessions_topic_source_check',
+      sql`topic_source = ANY (ARRAY['suggested'::text, 'custom'::text])`,
+    ),
+    check(
+      'sessions_feedback_mode_check',
+      sql`feedback_mode = ANY (ARRAY['immediate'::text, 'deferred'::text])`,
+    ),
+    check(
+      'sessions_status_check',
+      sql`status = ANY (ARRAY['active'::text, 'finished'::text])`,
+    ),
+    check(
+      'sessions_plan_check',
+      sql`(plan IS NULL) OR ((jsonb_typeof(plan) = 'object'::text) AND (COALESCE(jsonb_typeof((plan -> 'questions'::text)), ''::text) = 'array'::text))`,
+    ),
+  ],
 );
 
 export const goals = pgTable(
@@ -53,46 +101,6 @@ export const goals = pgTable(
     check(
       'goals_status_check',
       sql`status = ANY (ARRAY['active'::text, 'done'::text])`,
-    ),
-  ],
-);
-
-export const sessions = pgTable(
-  'sessions',
-  {
-    id: uuid().defaultRandom().primaryKey().notNull(),
-    userId: uuid('user_id').notNull(),
-    topic: text().notNull(),
-    topicSource: text('topic_source').default('suggested').notNull(),
-    feedbackMode: text('feedback_mode').default('immediate').notNull(),
-    status: text().default('active').notNull(),
-    startedAt: timestamp('started_at', { withTimezone: true, mode: 'string' })
-      .defaultNow()
-      .notNull(),
-    endedAt: timestamp('ended_at', { withTimezone: true, mode: 'string' }),
-  },
-  (table) => [
-    index('idx_sessions_user_start').using(
-      'btree',
-      table.userId.asc().nullsLast().op('timestamptz_ops'),
-      table.startedAt.desc().nullsFirst().op('timestamptz_ops'),
-    ),
-    foreignKey({
-      columns: [table.userId],
-      foreignColumns: [users.id],
-      name: 'sessions_user_id_fkey',
-    }).onDelete('cascade'),
-    check(
-      'sessions_topic_source_check',
-      sql`topic_source = ANY (ARRAY['suggested'::text, 'custom'::text])`,
-    ),
-    check(
-      'sessions_feedback_mode_check',
-      sql`feedback_mode = ANY (ARRAY['immediate'::text, 'deferred'::text])`,
-    ),
-    check(
-      'sessions_status_check',
-      sql`status = ANY (ARRAY['active'::text, 'finished'::text])`,
     ),
   ],
 );
