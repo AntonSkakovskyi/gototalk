@@ -5,13 +5,11 @@ import {
   AnalysisStatusSchema,
   BetterPhrasingSchema,
   FeedbackModeSchema,
-  MistakeCategoryCodeSchema,
   SessionStatusSchema,
   TopicSourceSchema,
   UtteranceRoleSchema,
 } from '@gototalk/shared';
 import type {
-  MistakeView,
   Session,
   SessionDetails,
   StartSessionRequest,
@@ -21,6 +19,8 @@ import { DRIZZLE } from '../../core/db/db.tokens.js';
 import type { Database, DbTransaction } from '../../core/db/db.tokens.js';
 import { pgTimestampToDate } from '../../core/db/pg-timestamp.js';
 import { mistakes, sessions, users, utterances } from '../../core/db/schema.js';
+import { toMistakeView } from './lib/mistake-view.js';
+import type { MistakeRow } from './lib/mistake-view.js';
 import {
   parsePlanQuestions,
   remainingQuestions,
@@ -29,7 +29,6 @@ import { SessionOwnerMissingError } from './session.errors.js';
 
 type SessionRow = typeof sessions.$inferSelect;
 type UtteranceRow = typeof utterances.$inferSelect;
-type MistakeRow = typeof mistakes.$inferSelect;
 
 function toIso(value: string): string {
   return pgTimestampToDate(value).toISOString();
@@ -44,21 +43,6 @@ function toSession(row: SessionRow): Session {
     status: SessionStatusSchema.parse(row.status),
     startedAt: toIso(row.startedAt),
     endedAt: row.endedAt === null ? null : toIso(row.endedAt),
-  };
-}
-
-function toMistakeView(row: MistakeRow): MistakeView | null {
-  if (row.startPos === null || row.endPos === null) return null;
-  return {
-    id: row.id,
-    start: row.startPos,
-    end: row.endPos,
-    original: row.original,
-    suggestion: row.suggestion ?? '',
-    category: MistakeCategoryCodeSchema.parse(row.category),
-    explanationEn: row.explanationEn ?? '',
-    translationUk: row.translationUk ?? '',
-    isFalse: row.isFalse,
   };
 }
 
