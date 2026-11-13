@@ -33,5 +33,7 @@ export function listSessions(): Promise<Session[]> {
 }
 
 export function getSession(id: string): Promise<SessionDetails> {
-  return apiFetch(`/api/sessions/${id}`, { schema: SessionDetailsSchema });
+  return apiFetch(`/api/sessions/${encodeURIComponent(id)}`, {
+    schema: SessionDetailsSchema,
+  });
 }

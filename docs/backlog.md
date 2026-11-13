@@ -57,3 +57,4 @@
 | `POST /api/sessions/plan` викликає LLM без rate limit (кожне «Інша тема» = виклик провайдера) | 03-06 | деплой |
 | `pnpm exec eslint e2e` падає з `ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL`, `pnpm lint` і `node node_modules/eslint/bin/eslint.js e2e` працюють | 03-15 | будь-яка |
 | Тест порядку `started_at` при конкурентних стартах імовірнісний (не червоніє при поверненні `now()`) | 03-07 | будь-яка |
+| Прибрати `session.details.answerSoon` («голосові відповіді з’являться в наступній версії») разом із реальним діалогом | фінальне рев’ю 03 | 04 |
