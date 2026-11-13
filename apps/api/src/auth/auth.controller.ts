@@ -98,7 +98,7 @@ export class AuthController {
   @ApiOperation({
     summary: 'Rotate the refresh cookie and issue a new access token',
     description:
-      'Reads the gtt_refresh cookie. A missing, expired, unknown or already used token gives 401 and clears the cookie; reuse also revokes all refresh tokens of the user.',
+      'Reads the gtt_refresh cookie. A missing, expired or unknown token gives 401 and clears the cookie. Replaying a rotated token within 60 s issues another token; a later replay deletes all refresh tokens of the user and returns 401.',
   })
   @ApiResponse({ status: 200, description: 'Session renewed' })
   @ApiResponse({ status: 401, description: 'Refresh token rejected' })
@@ -121,7 +121,7 @@ export class AuthController {
   @Post('logout')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
-    summary: 'Revoke the current refresh token and clear the cookie',
+    summary: 'Delete the current refresh token and clear the cookie',
     description: 'Idempotent: also succeeds without a cookie.',
   })
   @ApiResponse({ status: 204, description: 'Logged out' })

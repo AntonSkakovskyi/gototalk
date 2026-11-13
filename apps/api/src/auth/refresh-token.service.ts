@@ -11,6 +11,7 @@ import {
 } from './refresh-tokens.repository.js';
 
 export const REFRESH_TOKEN_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+export const REFRESH_REUSE_GRACE_MS = 60_000;
 
 export interface IssuedRefreshToken {
   token: string;
@@ -59,15 +60,31 @@ export class RefreshTokenService {
     }
 
     const existing = await this.repository.findByHash(oldTokenHash);
-    if (existing?.revokedAt) {
-      await this.repository.revokeAllForUser(existing.userId, now);
-      throw new TokenReusedError();
+    if (!existing?.revokedAt || existing.expiresAt.getTime() <= now.getTime()) {
+      throw new InvalidRefreshTokenError();
     }
-    throw new InvalidRefreshTokenError();
+    // A replay this soon is a lost response (reload, parallel tabs), not theft.
+    if (
+      now.getTime() - existing.revokedAt.getTime() <=
+      REFRESH_REUSE_GRACE_MS
+    ) {
+      await this.repository.insert({
+        userId: existing.userId,
+        tokenHash: fresh.tokenHash,
+        expiresAt: fresh.expiresAt,
+      });
+      return {
+        userId: existing.userId,
+        token: fresh.token,
+        expiresAt: fresh.expiresAt,
+      };
+    }
+    await this.repository.deleteAllForUser(existing.userId);
+    throw new TokenReusedError();
   }
 
   async revoke(rawToken: string): Promise<void> {
-    await this.repository.revokeActiveByHash(hashToken(rawToken), this.now());
+    await this.repository.deleteByHash(hashToken(rawToken));
   }
 
   private generate(now: Date = this.now()) {

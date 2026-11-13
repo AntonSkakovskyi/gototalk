@@ -151,24 +151,67 @@ describe('Auth endpoints', () => {
     expect(payload.exp - payload.iat).toBe(15 * 60);
   });
 
-  it('[TC-01-02] a revoked refresh token presented again gives 401 and revokes all tokens of the user', async () => {
+  it('[TC-01-02] a rotated token replayed within the grace period gives 200 with a new cookie and revokes nothing', async () => {
+    const { email, res: registered } = await register();
+    const first = parseRefreshCookie(registered);
+    const rotated = await refresh(first.value);
+
+    const replay = await refresh(first.value);
+
+    expect(replay.status).toBe(200);
+    expect(AuthResponseSchema.parse(replay.body).user.email).toBe(email);
+    const sibling = parseRefreshCookie(replay);
+    expect(sibling.value).not.toBe(parseRefreshCookie(rotated).value);
+    const rows = await tokenRows(email);
+    expect(rows).toHaveLength(3);
+    expect(rows.filter((r) => r.revoked_at !== null)).toHaveLength(1);
+    expect((await refresh(parseRefreshCookie(rotated).value)).status).toBe(200);
+    expect((await refresh(sibling.value)).status).toBe(200);
+  });
+
+  it('[TC-01-02] a rotated token replayed after the grace period gives 401 and removes all tokens of the user', async () => {
     const { email, res: registered } = await register();
     const first = parseRefreshCookie(registered);
     const second = parseRefreshCookie(await login(email));
+    const { email: otherEmail, res: otherRegistered } = await register();
     const rotatedCookie = parseRefreshCookie(await refresh(first.value));
+    await pool.query(
+      `UPDATE refresh_tokens SET revoked_at = now() - interval '2 minutes'
+       WHERE token_hash = $1`,
+      [sha256(first.value)],
+    );
 
     const reuse = await refresh(first.value);
 
     expect(reuse.status).toBe(401);
     expect(setCookieHeaders(reuse).join(';')).toMatch(CLEARED_COOKIE);
-    const rows = await tokenRows(email);
-    expect(rows).toHaveLength(3);
-    expect(rows.every((r) => r.revoked_at !== null)).toBe(true);
+    expect(await tokenRows(email)).toHaveLength(0);
     expect((await refresh(second.value)).status).toBe(401);
     expect((await refresh(rotatedCookie.value)).status).toBe(401);
+    expect(await tokenRows(otherEmail)).toHaveLength(1);
+    expect(
+      (await refresh(parseRefreshCookie(otherRegistered).value)).status,
+    ).toBe(200);
   });
 
-  it('[TC-01-02] two parallel refreshes of the same cookie give exactly one 200', async () => {
+  it('[TC-01-02] a replay after a reuse wipe gives a plain 401 and does not touch other users', async () => {
+    const { res: registered } = await register();
+    const first = parseRefreshCookie(registered);
+    await refresh(first.value);
+    await pool.query(
+      `UPDATE refresh_tokens SET revoked_at = now() - interval '2 minutes'
+       WHERE token_hash = $1`,
+      [sha256(first.value)],
+    );
+    expect((await refresh(first.value)).status).toBe(401);
+
+    const again = await refresh(first.value);
+
+    expect(again.status).toBe(401);
+    expect(setCookieHeaders(again).join(';')).toMatch(CLEARED_COOKIE);
+  });
+
+  it('[TC-01-02] two parallel refreshes of the same cookie give 200 and 200 and each new cookie can refresh again', async () => {
     const { res: registered } = await register();
     const cookie = parseRefreshCookie(registered);
 
@@ -177,31 +220,38 @@ describe('Auth endpoints', () => {
       refresh(cookie.value),
     ]);
 
-    expect(results.map((r) => r.status).sort()).toEqual([200, 401]);
+    expect(results.map((r) => r.status)).toEqual([200, 200]);
+    const cookies = results.map((r) => parseRefreshCookie(r).value);
+    expect(new Set(cookies).size).toBe(2);
+    for (const value of cookies) {
+      expect((await refresh(value)).status).toBe(200);
+    }
   });
 
-  it('[TC-01-02] after two parallel refreshes the winner new cookie is revoked too', async () => {
-    const { res: registered } = await register();
-    const cookie = parseRefreshCookie(registered);
+  it('[TC-01-02] a replay of a cookie after logout gives 401 and keeps the other sessions of the user', async () => {
+    const { email, res: registered } = await register();
+    const first = parseRefreshCookie(registered);
+    const otherSession = parseRefreshCookie(await login(email));
+    const rotated = parseRefreshCookie(await refresh(first.value));
+    expect((await logout(rotated.value)).status).toBe(204);
+    expect((await logout(first.value)).status).toBe(204);
 
-    const results = await Promise.all([
-      refresh(cookie.value),
-      refresh(cookie.value),
-    ]);
+    const replay = await refresh(first.value);
 
-    const winner = results.find((r) => r.status === 200);
-    if (!winner) throw new Error('No refresh succeeded');
-    const afterRace = await refresh(parseRefreshCookie(winner).value);
-    expect(afterRace.status).toBe(401);
+    expect(replay.status).toBe(401);
+    expect(setCookieHeaders(replay).join(';')).toMatch(CLEARED_COOKIE);
+    expect((await refresh(rotated.value)).status).toBe(401);
+    expect(await tokenRows(email)).toHaveLength(1);
+    expect((await refresh(otherSession.value)).status).toBe(200);
   });
 
-  it('[TC-01-02] a rotated token reused twice gives 401 both times', async () => {
-    const { res: registered } = await register();
+  it('[TC-01-02] logout deletes the token row', async () => {
+    const { email, res: registered } = await register();
     const cookie = parseRefreshCookie(registered);
-    expect((await refresh(cookie.value)).status).toBe(200);
 
-    expect((await refresh(cookie.value)).status).toBe(401);
-    expect((await refresh(cookie.value)).status).toBe(401);
+    expect((await logout(cookie.value)).status).toBe(204);
+
+    expect(await tokenRows(email)).toHaveLength(0);
   });
 
   it('[TC-01-02] register and login without a password give 400 and no cookie', async () => {

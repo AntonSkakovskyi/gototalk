@@ -12,13 +12,14 @@ export class InMemoryRefreshTokensRepository implements RefreshTokensRepository 
     return Promise.resolve();
   }
 
-  revokeActiveByHash(
-    tokenHash: string,
+  rotateActive(
+    oldTokenHash: string,
+    next: Pick<NewRefreshToken, 'tokenHash' | 'expiresAt'>,
     now: Date,
   ): Promise<{ userId: string } | null> {
     const row = this.rows.find(
       (r) =>
-        r.tokenHash === tokenHash &&
+        r.tokenHash === oldTokenHash &&
         r.revokedAt === null &&
         r.expiresAt.getTime() > now.getTime(),
     );
@@ -26,19 +27,8 @@ export class InMemoryRefreshTokensRepository implements RefreshTokensRepository 
       return Promise.resolve(null);
     }
     row.revokedAt = now;
+    this.rows.push({ userId: row.userId, ...next, revokedAt: null });
     return Promise.resolve({ userId: row.userId });
-  }
-
-  async rotateActive(
-    oldTokenHash: string,
-    next: Pick<NewRefreshToken, 'tokenHash' | 'expiresAt'>,
-    now: Date,
-  ): Promise<{ userId: string } | null> {
-    const revoked = await this.revokeActiveByHash(oldTokenHash, now);
-    if (revoked) {
-      await this.insert({ userId: revoked.userId, ...next });
-    }
-    return revoked;
   }
 
   findByHash(tokenHash: string): Promise<RefreshTokenRecord | null> {
@@ -46,12 +36,18 @@ export class InMemoryRefreshTokensRepository implements RefreshTokensRepository 
     return Promise.resolve(row ? { ...row } : null);
   }
 
-  revokeAllForUser(userId: string, now: Date): Promise<void> {
-    for (const row of this.rows) {
-      if (row.userId === userId && row.revokedAt === null) {
-        row.revokedAt = now;
-      }
-    }
+  deleteByHash(tokenHash: string): Promise<void> {
+    this.keep((r) => r.tokenHash !== tokenHash);
     return Promise.resolve();
+  }
+
+  deleteAllForUser(userId: string): Promise<void> {
+    this.keep((r) => r.userId !== userId);
+    return Promise.resolve();
+  }
+
+  private keep(predicate: (row: RefreshTokenRecord) => boolean): void {
+    const kept = this.rows.filter(predicate);
+    this.rows.splice(0, this.rows.length, ...kept);
   }
 }

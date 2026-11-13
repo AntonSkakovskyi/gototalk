@@ -14,15 +14,6 @@ export interface RefreshTokensRepository {
   insert(token: NewRefreshToken): Promise<void>;
 
   /**
-   * Revokes the token only if it is neither revoked nor expired at `now`.
-   * Must be a single atomic statement so concurrent callers cannot both win.
-   */
-  revokeActiveByHash(
-    tokenHash: string,
-    now: Date,
-  ): Promise<{ userId: string } | null>;
-
-  /**
    * Revokes the active token and inserts its replacement atomically
    * (one transaction). Returns null, inserting nothing, when no active token matches.
    * Implementations must use the passed `now`, not SQL now(), so the service clock stays authoritative.
@@ -36,5 +27,7 @@ export interface RefreshTokensRepository {
   /** Timestamps must be mapped to Date: Drizzle returns strings here (mode: 'string'). */
   findByHash(tokenHash: string): Promise<RefreshTokenRecord | null>;
 
-  revokeAllForUser(userId: string, now: Date): Promise<void>;
+  deleteByHash(tokenHash: string): Promise<void>;
+
+  deleteAllForUser(userId: string): Promise<void>;
 }

@@ -20,13 +20,6 @@ export class DrizzleRefreshTokensRepository implements RefreshTokensRepository {
     await insertToken(this.db, token);
   }
 
-  revokeActiveByHash(
-    tokenHash: string,
-    now: Date,
-  ): Promise<{ userId: string } | null> {
-    return revokeActive(this.db, tokenHash, now);
-  }
-
   rotateActive(
     oldTokenHash: string,
     next: Pick<NewRefreshToken, 'tokenHash' | 'expiresAt'>,
@@ -57,13 +50,14 @@ export class DrizzleRefreshTokensRepository implements RefreshTokensRepository {
     };
   }
 
-  async revokeAllForUser(userId: string, now: Date): Promise<void> {
+  async deleteByHash(tokenHash: string): Promise<void> {
     await this.db
-      .update(refreshTokens)
-      .set({ revokedAt: now.toISOString() })
-      .where(
-        and(eq(refreshTokens.userId, userId), isNull(refreshTokens.revokedAt)),
-      );
+      .delete(refreshTokens)
+      .where(eq(refreshTokens.tokenHash, tokenHash));
+  }
+
+  async deleteAllForUser(userId: string): Promise<void> {
+    await this.db.delete(refreshTokens).where(eq(refreshTokens.userId, userId));
   }
 }
 

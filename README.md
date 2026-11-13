@@ -40,7 +40,7 @@ pnpm test:e2e
 
 ## Authentication
 
-Email and password sign-up (no email confirmation). The API issues a 15-minute access JWT, kept only in the memory of the frontend, and a 30-day refresh token in the `gtt_refresh` cookie (HttpOnly, Secure, SameSite=Strict, `Path=/api/auth`); only its SHA-256 hash is stored in `refresh_tokens`. A refresh rotates the token, and presenting an already revoked token revokes all refresh tokens of that user. After the first sign-in the consent screen must be accepted before any recording (`users.consent_at`). The account can be deleted from the profile (password required); the cascade removes the user's data.
+Email and password sign-up (no email confirmation). The API issues a 15-minute access JWT, kept only in the memory of the frontend, and a 30-day refresh token in the `gtt_refresh` cookie (HttpOnly, Secure, SameSite=Strict, `Path=/api/auth`); only its SHA-256 hash is stored in `refresh_tokens`. A refresh rotates the token. Presenting a rotated token again within 60 seconds (a reload or a second tab while the new cookie was lost) is not treated as theft: it yields another new token and revokes nothing. A later replay deletes all refresh tokens of that user, and logout deletes the presented token. After the first sign-in the consent screen must be accepted before any recording (`users.consent_at`). The account can be deleted from the profile (password required); the cascade removes the user's data.
 
 - `JWT_ACCESS_SECRET` is required (at least 32 characters). Generate one: `node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"`.
 - `pnpm db:seed` creates the demo user `demo@gototalk.local` with the password `demo-password-1` (local development only).

@@ -6,6 +6,7 @@ import {
   TokenReusedError,
 } from './refresh-token.errors.js';
 import {
+  REFRESH_REUSE_GRACE_MS,
   REFRESH_TOKEN_TTL_MS,
   RefreshTokenService,
 } from './refresh-token.service.js';
@@ -88,31 +89,75 @@ describe('RefreshTokenService', () => {
     expect(third.token).not.toBe(second.token);
   });
 
-  it('[TC-01-01] reusing a rotated token throws TokenReused and revokes all active tokens of that user', async () => {
-    const { service, repository } = setup();
+  it('[TC-01-01] a replay within the grace period returns a new valid token and revokes nothing', async () => {
+    const { service, repository, advance } = setup();
+    const old = await service.issue(USER_ID);
+    const successor = await service.rotate(old.token);
+    advance(REFRESH_REUSE_GRACE_MS - 1);
+
+    const sibling = await service.rotate(old.token);
+
+    expect(sibling.userId).toBe(USER_ID);
+    expect(sibling.token).not.toBe(successor.token);
+    expect(sibling.token).not.toBe(old.token);
+    expect(repository.rows).toHaveLength(3);
+    expect(repository.rows.filter((r) => r.revokedAt !== null)).toHaveLength(1);
+    await expect(service.rotate(successor.token)).resolves.toMatchObject({
+      userId: USER_ID,
+    });
+    await expect(service.rotate(sibling.token)).resolves.toMatchObject({
+      userId: USER_ID,
+    });
+  });
+
+  it('[TC-01-01] a replay exactly at the end of the grace period is still accepted', async () => {
+    const { service, advance } = setup();
+    const old = await service.issue(USER_ID);
+    await service.rotate(old.token);
+    advance(REFRESH_REUSE_GRACE_MS);
+
+    await expect(service.rotate(old.token)).resolves.toMatchObject({
+      userId: USER_ID,
+    });
+  });
+
+  it('[TC-01-01] a replay after the grace period throws TokenReused and deletes all tokens of that user only', async () => {
+    const { service, repository, advance } = setup();
     const old = await service.issue(USER_ID);
     const otherDevice = await service.issue(USER_ID);
     const fresh = await service.rotate(old.token);
     const foreign = await service.issue(OTHER_USER_ID);
+    advance(REFRESH_REUSE_GRACE_MS + 1);
 
     await expect(service.rotate(old.token)).rejects.toBeInstanceOf(
       TokenReusedError,
     );
 
-    const userRows = repository.rows.filter((r) => r.userId === USER_ID);
-    expect(userRows).toHaveLength(3);
-    expect(userRows.every((r) => r.revokedAt !== null)).toBe(true);
+    expect(repository.rows.filter((r) => r.userId === USER_ID)).toHaveLength(0);
     await expect(service.rotate(fresh.token)).rejects.toBeInstanceOf(
-      TokenReusedError,
+      InvalidRefreshTokenError,
     );
     await expect(service.rotate(otherDevice.token)).rejects.toBeInstanceOf(
-      TokenReusedError,
+      InvalidRefreshTokenError,
     );
-    const foreignRow = repository.rows.find((r) => r.userId === OTHER_USER_ID);
-    expect(foreignRow?.revokedAt).toBeNull();
+    expect(repository.rows).toHaveLength(1);
     await expect(service.rotate(foreign.token)).resolves.toMatchObject({
       userId: OTHER_USER_ID,
     });
+  });
+
+  it('[TC-01-01] a replay after a reuse wipe is just an unknown token', async () => {
+    const { service, advance } = setup();
+    const old = await service.issue(USER_ID);
+    await service.rotate(old.token);
+    advance(REFRESH_REUSE_GRACE_MS + 1);
+    await expect(service.rotate(old.token)).rejects.toBeInstanceOf(
+      TokenReusedError,
+    );
+
+    await expect(service.rotate(old.token)).rejects.toBeInstanceOf(
+      InvalidRefreshTokenError,
+    );
   });
 
   it('[TC-01-01] an expired token throws InvalidRefreshToken without reuse side effects', async () => {
@@ -145,54 +190,70 @@ describe('RefreshTokenService', () => {
     expect(repository.rows[0]?.revokedAt).toBeNull();
   });
 
-  it('[TC-01-01] revoke makes the token unusable and is idempotent', async () => {
-    const { service, repository, advance, now } = setup();
+  it('[TC-01-01] revoke deletes the token, is idempotent and leaves other sessions intact', async () => {
+    const { service, repository } = setup();
     const { token } = await service.issue(USER_ID);
-    advance(1000);
+    const otherSession = await service.issue(USER_ID);
 
-    const revokeTime = now();
     await service.revoke(token);
-    const revokedAt = repository.rows[0]?.revokedAt;
-    advance(1000);
     await service.revoke(token);
 
-    expect(revokedAt).toEqual(revokeTime);
-    expect(repository.rows[0]?.revokedAt).toEqual(revokedAt);
+    expect(repository.rows).toHaveLength(1);
     await expect(service.rotate(token)).rejects.toBeInstanceOf(
-      TokenReusedError,
+      InvalidRefreshTokenError,
     );
+    await expect(service.rotate(otherSession.token)).resolves.toMatchObject({
+      userId: USER_ID,
+    });
   });
 
-  it('[TC-01-01] concurrent rotate of the same token succeeds once and reports reuse for the other', async () => {
+  it('[TC-01-01] a replay after logout is an invalid token even within the grace period and keeps other sessions', async () => {
+    const { service, repository } = setup();
+    const first = await service.issue(USER_ID);
+    const rotated = await service.rotate(first.token);
+    const otherSession = await service.issue(USER_ID);
+    await service.revoke(first.token);
+    await service.revoke(rotated.token);
+
+    await expect(service.rotate(first.token)).rejects.toBeInstanceOf(
+      InvalidRefreshTokenError,
+    );
+
+    expect(repository.rows).toHaveLength(1);
+    await expect(service.rotate(otherSession.token)).resolves.toMatchObject({
+      userId: USER_ID,
+    });
+  });
+
+  it('[TC-01-01] concurrent rotate of the same token succeeds for both callers with distinct tokens', async () => {
     const { service } = setup();
     const { token } = await service.issue(USER_ID);
 
-    const results = await Promise.allSettled([
+    const [a, b] = await Promise.all([
       service.rotate(token),
       service.rotate(token),
     ]);
 
-    expect(results.filter((r) => r.status === 'fulfilled')).toHaveLength(1);
-    const rejected = results.filter((r) => r.status === 'rejected');
-    expect(rejected).toHaveLength(1);
-    expect(rejected[0]?.reason).toBeInstanceOf(TokenReusedError);
+    expect(a.userId).toBe(USER_ID);
+    expect(b.userId).toBe(USER_ID);
+    expect(a.token).not.toBe(b.token);
+    await expect(service.rotate(a.token)).resolves.toBeDefined();
+    await expect(service.rotate(b.token)).resolves.toBeDefined();
   });
 
-  it('[TC-01-01] an expired token that was already revoked counts as reuse and revokes the user tokens', async () => {
+  it('[TC-01-01] an expired token that was already rotated is invalid, not reuse', async () => {
     const { service, repository, advance } = setup();
     const old = await service.issue(USER_ID);
-    advance(1000);
-    const live = await service.issue(USER_ID);
-    await service.revoke(old.token);
+    const successor = await service.rotate(old.token);
     advance(REFRESH_TOKEN_TTL_MS);
 
     await expect(service.rotate(old.token)).rejects.toBeInstanceOf(
-      TokenReusedError,
+      InvalidRefreshTokenError,
     );
 
-    expect(repository.rows.every((r) => r.revokedAt !== null)).toBe(true);
-    await expect(service.rotate(live.token)).rejects.toBeInstanceOf(
-      TokenReusedError,
+    expect(repository.rows).toHaveLength(2);
+    await expect(service.rotate(successor.token)).rejects.toBeInstanceOf(
+      InvalidRefreshTokenError,
     );
   });
 

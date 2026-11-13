@@ -43,10 +43,6 @@ test.describe('[TC-01-03] auth: registration, consent, logout and login', () => 
   }) => {
     const second = await page.context().newPage();
     await Promise.all([page.goto('/'), second.goto('/')]);
-    for (const tab of [page, second]) {
-      await expect(tab.getByRole('heading', { name: 'Сесія' })).toBeVisible();
-      await expect(tab).toHaveURL((url) => url.pathname === '/');
-    }
 
     for (let round = 0; round < 3; round += 1) {
       await Promise.all([page.reload(), second.reload()]);
@@ -54,6 +50,42 @@ test.describe('[TC-01-03] auth: registration, consent, logout and login', () => 
         await expect(tab.getByRole('heading', { name: 'Сесія' })).toBeVisible();
         await expect(tab).toHaveURL((url) => url.pathname === '/');
       }
+    }
+  });
+
+  test('[TC-01-03] a refresh response lost after the server rotated the token does not sign the user out', async ({
+    signedInPage: { page },
+  }) => {
+    const before = await page.context().cookies();
+    let intercepted = false;
+    let rotationLost!: () => void;
+    const lost = new Promise<void>((resolve) => {
+      rotationLost = resolve;
+    });
+    await page.route('**/api/auth/refresh', async (route) => {
+      if (intercepted) {
+        await route.continue();
+        return;
+      }
+      intercepted = true;
+      await route.fetch();
+      await route.abort();
+      rotationLost();
+    });
+
+    await page.goto('/');
+    await lost;
+    await page.unroute('**/api/auth/refresh');
+    // route.fetch() stores the rotated cookie in the context; put the stale one back, as if the response never arrived.
+    await page.context().clearCookies({ name: 'gtt_refresh' });
+    await page
+      .context()
+      .addCookies(before.filter((c) => c.name === 'gtt_refresh'));
+
+    for (let round = 0; round < 3; round += 1) {
+      await page.reload();
+      await expect(page.getByRole('heading', { name: 'Сесія' })).toBeVisible();
+      await expect(page).toHaveURL((url) => url.pathname === '/');
     }
   });
 

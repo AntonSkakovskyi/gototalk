@@ -86,7 +86,10 @@ describe('DrizzleRefreshTokensRepository', () => {
 
   it('[TC-01-01] rotateActive returns null and inserts nothing for revoked, expired and unknown tokens', async () => {
     await insertToken('revoked');
-    await repository.revokeActiveByHash('revoked', NOW);
+    await pool.query(
+      `UPDATE refresh_tokens SET revoked_at = $1 WHERE token_hash = 'revoked'`,
+      [NOW.toISOString()],
+    );
     await insertToken('expired', new Date(NOW.getTime() - 1));
     const next = {
       tokenHash: 'next',
@@ -134,18 +137,19 @@ describe('DrizzleRefreshTokensRepository', () => {
     expect(rows).toHaveLength(1);
   });
 
-  it('[TC-01-01] revokeActiveByHash honours expiry at the passed now and does not re-revoke', async () => {
-    await insertToken('live');
-    await insertToken('stale', new Date(NOW.getTime() - HOUR));
+  it('[TC-01-01] deleteByHash removes only the matching row and is idempotent', async () => {
+    await insertToken('a');
+    await insertToken('b');
 
-    expect(await repository.revokeActiveByHash('stale', NOW)).toBeNull();
-    expect(await repository.revokeActiveByHash('live', NOW)).toEqual({
-      userId,
-    });
-    expect(await repository.revokeActiveByHash('live', NOW)).toBeNull();
+    await repository.deleteByHash('a');
+    await repository.deleteByHash('a');
+    await repository.deleteByHash('missing');
+
+    expect(await repository.findByHash('a')).toBeNull();
+    expect(await repository.findByHash('b')).not.toBeNull();
   });
 
-  it('[TC-01-01] revokeAllForUser revokes only active tokens of that user', async () => {
+  it('[TC-01-01] deleteAllForUser removes every token of that user, revoked or not, and no one else', async () => {
     const { rows } = await pool.query<{ id: string }>(
       `INSERT INTO users (email, password_hash) VALUES ($1, 'x') RETURNING id`,
       [`${randomUUID()}@example.com`],
@@ -153,9 +157,10 @@ describe('DrizzleRefreshTokensRepository', () => {
     const otherId = rows[0]?.id ?? '';
     await insertToken('mine-1');
     await insertToken('mine-2');
-    await repository.revokeActiveByHash(
+    await repository.rotateActive(
       'mine-2',
-      new Date(NOW.getTime() - HOUR),
+      { tokenHash: 'mine-3', expiresAt: new Date(NOW.getTime() + HOUR) },
+      NOW,
     );
     await repository.insert({
       userId: otherId,
@@ -163,10 +168,11 @@ describe('DrizzleRefreshTokensRepository', () => {
       expiresAt: new Date(NOW.getTime() + HOUR),
     });
 
-    await repository.revokeAllForUser(userId, NOW);
+    await repository.deleteAllForUser(userId);
 
-    expect((await revokedAt('mine-1'))?.getTime()).toBe(NOW.getTime());
-    expect((await revokedAt('mine-2'))?.getTime()).toBe(NOW.getTime() - HOUR);
-    expect(await revokedAt('theirs')).toBeNull();
+    for (const hash of ['mine-1', 'mine-2', 'mine-3']) {
+      expect(await repository.findByHash(hash)).toBeNull();
+    }
+    expect(await repository.findByHash('theirs')).not.toBeNull();
   });
 });
