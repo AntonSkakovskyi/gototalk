@@ -10,10 +10,11 @@ import {
 import classes from './LevelPicker.module.scss';
 
 interface LevelPickerProps {
+  hint: string;
   focusOnMount: boolean;
 }
 
-export function LevelPicker({ focusOnMount }: LevelPickerProps) {
+export function LevelPicker({ hint, focusOnMount }: LevelPickerProps) {
   const { t } = useTranslation();
   const { field, fieldState } = useController<OnboardingFormValues, 'level'>({
     name: 'level',
@@ -22,7 +23,7 @@ export function LevelPicker({ focusOnMount }: LevelPickerProps) {
   return (
     <StepFieldset
       title={t('profile.onboarding.level.title')}
-      hint={t('profile.onboarding.level.hint')}
+      hint={hint}
       error={levelErrorMessage(fieldState.error)}
       focusOnMount={focusOnMount}
     >

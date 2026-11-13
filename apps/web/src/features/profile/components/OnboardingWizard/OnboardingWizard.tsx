@@ -42,7 +42,12 @@ export function OnboardingWizard({ onCompleted }: OnboardingWizardProps) {
               {errorText(submitError)}
             </Alert>
           )}
-          {step === 'level' && <LevelPicker focusOnMount={focusStep} />}
+          {step === 'level' && (
+            <LevelPicker
+              hint={t('profile.onboarding.level.hint')}
+              focusOnMount={focusStep}
+            />
+          )}
           {step === 'scenes' && (
             <ScenePicker draft={wizard.sceneDraft} focusOnMount={focusStep} />
           )}
@@ -62,7 +67,7 @@ export function OnboardingWizard({ onCompleted }: OnboardingWizardProps) {
               <Button key="finish" type="submit" size="lg" loading={isPending}>
                 {t(
                   isRetry
-                    ? 'profile.onboarding.actions.retry'
+                    ? 'profile.actions.retry'
                     : 'profile.onboarding.actions.finish',
                 )}
               </Button>

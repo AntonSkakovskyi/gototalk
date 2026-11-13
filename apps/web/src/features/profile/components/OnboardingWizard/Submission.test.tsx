@@ -98,7 +98,7 @@ describe('OnboardingWizard submission', () => {
     expect(onCompleted).not.toHaveBeenCalled();
     expect(goalField(1)).toHaveValue('Speak fluently');
 
-    await user.click(button(text.actions.retry));
+    await user.click(button(uk.profile.actions.retry));
 
     await waitFor(() => expect(onCompleted).toHaveBeenCalledTimes(1));
     expect(requests.filter(({ method }) => method === 'POST')).toHaveLength(1);
@@ -122,12 +122,12 @@ describe('OnboardingWizard submission', () => {
     await user.click(button(text.actions.finish));
     await screen.findByRole('alert');
 
-    await user.click(button(text.actions.retry));
+    await user.click(button(uk.profile.actions.retry));
 
     await waitFor(() =>
       expect(requests.filter(({ method }) => method === 'PUT')).toHaveLength(2),
     );
-    expect(button(text.actions.retry)).toBeDisabled();
+    expect(button(uk.profile.actions.retry)).toBeDisabled();
     expect(
       screen.queryByRole('button', { name: text.actions.finish }),
     ).toBeNull();

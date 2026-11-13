@@ -17,6 +17,12 @@ afterEach(() => {
 });
 
 describe('OnboardingWizard level step', () => {
+  it('[TC-02-03] explains that the level can be changed later in the profile', () => {
+    renderWizard();
+
+    expect(screen.getByText(text.level.hint)).toBeInTheDocument();
+  });
+
   it('[TC-02-03] blocks the first step until a level is chosen', async () => {
     const user = userEvent.setup();
     renderWizard();

@@ -1,11 +1,17 @@
 import { useState } from 'react';
-import {
-  addCustomScene,
-  type OnboardingForm,
-} from '@/features/profile/lib/onboarding-form';
+import { addCustomScene } from '@/features/profile/lib/onboarding-form';
 import type { ProfileErrorMessage } from '@/features/profile/lib/profile-errors';
 
-export function useSceneDraft(form: OnboardingForm) {
+interface ScenesForm {
+  getValues: (name: 'scenes') => string[];
+  setValue: (
+    name: 'scenes',
+    scenes: string[],
+    options: { shouldDirty: boolean; shouldValidate: boolean },
+  ) => void;
+}
+
+export function useSceneDraft(form: ScenesForm) {
   const [value, setValue] = useState('');
   const [error, setError] = useState<ProfileErrorMessage | null>(null);
 

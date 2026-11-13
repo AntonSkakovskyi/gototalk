@@ -57,3 +57,5 @@
 | Тест порядку `weakAreas` для однакових `frequency` і `last_seen_at` (фінальний критерій `category`) | рев'ю 02-05 | будь-яка |
 | `unstubGlobals: true` у конфігу Vitest замість `afterEach(vi.unstubAllGlobals)` у кожному тесті; прибрати `import { vi }` з `mock-api.ts` | рев'ю 02-06 | будь-яка |
 | `profile.errors.generic` дублює `auth.errors.generic`: винести спільний `errors.generic` | рев'ю 02-06 | будь-яка |
+| Редагування профілю використовує валідатори й ключі онбордингу (`goalErrorMessage`, `addCustomScene`, `profile.onboarding.errors.*`): винести у нейтральний `lib/` і групу ключів | рев'ю 02-08 | будь-яка |
+| У `test-cases.md` теги [TC-02-03]/[TC-02-04] означають e2e/inspection, а компонентні тести 02-07/02-08 їх також використовують: узгодити | рев'ю 02-08 | будь-яка |

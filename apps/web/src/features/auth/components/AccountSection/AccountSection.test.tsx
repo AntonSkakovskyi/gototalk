@@ -5,15 +5,28 @@ import userEvent from '@testing-library/user-event';
 import { App } from '@/app/App';
 import uk from '@/shared/i18n/uk.json';
 import {
+  TEST_PROFILE,
   TEST_USER,
   emptyResponse,
   errorResponse,
+  jsonResponse,
 } from '@/shared/testing/test-fixtures';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 import { clearQueryCacheOnSessionEnd } from '@/shared/session/query-cache';
 import { getSession } from '@/shared/session/session-store';
 
 const fetchMock = vi.fn<typeof fetch>();
+
+// The profile page also loads the profile and goals; fetchMock only sees the account requests.
+const PAGE_READS: Record<string, Response> = {
+  '/api/profile': jsonResponse(TEST_PROFILE),
+  '/api/goals': jsonResponse([]),
+};
+
+function routeFetch(input: RequestInfo | URL, init?: RequestInit) {
+  const pageRead = PAGE_READS[String(input)];
+  return pageRead ? Promise.resolve(pageRead.clone()) : fetchMock(input, init);
+}
 
 const account = uk.pages.profile.account;
 
@@ -43,7 +56,7 @@ function loginHeading() {
 
 beforeEach(() => {
   fetchMock.mockReset();
-  vi.stubGlobal('fetch', fetchMock);
+  vi.stubGlobal('fetch', routeFetch);
 });
 
 afterEach(() => {
