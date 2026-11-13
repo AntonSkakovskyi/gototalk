@@ -1,5 +1,5 @@
 import { queryOptions } from '@tanstack/react-query';
-import { ApiError } from '@/shared/api/http';
+import { retryUnlessClientError } from '@/shared/api/retry-policy';
 import { getLearnerModel, getProfile, listGoals } from './profile-api';
 
 export const profileKeys = {
@@ -11,17 +11,11 @@ export const profileKeys = {
 
 const MAX_PROFILE_RETRIES = 1;
 
-function retryUnlessClientError(failureCount: number, error: Error): boolean {
-  const isClientError =
-    error instanceof ApiError && error.status >= 400 && error.status < 500;
-  return !isClientError && failureCount < MAX_PROFILE_RETRIES;
-}
-
 export function profileQueryOptions() {
   return queryOptions({
     queryKey: profileKeys.profile(),
     queryFn: getProfile,
-    retry: retryUnlessClientError,
+    retry: retryUnlessClientError(MAX_PROFILE_RETRIES),
   });
 }
 

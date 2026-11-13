@@ -27,6 +27,7 @@ export default defineConfig({
   },
   test: {
     globals: true,
+    unstubGlobals: true,
     environment: 'jsdom',
     setupFiles: ['./vitest.setup.ts'],
     css: { modules: { classNameStrategy: 'non-scoped' } },

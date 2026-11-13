@@ -178,6 +178,13 @@
       }
     }
   },
+  "session": {
+    "errors": {
+      "consentRequired": "Щоб почати сесію, потрібна згода на обробку мовлення",
+      "planUnavailable": "Не вдалося підібрати тему. Спробуйте ще раз",
+      "notFound": "Сесію не знайдено"
+    }
+  },
   "mistakeCategories": {
     "articles": "Артиклі",
     "verb_tense": "Часи дієслів",
