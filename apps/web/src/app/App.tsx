@@ -1,12 +1,12 @@
 import { Navigate, Route, Routes } from 'react-router';
-import { AppLayout } from './app/AppLayout';
+import { AppLayout } from '@/app/layout/AppLayout/AppLayout';
 import { ConsentPage } from '@/pages/consent/ConsentPage';
 import {
   PublicOnly,
   RequireAuth,
   RequireConsent,
   RequireNoConsent,
-} from './auth/guards';
+} from '@/app/router/guards/guards';
 import { LoginPage } from '@/pages/login/LoginPage';
 import { RegisterPage } from '@/pages/register/RegisterPage';
 import { HistoryPage } from '@/pages/history/HistoryPage';

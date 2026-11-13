@@ -1,5 +1,5 @@
 import { screen } from '@testing-library/react';
-import { App } from '../App';
+import { App } from '@/app/App';
 import uk from '@/shared/i18n/uk.json';
 import { TEST_USER } from '@/shared/testing/test-fixtures';
 import { renderWithProviders } from '@/shared/testing/test-utils';

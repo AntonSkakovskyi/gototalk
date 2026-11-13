@@ -32,7 +32,7 @@
   - `auth/LoginPage.*` → `pages/login/`; `RegisterPage.*` → `pages/register/`; `ConsentPage.*` (tsx, scss, test) → `pages/consent/`; `pages/SessionPage.tsx` → `pages/session/`, `WordsPage` → `pages/words/`, `HistoryPage` → `pages/history/`, `ProfilePage` → `pages/profile/`.
   - Коміт: `refactor(web): one folder per route page`
 
-- [ ] **W6. `app/*` і `main.tsx`**
+- [x] **W6. `app/*` і `main.tsx`**
   - `App.tsx`, `App.test.tsx` → `app/`; `app/AppLayout.*` → `app/layout/AppLayout/`; `app/BottomNav.*` → `app/layout/BottomNav/`, `app/routes.ts` → `app/layout/BottomNav/tabs.ts`; `auth/AuthBootstrap.*` → `app/providers/AuthBootstrap/`; `auth/guards.*` → `app/router/guards/`. Папка `src/auth` має зникнути.
   - Коміт: `refactor(web): app shell, providers and router guards under app`
 

@@ -2,7 +2,7 @@ import { AppShell, Text } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
 import { Outlet } from 'react-router';
 import classes from './AppLayout.module.scss';
-import { BottomNav } from './BottomNav';
+import { BottomNav } from '@/app/layout/BottomNav/BottomNav';
 
 // Footer height plus the bottom safe-area inset of notched phones.
 const FOOTER_HEIGHT = 'calc(56px + env(safe-area-inset-bottom, 0px))';
