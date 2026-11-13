@@ -33,3 +33,10 @@ export function passwordErrorKey(
     ? tooShortKey
     : 'auth.validation.passwordRequired';
 }
+
+export function deleteAccountErrorKey(error: unknown): string {
+  return error instanceof ApiError &&
+    error.code === ERROR_CODES.INVALID_PASSWORD
+    ? 'pages.profile.account.delete.invalidPassword'
+    : 'auth.errors.generic';
+}

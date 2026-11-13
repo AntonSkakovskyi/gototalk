@@ -10,13 +10,14 @@ import i18n from './i18n/index.js';
 import { theme } from './theme.js';
 
 interface RenderOptions {
+  queryClient?: QueryClient;
   route?: string;
   session?: { user: Me; accessToken: string } | 'anonymous';
 }
 
 export function renderWithProviders(
   ui: ReactElement,
-  { route = '/', session }: RenderOptions = {},
+  { route = '/', session, queryClient: providedClient }: RenderOptions = {},
 ): RenderResult {
   if (session === 'anonymous') {
     clearSession();
@@ -24,9 +25,11 @@ export function renderWithProviders(
     setSession(session);
   }
 
-  const queryClient = new QueryClient({
-    defaultOptions: { queries: { retry: false } },
-  });
+  const queryClient =
+    providedClient ??
+    new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
 
   return render(
     <MantineProvider theme={theme}>
