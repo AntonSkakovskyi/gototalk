@@ -158,7 +158,8 @@ describe('GET /api/sessions and GET /api/sessions/:id', () => {
 
     const res = await get('/api/sessions', token);
 
-    expect(JSON.stringify(res.body)).not.toMatch(/plan|questions/);
+    expect(res.body).toHaveLength(1);
+    expect(res.body[0]).not.toHaveProperty('plan');
   });
 
   it('[TC-03-02] returns the utterances ordered by seq with text_verbatim as text', async () => {

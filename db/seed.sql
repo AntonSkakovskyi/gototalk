@@ -1,4 +1,5 @@
 -- Demo data for development. Apply after all migrations (the plan column comes from 0003); safe to re-run.
+-- Re-running resets the demo user's profile and goals to the seeded values, so older seeded databases converge to preset scene codes.
 -- Demo user: demo@gototalk.local, password demo-password-1 (local development only).
 -- Mistake categories come from mistake_categories (0002); mistake positions are offsets in text_verbatim.
 

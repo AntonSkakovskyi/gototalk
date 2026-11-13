@@ -1,4 +1,4 @@
-import { isScenePreset, PLAN_QUESTIONS } from '@gototalk/shared';
+import { isScenePreset } from '@gototalk/shared';
 import type { MistakeCategoryCode, Plan, ScenePreset } from '@gototalk/shared';
 import type { PlanSessionInput } from './language-model.port.js';
 
@@ -81,9 +81,7 @@ export function buildFakePlan(input: PlanSessionInput): Plan {
   const customTopic = input.customTopic?.trim();
   const topic = customTopic ? customTopic : pickTopic(input);
   const templates = customTopic ? CUSTOM_TOPIC_QUESTIONS : UNIVERSAL_QUESTIONS;
-  const questions = templates
-    .slice(0, PLAN_QUESTIONS)
-    .map((template) => template(topic));
+  const questions = templates.map((template) => template(topic));
 
   const [mostFrequent] = input.patterns;
   if (mostFrequent !== undefined) {

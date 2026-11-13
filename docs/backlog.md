@@ -15,7 +15,7 @@
 | Fake-поведінка за `docs/specs/stubs.md`: `transcribe` (разом із `reset()` лічильника, який stubs.md припускає), `analyzeUtterance`, `nextTurn`, `hint` | 00 «Fake-адаптери – мінімум» | 04 |
 | Fake-поведінка за `docs/specs/stubs.md`: `summarizeSession` | 00 «Fake-адаптери – мінімум» | 05 |
 | Підпис `hint` (union за `kind`) відрізняється від заголовків `stubs.md`: звірити й оновити `stubs.md` (звірити також специфікації 03 і 05) | 00-11, відхилення | 04 |
-| Внутрішні `ZodError` (відповідь LLM, рядок БД) мають бути 5xx із логом, а не 400 `VALIDATION_ERROR` | Відкладене після PR #1 | 04 |
+| Внутрішні `ZodError` (відповідь LLM, рядок БД) мають бути 5xx із логом, а не 400 `VALIDATION_ERROR`; також `.parse` рядків БД у мапері `sessions.repository.ts` (03-08) | Відкладене після PR #1 | 04 |
 | `FAKE_STT_FAIL`/`FAKE_LLM_FAIL`: зробити enum зі `stubs.md` і підтримку режимів у Fake-адаптерах | Відкладене після PR #1; 00-11 (режими не робили) | 04 |
 | Fake `analyzeUtterance`: регістронезалежні RegExp | 00-11, на потім | 04 |
 | Fake: словник перекладів `translation_uk` | 00-11, на потім | 04 |

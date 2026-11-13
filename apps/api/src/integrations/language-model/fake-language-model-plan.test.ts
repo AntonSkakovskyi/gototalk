@@ -167,21 +167,24 @@ describe('FakeLanguageModel.planSession', () => {
 
   it('[TC-03-01] every plan has 5 non-empty questions within the bounds', async () => {
     const customTopics = ['x'.repeat(TOPIC_MAX), undefined];
+    const patternSets: MistakeCategoryCode[][] = [[], ['verb_tense']];
     for (const scene of SCENE_PRESETS) {
       for (let length = 0; length <= 5; length++) {
         for (const customTopic of customTopics) {
-          const result = await plan({
-            scenes: [scene],
-            previousTopics: Array.from({ length }, () => 'x'),
-            customTopic,
-            patterns: ['verb_tense'],
-          });
+          for (const patterns of patternSets) {
+            const result = await plan({
+              scenes: [scene],
+              previousTopics: Array.from({ length }, () => 'x'),
+              customTopic,
+              patterns,
+            });
 
-          expect(result.topic.length).toBeLessThanOrEqual(TOPIC_MAX);
-          expect(result.questions).toHaveLength(5);
-          for (const question of result.questions) {
-            expect(question.length).toBeGreaterThan(0);
-            expect(question.length).toBeLessThanOrEqual(QUESTION_MAX);
+            expect(result.topic.length).toBeLessThanOrEqual(TOPIC_MAX);
+            expect(result.questions).toHaveLength(5);
+            for (const question of result.questions) {
+              expect(question.length).toBeGreaterThan(0);
+              expect(question.length).toBeLessThanOrEqual(QUESTION_MAX);
+            }
           }
         }
       }

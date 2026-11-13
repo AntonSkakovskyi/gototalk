@@ -65,9 +65,9 @@ export class FakeLanguageModel implements LanguageModelPort {
   }
 
   planSession(input: PlanSessionInput): Promise<unknown> {
-    return new Promise((resolve) => {
+    return Promise.resolve().then(() => {
       renderSessionPlanPrompt(input);
-      resolve(buildFakePlan(input));
+      return buildFakePlan(input);
     });
   }
 

@@ -9,6 +9,5 @@ import { SessionsService } from './sessions.service.js';
   imports: [ProfileModule],
   controllers: [SessionsController],
   providers: [SessionPlannerService, SessionsService, SessionsRepository],
-  exports: [SessionPlannerService],
 })
 export class SessionModule {}

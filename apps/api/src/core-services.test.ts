@@ -37,9 +37,9 @@ describe('Core service skeletons', () => {
     expect(moduleRef.get(LearnerModelService)).toBeInstanceOf(
       LearnerModelService,
     );
-    expect(moduleRef.get(SessionPlannerService)).toBeInstanceOf(
-      SessionPlannerService,
-    );
+    expect(
+      moduleRef.get(SessionPlannerService, { strict: false }),
+    ).toBeInstanceOf(SessionPlannerService);
     expect(moduleRef.get(MistakeAnalyzerService)).toBeInstanceOf(
       MistakeAnalyzerService,
     );
