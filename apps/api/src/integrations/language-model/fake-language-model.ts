@@ -5,13 +5,16 @@ import type {
   AnalyzeUtteranceResponse,
   HintRequest,
   LanguageModelPort,
+  NextTurnInput,
   PlanSessionInput,
 } from './language-model.port.js';
 import { analyzeText } from './fake-analysis.js';
 import {
   ERROR_ANALYSIS_PROMPT_ID,
   renderErrorAnalysisPrompt,
+  renderNextTurnPrompt,
 } from './prompts.js';
+import { buildFakeTurn } from './fake-next-turn.js';
 import { buildFakePlan } from './fake-session-plans.js';
 import { renderSessionPlanPrompt } from './session-plan-prompt.js';
 
@@ -52,10 +55,11 @@ export class FakeLanguageModel implements LanguageModelPort {
     });
   }
 
-  nextTurn(): Promise<unknown> {
+  nextTurn(input: NextTurnInput): Promise<unknown> {
     if (this.failMode === 'unavailable') return unavailable();
-    return Promise.resolve({
-      question: 'Tell me about your experience working on it.',
+    return Promise.resolve().then(() => {
+      renderNextTurnPrompt(input);
+      return buildFakeTurn(input);
     });
   }
 

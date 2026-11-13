@@ -11,6 +11,7 @@ import { ERROR_ANALYSIS_PROMPT_ID } from './language-model/prompts.js';
 import { FakeLanguageModel } from './language-model/fake-language-model.js';
 import type { LanguageModelPort } from './language-model/language-model.port.js';
 import type { SpeechRecognitionPort } from './speech-recognition/speech-recognition.port.js';
+import { FAKE_TRANSCRIPTS } from './speech-recognition/fake-transcripts.js';
 import { FakeSpeechRecognition } from './speech-recognition/fake-speech-recognition.js';
 
 const audio = Buffer.from([1, 2, 3]);
@@ -18,22 +19,19 @@ const audio = Buffer.from([1, 2, 3]);
 const fakeStt = (): SpeechRecognitionPort => new FakeSpeechRecognition();
 
 describe('FakeSpeechRecognition', () => {
-  it('[TC-00-05] transcribe: the same input gives an identical result', async () => {
+  it('[TC-00-05] transcribe: the same index gives an identical result', async () => {
     const stt = fakeStt();
-    const first = await stt.transcribe(audio, 'audio/webm');
-    const second = await stt.transcribe(audio, 'audio/webm');
+    const first = await stt.transcribe(audio, 'audio/webm', 2);
+    const second = await stt.transcribe(audio, 'audio/webm', 2);
 
     expect(second).toEqual(first);
     expect(TranscriptSchema.parse(first)).toEqual(first);
   });
 
-  it('[TC-00-05] transcribe returns transcript #0 from stubs.md and ignores the audio content and index', async () => {
-    const stt = fakeStt();
-    const result = await stt.transcribe(Buffer.alloc(0), 'audio/ogg', 3);
+  it('[TC-00-05] transcribe: a fresh adapter starts with transcript #0 and ignores the audio content', async () => {
+    const result = await fakeStt().transcribe(Buffer.alloc(0), 'audio/ogg');
 
-    expect(result.verbatim).toBe(
-      'Um, yesterday I go to the office and, uh, I have a meeting with my team. I very like my job.',
-    );
+    expect(result.verbatim).toBe(FAKE_TRANSCRIPTS[0]);
     expect(result.clean).toBe(
       'Yesterday I go to the office and I have a meeting with my team. I very like my job.',
     );

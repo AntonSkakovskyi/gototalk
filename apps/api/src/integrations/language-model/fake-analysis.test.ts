@@ -2,33 +2,6 @@ import { AnalysisEnvelopeSchema, AnalysisResultSchema } from '@gototalk/shared';
 import { describe, expect, it } from 'vitest';
 import { analyzeText } from './fake-analysis.js';
 
-const STT_TRANSCRIPTS = [
-  {
-    verbatim:
-      'Um, yesterday I go to the office and, uh, I have a meeting with my team. I very like my job.',
-    categories: ['verb_tense', 'word_order'],
-  },
-  {
-    verbatim:
-      'Well, I am agree that remote work is good. Uh, I work with small team since 2 years.',
-    categories: ['l1_calque', 'articles', 'prepositions'],
-  },
-  {
-    verbatim: 'My sister, um, she work in a big company. She busy every day.',
-    categories: ['subject_verb_agreement', 'missing_be'],
-  },
-  {
-    verbatim:
-      'I have 25 years and, uh, I live in Kyiv. It depends of the weather, um, if I will have time, I travel.',
-    categories: ['l1_calque', 'prepositions', 'conditionals'],
-  },
-  {
-    verbatim:
-      'Um, we have a meeting in Monday and I need more informations. Uh, I am boring because it is long.',
-    categories: ['prepositions', 'plural_countable', 'word_choice'],
-  },
-];
-
 describe('analyzeText', () => {
   it('[TC-04-01] matches case-insensitively and keeps the original as typed', () => {
     const { mistakes } = analyzeText('YESTERDAY i GO there. WHY YOU THINK so?');
@@ -118,19 +91,4 @@ describe('analyzeText', () => {
     expect(AnalysisResultSchema.safeParse(result).success).toBe(true);
     expect(result.better.length).toBeLessThanOrEqual(2);
   });
-
-  it.each(STT_TRANSCRIPTS.map((t, i) => [i, t] as const))(
-    '[TC-04-01] canned STT transcript %i yields the expected categories',
-    (_, { verbatim, categories }) => {
-      const result = analyzeText(verbatim);
-
-      expect(new Set(result.mistakes.map((m) => m.category))).toEqual(
-        new Set(categories),
-      );
-      expect(AnalysisResultSchema.safeParse(result).success).toBe(true);
-      for (const m of result.mistakes) {
-        expect(verbatim.slice(m.start, m.end)).toBe(m.original);
-      }
-    },
-  );
 });

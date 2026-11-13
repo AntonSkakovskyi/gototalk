@@ -57,7 +57,6 @@
 | `pnpm exec eslint e2e` падає з `ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL`, `pnpm lint` і `node node_modules/eslint/bin/eslint.js e2e` працюють | 03-15 | будь-яка |
 | Тест порядку `started_at` при конкурентних стартах імовірнісний (не червоніє при поверненні `now()`) | 03-07 | будь-яка |
 | Прибрати `session.details.answerSoon` («голосові відповіді з’являться в наступній версії») разом із реальним діалогом | фінальне рев’ю 03 | 04 |
-| Контрактний тест: коди `mistake_categories` у БД збігаються з `MISTAKE_CATEGORY_CODES` (інакше `toMistakeView` дає 500 на всю сесію) | рев'ю 04-01 | будь-яка |
 | `AnswerTextRequestSchema.text` рахує UTF-16 code units, емодзі займає 2 з 1000 | рев'ю 04-01 | будь-яка |
 | Розбити `packages/shared/src/session.test.ts` (329 рядків) при наступній зміні | рев'ю 04-01 | будь-яка |
 | `toUtterance`: `BetterPhrasingsSchema.parse` дає 500 на всю сесію, якщо збережений JSON не відповідає схемі після зміни меж; розглянути `safeParse` із логом і `[]` | рев'ю 04-02 | 04 (04-12) |
