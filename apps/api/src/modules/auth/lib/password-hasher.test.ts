@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { PasswordHasher } from './password-hasher.js';
 
 const seedSql = readFileSync(
-  new URL('../../../../db/seed.sql', import.meta.url),
+  new URL('../../../../../../db/seed.sql', import.meta.url),
   'utf8',
 );
 const demoHash = /'(\$argon2id\$[^']+)'/.exec(seedSql)?.[1];

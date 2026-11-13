@@ -6,7 +6,7 @@ import { AppConfigModule } from './core/config/app-config.module.js';
 import type { AppConfigOptions } from './core/config/app-config.module.js';
 import type { Env } from './core/config/env.schema.js';
 import { AnalysisModule } from './modules/analysis/analysis.module.js';
-import { AuthModule } from './auth/auth.module.js';
+import { AuthModule } from './modules/auth/auth.module.js';
 import { DbModule } from './core/db/db.module.js';
 import { DialogueModule } from './modules/dialogue/dialogue.module.js';
 import { HealthModule } from './core/health/health.module.js';

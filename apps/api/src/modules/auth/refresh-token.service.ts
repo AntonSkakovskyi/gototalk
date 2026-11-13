@@ -1,6 +1,6 @@
 import { createHash, randomBytes } from 'node:crypto';
 import { Inject, Injectable, Optional } from '@nestjs/common';
-import { CLOCK } from './clock.js';
+import { CLOCK } from './lib/clock.js';
 import {
   InvalidRefreshTokenError,
   TokenReusedError,
@@ -8,7 +8,7 @@ import {
 import {
   REFRESH_TOKENS_REPOSITORY,
   type RefreshTokensRepository,
-} from './refresh-tokens.repository.js';
+} from './persistence/refresh-tokens.repository.js';
 
 export const REFRESH_TOKEN_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 export const REFRESH_REUSE_GRACE_MS = 60_000;

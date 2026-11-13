@@ -6,10 +6,10 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { ERROR_CODES } from '@gototalk/shared';
 import type { ConsentInfo, Me } from '@gototalk/shared';
-import { toMe } from '../../auth/auth.service.js';
-import { PasswordHasher } from '../../auth/password-hasher.js';
-import { UsersRepository } from '../../auth/users.repository.js';
-import type { UserRecord } from '../../auth/users.repository.js';
+import { toMe } from '../auth/auth.service.js';
+import { PasswordHasher } from '../auth/lib/password-hasher.js';
+import { UsersRepository } from '../auth/persistence/users.repository.js';
+import type { UserRecord } from '../auth/persistence/users.repository.js';
 import type { Env } from '../../core/config/env.schema.js';
 
 @Injectable()

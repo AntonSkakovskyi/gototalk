@@ -5,8 +5,8 @@ import {
 } from '@nestjs/common';
 import type { CanActivate, ExecutionContext } from '@nestjs/common';
 import { ERROR_CODES } from '@gototalk/shared';
-import type { AuthenticatedRequest } from './current-user.decorator.js';
-import { UsersRepository } from './users.repository.js';
+import type { AuthenticatedRequest } from '../decorators/current-user.decorator.js';
+import { UsersRepository } from '../persistence/users.repository.js';
 
 @Injectable()
 export class ConsentGuard implements CanActivate {

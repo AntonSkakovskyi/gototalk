@@ -2,16 +2,16 @@ import { Global, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
-import type { Env } from '../core/config/env.schema.js';
+import type { Env } from '../../core/config/env.schema.js';
 import { AuthController } from './auth.controller.js';
-import { AuthGuard } from './auth.guard.js';
+import { AuthGuard } from './guards/auth.guard.js';
 import { AuthService } from './auth.service.js';
-import { CLOCK } from './clock.js';
-import { DrizzleRefreshTokensRepository } from './drizzle-refresh-tokens.repository.js';
-import { PasswordHasher } from './password-hasher.js';
+import { CLOCK } from './lib/clock.js';
+import { DrizzleRefreshTokensRepository } from './persistence/drizzle-refresh-tokens.repository.js';
+import { PasswordHasher } from './lib/password-hasher.js';
 import { RefreshTokenService } from './refresh-token.service.js';
-import { REFRESH_TOKENS_REPOSITORY } from './refresh-tokens.repository.js';
-import { UsersRepository } from './users.repository.js';
+import { REFRESH_TOKENS_REPOSITORY } from './persistence/refresh-tokens.repository.js';
+import { UsersRepository } from './persistence/users.repository.js';
 
 export const ACCESS_TOKEN_TTL_SECONDS = 15 * 60;
 

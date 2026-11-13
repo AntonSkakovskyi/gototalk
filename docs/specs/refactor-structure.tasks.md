@@ -61,7 +61,7 @@
   - Папки цілком → `modules/<name>/`; імпорти `auth` тимчасово `../../auth/...`.
   - Коміт: `refactor(api): domain modules under modules`
 
-- [ ] **A4. `modules/auth` з підпапками**
+- [x] **A4. `modules/auth` з підпапками**
   - Корінь: `auth.module.ts`, `auth.controller.ts`, `auth.service.ts` (+test), `refresh-token.service.ts` (+test), `refresh-token.errors.ts`; `guards/`: `auth.guard.ts`, `consent.guard.ts`; `decorators/`: `current-user.decorator.ts`, `requires-consent.decorator.ts`; `persistence/`: `refresh-tokens.repository.ts`, `drizzle-refresh-tokens.repository.ts`, `users.repository.ts`; `lib/`: `refresh-cookie.ts`, `password-hasher.ts` (+test), `clock.ts`; `testing/` без змін.
   - `password-hasher.test.ts`: `'../../../../db/seed.sql'` → `'../../../../../../db/seed.sql'`.
   - Коміт: `refactor(api): split auth module into guards, decorators, persistence and lib`

@@ -11,14 +11,17 @@ import type {
   Me,
   RegisterRequest,
 } from '@gototalk/shared';
-import { PasswordHasher } from './password-hasher.js';
+import { PasswordHasher } from './lib/password-hasher.js';
 import {
   InvalidRefreshTokenError,
   TokenReusedError,
 } from './refresh-token.errors.js';
 import { RefreshTokenService } from './refresh-token.service.js';
-import { EmailTakenError, UsersRepository } from './users.repository.js';
-import type { UserRecord } from './users.repository.js';
+import {
+  EmailTakenError,
+  UsersRepository,
+} from './persistence/users.repository.js';
+import type { UserRecord } from './persistence/users.repository.js';
 
 export interface AuthSession {
   response: AuthResponse;

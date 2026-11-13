@@ -3,9 +3,12 @@ import { UnauthorizedException } from '@nestjs/common';
 import type { JwtService } from '@nestjs/jwt';
 import { describe, expect, it, vi } from 'vitest';
 import { AuthService } from './auth.service.js';
-import type { PasswordHasher } from './password-hasher.js';
+import type { PasswordHasher } from './lib/password-hasher.js';
 import type { RefreshTokenService } from './refresh-token.service.js';
-import type { UserRecord, UsersRepository } from './users.repository.js';
+import type {
+  UserRecord,
+  UsersRepository,
+} from './persistence/users.repository.js';
 
 const USER: UserRecord = {
   id: '11111111-1111-4111-8111-111111111111',

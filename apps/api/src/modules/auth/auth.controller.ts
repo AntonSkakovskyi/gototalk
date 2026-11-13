@@ -16,15 +16,15 @@ import type {
   LoginRequest,
   RegisterRequest,
 } from '@gototalk/shared';
-import { ZodBodyPipe } from '../common/zod-body.pipe.js';
+import { ZodBodyPipe } from '../../common/zod-body.pipe.js';
 import { AuthService } from './auth.service.js';
 import {
   clearRefreshCookie,
   readRefreshCookie,
   setRefreshCookie,
-} from './refresh-cookie.js';
-import type { CookieRequest, CookieResponse } from './refresh-cookie.js';
-import { Public } from '../common/public.decorator.js';
+} from './lib/refresh-cookie.js';
+import type { CookieRequest, CookieResponse } from './lib/refresh-cookie.js';
+import { Public } from '../../common/public.decorator.js';
 
 const REGISTER_BODY: ApiBodyOptions = {
   schema: {

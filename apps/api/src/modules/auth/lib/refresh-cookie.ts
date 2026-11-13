@@ -1,5 +1,5 @@
-import { GLOBAL_PREFIX } from '../configure-app.js';
-import { REFRESH_TOKEN_TTL_MS } from './refresh-token.service.js';
+import { GLOBAL_PREFIX } from '../../../configure-app.js';
+import { REFRESH_TOKEN_TTL_MS } from '../refresh-token.service.js';
 
 export const REFRESH_COOKIE_NAME = 'gtt_refresh';
 

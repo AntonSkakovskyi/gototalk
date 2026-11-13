@@ -10,7 +10,7 @@ import {
   inject,
   it,
 } from 'vitest';
-import { DrizzleRefreshTokensRepository } from '../src/auth/drizzle-refresh-tokens.repository.js';
+import { DrizzleRefreshTokensRepository } from '../src/modules/auth/persistence/drizzle-refresh-tokens.repository.js';
 import { dbSchema } from '../src/core/db/db.tokens.js';
 import { resetUserData } from './support/test-db.js';
 

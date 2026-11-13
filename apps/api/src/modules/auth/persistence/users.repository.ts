@@ -1,9 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { and, eq, isNull, sql } from 'drizzle-orm';
-import { DRIZZLE } from '../core/db/db.tokens.js';
-import type { Database } from '../core/db/db.tokens.js';
-import { pgTimestampToDate } from '../core/db/pg-timestamp.js';
-import { users } from '../core/db/schema.js';
+import { DRIZZLE } from '../../../core/db/db.tokens.js';
+import type { Database } from '../../../core/db/db.tokens.js';
+import { pgTimestampToDate } from '../../../core/db/pg-timestamp.js';
+import { users } from '../../../core/db/schema.js';
 
 const UNIQUE_VIOLATION = '23505';
 

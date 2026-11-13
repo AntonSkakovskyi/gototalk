@@ -2,7 +2,7 @@ import type {
   NewRefreshToken,
   RefreshTokenRecord,
   RefreshTokensRepository,
-} from '../refresh-tokens.repository.js';
+} from '../persistence/refresh-tokens.repository.js';
 
 export class InMemoryRefreshTokensRepository implements RefreshTokensRepository {
   readonly rows: RefreshTokenRecord[] = [];
