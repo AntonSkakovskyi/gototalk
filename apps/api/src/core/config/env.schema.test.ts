@@ -121,4 +121,38 @@ describe('parseEnv', () => {
     expect(message).toContain('PORT');
     expect(message).toContain('LOG_LEVEL');
   });
+
+  it('[TC-00-05] fail modes are parsed from the allowed values', () => {
+    const env = parseEnv({
+      ...validEnv,
+      FAKE_STT_FAIL: 'unavailable',
+      FAKE_LLM_FAIL: 'invalid_json',
+    });
+
+    expect(env.FAKE_STT_FAIL).toBe('unavailable');
+    expect(env.FAKE_LLM_FAIL).toBe('invalid_json');
+    expect(parseEnv({ ...validEnv, FAKE_LLM_FAIL: 'unavailable' })).toMatchObject(
+      { FAKE_LLM_FAIL: 'unavailable' },
+    );
+  });
+
+  it('[TC-00-05] empty or missing fail modes are unset', () => {
+    const empty = parseEnv({ ...validEnv, FAKE_STT_FAIL: '', FAKE_LLM_FAIL: '' });
+
+    expect(empty.FAKE_STT_FAIL).toBeUndefined();
+    expect(empty.FAKE_LLM_FAIL).toBeUndefined();
+    expect(parseEnv(validEnv).FAKE_LLM_FAIL).toBeUndefined();
+  });
+
+  it('[TC-00-05] unknown fail modes name the variable', () => {
+    expect(errorOf({ ...validEnv, FAKE_STT_FAIL: '1' })).toContain(
+      'FAKE_STT_FAIL',
+    );
+    expect(errorOf({ ...validEnv, FAKE_STT_FAIL: 'invalid_json' })).toContain(
+      'FAKE_STT_FAIL',
+    );
+    expect(errorOf({ ...validEnv, FAKE_LLM_FAIL: 'boom' })).toContain(
+      'FAKE_LLM_FAIL',
+    );
+  });
 });

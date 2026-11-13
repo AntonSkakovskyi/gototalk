@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
+import { LanguageModelUnavailableError } from './language-model.errors.js';
 import {
   LanguageModelInvalidResponseError,
   requestValidated,
@@ -90,6 +91,17 @@ describe('requestValidated', () => {
   it('[TC-03-01] a provider failure propagates untouched and is not retried', async () => {
     const { logger } = setup();
     const failure = new Error('provider down');
+    const call = vi.fn().mockRejectedValue(failure);
+
+    await expect(requestValidated(Schema, call, logger)).rejects.toBe(failure);
+
+    expect(call).toHaveBeenCalledTimes(1);
+    expect(logger.warn).not.toHaveBeenCalled();
+  });
+
+  it('[TC-04-08] a LanguageModelUnavailableError propagates unchanged without a retry or a log', async () => {
+    const { logger } = setup();
+    const failure = new LanguageModelUnavailableError();
     const call = vi.fn().mockRejectedValue(failure);
 
     await expect(requestValidated(Schema, call, logger)).rejects.toBe(failure);

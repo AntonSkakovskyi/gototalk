@@ -79,10 +79,8 @@ describe('Core service skeletons', () => {
   it('[TC-00-04] DialogueService.nextTurn points to spec 04', async () => {
     const service = moduleRef.get(DialogueService);
     const input = {
-      plan: {
-        topic: 'Work',
-        questions: ['q1', 'q2', 'q3', 'q4', 'q5'],
-      },
+      topic: 'Work',
+      remainingQuestions: ['q1', 'q2'],
       history: [],
     };
 

@@ -1,16 +1,14 @@
-import type {
-  AnalysisResult,
-  Hint,
-  Mistake,
-  Summary,
-  Turn,
-} from '@gototalk/shared';
+import type { Mistake } from '@gototalk/shared';
+import type { FakeLlmFailMode } from '../../core/config/env.schema.js';
+import { LanguageModelUnavailableError } from './language-model.errors.js';
 import type {
   AnalyzeUtteranceInput,
+  AnalyzeUtteranceResponse,
   HintRequest,
   LanguageModelPort,
   PlanSessionInput,
 } from './language-model.port.js';
+import { ERROR_ANALYSIS_PROMPT_ID } from './prompts.js';
 import { buildFakePlan } from './fake-session-plans.js';
 import { renderSessionPlanPrompt } from './session-plan-prompt.js';
 
@@ -46,8 +44,29 @@ const BETTER = [
   { original: 'I very like my job', better: 'I really like my job' },
 ];
 
+export interface FakeLanguageModelOptions {
+  failMode?: FakeLlmFailMode;
+}
+
 export class FakeLanguageModel implements LanguageModelPort {
-  analyzeUtterance({ text }: AnalyzeUtteranceInput): Promise<AnalysisResult> {
+  private readonly failMode: FakeLlmFailMode | undefined;
+
+  constructor(options: FakeLanguageModelOptions = {}) {
+    this.failMode = options.failMode;
+  }
+
+  analyzeUtterance({
+    text,
+  }: AnalyzeUtteranceInput): Promise<AnalyzeUtteranceResponse> {
+    if (this.failMode === 'unavailable') return unavailable();
+    const response = (output: unknown): AnalyzeUtteranceResponse => ({
+      output,
+      promptVersion: ERROR_ANALYSIS_PROMPT_ID,
+      model: 'fake',
+    });
+    if (this.failMode === 'invalid_json') {
+      return Promise.resolve(response({ mistakes: 'broken' }));
+    }
     const mistakes: Mistake[] = [];
     for (const { original, ...rest } of TEMPLATES) {
       const start = text.indexOf(original);
@@ -61,23 +80,26 @@ export class FakeLanguageModel implements LanguageModelPort {
       }
     }
     const better = BETTER.filter((b) => text.includes(b.original));
-    return Promise.resolve({ mistakes, better });
+    return Promise.resolve(response({ mistakes, better }));
   }
 
   planSession(input: PlanSessionInput): Promise<unknown> {
+    if (this.failMode === 'unavailable') return unavailable();
     return Promise.resolve().then(() => {
       renderSessionPlanPrompt(input);
       return buildFakePlan(input);
     });
   }
 
-  nextTurn(): Promise<Turn> {
+  nextTurn(): Promise<unknown> {
+    if (this.failMode === 'unavailable') return unavailable();
     return Promise.resolve({
       question: 'Tell me about your experience working on it.',
     });
   }
 
-  hint(request: HintRequest): Promise<Hint> {
+  hint(request: HintRequest): Promise<unknown> {
+    if (this.failMode === 'unavailable') return unavailable();
     switch (request.kind) {
       case 'phrase_start':
         return Promise.resolve({ kind: 'phrase_start', text: 'I think that…' });
@@ -86,10 +108,15 @@ export class FakeLanguageModel implements LanguageModelPort {
     }
   }
 
-  summarizeSession(): Promise<Summary> {
+  summarizeSession(): Promise<unknown> {
+    if (this.failMode === 'unavailable') return unavailable();
     return Promise.resolve({
       summary: 'Ви відповіли 1 раз за 1 хв. Помилок не знайдено, так тримати.',
       top_categories: [],
     });
   }
+}
+
+function unavailable(): Promise<never> {
+  return Promise.reject(new LanguageModelUnavailableError());
 }

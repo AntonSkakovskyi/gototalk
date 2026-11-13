@@ -16,7 +16,6 @@
 | Fake-поведінка за `docs/specs/stubs.md`: `summarizeSession` | 00 «Fake-адаптери – мінімум» | 05 |
 | Підпис `hint` (union за `kind`) відрізняється від заголовків `stubs.md`: звірити й оновити `stubs.md` (звірити також специфікації 03 і 05) | 00-11, відхилення | 04 |
 | Внутрішні `ZodError` (відповідь LLM, рядок БД) мають бути 5xx із логом, а не 400 `VALIDATION_ERROR`; також `.parse` рядків БД у мапері `sessions.repository.ts` (03-08) | Відкладене після PR #1 | 04 |
-| `FAKE_STT_FAIL`/`FAKE_LLM_FAIL`: зробити enum зі `stubs.md` і підтримку режимів у Fake-адаптерах | Відкладене після PR #1; 00-11 (режими не робили) | 04 |
 | Fake `analyzeUtterance`: регістронезалежні RegExp | 00-11, на потім | 04 |
 | Fake: словник перекладів `translation_uk` | 00-11, на потім | 04 |
 | Fake `summarizeSession`: шаблон | 00-11, на потім | 05 |
@@ -52,7 +51,7 @@
 | У `test-cases.md` теги [TC-02-03]/[TC-02-04] означають e2e/inspection, а компонентні тести 02-07/02-08 їх також використовують: узгодити | рев'ю 02-08 | будь-яка |
 | Два гарди профілю (`RequireProfile`/`RequireNoProfile`) повторюють скелет із чотирьох гілок: можна винести `useProfileGate()` | рев'ю 02-10 | будь-яка |
 | Перевести наявні інтеграційні тести на `test/support/api-client.ts` (дублюються `registerUser`, `expectError`) | 03-06 | будь-яка |
-| Решта методів `LanguageModelPort` (`analyzeUtterance`, `nextTurn`, `hint`, `summarizeSession`) повертають `unknown` і проходять `requestValidated` (як `planSession`) | 03-05a | 04, 05 |
+| `summarizeSession` повертає `unknown` і проходить `requestValidated` зі `SummarySchema` (решту методів порту переведено в 04-04) | 03-05a | 05 |
 | Сесія, автоматично завершена наступним стартом, не проходить через «Завершити»: звіт має генеруватися ліниво або при обох шляхах завершення | 03-07 | 05 |
 | `POST /api/sessions/plan` викликає LLM без rate limit (кожне «Інша тема» = виклик провайдера) | 03-06 | деплой |
 | `pnpm exec eslint e2e` падає з `ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL`, `pnpm lint` і `node node_modules/eslint/bin/eslint.js e2e` працюють | 03-15 | будь-яка |

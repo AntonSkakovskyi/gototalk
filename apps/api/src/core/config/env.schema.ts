@@ -17,6 +17,12 @@ const LOG_LEVELS = [
   'silent',
 ] as const;
 
+export const FAKE_STT_FAIL_MODES = ['unavailable'] as const;
+export const FAKE_LLM_FAIL_MODES = ['invalid_json', 'unavailable'] as const;
+
+export type FakeSttFailMode = (typeof FAKE_STT_FAIL_MODES)[number];
+export type FakeLlmFailMode = (typeof FAKE_LLM_FAIL_MODES)[number];
+
 const notImplemented = (real: string) => ({
   error: `provider "${real}" is not implemented yet, use "fake"`,
 });
@@ -56,8 +62,8 @@ export const EnvSchema = z
         .default('fake')
         .refine((value) => value === 'fake', notImplemented('gemini')),
     ),
-    FAKE_STT_FAIL: optional(z.string().optional()),
-    FAKE_LLM_FAIL: optional(z.string().optional()),
+    FAKE_STT_FAIL: optional(z.enum(FAKE_STT_FAIL_MODES).optional()),
+    FAKE_LLM_FAIL: optional(z.enum(FAKE_LLM_FAIL_MODES).optional()),
     DEV_KEEP_AUDIO: optional(
       z
         .enum(['true', 'false'])

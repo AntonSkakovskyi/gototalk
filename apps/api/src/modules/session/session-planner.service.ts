@@ -3,9 +3,11 @@ import {
   Inject,
   Injectable,
   Logger,
+  ServiceUnavailableException,
 } from '@nestjs/common';
 import { ERROR_CODES, PlanSchema } from '@gototalk/shared';
 import type { Plan, PlanSessionRequest, SessionPlan } from '@gototalk/shared';
+import { LanguageModelUnavailableError } from '../../integrations/language-model/language-model.errors.js';
 import { LANGUAGE_MODEL_PORT } from '../../integrations/language-model/language-model.port.js';
 import type {
   LanguageModelPort,
@@ -65,6 +67,12 @@ export class SessionPlannerService {
         this.logger,
       );
     } catch (error) {
+      if (error instanceof LanguageModelUnavailableError) {
+        throw new ServiceUnavailableException({
+          code: ERROR_CODES.LANGUAGE_MODEL_UNAVAILABLE,
+          message: error.message,
+        });
+      }
       if (error instanceof LanguageModelInvalidResponseError) {
         throw new BadGatewayException({
           code: ERROR_CODES.LANGUAGE_MODEL_INVALID_RESPONSE,

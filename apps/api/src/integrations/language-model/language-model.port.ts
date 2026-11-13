@@ -1,11 +1,4 @@
-import type {
-  AnalysisResult,
-  Hint,
-  MistakeCategoryCode,
-  Plan,
-  Summary,
-  Turn,
-} from '@gototalk/shared';
+import type { MistakeCategoryCode } from '@gototalk/shared';
 
 export const LANGUAGE_MODEL_PORT = Symbol('LANGUAGE_MODEL_PORT');
 
@@ -24,12 +17,13 @@ export interface PlanSessionInput {
 }
 
 export interface NextTurnInput {
-  plan: Plan;
+  topic: string;
+  remainingQuestions: string[];
   history: { role: 'assistant' | 'user'; text: string }[];
 }
 
 export type HintRequest =
-  | { kind: 'phrase_start'; question: string }
+  | { kind: 'phrase_start'; question: string; questionNumber: number }
   | { kind: 'translation'; word: string };
 
 export interface SummarizeSessionInput {
@@ -38,11 +32,20 @@ export interface SummarizeSessionInput {
   mistakes: { category: MistakeCategoryCode }[];
 }
 
+export interface AnalyzeUtteranceResponse {
+  /** Raw model response, validated by the caller; positions are offsets in text_verbatim. */
+  output: unknown;
+  promptVersion: string;
+  model: string;
+}
+
+/** Every method returns the raw model output: callers validate it with a schema. */
 export interface LanguageModelPort {
-  analyzeUtterance(input: AnalyzeUtteranceInput): Promise<AnalysisResult>;
-  /** Raw model response: callers must validate it with PlanSchema. */
+  analyzeUtterance(
+    input: AnalyzeUtteranceInput,
+  ): Promise<AnalyzeUtteranceResponse>;
   planSession(input: PlanSessionInput): Promise<unknown>;
-  nextTurn(input: NextTurnInput): Promise<Turn>;
-  hint(request: HintRequest): Promise<Hint>;
-  summarizeSession(input: SummarizeSessionInput): Promise<Summary>;
+  nextTurn(input: NextTurnInput): Promise<unknown>;
+  hint(request: HintRequest): Promise<unknown>;
+  summarizeSession(input: SummarizeSessionInput): Promise<unknown>;
 }

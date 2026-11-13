@@ -1,9 +1,15 @@
 import 'reflect-metadata';
-import { BadGatewayException, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadGatewayException,
+  Logger,
+  NotFoundException,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { ERROR_CODES, PLAN_QUESTIONS } from '@gototalk/shared';
 import type { Goal, PlanSessionRequest, Profile } from '@gototalk/shared';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { FakeLanguageModel } from '../../integrations/language-model/fake-language-model.js';
+import { LanguageModelUnavailableError } from '../../integrations/language-model/language-model.errors.js';
 import type {
   LanguageModelPort,
   PlanSessionInput,
@@ -160,6 +166,21 @@ describe('SessionPlannerService.plan', () => {
     await expect(service.plan(USER_ID, REQUEST)).rejects.toBe(notFound);
 
     expect(planSession).not.toHaveBeenCalled();
+  });
+
+  it('[TC-04-08] answers 503 LANGUAGE_MODEL_UNAVAILABLE when the model is unavailable, without a retry', async () => {
+    const planSession = vi
+      .fn()
+      .mockRejectedValue(new LanguageModelUnavailableError());
+    const { service } = setup(planSession);
+
+    const error = await failureOf(service.plan(USER_ID, REQUEST));
+
+    expect(error).toBeInstanceOf(ServiceUnavailableException);
+    expect((error as ServiceUnavailableException).getResponse()).toMatchObject({
+      code: ERROR_CODES.LANGUAGE_MODEL_UNAVAILABLE,
+    });
+    expect(planSession).toHaveBeenCalledTimes(1);
   });
 
   it('[TC-03-01] propagates provider errors untouched', async () => {
