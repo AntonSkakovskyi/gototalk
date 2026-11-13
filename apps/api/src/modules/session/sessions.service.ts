@@ -34,6 +34,13 @@ export class SessionsService {
     return this.sessions.listRecent(userId, RECENT_SESSIONS_LIMIT);
   }
 
+  async finish(userId: string, id: string): Promise<Session> {
+    if (!isSessionId(id)) throw sessionNotFound();
+    const session = await this.sessions.finish(userId, id);
+    if (!session) throw sessionNotFound();
+    return session;
+  }
+
   async details(userId: string, id: string): Promise<SessionDetails> {
     if (!isSessionId(id)) throw sessionNotFound();
     const details = await this.sessions.findDetails(userId, id);

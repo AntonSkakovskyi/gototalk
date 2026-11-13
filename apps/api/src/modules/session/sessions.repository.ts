@@ -174,6 +174,26 @@ export class SessionsRepository {
     return toSessionDetails(session, rows, mistakeRows);
   }
 
+  finish(userId: string, sessionId: string): Promise<Session | null> {
+    return this.db.transaction(async (tx) => {
+      // The row lock serialises the finish against answers and analysis of the session
+      const [session] = await tx
+        .select()
+        .from(sessions)
+        .where(and(eq(sessions.id, sessionId), eq(sessions.userId, userId)))
+        .for('update');
+      if (!session) return null;
+      if (session.status !== 'active') return toSession(session);
+      const [finished] = await tx
+        .update(sessions)
+        .set({ status: 'finished', endedAt: sql`clock_timestamp()` })
+        .where(eq(sessions.id, session.id))
+        .returning();
+      if (!finished) throw new Error('Session update returned no row');
+      return toSession(finished);
+    });
+  }
+
   // Serialises one user's session starts so only one session stays active
   private async lockOwner(tx: DbTransaction, userId: string): Promise<void> {
     const locked = await tx
