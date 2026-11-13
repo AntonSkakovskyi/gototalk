@@ -114,15 +114,15 @@ export default defineConfig(
     ignores: ['**/*.test.{ts,tsx}', `${WEB_SRC}/shared/testing/**`],
     rules: {
       'import-x/no-restricted-paths': [
-        'warn',
+        'error',
         { basePath: import.meta.dirname, zones: webLayerZones },
       ],
-      'import-x/no-cycle': 'warn',
+      'import-x/no-cycle': 'error',
       'no-restricted-syntax': [
-        'warn',
+        'error',
         {
           selector:
-            'ImportDeclaration[source.value=/^\\.\\.\\x2F\\.\\.\\x2F/], ExportAllDeclaration[source.value=/^\\.\\.\\x2F\\.\\.\\x2F/], ExportNamedDeclaration[source.value=/^\\.\\.\\x2F\\.\\.\\x2F/]',
+            'ImportDeclaration[source.value=/^\\.\\.(\\x2F\\.\\.)+(\\x2F|$)/], ExportAllDeclaration[source.value=/^\\.\\.(\\x2F\\.\\.)+(\\x2F|$)/], ExportNamedDeclaration[source.value=/^\\.\\.(\\x2F\\.\\.)+(\\x2F|$)/]',
           message: 'Use the @/ alias instead of climbing 2+ levels.',
         },
       ],

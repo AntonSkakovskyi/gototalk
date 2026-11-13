@@ -36,7 +36,7 @@
   - `App.tsx`, `App.test.tsx` → `app/`; `app/AppLayout.*` → `app/layout/AppLayout/`; `app/BottomNav.*` → `app/layout/BottomNav/`, `app/routes.ts` → `app/layout/BottomNav/tabs.ts`; `auth/AuthBootstrap.*` → `app/providers/AuthBootstrap/`; `auth/guards.*` → `app/router/guards/`. Папка `src/auth` має зникнути.
   - Коміт: `refactor(web): app shell, providers and router guards under app`
 
-- [ ] **W7. Правила в `error`, документація, перевірка**
+- [x] **W7. Правила в `error`, документація, перевірка**
   - Правила меж web → `error` (зона `shared/session ↛ shared/api` теж); перевірити тимчасовим імпортом `shared → features` (помилка) і відкотити.
   - CLAUDE.md (розділ «Структура коду», шлях теми `apps/web/src/app/theme/theme.ts`), README (структура web), `docs/tech-decisions.md` (рішення 29 «Структура коду»), `docs/specs/01-auth-consent.tasks.md` і `docs/backlog.md` (оновити старі шляхи на нові; нові рядки: чистка `refresh_tokens`, винесення форм Login/Register/Consent, `shared/ui/` з першим спільним компонентом, `packages/shared` за доменами).
   - `pnpm --filter web build`, `pnpm test:e2e`, рев'ю сабагентом `reviewer`.
@@ -72,3 +72,25 @@
   - CLAUDE.md (структура модуля NestJS, межі), README, `.claude/skills/db-migration/SKILL.md` (`apps/api/src/core/db/schema.ts`), `.claude/agents/reviewer.md` (шляхи портів/адаптерів), `docs/tech-decisions.md` (доповнення рішення 29), `docs/backlog.md` (шляхи).
   - Таблиця «старий шлях → новий» для тестових файлів api.
   - Коміт: `refactor(api): enforce module boundaries and document the structure`
+
+## Таблиця переміщень тестових файлів: web
+
+Обчислено з git: `git diff -M --name-status 3d46051 HEAD -- apps/web`. Шляхи від `apps/web/src`. `pwa-config.test.ts` не переміщувався (змінено лише імпорти). Кількість тестів не змінилась (web 112).
+
+| Старий шлях | Новий шлях |
+|---|---|
+| `App.test.tsx` | `app/App.test.tsx` |
+| `auth/AuthBootstrap.test.tsx` | `app/providers/AuthBootstrap/AuthBootstrap.test.tsx` |
+| `auth/guards.test.tsx` | `app/router/guards/guards.test.tsx` |
+| `auth/auth-api.test.ts` | `features/auth/api/auth-api.test.ts` |
+| `auth/AccountSection.test.tsx` | `features/auth/components/AccountSection/AccountSection.test.tsx` |
+| `auth/ConsentPage.test.tsx` | `pages/consent/ConsentPage.test.tsx` |
+| `auth/LoginPage.test.tsx` | `pages/login/LoginPage.test.tsx` |
+| `auth/RegisterPage.test.tsx` | `pages/register/RegisterPage.test.tsx` |
+| `api/http.test.ts` | `shared/api/http.test.ts` |
+| `auth/refresh.test.ts` | `shared/api/refresh.test.ts` |
+| `i18n/i18n.test.ts` | `shared/i18n/i18n.test.ts` |
+| `auth/query-cache.test.ts` | `shared/session/query-cache.test.ts` |
+| `auth/session-store.test.ts` | `shared/session/session-store.test.ts` |
+| `test-fixtures.ts` | `shared/testing/test-fixtures.ts` |
+| `test-utils.tsx` | `shared/testing/test-utils.tsx` |

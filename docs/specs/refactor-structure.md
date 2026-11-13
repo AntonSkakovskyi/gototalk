@@ -6,7 +6,7 @@
 Зрозуміла структура за шарами й доменами, межі імпортів перевіряє ESLint. Поведінка не змінюється.
 
 ## Незмінні обмеження
-- Жодних правок логіки, назв експортів, DI-токенів, SQL, міграцій. Не чіпаємо `db/migrations/*`, `db/seed.sql`, `docs/specs/test-cases.md`, історичні `docs/specs/00-*` і `01-*`.
+- Жодних правок логіки, назв експортів, DI-токенів, SQL, міграцій. Не чіпаємо `db/migrations/*`, `db/seed.sql`, `docs/specs/test-cases.md`, історичні `docs/specs/00-*`. Рішення власника: у `docs/specs/01-auth-consent.tasks.md` лише оновлюємо рядки зі старими шляхами (PR спільний зі spec 01).
 - Імена файлів не міняються, лише розташування. Виняток: `app/routes.ts` → `tabs.ts`.
 - Переміщення лише через `git mv`, імпорти виправляються в тому самому коміті. Кожен коміт зелений: `pnpm typecheck`, `pnpm lint`, `pnpm test`.
 - Нові залежності: лише dev `eslint-plugin-import-x`, `eslint-import-resolver-typescript`.

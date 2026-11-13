@@ -70,6 +70,15 @@ e2e/             Playwright tests
 docs/            product, technical decisions, specifications
 ```
 
+Web (`apps/web/src`) is split into layers that import only downward: `app → pages → features → shared`. Cross-folder imports use the `@/` alias (→ `apps/web/src`); ESLint (`eslint-plugin-import-x`) enforces the boundaries.
+
+```
+app/       App, layout (AppLayout, BottomNav), providers (AuthBootstrap), router guards, Mantine theme
+pages/     one folder per route: login, register, consent, session, words, history, profile
+features/  one folder per domain, e.g. auth/{api,lib,components}
+shared/    api (HTTP client, refresh), session (client state), i18n, testing
+```
+
 ## Database and migrations
 
 The source of truth is the SQL migrations in `db/migrations` (drizzle-kit, custom migrations). They are written by hand and applied with `pnpm db:migrate`; afterwards `pnpm db:pull` updates the TS schema `apps/api/src/db/schema.ts` (do not edit it manually). Forbidden: `drizzle-kit push`, editing already applied migrations, `podman compose down -v`. The full procedure is the `/db-migration` skill (`.claude/skills/db-migration/SKILL.md`).
