@@ -1,0 +1,20 @@
+.content {
+  overflow-wrap: anywhere;
+}
+
+.list {
+  padding-inline-start: var(--mantine-spacing-xs);
+
+  li + li {
+    margin-top: var(--mantine-spacing-xs);
+  }
+}
+
+.loader {
+  display: flex;
+  justify-content: center;
+}
+
+.retry {
+  align-items: flex-start;
+}
