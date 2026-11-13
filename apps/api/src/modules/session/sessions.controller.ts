@@ -2,16 +2,27 @@ import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiBody,
+  ApiCreatedResponse,
   ApiOperation,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import {
+  FEEDBACK_MODES,
   MAX_TOPIC_REROLLS,
+  PLAN_QUESTIONS,
   PlanSessionRequestSchema,
+  QUESTION_MAX,
+  StartSessionRequestSchema,
   TOPIC_MAX,
+  TOPIC_SOURCES,
 } from '@gototalk/shared';
-import type { PlanSessionRequest, SessionPlan } from '@gototalk/shared';
+import type {
+  PlanSessionRequest,
+  SessionDetails,
+  SessionPlan,
+  StartSessionRequest,
+} from '@gototalk/shared';
 import {
   CurrentUser,
   requireUserId,
@@ -20,6 +31,7 @@ import type { AuthenticatedUser } from '../auth/decorators/current-user.decorato
 import { RequiresConsent } from '../auth/decorators/requires-consent.decorator.js';
 import { ZodBodyPipe } from '../../common/zod-body.pipe.js';
 import { SessionPlannerService } from './session-planner.service.js';
+import { SessionsService } from './sessions.service.js';
 
 const TOPIC_SCHEMA = {
   type: 'string',
@@ -31,7 +43,10 @@ const TOPIC_SCHEMA = {
 @ApiBearerAuth()
 @Controller('sessions')
 export class SessionsController {
-  constructor(private readonly planner: SessionPlannerService) {}
+  constructor(
+    private readonly planner: SessionPlannerService,
+    private readonly sessions: SessionsService,
+  ) {}
 
   @Post('plan')
   @HttpCode(HttpStatus.OK)
@@ -71,5 +86,47 @@ export class SessionsController {
     @Body(new ZodBodyPipe(PlanSessionRequestSchema)) body: PlanSessionRequest,
   ): Promise<SessionPlan> {
     return this.planner.plan(requireUserId(user), body);
+  }
+
+  @Post()
+  @RequiresConsent()
+  @ApiOperation({
+    summary: 'Start a session from the plan the user was shown',
+    description:
+      'Finishes the active session of the user, if any, and stores the new one with all planned questions. The first question becomes the first assistant utterance. No language model call is made.',
+  })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      required: ['topic', 'topicSource', 'questions'],
+      properties: {
+        topic: TOPIC_SCHEMA,
+        topicSource: { type: 'string', enum: [...TOPIC_SOURCES] },
+        questions: {
+          type: 'array',
+          minItems: PLAN_QUESTIONS,
+          maxItems: PLAN_QUESTIONS,
+          items: { type: 'string', minLength: 1, maxLength: QUESTION_MAX },
+        },
+        feedbackMode: {
+          type: 'string',
+          enum: [...FEEDBACK_MODES],
+          default: 'immediate',
+        },
+      },
+    },
+  })
+  @ApiCreatedResponse({
+    description:
+      'SessionDetails { id, topic, topicSource, feedbackMode, status, startedAt, endedAt, utterances }',
+  })
+  @ApiResponse({ status: 400, description: 'VALIDATION_ERROR' })
+  @ApiResponse({ status: 401, description: 'UNAUTHORIZED' })
+  @ApiResponse({ status: 403, description: 'CONSENT_REQUIRED' })
+  start(
+    @CurrentUser() user: AuthenticatedUser | undefined,
+    @Body(new ZodBodyPipe(StartSessionRequestSchema)) body: StartSessionRequest,
+  ): Promise<SessionDetails> {
+    return this.sessions.start(requireUserId(user), body);
   }
 }

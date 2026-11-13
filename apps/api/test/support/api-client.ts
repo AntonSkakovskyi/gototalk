@@ -7,7 +7,7 @@ import type { Response } from 'supertest';
 import { expect } from 'vitest';
 
 const PASSWORD = 'correct-horse-battery';
-const MISSING_USER_ID = '6f1c2a0e-4b8d-4f7e-9a53-0c7d2f1b9e11';
+export const MISSING_USER_ID = '6f1c2a0e-4b8d-4f7e-9a53-0c7d2f1b9e11';
 
 export interface RegisteredUser {
   id: string;
