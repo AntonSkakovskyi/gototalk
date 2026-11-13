@@ -15,7 +15,6 @@
 | Fake-поведінка за `docs/specs/stubs.md`: `transcribe` (разом із `reset()` лічильника, який stubs.md припускає), `analyzeUtterance`, `nextTurn`, `hint` | 00 «Fake-адаптери – мінімум» | 04 |
 | Fake-поведінка за `docs/specs/stubs.md`: `summarizeSession` | 00 «Fake-адаптери – мінімум» | 05 |
 | Підпис `hint` (union за `kind`) відрізняється від заголовків `stubs.md`: звірити й оновити `stubs.md` (звірити також специфікації 03 і 05) | 00-11, відхилення | 04 |
-| Внутрішні `ZodError` (відповідь LLM, рядок БД) мають бути 5xx із логом, а не 400 `VALIDATION_ERROR`; також `.parse` рядків БД у мапері `sessions.repository.ts` (03-08) | Відкладене після PR #1 | 04 |
 | Fake `analyzeUtterance`: регістронезалежні RegExp | 00-11, на потім | 04 |
 | Fake: словник перекладів `translation_uk` | 00-11, на потім | 04 |
 | Fake `summarizeSession`: шаблон | 00-11, на потім | 05 |
@@ -63,3 +62,4 @@
 | `error-analysis.v1.md`: додати правило «не більше 30 помилок, найважливіші першими» (інакше конверт падає на довгій відповіді) і «рахуй зсуви в декодованому рядку, не в JSON-екранованому»; змінити на місці, поки результатів із версією v1 немає | рев'ю 04-03 | 04 (до реального адаптера) |
 | `hint.v1.md`: у формі `translation` не описано `message` (поле опційне в `HintSchema`) | рев'ю 04-03 | 04b |
 | `prompts.test.ts`: тавтологічна перевірка id/basename, слабка перевірка полів виходу, `input as never`, зв'язок із фінальним реченням шаблону; `renderPrompt` повертає `{id,text}`, а обгортки відкидають id й дублюються | рев'ю 04-03 | будь-яка |
+| `all-exceptions.filter.test.ts` (413 рядків): винести кейси `RequestValidationError`/сирого `ZodError` у `all-exceptions.filter.zod.test.ts`; `sanitizeForLog` не розгортає `ZodError` у `cause`; лог-тест не проходить через реальний pino-серіалізатор; регулярка `/^d+$/` без backslash | рев'ю 04-07 | будь-яка |

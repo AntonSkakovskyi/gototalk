@@ -11,6 +11,7 @@ import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { z } from 'zod';
 import { Public } from '../src/common/public.decorator.js';
+import { ZodBodyPipe } from '../src/common/zod-body.pipe.js';
 import { createTestApp } from './support/test-app.js';
 
 // Test-only controller: production code has no routes that throw these errors.
@@ -23,9 +24,19 @@ const BodySchema = z.object({
 @Controller('test-errors')
 class TestErrorsController {
   @Post('validate')
-  validate(@Body() body: unknown): { ok: true } {
-    BodySchema.parse(body);
-    return { ok: true };
+  validate(
+    @Body(new ZodBodyPipe(BodySchema)) body: z.infer<typeof BodySchema>,
+  ): {
+    ok: true;
+    title: string;
+  } {
+    return { ok: true, title: body.title };
+  }
+
+  @Get('corrupt-row')
+  corruptRow(): never {
+    BodySchema.parse({ title: 'secret-user-text', count: 'secret-user-text' });
+    throw new Error('unreachable');
   }
 
   @Get('boom')
@@ -81,7 +92,7 @@ describe('error format and Swagger', () => {
       .send({ title: 'x', count: 1 });
 
     expect(res.status).toBe(201);
-    expect(res.body).toEqual({ ok: true });
+    expect(res.body).toEqual({ ok: true, title: 'x' });
   });
 
   it('[TC-00-07] malformed JSON: 400 in the error format without parser details', async () => {
@@ -102,6 +113,18 @@ describe('error format and Swagger', () => {
     const { error } = ErrorResponseSchema.parse(res.body);
     expect(error.code).toBe('INTERNAL_ERROR');
     expect(JSON.stringify(res.body)).not.toContain('hunter2');
+  });
+
+  it('[TC-04-01] internal ZodError (row or LLM output): 500 INTERNAL_ERROR without issue details', async () => {
+    const res = await request(app.getHttpServer()).get(
+      '/api/test-errors/corrupt-row',
+    );
+
+    expect(res.status).toBe(500);
+    expect(res.body).toEqual({
+      error: { code: 'INTERNAL_ERROR', message: 'Internal server error' },
+    });
+    expect(JSON.stringify(res.body)).not.toContain('secret-user-text');
   });
 
   it('[TC-00-07] 5xx HttpException: code derived from status without details', async () => {

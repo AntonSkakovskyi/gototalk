@@ -10,6 +10,8 @@ import type { ErrorResponse } from '@gototalk/shared';
 import { ERROR_CODES } from '@gototalk/shared';
 import { DrizzleQueryError } from 'drizzle-orm';
 import { ZodError } from 'zod';
+import type { z } from 'zod';
+import { RequestValidationError } from '../../common/zod-body.pipe.js';
 import { codeFromStatus } from './error-code.js';
 
 const GENERIC_SERVER_MESSAGE = 'Internal server error';
@@ -52,18 +54,38 @@ function httpExceptionMessage(exception: HttpException): string {
   return exception.message;
 }
 
-// Only field path and issue code are reported: user-supplied values never reach the response
-function zodMessage(error: ZodError): string {
-  const problems = error.issues.map((issue) => {
+function issueSummaries(issues: readonly z.core.$ZodIssue[]): string[] {
+  return issues.map((issue) => {
     const path =
       issue.path.length > 0 ? issue.path.map(String).join('.') : '(root)';
     return `${path}: ${issue.code}`;
   });
-  return `Validation failed: ${problems.join('; ')}`;
+}
+
+// Only field path and issue code are reported: user-supplied values never reach the response
+function validationMessage(error: RequestValidationError): string {
+  return `Validation failed: ${issueSummaries(error.issues).join('; ')}`;
+}
+
+// ZodError.message embeds the offending values, so the log keeps only paths and codes
+function sanitizedZodError(error: ZodError): Error {
+  const safe = new Error(
+    `Schema validation failed: ${issueSummaries(error.issues).join('; ')}`,
+  );
+  safe.name = error.name;
+  // The first stack line repeats the original message, so only the frames are kept
+  const frames = error.stack
+    ?.split('\n')
+    .filter((line) => /^\s+at /.test(line));
+  if (frames?.length) {
+    safe.stack = `${safe.name}: ${safe.message}\n${frames.join('\n')}`;
+  }
+  return safe;
 }
 
 // DrizzleQueryError embeds the SQL text and bound params (emails, hashes) in its message
 function sanitizeForLog(exception: unknown): unknown {
+  if (exception instanceof ZodError) return sanitizedZodError(exception);
   if (!(exception instanceof DrizzleQueryError)) return exception;
   const cause = exception.cause;
   if (!(cause instanceof Error)) return new Error('Database query failed');
@@ -100,11 +122,14 @@ export class AllExceptionsFilter implements ExceptionFilter {
     exception: unknown,
     requestInfo: () => { method: string; url: string },
   ): { status: number; body: ErrorResponse } {
-    if (exception instanceof ZodError) {
+    if (exception instanceof RequestValidationError) {
       return {
         status: HttpStatus.BAD_REQUEST,
         body: {
-          error: { code: 'VALIDATION_ERROR', message: zodMessage(exception) },
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: validationMessage(exception),
+          },
         },
       };
     }
