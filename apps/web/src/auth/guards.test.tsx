@@ -1,8 +1,8 @@
 import { screen } from '@testing-library/react';
 import { App } from '../App';
-import uk from '../i18n/uk.json';
-import { TEST_USER } from '../test-fixtures';
-import { renderWithProviders } from '../test-utils';
+import uk from '@/shared/i18n/uk.json';
+import { TEST_USER } from '@/shared/testing/test-fixtures';
+import { renderWithProviders } from '@/shared/testing/test-utils';
 
 const WITH_CONSENT = {
   accessToken: 'access-1',

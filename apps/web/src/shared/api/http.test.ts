@@ -5,7 +5,7 @@ import {
   emptyResponse,
   errorResponse,
   jsonResponse,
-} from '@/test-fixtures';
+} from '@/shared/testing/test-fixtures';
 import { ApiError, apiFetch } from './http';
 
 const fetchMock = vi.fn<typeof fetch>();

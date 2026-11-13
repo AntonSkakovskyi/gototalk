@@ -9,8 +9,8 @@ import { BrowserRouter } from 'react-router';
 import { App } from './App';
 import { AuthBootstrap } from './auth/AuthBootstrap';
 import { clearQueryCacheOnSessionEnd } from '@/shared/session/query-cache';
-import i18n from './i18n/index';
-import { theme } from './theme';
+import i18n from '@/shared/i18n/index';
+import { theme } from '@/app/theme/theme';
 
 const container = document.getElementById('root');
 if (!container) {

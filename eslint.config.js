@@ -139,7 +139,7 @@ export default defineConfig(
   },
   {
     files: ['apps/web/src/**/*.tsx'],
-    ignores: ['**/*.test.tsx', 'apps/web/src/test-utils.tsx'],
+    ignores: ['**/*.test.tsx', 'apps/web/src/shared/testing/**'],
     plugins: { i18next },
     rules: {
       'i18next/no-literal-string': [

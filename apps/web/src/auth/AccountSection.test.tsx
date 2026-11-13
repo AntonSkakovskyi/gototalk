@@ -3,9 +3,13 @@ import { QueryClient } from '@tanstack/react-query';
 import { act, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { App } from '../App';
-import uk from '../i18n/uk.json';
-import { TEST_USER, emptyResponse, errorResponse } from '../test-fixtures';
-import { renderWithProviders } from '../test-utils';
+import uk from '@/shared/i18n/uk.json';
+import {
+  TEST_USER,
+  emptyResponse,
+  errorResponse,
+} from '@/shared/testing/test-fixtures';
+import { renderWithProviders } from '@/shared/testing/test-utils';
 import { clearQueryCacheOnSessionEnd } from '@/shared/session/query-cache';
 import { getSession } from '@/shared/session/session-store';
 

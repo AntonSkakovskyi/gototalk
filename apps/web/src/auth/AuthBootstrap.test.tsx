@@ -1,13 +1,13 @@
 import { screen, waitFor } from '@testing-library/react';
 import { StrictMode } from 'react';
-import uk from '../i18n/uk.json';
+import uk from '@/shared/i18n/uk.json';
 import {
   TEST_USER,
   authResponse,
   errorResponse,
   jsonResponse,
-} from '../test-fixtures';
-import { renderWithProviders } from '../test-utils';
+} from '@/shared/testing/test-fixtures';
+import { renderWithProviders } from '@/shared/testing/test-utils';
 import { AuthBootstrap } from './AuthBootstrap';
 import { getSession } from '@/shared/session/session-store';
 

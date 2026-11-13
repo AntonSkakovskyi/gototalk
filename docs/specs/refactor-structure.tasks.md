@@ -19,7 +19,7 @@
   - Імпорти в `auth/*`, `main.tsx`, `test-utils.tsx`, `vitest.setup.ts` → `@/shared/...`.
   - Коміт: `refactor(web): move http client and session store to shared`
 
-- [ ] **W3. `shared/i18n`, `shared/testing`, `app/theme`**
+- [x] **W3. `shared/i18n`, `shared/testing`, `app/theme`**
   - `i18n/index.ts`, `i18n.test.ts`, `uk.json` → `shared/i18n/`; `test-utils.tsx`, `test-fixtures.ts` → `shared/testing/`; `theme.ts` → `app/theme/theme.ts`.
   - `eslint.config.js`: виняток i18next `apps/web/src/test-utils.tsx` → `apps/web/src/shared/testing/**`.
   - Коміт: `refactor(web): move i18n, test utilities and theme`
