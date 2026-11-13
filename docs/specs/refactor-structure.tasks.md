@@ -94,3 +94,21 @@
 | `auth/session-store.test.ts` | `shared/session/session-store.test.ts` |
 | `test-fixtures.ts` | `shared/testing/test-fixtures.ts` |
 | `test-utils.tsx` | `shared/testing/test-utils.tsx` |
+
+## Таблиця переміщень тестових файлів: api
+
+Обчислено з git: `git diff -M --name-status 3d46051 HEAD -- apps/api`. Шляхи від `apps/api/src`. Файли `apps/api/test/**` не переміщувались (змінено лише імпорти), як і `app.module.test.ts`, `core-services.test.ts` і `common/zod-body.pipe.test.ts`. Тестовий допоміжний файл `auth/testing/in-memory-refresh-tokens.repository.ts` теж переїхав. Кількість тестів не змінилась (api 193).
+
+| Старий шлях | Новий шлях |
+|---|---|
+| `config/env.schema.test.ts` | `core/config/env.schema.test.ts` |
+| `db/db.module.test.ts` | `core/db/db.module.test.ts` |
+| `db/pg-timestamp.test.ts` | `core/db/pg-timestamp.test.ts` |
+| `errors/all-exceptions.filter.test.ts` | `core/errors/all-exceptions.filter.test.ts` |
+| `logger/pino-options.test.ts` | `core/logger/pino-options.test.ts` |
+| `adapters/fake/fake-adapters.test.ts` | `integrations/fake-adapters.test.ts` |
+| `providers/providers.module.test.ts` | `integrations/providers.module.test.ts` |
+| `auth/auth.service.test.ts` | `modules/auth/auth.service.test.ts` |
+| `auth/refresh-token.service.test.ts` | `modules/auth/refresh-token.service.test.ts` |
+| `auth/password-hasher.test.ts` | `modules/auth/lib/password-hasher.test.ts` |
+| `auth/testing/in-memory-refresh-tokens.repository.ts` | `modules/auth/testing/in-memory-refresh-tokens.repository.ts` |

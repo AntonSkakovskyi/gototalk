@@ -35,7 +35,7 @@
 | Після `git push`: CI зелений (`pnpm/action-setup@v6` без `version`, `cache: pnpm` з Node 26) | 00-17, відхилення | Антон |
 | Ручна перевірка `[TC-00-03]`: відкриття й встановлення PWA на Android (емулятор, `adb reverse`) | 00-15, 00-18 | Антон |
 | Мігровані кириличні коментарі в `db/migrations/0000`–`0002`: не редагуємо, нові міграції англійською | Відкладене після PR #1 | не робимо |
-| Переліки провайдерів `fake/deepgram` і `fake/gemini` дубльовані в `packages/shared/src/auth.ts` та `apps/api/src/config/env.schema.ts`: винести `SttProviderSchema`/`LlmProviderSchema` у shared | рев'ю 01-04 | будь-яка |
+| Переліки провайдерів `fake/deepgram` і `fake/gemini` дубльовані в `packages/shared/src/auth.ts` та `apps/api/src/core/config/env.schema.ts`: винести `SttProviderSchema`/`LlmProviderSchema` у shared | рев'ю 01-04 | будь-яка |
 | Реєстрація не атомарна: якщо старт сесії падає після вставки користувача, повторна спроба дає 409 EMAIL_TAKEN; обгорнути вставку користувача й токена однією транзакцією | рев'ю 01-08 | будь-яка |
 | Нема rate limiting: `POST /api/auth/login` і `DELETE /api/me` (перевірка пароля) придатні для перебору паролів, зокрема з краденим access-токеном | рев'ю 01-10 | деплой |
 | Захищені маршрути не повинні довіряти лише JWT: access-токен діє до 15 хв після видалення акаунта; кожен сервіс, що читає дані користувача, має працювати з існуючим рядком `users` | рев'ю 01-10 | 02–05 |

@@ -79,9 +79,18 @@ features/  one folder per domain, e.g. auth/{api,lib,components}
 shared/    api (HTTP client, refresh), session (client state), i18n, testing
 ```
 
+Api (`apps/api/src`) keeps infrastructure apart from domain modules; imports are relative with a `.js` suffix (ESM). `core`, `common` and `integrations` never import `modules`, which ESLint enforces.
+
+```
+core/          config, db (schema, relations), logger, errors, health
+common/        decorators and pipes shared by several modules and core (@Public, ZodBodyPipe)
+integrations/  ports with fake adapters per capability (speech-recognition, language-model); provider SDKs only here
+modules/       one folder per domain: auth (guards, decorators, persistence, lib), me, profile, session, dialogue, analysis
+```
+
 ## Database and migrations
 
-The source of truth is the SQL migrations in `db/migrations` (drizzle-kit, custom migrations). They are written by hand and applied with `pnpm db:migrate`; afterwards `pnpm db:pull` updates the TS schema `apps/api/src/db/schema.ts` (do not edit it manually). Forbidden: `drizzle-kit push`, editing already applied migrations, `podman compose down -v`. The full procedure is the `/db-migration` skill (`.claude/skills/db-migration/SKILL.md`).
+The source of truth is the SQL migrations in `db/migrations` (drizzle-kit, custom migrations). They are written by hand and applied with `pnpm db:migrate`; afterwards `pnpm db:pull` updates the TS schema `apps/api/src/core/db/schema.ts` (do not edit it manually). Forbidden: `drizzle-kit push`, editing already applied migrations, `podman compose down -v`. The full procedure is the `/db-migration` skill (`.claude/skills/db-migration/SKILL.md`).
 
 ## Documentation
 

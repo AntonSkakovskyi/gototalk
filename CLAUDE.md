@@ -30,9 +30,9 @@ PWA-тренер говоріння англійською для україно
 - Видалення користувача = каскадне видалення (вже в схемі). Не ламати ON DELETE CASCADE.
 
 ## Архітектура
-- Порти й адаптери: `SpeechRecognitionPort` і `LanguageModelPort` — лише через інтерфейси. Доменний код не імпортує SDK провайдерів.
+- Порти й адаптери (`apps/api/src/integrations/`): `SpeechRecognitionPort` і `LanguageModelPort` — лише через інтерфейси. Доменний код не імпортує SDK провайдерів.
 - Для кожного порту є Fake-адаптер (детерміновані відповіді). Тести й режим без ключів працюють на ньому. Адаптер обирається змінною env (`STT_PROVIDER=fake|deepgram`, `LLM_PROVIDER=fake|gemini`).
-- Модуль NestJS = доменна область: auth, profile, session, dialogue, analysis, vocabulary, cards, report.
+- Модуль NestJS (`apps/api/src/modules/`) = доменна область: auth, profile, session, dialogue, analysis, vocabulary, cards, report.
 - Запис голосу пакетний: MediaRecorder → файл → `POST` на бекенд → STT. Без WebSocket і стримінгу.
 - Аналіз кожної репліки запускається одразу після транскрипції; режим фідбеку (`immediate`/`deferred`) керує лише показом.
 - Відповідь мовної моделі — строгий JSON, перевірка Zod, один повтор при невалідній відповіді. Категорії помилок лише з таблиці `mistake_categories`. Зберігай `analysis_prompt_version` і `analysis_model` на репліці.
@@ -55,6 +55,13 @@ Web (`apps/web/src`):
 - Імпорти між папками через `@/` (→ `apps/web/src`), відносні лише в межах однієї папки, ніколи `../../`. Суфікса `.js` в імпортах web немає.
 - Іменування: файли й папки компонентів PascalCase, усе інше kebab-case.
 - Межі шарів, цикли й `../../` перевіряє ESLint (`eslint-plugin-import-x`), порушення дають помилку.
+
+Api (`apps/api/src`): `core/`, `common/`, `integrations/`, `modules/`; у корені лише `main.ts`, `configure-app.ts`, `app.module.ts` та їхні тести.
+- Модуль NestJS = доменна область у `modules/<name>/` (auth, me, profile, session, dialogue, analysis, далі vocabulary, cards, report).
+- `core/` – інфраструктура застосунку (config, db, logger, errors, health). `common/` – спільні декоратори й pipe, потрібні кільком модулям і core (наприклад `@Public()`: його потребує health, тому він не може лежати в `modules/auth`). `integrations/` – порти й Fake-адаптери по можливостях (`speech-recognition/`, `language-model/`), SDK провайдерів лише тут. `core`, `common` і `integrations` не імпортують `modules`.
+- Усередині модуля підпапки за типом (`guards/`, `decorators/`, `persistence/`, `lib/`) лише коли файлів одного типу ≥2; корінь модуля тримає module, controller, service(s) і errors. Тестові дублі модуля лежать у `testing/`.
+- Імпорти відносні з суфіксом `.js` (ESM NodeNext), аліасу в api немає. `apps/api/test/` (інтеграційні тести й `support/`) не реорганізуємо.
+- Межі перевіряє ESLint (`import-x/no-restricted-paths`), порушення дають помилку.
 
 ## Мова коду й коментарі
 - Уся кодова база англійською: код, ідентифікатори, коментарі, назви тестів (`describe`/`it`), опис Swagger, повідомлення винятків і логів, вивід CLI-скриптів, метадані пакетів, README, повідомлення комітів. Українська лише в i18n-ресурсах (`uk.json`) і в користувацьких даних (`translation_uk`, українські зразки відповідей Fake-адаптера, очікувані українські підписи UI в тестах). `docs/`, `CLAUDE.md`, `KICKOFF.md` і скіли в `.claude/skills/` лишаються українською. Застосовані міграції (`db/migrations/0000`–`0002`) не редагуємо навіть заради коментарів; нові міграції пишемо англійською.

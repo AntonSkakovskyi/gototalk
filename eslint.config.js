@@ -132,7 +132,7 @@ export default defineConfig(
     files: ['apps/api/src/**/*.ts'],
     rules: {
       'import-x/no-restricted-paths': [
-        'warn',
+        'error',
         { basePath: import.meta.dirname, zones: apiLayerZones },
       ],
     },

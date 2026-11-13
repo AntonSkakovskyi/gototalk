@@ -43,7 +43,7 @@
 | 26 | GDPR у прототипі | Екран згоди перед першим записом + «видалити акаунт»; експорт і політика — MVP |
 | 27 | Стан слова `active` | Система ставить його, коли збережене слово вжито в мовленні |
 | 28 | Node.js | Node 26 LTS (Active LTS з 28.10.2026; Node 24 перейшов у Maintenance 20.10.2026). pnpm ставиться окремо, corepack не використовуємо |
-| 29 | Структура коду | Гібрид Bulletproof React і мінімального FSD: шари `app → pages → features → shared`, межі перевіряє ESLint; деталі в розділі 6 |
+| 29 | Структура коду | Гібрид Bulletproof React і мінімального FSD: шари `app → pages → features → shared`, межі перевіряє ESLint; api: інфраструктура (`core`, `common`, `integrations`) окремо від доменів (`modules`); деталі в розділі 6 |
 
 ## 3. Схема: що змінює 0002 відносно 0001
 
@@ -87,7 +87,7 @@
 
 ## 6. Структура коду
 
-Рішення 29. Web (`apps/web/src`): гібрид Bulletproof React і мінімального Feature-Sliced Design. Шари `app → pages → features → shared`, імпорти лише вниз, фіча не імпортує іншу фічу. Структура api додається окремо.
+Рішення 29. Web (`apps/web/src`): гібрид Bulletproof React і мінімального Feature-Sliced Design. Шари `app → pages → features → shared`, імпорти лише вниз, фіча не імпортує іншу фічу. Api (`apps/api/src`): пласкі доменні модулі NestJS у `modules/`, інфраструктура окремо в `core/`, `common/`, `integrations/`.
 
 | Питання | Рішення і причина |
 |---|---|
@@ -100,4 +100,8 @@
 | `shared/api → shared/session` | Залежність односпрямована. `shared/session` – лише клієнтський стан (сховище сесії, кеш запитів), без мережі. `refresh.ts` викликає API та оновлює сесію, тож лежить у `shared/api`; у попередній розкладці `auth/refresh.ts` і `auth/session-store.ts` створювали цикл `http ↔ session-store ↔ refresh` |
 | Сторінки | Завжди в папці маршруту `pages/<route>/<Name>Page.tsx`, тонкі (для нового коду). Форми Login/Register/Consent винесемо у `features/auth` при наступній зміні цих сторінок (`docs/backlog.md`) |
 | Іменування | Файли й папки компонентів PascalCase, решта kebab-case. Папка на компонент лише коли поруч є `.module.scss` або тест |
+| Api: чому лише розділення, а не перебудова | Пласкі модулі «одна папка = одна доменна область» уже збігаються з рекомендованою документацією NestJS структурою, тож їх не чіпаємо. Додано лише розділення інфраструктури (`core`: config, db, logger, errors, health; `common`: спільні декоратори й pipe, як `@Public()`, потрібний і health, тому не в `modules/auth`; `integrations`: порти й Fake-адаптери по можливостях, SDK лише тут) і доменів (`modules`), та розбиття найбільшого модуля `auth` на `guards/`, `decorators/`, `persistence/`, `lib/` (підпапка лише за ≥2 файлів одного типу; корінь модуля тримає module, controller, service(s), errors) |
+| Api: без гексагональних шарів `domain`/`mappers` | Не беремо: у модулях мало логіки, яка не залежить від Nest і Drizzle, а мапери й domain-типи подвоїли б кількість файлів без вигоди для одного розробника. Порти потрібні лише на межі із зовнішніми сервісами (STT, LLM) і лежать в `integrations/` |
+| Api: без аліасу | В api імпорти відносні з `.js` (ESM NodeNext): аліас потребував би резолвера в рантаймі (tsx, Vitest, збирання) і не дає вигоди при неглибокій вкладеності (максимум `../../../`) |
+| Api: контроль меж | Ті самі `eslint-plugin-import-x`: зона `no-restricted-paths` забороняє `core`, `common` і `integrations` імпортувати `modules`; SDK провайдерів дозволені лише в `integrations/**`. Правило в `error`. `apps/api/test/` (інтеграційні тести й `support/`) не реорганізовано |
 | `packages/shared` | Розкладати за доменами, коли схем стане ~6+ (`docs/backlog.md`) |
