@@ -84,7 +84,7 @@ Api (`apps/api/src`): `core/`, `common/`, `integrations/`, `modules/`; у кор
 
 ## Git
 - Одна гілка на сценарій (`feat/NN-name`), злиття через PR із CI. У `main` напряму не комітити.
-- Агент комітить сам (Conventional Commits). `git push` робить людина.
+- Агент комітить сам (Conventional Commits). Після завершення сценарію агент пушить свою гілку `feat/NN-*` і створює PR (`gh pr create`). Пуш у `main`, force-push і злиття PR робить лише людина.
 
 ## Безпека й приватність
 - Секрети лише в `.env` (у `.gitignore`); `.env.example` без значень. Не читати й не виводити `.env`. Жодних ключів у фронтенді чи логах.
