@@ -67,7 +67,7 @@ export function OnboardingWizard({ onCompleted }: OnboardingWizardProps) {
               <Button key="finish" type="submit" size="lg" loading={isPending}>
                 {t(
                   isRetry
-                    ? 'profile.actions.retry'
+                    ? 'common.actions.retry'
                     : 'profile.onboarding.actions.finish',
                 )}
               </Button>

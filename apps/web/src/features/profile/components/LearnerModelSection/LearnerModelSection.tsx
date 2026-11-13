@@ -3,9 +3,9 @@ import { Stack, Text } from '@mantine/core';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { learnerModelQueryOptions } from '@/features/profile/api/profile-queries';
-import { LoadError } from '@/features/profile/components/LoadError/LoadError';
+import { LoadError } from '@/shared/ui/LoadError/LoadError';
 import { ProfileSection } from '@/features/profile/components/ProfileSection/ProfileSection';
-import { SectionSkeleton } from '@/features/profile/components/SectionSkeleton/SectionSkeleton';
+import { SectionSkeleton } from '@/shared/ui/SectionSkeleton/SectionSkeleton';
 import { VocabularyStats } from './VocabularyStats';
 import { WeakAreasList } from './WeakAreasList';
 

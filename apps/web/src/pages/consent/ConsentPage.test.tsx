@@ -138,7 +138,7 @@ describe('ConsentPage', () => {
     await user.click(agreeButton());
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      uk.auth.errors.generic,
+      uk.errors.generic,
     );
     expect(agreeButton()).toBeEnabled();
     expect(getSession().user?.consentAt).toBeNull();
@@ -209,7 +209,7 @@ describe('ConsentPage', () => {
     renderConsent();
 
     const alert = await screen.findByRole('alert');
-    expect(alert).toHaveTextContent(uk.auth.errors.generic);
+    expect(alert).toHaveTextContent(uk.errors.generic);
     expect(agreeButton()).toBeDisabled();
 
     await user.click(

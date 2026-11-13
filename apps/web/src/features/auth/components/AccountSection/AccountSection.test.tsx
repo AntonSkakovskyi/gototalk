@@ -217,7 +217,7 @@ describe('AccountSection', () => {
     );
 
     expect(await within(dialog).findByRole('alert')).toHaveTextContent(
-      uk.auth.errors.generic,
+      uk.errors.generic,
     );
     expect(getSession().status).toBe('authenticated');
     await waitFor(() =>
@@ -317,7 +317,7 @@ describe('AccountSection', () => {
     rejectRequest(new TypeError('Failed to fetch'));
 
     expect(await within(dialog).findByRole('alert')).toHaveTextContent(
-      uk.auth.errors.generic,
+      uk.errors.generic,
     );
     expect(screen.getByRole('dialog')).toBeInTheDocument();
     expect(getSession().status).toBe('authenticated');

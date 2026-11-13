@@ -11,7 +11,7 @@ export function apiErrorKey(error: unknown): string {
       return 'auth.errors.emailTaken';
     }
   }
-  return 'auth.errors.generic';
+  return 'errors.generic';
 }
 
 // Maps field errors to i18n keys so the English Zod messages never reach the UI.
@@ -38,5 +38,5 @@ export function deleteAccountErrorKey(error: unknown): string {
   return error instanceof ApiError &&
     error.code === ERROR_CODES.INVALID_PASSWORD
     ? 'pages.profile.account.delete.invalidPassword'
-    : 'auth.errors.generic';
+    : 'errors.generic';
 }

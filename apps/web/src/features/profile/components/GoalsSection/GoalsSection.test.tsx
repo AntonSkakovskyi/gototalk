@@ -59,7 +59,7 @@ describe('GoalsSection list', () => {
     renderGoals();
 
     expect(
-      screen.getByRole('status', { name: uk.profile.loading }),
+      screen.getByRole('status', { name: uk.common.loading }),
     ).toBeInTheDocument();
     expect(await screen.findByText(FLUENT.title)).toBeInTheDocument();
     expect(screen.queryByRole('status')).not.toBeInTheDocument();
@@ -74,12 +74,12 @@ describe('GoalsSection list', () => {
     });
     renderGoals();
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      uk.profile.errors.generic,
+      uk.errors.generic,
     );
 
     failing = false;
     await user.click(
-      screen.getByRole('button', { name: uk.profile.actions.retry }),
+      screen.getByRole('button', { name: uk.common.actions.retry }),
     );
 
     expect(await screen.findByText(FLUENT.title)).toBeInTheDocument();

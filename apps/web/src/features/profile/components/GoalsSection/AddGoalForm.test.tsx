@@ -130,7 +130,7 @@ describe('GoalsSection add goal', () => {
     await user.type(addField(), 'One more');
     await user.click(addButton());
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      uk.profile.errors.generic,
+      uk.errors.generic,
     );
 
     failing = false;

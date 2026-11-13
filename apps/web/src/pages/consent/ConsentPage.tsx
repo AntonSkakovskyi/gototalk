@@ -31,7 +31,7 @@ export function ConsentPage() {
         {info.isError && (
           <Alert color="red">
             <Stack gap="xs" className={classes.retry}>
-              {t('auth.errors.generic')}
+              {t('errors.generic')}
               <Button
                 variant="light"
                 color="red"
@@ -66,7 +66,7 @@ export function ConsentPage() {
         <Text>{t('pages.consent.audioNotStored')}</Text>
         <Text>{t('pages.consent.deletion')}</Text>
         {consent.isError && (
-          <Alert color="red">{t('auth.errors.generic')}</Alert>
+          <Alert color="red">{t('errors.generic')}</Alert>
         )}
         {signOut.isError && (
           <Alert color="red">{t('auth.errors.logoutFailed')}</Alert>

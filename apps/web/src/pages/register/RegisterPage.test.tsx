@@ -141,7 +141,7 @@ describe('RegisterPage', () => {
     await fillAndSubmit('anna@example.com', 'long-enough-password');
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      uk.auth.errors.generic,
+      uk.errors.generic,
     );
   });
 });

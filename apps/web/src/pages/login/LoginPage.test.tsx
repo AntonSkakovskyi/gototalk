@@ -149,7 +149,7 @@ describe('LoginPage', () => {
     await fillAndSubmit('anna@example.com', 'secret-pass');
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      uk.auth.errors.generic,
+      uk.errors.generic,
     );
     await waitFor(() =>
       expect(
