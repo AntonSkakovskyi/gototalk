@@ -7,12 +7,12 @@ import {
 } from '@/app/router/guards/guard-test-helpers';
 import uk from '@/shared/i18n/uk.json';
 import { mockApi } from '@/shared/testing/mock-api';
+import { STARTED_SESSION } from '@/shared/testing/session-mocks';
 import {
   TEST_PROFILE,
   TEST_USER,
   errorResponse,
   jsonResponse,
-  testSessionDetails,
   testSessionPlan,
 } from '@/shared/testing/test-fixtures';
 
@@ -20,25 +20,14 @@ const SESSION = {
   accessToken: 'access-1',
   user: { ...TEST_USER, consentAt: '2026-01-01T10:00:00.000Z' },
 };
-const STARTED = testSessionDetails({
-  id: '7c2e8b64-5f0a-4d1b-8e3a-2a9b4c6d0099',
-  utterances: [
-    {
-      id: '9e4a1c73-6b2d-4f8a-a1c5-3b7d5e8f0099',
-      seq: 1,
-      role: 'assistant',
-      text: 'Which part of the offsite are you most excited about?',
-    },
-  ],
-});
-const FIRST_QUESTION = STARTED.utterances[0]!.text;
+const FIRST_QUESTION = STARTED_SESSION.utterances[0]!.text;
 
 describe('DialogPage route', () => {
   it('[TC-03-03] sends an anonymous visitor to the login page', async () => {
     mockApi({});
 
     renderAppWithProbe({
-      route: `/sessions/${STARTED.id}`,
+      route: `/sessions/${STARTED_SESSION.id}`,
       session: 'anonymous',
     });
 
@@ -54,16 +43,23 @@ describe('DialogPage route', () => {
   it('[TC-03-03] opens the session by the id from the route', async () => {
     mockApi({
       'GET /api/profile': jsonResponse(TEST_PROFILE),
-      [`GET /api/sessions/${STARTED.id}`]: jsonResponse(STARTED),
+      [`GET /api/sessions/${STARTED_SESSION.id}`]:
+        jsonResponse(STARTED_SESSION),
     });
 
-    renderAppWithProbe({ route: `/sessions/${STARTED.id}`, session: SESSION });
+    renderAppWithProbe({
+      route: `/sessions/${STARTED_SESSION.id}`,
+      session: SESSION,
+    });
 
     expect(
-      await screen.findByRole('heading', { level: 1, name: STARTED.topic }),
+      await screen.findByRole('heading', {
+        level: 1,
+        name: STARTED_SESSION.topic,
+      }),
     ).toBeInTheDocument();
     expect(screen.getByText(FIRST_QUESTION)).toBeInTheDocument();
-    expect(currentLocation()).toBe(`/sessions/${STARTED.id}`);
+    expect(currentLocation()).toBe(`/sessions/${STARTED_SESSION.id}`);
   });
 
   it.each([
@@ -112,7 +108,7 @@ describe('DialogPage route', () => {
     const { requests } = mockApi({
       'GET /api/profile': jsonResponse(TEST_PROFILE),
       'POST /api/sessions/plan': jsonResponse(testSessionPlan()),
-      'POST /api/sessions': jsonResponse(STARTED, 201),
+      'POST /api/sessions': jsonResponse(STARTED_SESSION, 201),
     });
 
     renderAppWithProbe({ route: '/sessions/new', session: SESSION });
@@ -122,10 +118,10 @@ describe('DialogPage route', () => {
 
     expect(await screen.findByText(FIRST_QUESTION)).toBeInTheDocument();
     expect(
-      screen.getByRole('heading', { level: 1, name: STARTED.topic }),
+      screen.getByRole('heading', { level: 1, name: STARTED_SESSION.topic }),
     ).toBeInTheDocument();
     await waitFor(() =>
-      expect(currentLocation()).toBe(`/sessions/${STARTED.id}`),
+      expect(currentLocation()).toBe(`/sessions/${STARTED_SESSION.id}`),
     );
     expect(
       requests.filter(

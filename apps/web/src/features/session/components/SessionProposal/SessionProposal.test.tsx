@@ -1,8 +1,4 @@
-import {
-  ERROR_CODES,
-  MAX_TOPIC_REROLLS,
-  type PlanSessionRequest,
-} from '@gototalk/shared';
+import { ERROR_CODES, MAX_TOPIC_REROLLS } from '@gototalk/shared';
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { StrictMode } from 'react';
@@ -10,35 +6,26 @@ import { Route, Routes } from 'react-router';
 import { sessionKeys } from '@/features/session/api/session-queries';
 import uk from '@/shared/i18n/uk.json';
 import { LocationProbe } from '@/shared/testing/LocationProbe';
-import { mockApi, type MockRequest } from '@/shared/testing/mock-api';
 import { createTestQueryClient } from '@/shared/testing/query-wrapper';
+import i18n from '@/shared/i18n/index';
+import {
+  STARTED_SESSION,
+  mockSessionApi,
+  planFor,
+  startOk,
+} from '@/shared/testing/session-mocks';
 import {
   errorResponse,
   jsonResponse,
-  testSessionDetails,
   testSessionPlan,
 } from '@/shared/testing/test-fixtures';
-import i18n from '@/shared/i18n/index';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 import { SessionProposal } from './SessionProposal';
 
 const text = uk.session.proposal;
-const STARTED = testSessionDetails({
-  id: '7c2e8b64-5f0a-4d1b-8e3a-2a9b4c6d0099',
-});
 
-function planFor({ previousTopics }: PlanSessionRequest) {
-  return jsonResponse(
-    testSessionPlan({ topic: `Topic ${previousTopics.length}` }),
-  );
-}
-
-function setup(startReply: () => Response | Promise<Response>) {
-  const { requests } = mockApi({
-    'POST /api/sessions/plan': (request) =>
-      planFor(request.body as PlanSessionRequest),
-    'POST /api/sessions': startReply,
-  });
+function setup(startReply?: () => Response | Promise<Response>) {
+  const api = mockSessionApi({ start: startReply });
   const queryClient = createTestQueryClient();
   renderWithProviders(
     <StrictMode>
@@ -50,21 +37,7 @@ function setup(startReply: () => Response | Promise<Response>) {
     </StrictMode>,
     { route: '/sessions/new', queryClient },
   );
-  return {
-    queryClient,
-    requests,
-    user: userEvent.setup(),
-    planRequests: () =>
-      requests.filter((request) => request.path === '/api/sessions/plan'),
-    startRequests: () =>
-      requests.filter((request) => request.path === '/api/sessions'),
-  };
-}
-
-const startOk = () => jsonResponse(STARTED, 201);
-
-function bodyOf(request: MockRequest | undefined) {
-  return request?.body;
+  return { ...api, queryClient, user: userEvent.setup() };
 }
 
 const startButton = () => screen.getByRole('button', { name: text.start });
@@ -106,7 +79,7 @@ describe('SessionProposal', () => {
 
     await topic('Topic 0');
 
-    expect(planRequests().map(bodyOf)).toEqual([{ previousTopics: [] }]);
+    expect(planRequests()).toEqual([{ previousTopics: [] }]);
   });
 
   it('[TC-03-03] another topic requests a plan excluding the shown ones and moves focus to the new topic', async () => {
@@ -119,7 +92,7 @@ describe('SessionProposal', () => {
     await user.click(anotherButton());
 
     const next = await topic('Topic 1');
-    expect(planRequests().map(bodyOf)).toEqual([
+    expect(planRequests()).toEqual([
       { previousTopics: [] },
       { previousTopics: ['Topic 0'] },
     ]);
@@ -143,7 +116,7 @@ describe('SessionProposal', () => {
     expect(screen.getByText(text.rerollsExhausted)).toBeInTheDocument();
     expect(anotherButton()).toHaveAccessibleDescription(text.rerollsExhausted);
     expect(planRequests()).toHaveLength(MAX_TOPIC_REROLLS + 1);
-    expect(bodyOf(planRequests().at(-1))).toEqual({
+    expect(planRequests().at(-1)).toEqual({
       previousTopics: ['Topic 0', 'Topic 1', 'Topic 2'],
     });
   });
@@ -162,7 +135,7 @@ describe('SessionProposal', () => {
     await user.click(startButton());
 
     await waitFor(() => expect(startRequests()).toHaveLength(1));
-    expect(bodyOf(startRequests()[0])).toMatchObject({
+    expect(startRequests()[0]).toMatchObject({
       topic: 'Topic 0',
       topicSource: 'suggested',
       feedbackMode: 'immediate',
@@ -180,10 +153,10 @@ describe('SessionProposal', () => {
 
     await waitFor(() =>
       expect(screen.getByTestId('location-path')).toHaveTextContent(
-        `/sessions/${STARTED.id}`,
+        `/sessions/${STARTED_SESSION.id}`,
       ),
     );
-    expect(bodyOf(startRequests()[0])).toMatchObject({
+    expect(startRequests()[0]).toMatchObject({
       feedbackMode: 'deferred',
       questions: testSessionPlan().questions,
     });
@@ -192,8 +165,8 @@ describe('SessionProposal', () => {
   it('[TC-03-03] shows the mapped message with a working retry when the plan fails', async () => {
     const user = userEvent.setup();
     let failing = true;
-    mockApi({
-      'POST /api/sessions/plan': () =>
+    mockSessionApi({
+      plan: () =>
         failing
           ? errorResponse(502, ERROR_CODES.LANGUAGE_MODEL_INVALID_RESPONSE)
           : jsonResponse(testSessionPlan({ topic: 'Recovered' })),
@@ -236,7 +209,7 @@ describe('SessionProposal', () => {
 
     await waitFor(() =>
       expect(screen.getByTestId('location-path')).toHaveTextContent(
-        `/sessions/${STARTED.id}`,
+        `/sessions/${STARTED_SESSION.id}`,
       ),
     );
     expect(startRequests()).toHaveLength(2);
@@ -274,7 +247,7 @@ describe('SessionProposal', () => {
 
     await waitFor(() =>
       expect(screen.getByTestId('location-path')).toHaveTextContent(
-        `/sessions/${STARTED.id}`,
+        `/sessions/${STARTED_SESSION.id}`,
       ),
     );
   });
@@ -289,7 +262,7 @@ describe('SessionProposal', () => {
 
     await waitFor(() =>
       expect(screen.getByTestId('location-path')).toHaveTextContent(
-        '/sessions/' + STARTED.id,
+        '/sessions/' + STARTED_SESSION.id,
       ),
     );
     await waitFor(() =>
@@ -316,13 +289,11 @@ describe('SessionProposal', () => {
   it('[TC-03-03] keeps the previous topics when another topic fails, offers a retry and keeps the count', async () => {
     const user = userEvent.setup();
     let failing = true;
-    const { requests } = mockApi({
-      'POST /api/sessions/plan': (request) => {
-        const body = request.body as PlanSessionRequest;
-        return failing && body.previousTopics.length === 1
+    const { planRequests } = mockSessionApi({
+      plan: ({ previousTopics }) =>
+        failing && previousTopics.length === 1
           ? errorResponse(502, ERROR_CODES.LANGUAGE_MODEL_INVALID_RESPONSE)
-          : planFor(body);
-      },
+          : jsonResponse(planFor({ previousTopics })),
     });
     renderWithProviders(<SessionProposal />);
     await topic('Topic 0');
@@ -348,6 +319,6 @@ describe('SessionProposal', () => {
     expect(
       screen.getByText(i18n.t('session.proposal.rerollsLeft', { left: 2 })),
     ).toBeInTheDocument();
-    expect(requests.at(-1)?.body).toEqual({ previousTopics: ['Topic 0'] });
+    expect(planRequests().at(-1)).toEqual({ previousTopics: ['Topic 0'] });
   });
 });

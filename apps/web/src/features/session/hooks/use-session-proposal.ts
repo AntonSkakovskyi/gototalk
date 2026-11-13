@@ -1,45 +1,13 @@
-import {
-  MAX_TOPIC_REROLLS,
-  type FeedbackMode,
-  type SessionDetails,
-} from '@gototalk/shared';
-import { useQuery } from '@tanstack/react-query';
+import type { FeedbackMode, SessionDetails } from '@gototalk/shared';
 import { useState } from 'react';
-import { sessionPlanQueryOptions } from '@/features/session/api/session-queries';
 import { useStartSession } from './use-start-session';
+import { useTopicSelection } from './use-topic-selection';
 
 export function useSessionProposal() {
-  const [shownTopics, setShownTopics] = useState<string[]>([]);
-  const [customTopic, setCustomTopic] = useState<string>();
-  const [feedbackMode, setFeedbackMode] = useState<FeedbackMode>('immediate');
-  const plan = useQuery(
-    sessionPlanQueryOptions({ previousTopics: shownTopics, customTopic }),
-  );
   const mutation = useStartSession();
-
-  const rerolls = shownTopics.length;
-  const canReroll =
-    customTopic === undefined &&
-    plan.data !== undefined &&
-    rerolls < MAX_TOPIC_REROLLS;
-
-  function requestAnotherTopic() {
-    if (canReroll && plan.data !== undefined) {
-      mutation.reset();
-      setShownTopics([...shownTopics, plan.data.topic]);
-    }
-  }
-
-  function applyCustomTopic(topic: string) {
-    const trimmed = topic.trim();
-    mutation.reset();
-    setCustomTopic(trimmed === '' ? undefined : trimmed);
-  }
-
-  function clearCustomTopic() {
-    mutation.reset();
-    setCustomTopic(undefined);
-  }
+  const topics = useTopicSelection(mutation.reset);
+  const [feedbackMode, setFeedbackMode] = useState<FeedbackMode>('immediate');
+  const { plan } = topics;
 
   function changeFeedbackMode(mode: FeedbackMode) {
     mutation.reset();
@@ -58,16 +26,9 @@ export function useSessionProposal() {
   }
 
   return {
-    plan,
-    rerolls,
-    maxRerolls: MAX_TOPIC_REROLLS,
-    canReroll,
-    customTopic,
+    ...topics,
     feedbackMode,
     setFeedbackMode: changeFeedbackMode,
-    requestAnotherTopic,
-    applyCustomTopic,
-    clearCustomTopic,
     start,
     isStarting: mutation.isPending,
     startError: mutation.error,

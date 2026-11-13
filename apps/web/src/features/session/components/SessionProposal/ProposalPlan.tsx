@@ -1,83 +1,15 @@
 import type { SessionPlan } from '@gototalk/shared';
-import {
-  Alert,
-  Badge,
-  Button,
-  Group,
-  List,
-  Stack,
-  Text,
-  Title,
-} from '@mantine/core';
+import { Alert, Button, Stack } from '@mantine/core';
 import type { UseQueryResult } from '@tanstack/react-query';
-import { useEffect, useId, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useFocusWhen } from '@/features/session/hooks/use-focus-when';
 import { sessionErrorKey } from '@/features/session/lib/session-errors';
-import { topicLanguage } from '@/features/session/lib/topic-language';
 import { SectionSkeleton } from '@/shared/ui/SectionSkeleton/SectionSkeleton';
-
-const QUESTION_LANGUAGE = 'en';
+import { PlanContent } from './PlanContent';
 
 interface ProposalPlanProps {
   plan: UseQueryResult<SessionPlan>;
   focusTopic: boolean;
-}
-
-interface PlanContentProps {
-  plan: SessionPlan;
-  focusTopic: boolean;
-}
-
-function PlanContent({ plan, focusTopic }: PlanContentProps) {
-  const { t } = useTranslation();
-  const questionsId = useId();
-  const topicRef = useRef<HTMLHeadingElement>(null);
-
-  useEffect(() => {
-    if (focusTopic) {
-      topicRef.current?.focus();
-    }
-  }, [plan.topic, focusTopic]);
-
-  return (
-    <Stack gap="md">
-      <Stack gap={0}>
-        <Group gap="xs">
-          <Text size="sm" c="dimmed">
-            {t('session.proposal.topicLabel')}
-          </Text>
-          {plan.topicSource === 'custom' && (
-            <Badge variant="light" size="lg">
-              {t('session.proposal.custom.badge')}
-            </Badge>
-          )}
-        </Group>
-        <Title
-          order={2}
-          lang={topicLanguage(plan.topicSource)}
-          tabIndex={-1}
-          ref={topicRef}
-        >
-          {plan.topic}
-        </Title>
-      </Stack>
-      <Stack gap="xs">
-        <Text id={questionsId} size="sm" fw={500}>
-          {t('session.proposal.questionsLabel')}
-        </Text>
-        <List
-          type="ordered"
-          spacing="sm"
-          lang={QUESTION_LANGUAGE}
-          aria-labelledby={questionsId}
-        >
-          {plan.questions.map((question) => (
-            <List.Item key={question}>{question}</List.Item>
-          ))}
-        </List>
-      </Stack>
-    </Stack>
-  );
 }
 
 interface PlanErrorProps {
@@ -88,13 +20,7 @@ interface PlanErrorProps {
 
 function PlanError({ error, focusRetry, onRetry }: PlanErrorProps) {
   const { t } = useTranslation();
-  const retryRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    if (focusRetry) {
-      retryRef.current?.focus();
-    }
-  }, [focusRetry]);
+  const retryRef = useFocusWhen<HTMLButtonElement>(focusRetry);
 
   return (
     <Stack gap="sm" align="flex-start">

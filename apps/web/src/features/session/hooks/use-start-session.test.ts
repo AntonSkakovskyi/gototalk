@@ -42,8 +42,8 @@ function startedList() {
 }
 
 describe('useStartSession', () => {
-  it('[TC-03-03] seeds the details cache and refetches the observed list with the new session first', async () => {
-    const { queryClient, wrapper } = setup();
+  it('[TC-03-03] refetches the observed list with the new session first', async () => {
+    const { wrapper } = setup();
     const { requests } = mockApi({
       'POST /api/sessions': jsonResponse(STARTED, 201),
       'GET /api/sessions': jsonResponse(startedList()),
@@ -70,9 +70,6 @@ describe('useStartSession', () => {
     ]);
     expect(requests.find((request) => request.method === 'POST')?.body).toEqual(
       REQUEST,
-    );
-    expect(queryClient.getQueryData(sessionKeys.details(STARTED.id))).toEqual(
-      STARTED,
     );
   });
 

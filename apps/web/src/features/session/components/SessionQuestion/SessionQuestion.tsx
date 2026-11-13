@@ -1,7 +1,8 @@
 import { Button, Stack, Title } from '@mantine/core';
+import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
-import { useSessionDetails } from '@/features/session/hooks/use-session-details';
+import { sessionDetailsQueryOptions } from '@/features/session/api/session-queries';
 import { currentQuestion } from '@/features/session/lib/current-question';
 import { isSessionNotFound } from '@/features/session/lib/session-errors';
 import { LoadError } from '@/shared/ui/LoadError/LoadError';
@@ -16,7 +17,7 @@ interface SessionQuestionProps {
 
 export function SessionQuestion({ sessionId }: SessionQuestionProps) {
   const { t } = useTranslation();
-  const details = useSessionDetails(sessionId);
+  const details = useQuery(sessionDetailsQueryOptions(sessionId));
   const question = details.data && currentQuestion(details.data.utterances);
 
   return (

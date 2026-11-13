@@ -1,9 +1,17 @@
-import { QueryClient } from '@tanstack/react-query';
 import { ERROR_CODES } from '@gototalk/shared';
+import {
+  QueryClient,
+  focusManager,
+  onlineManager,
+  useQuery,
+} from '@tanstack/react-query';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { mockApi } from '@/shared/testing/mock-api';
+import { createQueryWrapper } from '@/shared/testing/query-wrapper';
 import {
   errorResponse,
   jsonResponse,
+  testSessionDetails,
   testSessionPlan,
 } from '@/shared/testing/test-fixtures';
 import {
@@ -74,13 +82,25 @@ describe('session queries', () => {
     expect(requests).toHaveLength(2);
   });
 
-  it('[TC-03-03] plan query never refetches on focus or reconnect', () => {
-    const options = sessionPlanQueryOptions({ previousTopics: [] });
+  it('[TC-03-03] an observed plan is not refetched on focus or reconnect', async () => {
+    const { requests } = mockApi({
+      'POST /api/sessions/plan': jsonResponse(testSessionPlan()),
+    });
+    const { result } = renderHook(
+      () => useQuery(sessionPlanQueryOptions({ previousTopics: [] })),
+      { wrapper: createQueryWrapper(new QueryClient()) },
+    );
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-    expect(options.staleTime).toBe(Infinity);
-    expect(options.gcTime).toBe(0);
-    expect(options.refetchOnWindowFocus).toBe(false);
-    expect(options.refetchOnReconnect).toBe(false);
+    act(() => {
+      focusManager.setFocused(false);
+      focusManager.setFocused(true);
+      onlineManager.setOnline(false);
+      onlineManager.setOnline(true);
+    });
+
+    expect(result.current.isFetching).toBe(false);
+    expect(requests).toHaveLength(1);
   });
 
   it('[TC-03-03] list query does not retry a 4xx', async () => {
@@ -109,7 +129,47 @@ describe('session queries', () => {
     expect(requests).toHaveLength(2);
   });
 
-  it('[TC-03-03] details stay fresh for a while so a just-started session is not refetched', () => {
-    expect(sessionDetailsQueryOptions('abc').staleTime).toBeGreaterThan(0);
+  it('[TC-03-03] seeded details are served from the cache without a request', async () => {
+    const details = testSessionDetails();
+    const { requests } = mockApi({});
+    const queryClient = new QueryClient();
+    queryClient.setQueryData(sessionKeys.details(details.id), details);
+
+    await expect(
+      queryClient.query(sessionDetailsQueryOptions(details.id)),
+    ).resolves.toEqual(details);
+
+    expect(requests).toHaveLength(0);
+  });
+
+  it('[TC-03-03] details fetched on a direct visit are requested once', async () => {
+    const details = testSessionDetails();
+    const { requests } = mockApi({
+      [`GET /api/sessions/${details.id}`]: jsonResponse(details),
+    });
+
+    await expect(
+      new QueryClient().query(sessionDetailsQueryOptions(details.id)),
+    ).resolves.toEqual(details);
+
+    expect(requests).toHaveLength(1);
+  });
+
+  it('[TC-03-03] details query does not retry a missing session', async () => {
+    const { requests } = mockApi({
+      'GET /api/sessions/abc': errorResponse(
+        404,
+        ERROR_CODES.SESSION_NOT_FOUND,
+      ),
+    });
+
+    await expect(
+      new QueryClient().query({
+        ...sessionDetailsQueryOptions('abc'),
+        retryDelay: 0,
+      }),
+    ).rejects.toMatchObject({ status: 404 });
+
+    expect(requests).toHaveLength(1);
   });
 });

@@ -24,7 +24,7 @@ export function CustomTopicAction({
     }
   }, [open]);
 
-  function close() {
+  function cancel() {
     restoreFocus.current = true;
     setOpen(false);
   }
@@ -34,9 +34,9 @@ export function CustomTopicAction({
       <CustomTopicForm
         onSubmit={(topic) => {
           onApply(topic);
-          close();
+          setOpen(false);
         }}
-        onCancel={close}
+        onCancel={cancel}
       />
     );
   }

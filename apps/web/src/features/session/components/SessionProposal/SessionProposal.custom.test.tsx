@@ -6,11 +6,10 @@ import {
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import uk from '@/shared/i18n/uk.json';
-import { mockApi } from '@/shared/testing/mock-api';
+import { mockSessionApi } from '@/shared/testing/session-mocks';
 import {
   errorResponse,
   jsonResponse,
-  testSessionDetails,
   testSessionPlan,
 } from '@/shared/testing/test-fixtures';
 import { renderWithProviders } from '@/shared/testing/test-utils';
@@ -36,23 +35,9 @@ function setup(
   planReply: (body: PlanSessionRequest) => Response = (body) =>
     jsonResponse(planFor(body)),
 ) {
-  const { requests } = mockApi({
-    'POST /api/sessions/plan': (request) =>
-      planReply(request.body as PlanSessionRequest),
-    'POST /api/sessions': () => jsonResponse(testSessionDetails(), 201),
-  });
+  const { planRequests, startRequests } = mockSessionApi({ plan: planReply });
   renderWithProviders(<SessionProposal />);
-  return {
-    user: userEvent.setup(),
-    planBodies: () =>
-      requests
-        .filter((request) => request.path === '/api/sessions/plan')
-        .map((request) => request.body),
-    startBodies: () =>
-      requests
-        .filter((request) => request.path === '/api/sessions')
-        .map((request) => request.body),
-  };
+  return { user: userEvent.setup(), planRequests, startRequests };
 }
 
 type User = ReturnType<typeof userEvent.setup>;
@@ -75,14 +60,14 @@ async function applyTopic(user: User, topic: string) {
 
 describe('SessionProposal custom topic', () => {
   it('[TC-03-03] requests a plan for the typed topic and shows its questions with an own-topic indicator', async () => {
-    const { user, planBodies } = setup();
+    const { user, planRequests } = setup();
     await heading('Suggested topic');
     expect(screen.queryByText(text.custom.badge)).not.toBeInTheDocument();
 
     await applyTopic(user, '  My cat  ');
 
     await heading('My cat');
-    expect(planBodies()).toEqual([
+    expect(planRequests()).toEqual([
       { previousTopics: [] },
       { previousTopics: [], customTopic: 'My cat' },
     ]);
@@ -101,7 +86,7 @@ describe('SessionProposal custom topic', () => {
   });
 
   it('[TC-03-03] hides another topic while the own topic is active and returns to a suggestion', async () => {
-    const { user, planBodies } = setup();
+    const { user, planRequests } = setup();
     await heading('Suggested topic');
     await applyTopic(user, 'My cat');
     await heading('My cat');
@@ -112,13 +97,13 @@ describe('SessionProposal custom topic', () => {
 
     const suggested = await heading('Suggested topic');
     await waitFor(() => expect(suggested).toHaveFocus());
-    expect(planBodies().at(-1)).toEqual({ previousTopics: [] });
+    expect(planRequests().at(-1)).toEqual({ previousTopics: [] });
     expect(screen.queryByText(text.custom.badge)).not.toBeInTheDocument();
     expect(another()).toBeEnabled();
   });
 
   it('[TC-03-03] cancel closes the form without a request and returns focus to the opener', async () => {
-    const { user, planBodies } = setup();
+    const { user, planRequests } = setup();
     await heading('Suggested topic');
     await user.click(opener());
     expect(topicField()).toHaveFocus();
@@ -129,21 +114,22 @@ describe('SessionProposal custom topic', () => {
 
     expect(topicField()).not.toBeInTheDocument();
     await waitFor(() => expect(opener()).toHaveFocus());
-    expect(planBodies()).toHaveLength(1);
+    expect(planRequests()).toHaveLength(1);
   });
 
-  it('[TC-03-03] returns focus to the opener after a topic is applied', async () => {
+  it('[TC-03-03] moves focus to the new topic heading after a topic is applied', async () => {
     const { user } = setup();
     await heading('Suggested topic');
 
     await applyTopic(user, 'My cat');
 
-    await heading('My cat');
-    await waitFor(() => expect(opener()).toHaveFocus());
+    const applied = await heading('My cat');
+    await waitFor(() => expect(applied).toHaveFocus());
+    expect(opener()).not.toHaveFocus();
   });
 
   it('[TC-03-03] starts with the custom topic source, its text and the chosen feedback mode', async () => {
-    const { user, startBodies } = setup();
+    const { user, startRequests } = setup();
     await heading('Suggested topic');
     await applyTopic(user, 'My cat');
     await heading('My cat');
@@ -153,8 +139,8 @@ describe('SessionProposal custom topic', () => {
 
     await user.click(screen.getByRole('button', { name: text.start }));
 
-    await waitFor(() => expect(startBodies()).toHaveLength(1));
-    expect(startBodies()[0]).toEqual({
+    await waitFor(() => expect(startRequests()).toHaveLength(1));
+    expect(startRequests()[0]).toEqual({
       topic: 'My cat',
       topicSource: 'custom',
       questions: CUSTOM_QUESTIONS,

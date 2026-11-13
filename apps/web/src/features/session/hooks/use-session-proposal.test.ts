@@ -1,37 +1,20 @@
-import {
-  ERROR_CODES,
-  MAX_TOPIC_REROLLS,
-  type PlanSessionRequest,
-} from '@gototalk/shared';
+import { ERROR_CODES, MAX_TOPIC_REROLLS } from '@gototalk/shared';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { sessionKeys } from '@/features/session/api/session-queries';
-import { mockApi } from '@/shared/testing/mock-api';
+import {
+  STARTED_SESSION,
+  mockSessionApi,
+} from '@/shared/testing/session-mocks';
 import {
   createQueryWrapper,
   createTestQueryClient,
 } from '@/shared/testing/query-wrapper';
-import {
-  errorResponse,
-  jsonResponse,
-  testSessionDetails,
-  testSessionPlan,
-} from '@/shared/testing/test-fixtures';
+import { errorResponse, testSessionPlan } from '@/shared/testing/test-fixtures';
 import { useSessionProposal } from './use-session-proposal';
 
-function planFor({ previousTopics, customTopic }: PlanSessionRequest) {
-  if (customTopic !== undefined) {
-    return testSessionPlan({ topic: customTopic, topicSource: 'custom' });
-  }
-  return testSessionPlan({ topic: `Topic ${previousTopics.length}` });
-}
-
-const startOk = () => jsonResponse(testSessionDetails(), 201);
-
-function setup(startReply: () => Response = () => startOk()) {
-  const { requests } = mockApi({
-    'POST /api/sessions/plan': (request) =>
-      jsonResponse(planFor(request.body as PlanSessionRequest)),
-    'POST /api/sessions': startReply,
+function setup(startReply?: () => Response) {
+  const { planRequests, startRequests } = mockSessionApi({
+    start: startReply,
   });
   const queryClient = createTestQueryClient();
   const render = () =>
@@ -39,13 +22,18 @@ function setup(startReply: () => Response = () => startOk()) {
       wrapper: createQueryWrapper(queryClient),
     });
   const { result, unmount } = render();
-  const planRequests = () =>
-    requests.filter((request) => request.path === '/api/sessions/plan');
   const cachedFirstPlan = () =>
     queryClient.getQueryCache().find({
       queryKey: sessionKeys.plan({ previousTopics: [] }),
     });
-  return { result, requests, planRequests, unmount, render, cachedFirstPlan };
+  return {
+    result,
+    planRequests,
+    startRequests,
+    unmount,
+    render,
+    cachedFirstPlan,
+  };
 }
 
 describe('useSessionProposal', () => {
@@ -56,9 +44,7 @@ describe('useSessionProposal', () => {
       expect(result.current.plan.data?.topic).toBe('Topic 0'),
     );
 
-    expect(planRequests().map((request) => request.body)).toEqual([
-      { previousTopics: [] },
-    ]);
+    expect(planRequests()).toEqual([{ previousTopics: [] }]);
     expect(result.current.feedbackMode).toBe('immediate');
     expect(result.current.canReroll).toBe(true);
     expect(result.current.rerolls).toBe(0);
@@ -76,7 +62,7 @@ describe('useSessionProposal', () => {
     await waitFor(() =>
       expect(result.current.plan.data?.topic).toBe('Topic 1'),
     );
-    expect(planRequests()[1]?.body).toEqual({ previousTopics: ['Topic 0'] });
+    expect(planRequests()[1]).toEqual({ previousTopics: ['Topic 0'] });
     expect(result.current.rerolls).toBe(1);
   });
 
@@ -111,7 +97,7 @@ describe('useSessionProposal', () => {
     await waitFor(() =>
       expect(result.current.plan.data?.topicSource).toBe('custom'),
     );
-    expect(planRequests()[1]?.body).toEqual({
+    expect(planRequests()[1]).toEqual({
       previousTopics: [],
       customTopic: 'My own topic',
     });
@@ -150,7 +136,7 @@ describe('useSessionProposal', () => {
     await waitFor(() =>
       expect(result.current.plan.data?.topicSource).toBe('suggested'),
     );
-    expect(planRequests().map((request) => request.body)).toEqual([
+    expect(planRequests()).toEqual([
       { previousTopics: [] },
       { previousTopics: ['Topic 0'] },
       { previousTopics: ['Topic 0'], customTopic: 'My own topic' },
@@ -161,7 +147,7 @@ describe('useSessionProposal', () => {
   });
 
   it('[TC-03-03] start sends exactly the shown plan and the chosen mode', async () => {
-    const { result, requests } = setup();
+    const { result, startRequests } = setup();
     await waitFor(() =>
       expect(result.current.plan.data?.topic).toBe('Topic 0'),
     );
@@ -176,17 +162,39 @@ describe('useSessionProposal', () => {
 
     await waitFor(() => expect(onStarted).toHaveBeenCalledOnce());
     const shown = testSessionPlan({ topic: 'Topic 1' });
-    expect(requests.at(-1)?.body).toEqual({
+    expect(startRequests().at(-1)).toEqual({
       topic: shown.topic,
       topicSource: shown.topicSource,
       questions: shown.questions,
       feedbackMode: 'deferred',
     });
-    expect(onStarted.mock.calls[0]?.[0]).toEqual(testSessionDetails());
+    expect(onStarted.mock.calls[0]?.[0]).toEqual(STARTED_SESSION);
+  });
+
+  it('[TC-03-03] flags a topic change after a reroll', async () => {
+    const { result } = setup();
+    await waitFor(() =>
+      expect(result.current.plan.data?.topic).toBe('Topic 0'),
+    );
+    expect(result.current.topicChanged).toBe(false);
+
+    act(() => result.current.requestAnotherTopic());
+    expect(result.current.topicChanged).toBe(true);
+  });
+
+  it('[TC-03-03] flags a topic change when a custom topic is applied', async () => {
+    const { result } = setup();
+    await waitFor(() =>
+      expect(result.current.plan.data?.topic).toBe('Topic 0'),
+    );
+
+    act(() => result.current.applyCustomTopic('My own topic'));
+
+    expect(result.current.topicChanged).toBe(true);
   });
 
   it('[TC-03-03] start sends the default immediate mode', async () => {
-    const { result, requests } = setup();
+    const { result, startRequests } = setup();
     await waitFor(() =>
       expect(result.current.plan.data?.topic).toBe('Topic 0'),
     );
@@ -195,7 +203,7 @@ describe('useSessionProposal', () => {
     act(() => result.current.start(onStarted));
 
     await waitFor(() => expect(onStarted).toHaveBeenCalledOnce());
-    expect(requests.at(-1)?.body).toMatchObject({ feedbackMode: 'immediate' });
+    expect(startRequests().at(-1)).toMatchObject({ feedbackMode: 'immediate' });
   });
 
   it('[TC-03-03] requests a fresh plan when the proposal is left and entered again', async () => {
@@ -211,7 +219,7 @@ describe('useSessionProposal', () => {
     await waitFor(() =>
       expect(reentered.result.current.plan.data?.topic).toBe('Topic 0'),
     );
-    expect(planRequests().map((request) => request.body)).toEqual([
+    expect(planRequests()).toEqual([
       { previousTopics: [] },
       { previousTopics: [] },
     ]);
