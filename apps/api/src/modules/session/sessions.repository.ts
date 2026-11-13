@@ -21,13 +21,15 @@ import { DRIZZLE } from '../../core/db/db.tokens.js';
 import type { Database, DbTransaction } from '../../core/db/db.tokens.js';
 import { pgTimestampToDate } from '../../core/db/pg-timestamp.js';
 import { mistakes, sessions, users, utterances } from '../../core/db/schema.js';
+import {
+  parsePlanQuestions,
+  remainingQuestions,
+} from './lib/plan-questions.js';
 import { SessionOwnerMissingError } from './session.errors.js';
 
 type SessionRow = typeof sessions.$inferSelect;
 type UtteranceRow = typeof utterances.$inferSelect;
 type MistakeRow = typeof mistakes.$inferSelect;
-
-const StoredPlanSchema = z.object({ questions: z.array(z.string()) });
 
 function toIso(value: string): string {
   return pgTimestampToDate(value).toISOString();
@@ -76,20 +78,14 @@ function toUtterance(row: UtteranceRow, mistakeRows: MistakeRow[]): Utterance {
   };
 }
 
-// A plan question counts as asked once its exact text is an assistant utterance
 function countPlanRemaining(
   plan: unknown,
   utteranceRows: UtteranceRow[],
 ): number {
-  const parsed = StoredPlanSchema.safeParse(plan);
-  if (!parsed.success) return 0;
-  const asked = new Set(
-    utteranceRows
-      .filter((row) => row.role === 'assistant')
-      .map((row) => row.textVerbatim),
-  );
-  return parsed.data.questions.filter((question) => !asked.has(question))
-    .length;
+  const askedTexts = utteranceRows
+    .filter((row) => row.role === 'assistant')
+    .map((row) => row.textVerbatim);
+  return remainingQuestions(parsePlanQuestions(plan), askedTexts).length;
 }
 
 function toSessionDetails(

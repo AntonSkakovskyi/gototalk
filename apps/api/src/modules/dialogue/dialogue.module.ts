@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { DialogueService } from './dialogue.service.js';
+import { NextTurnService } from './next-turn.service.js';
 
 @Module({
-  providers: [DialogueService],
-  exports: [DialogueService],
+  providers: [NextTurnService],
+  exports: [NextTurnService],
 })
 export class DialogueModule {}

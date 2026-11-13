@@ -1,10 +1,9 @@
 import 'reflect-metadata';
-import { NotImplementedException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import type { TestingModule } from '@nestjs/testing';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { AppModule } from './app.module.js';
-import { DialogueService } from './modules/dialogue/dialogue.service.js';
+import { NextTurnService } from './modules/dialogue/next-turn.service.js';
 import { MistakeAnalyzerService } from './modules/analysis/mistake-analyzer.service.js';
 import { LearnerModelService } from './modules/profile/learner-model.service.js';
 import { SessionPlannerService } from './modules/session/session-planner.service.js';
@@ -41,20 +40,6 @@ describe('Core service skeletons', () => {
     expect(moduleRef.get(MistakeAnalyzerService)).toBeInstanceOf(
       MistakeAnalyzerService,
     );
-    expect(moduleRef.get(DialogueService)).toBeInstanceOf(DialogueService);
-  });
-
-  it('[TC-00-04] DialogueService.nextTurn points to spec 04', async () => {
-    const service = moduleRef.get(DialogueService);
-    const input = {
-      topic: 'Work',
-      remainingQuestions: ['q1', 'q2'],
-      history: [],
-    };
-
-    await expect(service.nextTurn(input)).rejects.toThrow(
-      NotImplementedException,
-    );
-    await expect(service.nextTurn(input)).rejects.toThrow(/04-dialog/);
+    expect(moduleRef.get(NextTurnService)).toBeInstanceOf(NextTurnService);
   });
 });
