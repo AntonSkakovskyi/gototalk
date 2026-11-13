@@ -93,7 +93,7 @@
 - [x] **02-11. e2e.** `e2e/profile.spec.ts`, фікстури, `auth.spec.ts`; `pnpm test:e2e`. `[TC-02-03]`.
   - Відхилення: фікстури `consentedPage` (без профілю) і `signedInPage` (з профілем через PUT); хелпери `support/onboarding.ts`; тест виходу → входу тепер очікує повернення на `/profile` (рішення 02-10), окремий `[TC-01-03]` тест перевіряє вхід без `from` → `/`; e2e 13 (було 8), дві послідовні зелені прогони. Перевірку casts через `@gototalk/shared` пропущено: пакет недоступний з `e2e`.
 - [x] **02-12. Backlog: нижні вкладки на Mantine.** `UnstyledButton component={NavLink}`, тест `BottomNav.test.tsx`; px-літерали в SCSS (рамка 2px, outline) успадковані з попередньої версії, на 360 px виміряно 4 вкладки по 90x55 px.
-- [ ] **02-13. Backlog: офлайн-старт.** 5xx/мережа при тихому refresh → екран з повтором.
+- [x] **02-13. Backlog: офлайн-старт.** 5xx/мережа при тихому refresh → екран з повтором (`GateError`, ключі `app.gate.*`); тест `falls back to anonymous when the refresh fails with a server error` замінено на протилежну поведінку, як вимагає задача; перевірено в Playwright MCP на 360x800.
 - [ ] **02-14. Backlog: помилка виходу.** `logout()` не чистить сесію мовчки.
 - [ ] **02-15. Документація рішень.** `docs/tech-decisions.md` (рішення 30), `db/seed.sql` і `docs/specs/stubs.md` (коди сцен), `docs/backlog.md`.
 - [ ] **02-16. README.** API профілю/цілей, онбординг у потоці.

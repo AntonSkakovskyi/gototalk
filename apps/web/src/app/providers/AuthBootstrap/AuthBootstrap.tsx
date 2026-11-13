@@ -1,37 +1,40 @@
 import { Center, Loader } from '@mantine/core';
-import { useEffect, type ReactNode } from 'react';
+import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import classes from './AuthBootstrap.module.scss';
+import { GateError } from '@/app/router/guards/GateScreens/GateScreens';
 import { refreshSession } from '@/shared/api/refresh';
-import {
-  clearSession,
-  getSession,
-  useSession,
-} from '@/shared/session/session-store';
+import { getSession, useSession } from '@/shared/session/session-store';
 
 export function AuthBootstrap({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
   const { status } = useSession();
+  const [failed, setFailed] = useState(false);
 
-  useEffect(() => {
-    if (getSession().status !== 'unknown') {
-      return;
-    }
-    // Server or network errors must not leave the app on the loader forever.
-    refreshSession().catch(() => clearSession());
+  const restore = useCallback(() => {
+    setFailed(false);
+    refreshSession().catch(() => setFailed(true));
   }, []);
 
-  if (status === 'unknown') {
-    return (
-      <Center
-        className={classes.root}
-        role="status"
-        aria-label={t('auth.loading')}
-      >
-        <Loader />
-      </Center>
-    );
-  }
+  useEffect(() => {
+    if (getSession().status === 'unknown') {
+      restore();
+    }
+  }, [restore]);
 
-  return children;
+  if (status !== 'unknown') {
+    return children;
+  }
+  if (failed) {
+    return <GateError onRetry={restore} />;
+  }
+  return (
+    <Center
+      className={classes.root}
+      role="status"
+      aria-label={t('auth.loading')}
+    >
+      <Loader />
+    </Center>
+  );
 }
