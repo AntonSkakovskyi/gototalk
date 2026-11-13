@@ -75,6 +75,7 @@ describe('FakeLanguageModel', () => {
     const plan = await llm.planSession({
       level: 'A2',
       scenes: ['work'],
+      goals: [],
       patterns: [],
       previousTopics: [],
     });
@@ -82,6 +83,7 @@ describe('FakeLanguageModel', () => {
       await llm.planSession({
         level: 'A2',
         scenes: ['work'],
+        goals: [],
         patterns: [],
         previousTopics: [],
       }),
@@ -117,6 +119,7 @@ describe('FakeLanguageModel', () => {
     const first = await llm.planSession({
       level: 'A2',
       scenes: [],
+      goals: [],
       patterns: [],
       previousTopics: [],
     });
@@ -124,6 +127,7 @@ describe('FakeLanguageModel', () => {
     const second = await llm.planSession({
       level: 'A2',
       scenes: [],
+      goals: [],
       patterns: [],
       previousTopics: [],
     });

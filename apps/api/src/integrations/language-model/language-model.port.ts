@@ -17,6 +17,7 @@ export interface AnalyzeUtteranceInput {
 export interface PlanSessionInput {
   level: string;
   scenes: string[];
+  goals: string[];
   patterns: MistakeCategoryCode[];
   previousTopics: string[];
   customTopic?: string;

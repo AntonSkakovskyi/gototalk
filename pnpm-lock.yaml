@@ -205,6 +205,9 @@ importers:
 
   apps/api:
     dependencies:
+      '@gototalk/prompts':
+        specifier: workspace:*
+        version: link:../../packages/prompts
       '@gototalk/shared':
         specifier: workspace:*
         version: link:../../packages/shared

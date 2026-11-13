@@ -14,6 +14,7 @@
     "db:seed": "node scripts/db-seed.mjs"
   },
   "dependencies": {
+    "@gototalk/prompts": "workspace:*",
     "@gototalk/shared": "workspace:*",
     "@nestjs/common": "^12.4.2",
     "@nestjs/config": "^12.1.1",
