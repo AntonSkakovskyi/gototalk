@@ -6,7 +6,12 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { LEVELS, UpdateProfileRequestSchema } from '@gototalk/shared';
+import {
+  LEVELS,
+  MAX_SCENE_LENGTH,
+  MAX_SCENES,
+  UpdateProfileRequestSchema,
+} from '@gototalk/shared';
 import type { Profile, UpdateProfileRequest } from '@gototalk/shared';
 import {
   CurrentUser,
@@ -52,9 +57,9 @@ export class ProfileController {
         scenes: {
           type: 'array',
           minItems: 1,
-          maxItems: 6,
+          maxItems: MAX_SCENES,
           uniqueItems: true,
-          items: { type: 'string', minLength: 1, maxLength: 60 },
+          items: { type: 'string', minLength: 1, maxLength: MAX_SCENE_LENGTH },
         },
       },
     },

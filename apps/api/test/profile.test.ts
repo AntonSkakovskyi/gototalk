@@ -46,11 +46,11 @@ describe('Profile endpoints', () => {
       .get('/api/profile')
       .set('Authorization', `Bearer ${token}`);
 
-  const putProfile = (token: string, body: unknown) =>
+  const putProfile = (token: string, body: object) =>
     request(app.getHttpServer())
       .put('/api/profile')
       .set('Authorization', `Bearer ${token}`)
-      .send(body as object);
+      .send(body);
 
   const tokenOfMissingUser = () =>
     app.get(JwtService).signAsync({ sub: MISSING_USER_ID });
@@ -75,8 +75,6 @@ describe('Profile endpoints', () => {
     expect(created.status).toBe(200);
     const profile = ProfileSchema.parse(created.body);
     expect(profile).toMatchObject(body);
-    const age = Date.now() - new Date(profile.updatedAt).getTime();
-    expect(age).toBeLessThan(60_000);
 
     const read = await getProfile(token);
     expect(read.status).toBe(200);

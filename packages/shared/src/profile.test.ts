@@ -5,6 +5,10 @@ import {
   isScenePreset,
   LearnerModelSchema,
   LevelSchema,
+  GOAL_TITLE_MAX,
+  MAX_ACTIVE_GOALS,
+  MAX_SCENE_LENGTH,
+  MAX_SCENES,
   SCENE_PRESETS,
   SceneSchema,
   ScenesSchema,
@@ -41,7 +45,9 @@ describe('profile schemas', () => {
   });
 
   it('[TC-02-01] ScenesSchema accepts preset codes and custom text', () => {
-    expect(ScenesSchema.safeParse(['work_meetings', 'ordering coffee']).success).toBe(true);
+    expect(
+      ScenesSchema.safeParse(['work_meetings', 'ordering coffee']).success,
+    ).toBe(true);
   });
 
   it('[TC-02-01] isScenePreset tells preset codes from custom text', () => {
@@ -52,10 +58,43 @@ describe('profile schemas', () => {
   });
 
   it('[TC-02-01] UpdateProfileRequestSchema requires level and scenes', () => {
-    expect(UpdateProfileRequestSchema.safeParse({ level: 'B1', scenes: ['travel'] }).success).toBe(
+    expect(
+      UpdateProfileRequestSchema.safeParse({ level: 'B1', scenes: ['travel'] })
+        .success,
+    ).toBe(true);
+    expect(UpdateProfileRequestSchema.safeParse({ level: 'B1' }).success).toBe(
+      false,
+    );
+  });
+});
+
+describe('profile and goal limits', () => {
+  it('[TC-02-01] the limits are 3 active goals, 6 scenes of 60 characters and 200-character titles', () => {
+    expect([
+      MAX_ACTIVE_GOALS,
+      MAX_SCENES,
+      MAX_SCENE_LENGTH,
+      GOAL_TITLE_MAX,
+    ]).toEqual([3, 6, 60, 200]);
+  });
+
+  it('[TC-02-01] the limits are enforced at the boundary', () => {
+    expect(SceneSchema.safeParse('a'.repeat(MAX_SCENE_LENGTH)).success).toBe(
       true,
     );
-    expect(UpdateProfileRequestSchema.safeParse({ level: 'B1' }).success).toBe(false);
+    expect(
+      SceneSchema.safeParse('a'.repeat(MAX_SCENE_LENGTH + 1)).success,
+    ).toBe(false);
+    const scenes = (count: number) =>
+      Array.from({ length: count }, (_unused, index) => `scene ${index}`);
+    expect(ScenesSchema.safeParse(scenes(MAX_SCENES)).success).toBe(true);
+    expect(ScenesSchema.safeParse(scenes(MAX_SCENES + 1)).success).toBe(false);
+    expect(GoalTitleSchema.safeParse('a'.repeat(GOAL_TITLE_MAX)).success).toBe(
+      true,
+    );
+    expect(
+      GoalTitleSchema.safeParse('a'.repeat(GOAL_TITLE_MAX + 1)).success,
+    ).toBe(false);
   });
 });
 
@@ -65,18 +104,29 @@ describe('goal schemas', () => {
   });
 
   it('[TC-02-01] UpdateGoalRequestSchema accepts a title or a status alone', () => {
-    expect(UpdateGoalRequestSchema.safeParse({ title: 'Pass the interview' }).success).toBe(true);
-    expect(UpdateGoalRequestSchema.safeParse({ status: 'done' }).success).toBe(true);
+    expect(
+      UpdateGoalRequestSchema.safeParse({ title: 'Pass the interview' })
+        .success,
+    ).toBe(true);
+    expect(UpdateGoalRequestSchema.safeParse({ status: 'done' }).success).toBe(
+      true,
+    );
   });
 
   it('[TC-02-01] UpdateGoalRequestSchema rejects an unknown status', () => {
-    expect(UpdateGoalRequestSchema.safeParse({ status: 'archived' }).success).toBe(false);
+    expect(
+      UpdateGoalRequestSchema.safeParse({ status: 'archived' }).success,
+    ).toBe(false);
   });
 
   it('[TC-02-01] goal title is trimmed and limited to 200 characters', () => {
-    expect(GoalTitleSchema.parse('  Speak at a meeting ')).toBe('Speak at a meeting');
+    expect(GoalTitleSchema.parse('  Speak at a meeting ')).toBe(
+      'Speak at a meeting',
+    );
     expect(GoalTitleSchema.safeParse('a'.repeat(201)).success).toBe(false);
-    expect(CreateGoalRequestSchema.safeParse({ title: '   ' }).success).toBe(false);
+    expect(CreateGoalRequestSchema.safeParse({ title: '   ' }).success).toBe(
+      false,
+    );
   });
 });
 
@@ -84,7 +134,11 @@ describe('learner model schema', () => {
   it('[TC-02-01] LearnerModelSchema accepts a valid payload', () => {
     const payload = {
       weakAreas: [
-        { category: 'articles', frequency: 4, lastSeenAt: '2026-11-01T10:00:00.000Z' },
+        {
+          category: 'articles',
+          frequency: 4,
+          lastSeenAt: '2026-11-01T10:00:00.000Z',
+        },
         { category: 'word_order', frequency: 1, lastSeenAt: null },
       ],
       vocabulary: { new: 3, partial: 2, passive: 1, active: 0 },
@@ -95,8 +149,10 @@ describe('learner model schema', () => {
   it('[TC-02-01] LearnerModelSchema rejects a negative count and an unknown category', () => {
     const vocabulary = { new: 0, partial: 0, passive: 0, active: 0 };
     expect(
-      LearnerModelSchema.safeParse({ weakAreas: [], vocabulary: { ...vocabulary, new: -1 } })
-        .success,
+      LearnerModelSchema.safeParse({
+        weakAreas: [],
+        vocabulary: { ...vocabulary, new: -1 },
+      }).success,
     ).toBe(false);
     expect(
       LearnerModelSchema.safeParse({

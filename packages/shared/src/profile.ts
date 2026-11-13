@@ -21,12 +21,18 @@ export function isScenePreset(value: string): value is ScenePreset {
   return scenePresetCodes.includes(value);
 }
 
-export const SceneSchema = z.string().trim().min(1).max(60);
+export const MAX_SCENES = 6;
+
+export const MAX_SCENE_LENGTH = 60;
+
+export const GOAL_TITLE_MAX = 200;
+
+export const SceneSchema = z.string().trim().min(1).max(MAX_SCENE_LENGTH);
 
 export const ScenesSchema = z
   .array(SceneSchema)
   .min(1)
-  .max(6)
+  .max(MAX_SCENES)
   .refine((scenes) => new Set(scenes).size === scenes.length);
 
 export const GOAL_STATUSES = ['active', 'done'] as const;
@@ -35,7 +41,7 @@ export const GoalStatusSchema = z.enum(GOAL_STATUSES);
 
 export const MAX_ACTIVE_GOALS = 3;
 
-export const GoalTitleSchema = z.string().trim().min(1).max(200);
+export const GoalTitleSchema = z.string().trim().min(1).max(GOAL_TITLE_MAX);
 
 export const ProfileSchema = z.object({
   level: LevelSchema,
