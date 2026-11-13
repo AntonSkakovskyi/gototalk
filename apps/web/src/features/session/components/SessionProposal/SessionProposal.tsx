@@ -1,20 +1,21 @@
-import { Alert, Button, Stack, Text } from '@mantine/core';
-import { useId } from 'react';
+import { Alert, Button, Stack } from '@mantine/core';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { useSessionProposal } from '@/features/session/hooks/use-session-proposal';
 import { sessionErrorKey } from '@/features/session/lib/session-errors';
+import { CustomTopicAction } from './CustomTopicAction';
 import { FeedbackModeControl } from './FeedbackModeControl';
 import { ProposalPlan } from './ProposalPlan';
 import classes from './SessionProposal.module.scss';
+import { TopicActions } from './TopicActions';
 
 export function SessionProposal() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const proposal = useSessionProposal();
-  const rerollsHintId = useId();
+  const [returnedToSuggested, setReturnedToSuggested] = useState(false);
   const { plan, isStarting } = proposal;
-  const left = proposal.maxRerolls - proposal.rerolls;
 
   function handleStart() {
     proposal.start(
@@ -22,24 +23,32 @@ export function SessionProposal() {
     );
   }
 
+  function applyCustomTopic(topic: string) {
+    setReturnedToSuggested(false);
+    proposal.applyCustomTopic(topic);
+  }
+
+  function backToSuggested() {
+    setReturnedToSuggested(true);
+    proposal.clearCustomTopic();
+  }
+
   return (
     <Stack gap="lg">
-      <ProposalPlan plan={plan} focusTopic={proposal.rerolls > 0} />
-      <Stack gap="xs">
-        <Button
-          variant="default"
-          size="lg"
-          aria-describedby={rerollsHintId}
-          disabled={!proposal.canReroll || isStarting}
-          onClick={proposal.requestAnotherTopic}
-        >
-          {t('session.proposal.anotherTopic')}
-        </Button>
-        <Text id={rerollsHintId} size="sm" c="dimmed" ta="center">
-          {left > 0
-            ? t('session.proposal.rerollsLeft', { left })
-            : t('session.proposal.rerollsExhausted')}
-        </Text>
+      <ProposalPlan
+        plan={plan}
+        focusTopic={proposal.rerolls > 0 || returnedToSuggested}
+      />
+      <Stack gap="md">
+        <TopicActions
+          customActive={proposal.customTopic !== undefined}
+          canReroll={proposal.canReroll}
+          rerollsLeft={proposal.maxRerolls - proposal.rerolls}
+          disabled={isStarting}
+          onReroll={proposal.requestAnotherTopic}
+          onBackToSuggested={backToSuggested}
+        />
+        <CustomTopicAction disabled={isStarting} onApply={applyCustomTopic} />
       </Stack>
       <FeedbackModeControl
         value={proposal.feedbackMode}

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useErrorText } from '@/features/profile/hooks/use-error-text';
 import type { GoalActions } from '@/features/profile/hooks/use-goal-actions';
 import { useGoalTitleForm } from '@/features/profile/hooks/use-goal-title-form';
-import { ANNOUNCED_ERROR_PROPS } from '@/features/profile/lib/field-error-props';
+import { ANNOUNCED_ERROR_PROPS } from '@/shared/forms/field-error-props';
 
 interface AddGoalFormProps {
   actions: GoalActions;

@@ -1,5 +1,14 @@
 import type { SessionPlan } from '@gototalk/shared';
-import { Alert, Button, List, Stack, Text, Title } from '@mantine/core';
+import {
+  Alert,
+  Badge,
+  Button,
+  Group,
+  List,
+  Stack,
+  Text,
+  Title,
+} from '@mantine/core';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { useEffect, useId, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -32,9 +41,16 @@ function PlanContent({ plan, focusTopic }: PlanContentProps) {
   return (
     <Stack gap="md">
       <Stack gap={0}>
-        <Text size="sm" c="dimmed">
-          {t('session.proposal.topicLabel')}
-        </Text>
+        <Group gap="xs">
+          <Text size="sm" c="dimmed">
+            {t('session.proposal.topicLabel')}
+          </Text>
+          {plan.topicSource === 'custom' && (
+            <Badge variant="light" size="lg">
+              {t('session.proposal.custom.badge')}
+            </Badge>
+          )}
+        </Group>
         <Title order={2} lang={TOPIC_LANGUAGE} tabIndex={-1} ref={topicRef}>
           {plan.topic}
         </Title>
