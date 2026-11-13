@@ -30,7 +30,7 @@ export function DeleteGoalDialog({
         </Text>
         <Group justify="flex-end" gap="sm">
           <Button variant="default" size="lg" data-autofocus onClick={onClose}>
-            {t('profile.actions.cancel')}
+            {t('common.actions.cancel')}
           </Button>
           <Button color="red" size="lg" onClick={onConfirm}>
             {t('profile.actions.delete')}

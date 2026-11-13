@@ -4,6 +4,7 @@ import { App } from './App';
 import uk from '@/shared/i18n/uk.json';
 import { mockApi } from '@/shared/testing/mock-api';
 import {
+  EMPTY_SESSIONS_ROUTE,
   TEST_PROFILE,
   TEST_USER,
   jsonResponse,
@@ -16,11 +17,10 @@ const SESSION = {
 };
 
 beforeEach(() => {
-  mockApi({ 'GET /api/profile': jsonResponse(TEST_PROFILE) });
-});
-
-afterEach(() => {
-  vi.unstubAllGlobals();
+  mockApi({
+    'GET /api/profile': jsonResponse(TEST_PROFILE),
+    ...EMPTY_SESSIONS_ROUTE,
+  });
 });
 
 describe('App', () => {

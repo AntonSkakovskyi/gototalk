@@ -8,10 +8,6 @@ import {
 } from '@/shared/testing/test-fixtures';
 import { profileKeys, profileQueryOptions } from './profile-queries';
 
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
-
 function fetchProfileWith(...responses: Response[]) {
   const queue = [...responses];
   const { requests } = mockApi({

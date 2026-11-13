@@ -11,6 +11,7 @@ import { createTestQueryClient } from '@/shared/testing/query-wrapper';
 import type { RenderOptions } from '@/shared/testing/test-utils';
 import { mockApi } from '@/shared/testing/mock-api';
 import {
+  EMPTY_SESSIONS_ROUTE,
   TEST_PROFILE,
   TEST_USER,
   errorResponse,
@@ -54,7 +55,10 @@ async function failBackgroundRefetch(
   landedHeading: string,
 ) {
   const queryClient = createTestQueryClient();
-  mockApi({ 'GET /api/profile': loadedThenFailing(status) });
+  mockApi({
+    'GET /api/profile': loadedThenFailing(status),
+    ...EMPTY_SESSIONS_ROUTE,
+  });
   renderAppWithProbe({ route, session: SESSION, queryClient });
   await heading(landedHeading);
 
@@ -66,10 +70,6 @@ async function failBackgroundRefetch(
     'error',
   );
 }
-
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
 
 describe('RequireProfile', () => {
   it('[TC-02-03] sends a user without a profile to onboarding and back to the requested page', async () => {
@@ -105,7 +105,7 @@ describe('RequireProfile', () => {
     renderApp('/words');
 
     expect(
-      screen.getByRole('status', { name: uk.app.gate.loading }),
+      screen.getByRole('status', { name: uk.common.loading }),
     ).toBeInTheDocument();
     expect(screen.queryByRole('heading')).toBeNull();
     expect(screen.queryByRole('navigation')).toBeNull();
@@ -125,7 +125,7 @@ describe('RequireProfile', () => {
 
     await userEvent
       .setup()
-      .click(screen.getByRole('button', { name: uk.app.gate.retry }));
+      .click(screen.getByRole('button', { name: uk.common.actions.retry }));
 
     expect(await heading(uk.pages.words.title)).toBeInTheDocument();
     expect(currentLocation()).toBe('/words');
@@ -188,7 +188,10 @@ describe('RequireNoProfile', () => {
   );
 
   it('[TC-02-03] sends a user with a profile from /onboarding to /', async () => {
-    mockApi({ 'GET /api/profile': jsonResponse(TEST_PROFILE) });
+    mockApi({
+      'GET /api/profile': jsonResponse(TEST_PROFILE),
+      ...EMPTY_SESSIONS_ROUTE,
+    });
     renderApp('/onboarding');
 
     expect(await heading(uk.pages.session.title)).toBeInTheDocument();
@@ -196,7 +199,10 @@ describe('RequireNoProfile', () => {
   });
 
   it('[TC-02-03] ignores an unsafe origin when redirecting a user with a profile', async () => {
-    mockApi({ 'GET /api/profile': jsonResponse(TEST_PROFILE) });
+    mockApi({
+      'GET /api/profile': jsonResponse(TEST_PROFILE),
+      ...EMPTY_SESSIONS_ROUTE,
+    });
     renderApp({ pathname: '/onboarding', state: { from: '//evil.example' } });
 
     expect(await heading(uk.pages.session.title)).toBeInTheDocument();
@@ -208,13 +214,13 @@ describe('RequireNoProfile', () => {
     renderApp('/onboarding');
 
     expect(
-      screen.getByRole('status', { name: uk.app.gate.loading }),
+      screen.getByRole('status', { name: uk.common.loading }),
     ).toBeInTheDocument();
     expect(screen.queryByRole('heading')).toBeNull();
   });
 
   it('[TC-02-03] shows the retry screen on /onboarding after a server error and redirects once the profile loads', async () => {
-    mockApi({ 'GET /api/profile': failingThenOk(2) });
+    mockApi({ 'GET /api/profile': failingThenOk(2), ...EMPTY_SESSIONS_ROUTE });
     renderApp('/onboarding');
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
@@ -224,7 +230,7 @@ describe('RequireNoProfile', () => {
 
     await userEvent
       .setup()
-      .click(screen.getByRole('button', { name: uk.app.gate.retry }));
+      .click(screen.getByRole('button', { name: uk.common.actions.retry }));
 
     expect(await heading(uk.pages.session.title)).toBeInTheDocument();
     expect(currentLocation()).toBe('/');

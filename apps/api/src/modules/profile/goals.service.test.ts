@@ -27,7 +27,7 @@ const DONE: GoalRecord = { ...ACTIVE, status: 'done' };
 function setup(
   unit: Partial<Record<keyof GoalsUnitOfWork, unknown>> = {},
   repository: Partial<
-    Record<'list' | 'delete' | 'withLockedUser', unknown>
+    Record<'list' | 'listActive' | 'delete' | 'withLockedUser', unknown>
   > = {},
 ) {
   const tx = {
@@ -39,6 +39,7 @@ function setup(
   };
   const repo = {
     list: vi.fn().mockResolvedValue([ACTIVE]),
+    listActive: vi.fn().mockResolvedValue([ACTIVE]),
     delete: vi.fn().mockResolvedValue(true),
     withLockedUser: vi.fn(
       (_userId: string, work: (unitOfWork: unknown) => Promise<unknown>) =>
@@ -66,6 +67,31 @@ function responseOf(failure: unknown): unknown {
     ? failure.getResponse()
     : undefined;
 }
+
+describe('GoalsService.listActive', () => {
+  it('[TC-03-01] maps active records to the Goal DTO with an ISO date', async () => {
+    const { service, repo } = setup();
+
+    expect(await service.listActive(USER_ID)).toEqual([
+      {
+        id: GOAL_ID,
+        title: 'Speak at meetings',
+        status: 'active',
+        createdAt: '2026-11-13T10:00:00.123Z',
+      },
+    ]);
+    expect(repo.listActive).toHaveBeenCalledWith(USER_ID);
+  });
+
+  it('[TC-03-01] returns an empty list when there are no active goals', async () => {
+    const { service } = setup(
+      {},
+      { listActive: vi.fn().mockResolvedValue([]) },
+    );
+
+    expect(await service.listActive(USER_ID)).toEqual([]);
+  });
+});
 
 describe('GoalsService.list', () => {
   it('[TC-02-01] returns the goals of the user with ISO createdAt', async () => {

@@ -2,7 +2,6 @@ import type {
   AnalysisResult,
   Hint,
   Mistake,
-  Plan,
   Summary,
   Turn,
 } from '@gototalk/shared';
@@ -10,7 +9,10 @@ import type {
   AnalyzeUtteranceInput,
   HintRequest,
   LanguageModelPort,
+  PlanSessionInput,
 } from './language-model.port.js';
+import { buildFakePlan } from './fake-session-plans.js';
+import { renderSessionPlanPrompt } from './session-plan-prompt.js';
 
 type MistakeTemplate = Omit<Mistake, 'start' | 'end'>;
 
@@ -62,16 +64,10 @@ export class FakeLanguageModel implements LanguageModelPort {
     return Promise.resolve({ mistakes, better });
   }
 
-  planSession(): Promise<Plan> {
-    return Promise.resolve({
-      topic: 'My last project at work',
-      questions: [
-        'What was the main goal of your last project at work?',
-        'Tell me about your experience working on it.',
-        'What do you think was the most important part of it?',
-        'How is it different from your previous projects?',
-        'What would you do differently next time?',
-      ],
+  planSession(input: PlanSessionInput): Promise<unknown> {
+    return Promise.resolve().then(() => {
+      renderSessionPlanPrompt(input);
+      return buildFakePlan(input);
     });
   }
 

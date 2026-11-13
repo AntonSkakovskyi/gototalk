@@ -63,10 +63,6 @@ beforeEach(() => {
   vi.stubGlobal('fetch', routeFetch);
 });
 
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
-
 describe('AccountSection', () => {
   it('[TC-01-03] keeps the page heading and shows the email with the account actions', async () => {
     renderProfile();
@@ -146,7 +142,7 @@ describe('AccountSection', () => {
       within(dialog).getByRole('button', { name: account.delete.confirm }),
     ).toBeInTheDocument();
     expect(
-      within(dialog).getByRole('button', { name: account.delete.cancel }),
+      within(dialog).getByRole('button', { name: uk.common.actions.cancel }),
     ).toBeInTheDocument();
     expect(fetchMock).not.toHaveBeenCalled();
   });
@@ -217,7 +213,7 @@ describe('AccountSection', () => {
     );
 
     expect(await within(dialog).findByRole('alert')).toHaveTextContent(
-      uk.auth.errors.generic,
+      uk.errors.generic,
     );
     expect(getSession().status).toBe('authenticated');
     await waitFor(() =>
@@ -266,7 +262,7 @@ describe('AccountSection', () => {
     await within(dialog).findByRole('alert');
 
     await user.click(
-      within(dialog).getByRole('button', { name: account.delete.cancel }),
+      within(dialog).getByRole('button', { name: uk.common.actions.cancel }),
     );
 
     await waitFor(() =>
@@ -311,13 +307,13 @@ describe('AccountSection', () => {
       buttonsBefore - 1,
     );
     expect(
-      within(dialog).getByRole('button', { name: account.delete.cancel }),
+      within(dialog).getByRole('button', { name: uk.common.actions.cancel }),
     ).toBeDisabled();
 
     rejectRequest(new TypeError('Failed to fetch'));
 
     expect(await within(dialog).findByRole('alert')).toHaveTextContent(
-      uk.auth.errors.generic,
+      uk.errors.generic,
     );
     expect(screen.getByRole('dialog')).toBeInTheDocument();
     expect(getSession().status).toBe('authenticated');

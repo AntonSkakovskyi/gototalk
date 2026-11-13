@@ -1,4 +1,5 @@
--- Demo data for development. Apply after 0001 + 0002; safe to re-run.
+-- Demo data for development. Apply after all migrations (the plan column comes from 0003); safe to re-run.
+-- Re-running resets the demo user's profile and goals to the seeded values, so older seeded databases converge to preset scene codes.
 -- Demo user: demo@gototalk.local, password demo-password-1 (local development only).
 -- Mistake categories come from mistake_categories (0002); mistake positions are offsets in text_verbatim.
 
@@ -10,12 +11,12 @@ ON CONFLICT DO NOTHING;
 
 INSERT INTO profiles (user_id, level, scenes, interface_lang) VALUES
   ('00000000-0000-4000-8000-000000000001', 'B1', ARRAY['work_meetings', 'small_talk'], 'uk')
-ON CONFLICT DO NOTHING;
+ON CONFLICT (user_id) DO UPDATE SET level = EXCLUDED.level, scenes = EXCLUDED.scenes, interface_lang = EXCLUDED.interface_lang, updated_at = now();
 
 INSERT INTO goals (id, user_id, title, scene, status) VALUES
   ('00000000-0000-4000-8000-000000000101', '00000000-0000-4000-8000-000000000001', 'Вільно говорити на мітингах', 'work_meetings', 'active'),
   ('00000000-0000-4000-8000-000000000102', '00000000-0000-4000-8000-000000000001', 'Підтримувати small talk з колегами', 'small_talk', 'active')
-ON CONFLICT DO NOTHING;
+ON CONFLICT (id) DO UPDATE SET title = EXCLUDED.title, status = EXCLUDED.status, scene = EXCLUDED.scene;
 
 INSERT INTO theory_links (id, category, title, url) VALUES
   ('00000000-0000-4000-8000-000000000201', 'articles', 'A/an and the (Cambridge Dictionary)', 'https://dictionary.cambridge.org/grammar/british-grammar/a-an-and-the'),
@@ -31,9 +32,10 @@ INSERT INTO mistake_patterns (id, user_id, category, description, frequency, las
   ('00000000-0000-4000-8000-000000000304', '00000000-0000-4000-8000-000000000001', 'word_order', 'Хибне місце прислівника', 1, now() - interval '1 day', NULL)
 ON CONFLICT DO NOTHING;
 
-INSERT INTO sessions (id, user_id, topic, topic_source, feedback_mode, status, started_at, ended_at) VALUES
-  ('00000000-0000-4000-8000-000000000301', '00000000-0000-4000-8000-000000000001', 'My last project at work', 'suggested', 'immediate', 'finished', now() - interval '1 day', now() - interval '1 day' + interval '4 minutes')
-ON CONFLICT DO NOTHING;
+INSERT INTO sessions (id, user_id, topic, topic_source, feedback_mode, status, started_at, ended_at, plan) VALUES
+  ('00000000-0000-4000-8000-000000000301', '00000000-0000-4000-8000-000000000001', 'My last project at work', 'suggested', 'immediate', 'finished', now() - interval '1 day', now() - interval '1 day' + interval '4 minutes',
+   '{"questions":["Tell me about your last project at work.","Which part of the project was the most difficult for you?","How did your team share the work?","What did you learn from the project?","What would you do differently next time?"]}'::jsonb)
+ON CONFLICT (id) DO UPDATE SET plan = EXCLUDED.plan;
 
 INSERT INTO utterances (id, session_id, seq, role, text_verbatim, text_clean, analysis_status, analysis_prompt_version, analysis_model, analyzed_at, created_at) VALUES
   ('00000000-0000-4000-8000-000000000201', '00000000-0000-4000-8000-000000000301', 1, 'assistant', 'Tell me about your last project at work.', NULL, 'skipped', NULL, NULL, NULL, now() - interval '1 day' + interval '1 minutes'),

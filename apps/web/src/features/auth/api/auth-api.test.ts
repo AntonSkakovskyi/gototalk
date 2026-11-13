@@ -27,10 +27,6 @@ beforeEach(() => {
   vi.stubGlobal('fetch', fetchMock);
 });
 
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
-
 describe('auth api', () => {
   it('[TC-01-03] register posts credentials and starts the session', async () => {
     fetchMock.mockResolvedValueOnce(

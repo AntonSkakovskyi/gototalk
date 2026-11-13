@@ -20,10 +20,6 @@ import {
   useUpdateGoal,
 } from './use-goal-mutations';
 
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
-
 function setup() {
   const queryClient = createTestQueryClient();
   queryClient.setQueryData(profileKeys.goals(), [testGoal()]);

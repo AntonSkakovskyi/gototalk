@@ -12,4 +12,4 @@ The prompt version and the model are recorded on the utterance: `utterances.anal
 
 ## Contents
 
-Empty for now: the first prompts will appear in specs 03–05.
+- `session-plan.v1.md`: plans a session (topic and five questions) from the learner profile. Id: `session-plan.v1`, the file name without `.md`. The learner data is inserted at the single `{{input}}` placeholder as JSON.

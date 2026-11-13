@@ -18,6 +18,6 @@ import { ProfilesRepository } from './persistence/profiles.repository.js';
     ProfileService,
     ProfilesRepository,
   ],
-  exports: [LearnerModelService],
+  exports: [GoalsService, LearnerModelService, ProfileService],
 })
 export class ProfileModule {}

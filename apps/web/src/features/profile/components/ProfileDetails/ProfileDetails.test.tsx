@@ -27,10 +27,6 @@ const PROFILE = {
 
 type User = ReturnType<typeof userEvent.setup>;
 
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
-
 function renderDetails() {
   return renderWithProviders(<ProfileDetails />);
 }
@@ -84,7 +80,7 @@ describe('ProfileDetails view', () => {
     renderDetails();
 
     expect(
-      screen.getByRole('status', { name: uk.profile.loading }),
+      screen.getByRole('status', { name: uk.common.loading }),
     ).toBeInTheDocument();
     expect(await screen.findByText(presets.work_meetings)).toBeInTheDocument();
     expect(screen.queryByRole('status')).not.toBeInTheDocument();
@@ -101,12 +97,12 @@ describe('ProfileDetails view', () => {
     });
     renderDetails();
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      uk.profile.errors.generic,
+      uk.errors.generic,
     );
 
     missing = false;
     await user.click(
-      screen.getByRole('button', { name: uk.profile.actions.retry }),
+      screen.getByRole('button', { name: uk.common.actions.retry }),
     );
 
     expect(await screen.findByText(presets.work_meetings)).toBeInTheDocument();
@@ -214,7 +210,7 @@ describe('ProfileDetails edit', () => {
     await user.click(levelOption('C1'));
 
     await user.click(
-      screen.getByRole('button', { name: uk.profile.actions.cancel }),
+      screen.getByRole('button', { name: uk.common.actions.cancel }),
     );
 
     expect(screen.getByText(uk.profile.levels.B1.title)).toBeInTheDocument();
@@ -236,7 +232,7 @@ describe('ProfileDetails edit', () => {
     await user.click(save());
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      uk.profile.errors.generic,
+      uk.errors.generic,
     );
     expect(levelOption('B2')).toBeChecked();
     await waitFor(() => expect(save()).toBeEnabled());

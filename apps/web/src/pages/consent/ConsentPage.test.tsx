@@ -41,10 +41,6 @@ beforeEach(() => {
   vi.stubGlobal('fetch', fetchMock);
 });
 
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
-
 describe('ConsentPage', () => {
   it.each([
     ['fake', 'fake'],
@@ -138,7 +134,7 @@ describe('ConsentPage', () => {
     await user.click(agreeButton());
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      uk.auth.errors.generic,
+      uk.errors.generic,
     );
     expect(agreeButton()).toBeEnabled();
     expect(getSession().user?.consentAt).toBeNull();
@@ -209,11 +205,11 @@ describe('ConsentPage', () => {
     renderConsent();
 
     const alert = await screen.findByRole('alert');
-    expect(alert).toHaveTextContent(uk.auth.errors.generic);
+    expect(alert).toHaveTextContent(uk.errors.generic);
     expect(agreeButton()).toBeDisabled();
 
     await user.click(
-      within(alert).getByRole('button', { name: uk.pages.consent.retry }),
+      within(alert).getByRole('button', { name: uk.common.actions.retry }),
     );
 
     const items = await screen.findAllByRole('listitem');

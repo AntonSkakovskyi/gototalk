@@ -4,8 +4,8 @@ import { BottomNav } from './BottomNav';
 import uk from '@/shared/i18n/uk.json';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 
-function renderNav() {
-  renderWithProviders(<BottomNav />);
+function renderNav(route = '/') {
+  renderWithProviders(<BottomNav />, { route });
   return screen.getByRole('navigation', { name: uk.nav.label });
 }
 
@@ -41,6 +41,28 @@ describe('BottomNav', () => {
     ).not.toHaveAttribute('aria-current');
     expect(within(nav).getAllByRole('link', { current: 'page' })).toHaveLength(1);
   });
+
+  it.each(['/', '/sessions/new', '/sessions/0f8fad5b-d9cb-469f-a165-70867728950e'])(
+    '[TC-03-03] marks the session tab as current on %s',
+    (route) => {
+      const nav = renderNav(route);
+
+      expect(within(nav).getAllByRole('link', { current: 'page' })).toEqual([
+        within(nav).getByRole('link', { name: uk.nav.session }),
+      ]);
+    },
+  );
+
+  it.each(['/words', '/history', '/profile'])(
+    '[TC-03-03] does not mark the session tab as current on %s',
+    (route) => {
+      const nav = renderNav(route);
+
+      expect(
+        within(nav).getByRole('link', { name: uk.nav.session }),
+      ).not.toHaveAttribute('aria-current');
+    },
+  );
 
   it('[TC-00-02] makes every tab reachable with the keyboard', async () => {
     const user = userEvent.setup();

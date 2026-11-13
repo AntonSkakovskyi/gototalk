@@ -5,7 +5,7 @@ import { useController } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { StepFieldset } from '@/features/profile/components/StepFieldset/StepFieldset';
 import { useErrorText } from '@/features/profile/hooks/use-error-text';
-import { ANNOUNCED_ERROR_PROPS } from '@/features/profile/lib/field-error-props';
+import { ANNOUNCED_ERROR_PROPS } from '@/shared/forms/field-error-props';
 import type { SceneDraft } from '@/features/profile/hooks/use-scene-draft';
 import {
   scenesErrorMessage,

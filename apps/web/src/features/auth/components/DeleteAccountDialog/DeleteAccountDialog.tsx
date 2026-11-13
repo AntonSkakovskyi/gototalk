@@ -90,7 +90,7 @@ function DeleteAccountForm({
         />
         <div className={classes.actions}>
           <Button variant="default" disabled={isSubmitting} onClick={onCancel}>
-            {t('pages.profile.account.delete.cancel')}
+            {t('common.actions.cancel')}
           </Button>
           <Button type="submit" color="red" loading={isSubmitting}>
             {t('pages.profile.account.delete.confirm')}

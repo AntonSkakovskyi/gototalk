@@ -32,7 +32,7 @@ export function AuthBootstrap({ children }: { children: ReactNode }) {
     <Center
       className={classes.root}
       role="status"
-      aria-label={t('auth.loading')}
+      aria-label={t('common.loading')}
     >
       <Loader />
     </Center>

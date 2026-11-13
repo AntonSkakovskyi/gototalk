@@ -80,9 +80,9 @@ describe('auth schemas', () => {
         user: { ...response.user, id: 'not-a-uuid' },
       }).success,
     ).toBe(false);
-    expect(
-      AuthResponseSchema.safeParse({ user: response.user }).success,
-    ).toBe(false);
+    expect(AuthResponseSchema.safeParse({ user: response.user }).success).toBe(
+      false,
+    );
   });
 
   it('[TC-01-02] ConsentInfoSchema accepts known providers and rejects unknown ones', () => {
@@ -117,6 +117,8 @@ describe('auth schemas', () => {
       PROFILE_NOT_FOUND: 'PROFILE_NOT_FOUND',
       GOAL_NOT_FOUND: 'GOAL_NOT_FOUND',
       ACTIVE_GOALS_LIMIT: 'ACTIVE_GOALS_LIMIT',
+      SESSION_NOT_FOUND: 'SESSION_NOT_FOUND',
+      LANGUAGE_MODEL_INVALID_RESPONSE: 'LANGUAGE_MODEL_INVALID_RESPONSE',
     });
   });
 });

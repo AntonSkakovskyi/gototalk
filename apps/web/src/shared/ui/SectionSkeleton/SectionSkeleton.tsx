@@ -7,7 +7,7 @@ export function SectionSkeleton() {
   const { t } = useTranslation();
 
   return (
-    <Stack gap="sm" role="status" aria-label={t('profile.loading')}>
+    <Stack gap="sm" role="status" aria-label={t('common.loading')}>
       <Skeleton height={ROW_HEIGHT} />
       <Skeleton height={ROW_HEIGHT} />
     </Stack>

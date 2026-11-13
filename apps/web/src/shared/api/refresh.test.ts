@@ -19,7 +19,6 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  vi.unstubAllGlobals();
   Reflect.deleteProperty(navigator, 'locks');
 });
 

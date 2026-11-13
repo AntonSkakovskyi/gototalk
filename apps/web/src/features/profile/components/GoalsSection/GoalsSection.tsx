@@ -2,9 +2,9 @@ import { useQuery } from '@tanstack/react-query';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { goalsQueryOptions } from '@/features/profile/api/profile-queries';
-import { LoadError } from '@/features/profile/components/LoadError/LoadError';
+import { LoadError } from '@/shared/ui/LoadError/LoadError';
 import { ProfileSection } from '@/features/profile/components/ProfileSection/ProfileSection';
-import { SectionSkeleton } from '@/features/profile/components/SectionSkeleton/SectionSkeleton';
+import { SectionSkeleton } from '@/shared/ui/SectionSkeleton/SectionSkeleton';
 import { GoalList } from './GoalList';
 
 export function GoalsSection() {

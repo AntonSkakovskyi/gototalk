@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import {
+  BadGatewayException,
   BadRequestException,
   ConflictException,
   HttpException,
@@ -8,7 +9,7 @@ import {
 } from '@nestjs/common';
 import type { ArgumentsHost, LoggerService } from '@nestjs/common';
 import type { HttpAdapterHost } from '@nestjs/core';
-import { ErrorResponseSchema } from '@gototalk/shared';
+import { ERROR_CODES, ErrorResponseSchema } from '@gototalk/shared';
 import { describe, expect, it, vi } from 'vitest';
 import { DrizzleQueryError } from 'drizzle-orm';
 import { z } from 'zod';
@@ -259,6 +260,41 @@ describe('AllExceptionsFilter', () => {
     });
     expect(JSON.stringify(body)).not.toContain('10.0.0.5');
     expect(logger.error).toHaveBeenCalledTimes(1);
+  });
+
+  it('[TC-03-01] 5xx HttpException with a known application code: the code is kept, message stays generic, exception is logged', () => {
+    const { run, logger } = setup();
+
+    const { status, body } = run(
+      new BadGatewayException({
+        code: ERROR_CODES.LANGUAGE_MODEL_INVALID_RESPONSE,
+        message: 'raw model output: SECRET-VALUE-xyz',
+      }),
+    );
+
+    expect(status).toBe(502);
+    expect(ErrorResponseSchema.parse(body).error).toEqual({
+      code: ERROR_CODES.LANGUAGE_MODEL_INVALID_RESPONSE,
+      message: 'Bad Gateway',
+    });
+    expect(JSON.stringify(body)).not.toContain('SECRET-VALUE-xyz');
+    expect(logger.error).toHaveBeenCalledTimes(1);
+  });
+
+  it('[TC-03-01] 5xx HttpException without a code keeps the status-derived code', () => {
+    const { run } = setup();
+
+    const { body } = run(new BadGatewayException('upstream said no'));
+
+    expect(ErrorResponseSchema.parse(body).error.code).toBe('BAD_GATEWAY');
+  });
+
+  it('[TC-03-01] 5xx HttpException with an empty code keeps the status-derived code', () => {
+    const { run } = setup();
+
+    const { body } = run(new BadGatewayException({ code: '', message: 'x' }));
+
+    expect(ErrorResponseSchema.parse(body).error.code).toBe('BAD_GATEWAY');
   });
 
   it('[TC-00-07] body parser error (http-errors, 4xx) becomes a response built from the status code', () => {

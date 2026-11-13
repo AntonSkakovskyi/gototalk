@@ -18,5 +18,5 @@ export function profileErrorKey(error: unknown): ProfileErrorMessage {
       return { key: 'profile.goals.errors.notFound' };
     }
   }
-  return { key: 'profile.errors.generic' };
+  return { key: 'errors.generic' };
 }

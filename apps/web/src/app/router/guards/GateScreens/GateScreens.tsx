@@ -9,7 +9,7 @@ export function GateLoader() {
     <Center
       className={classes.screen}
       role="status"
-      aria-label={t('app.gate.loading')}
+      aria-label={t('common.loading')}
     >
       <Loader />
     </Center>
@@ -26,7 +26,7 @@ export function GateError({ onRetry }: { onRetry: () => void }) {
           {t('app.gate.error')}
         </Alert>
         <Button size="lg" onClick={onRetry}>
-          {t('app.gate.retry')}
+          {t('common.actions.retry')}
         </Button>
       </Stack>
     </Center>

@@ -18,10 +18,6 @@ import {
 import { profileKeys } from '@/features/profile/api/profile-queries';
 import { useCompleteOnboarding } from './use-complete-onboarding';
 
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
-
 const INPUT = {
   level: TEST_PROFILE.level,
   scenes: TEST_PROFILE.scenes,

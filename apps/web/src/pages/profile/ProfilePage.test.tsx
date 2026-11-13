@@ -34,10 +34,6 @@ function renderPage() {
   });
 }
 
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
-
 describe('ProfilePage', () => {
   it('[TC-02-03] shows the level, preset and custom scenes, goals, learner model and the account section', async () => {
     mockApi({
@@ -100,7 +96,7 @@ describe('ProfilePage', () => {
     renderPage();
 
     expect(
-      screen.getAllByRole('status', { name: uk.profile.loading }),
+      screen.getAllByRole('status', { name: uk.common.loading }),
     ).toHaveLength(3);
   });
 
@@ -118,13 +114,13 @@ describe('ProfilePage', () => {
     renderPage();
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      uk.profile.errors.generic,
+      uk.errors.generic,
     );
     expect(await screen.findByText(ACTIVE_GOAL.title)).toBeInTheDocument();
 
     failing = false;
     await user.click(
-      screen.getByRole('button', { name: uk.profile.actions.retry }),
+      screen.getByRole('button', { name: uk.common.actions.retry }),
     );
 
     expect(

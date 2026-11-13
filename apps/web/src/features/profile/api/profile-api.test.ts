@@ -18,10 +18,6 @@ import {
   updateProfile,
 } from './profile-api';
 
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
-
 describe('profile api', () => {
   it('[TC-02-02] getProfile returns the parsed profile', async () => {
     mockApi({ 'GET /api/profile': jsonResponse(TEST_PROFILE) });

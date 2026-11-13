@@ -16,10 +16,6 @@ import {
   withMax,
 } from './wizard-test-helpers';
 
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
-
 describe('OnboardingWizard goals step', () => {
   it('[TC-02-03] starts with one goal field and offers up to the active limit', async () => {
     const user = userEvent.setup();

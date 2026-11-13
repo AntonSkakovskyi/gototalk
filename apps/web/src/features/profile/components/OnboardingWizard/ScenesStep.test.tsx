@@ -14,10 +14,6 @@ import {
   withMax,
 } from './wizard-test-helpers';
 
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
-
 describe('OnboardingWizard scenes step', () => {
   it('[TC-02-03] blocks the step when nothing is selected', async () => {
     const user = userEvent.setup();

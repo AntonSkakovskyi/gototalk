@@ -36,10 +36,6 @@ beforeEach(() => {
   vi.stubGlobal('fetch', fetchMock);
 });
 
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
-
 describe('LoginPage', () => {
   it('[TC-01-03] renders the form without the bottom navigation and links to registration', () => {
     renderLogin();
@@ -149,7 +145,7 @@ describe('LoginPage', () => {
     await fillAndSubmit('anna@example.com', 'secret-pass');
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      uk.auth.errors.generic,
+      uk.errors.generic,
     );
     await waitFor(() =>
       expect(

@@ -1,5 +1,5 @@
-import type { Page } from '@playwright/test';
 import { authorization, expect, setProfile, test } from './support/fixtures.js';
+import { expectNoHorizontalScroll } from './support/layout.js';
 import {
   completeOnboarding,
   expectOnboardingScreen,
@@ -100,11 +100,3 @@ test.describe('[TC-02-03] onboarding and profile', () => {
     await expectNoHorizontalScroll(page);
   });
 });
-
-async function expectNoHorizontalScroll(page: Page): Promise<void> {
-  const { scrollWidth, clientWidth } = await page.evaluate(() => ({
-    scrollWidth: document.documentElement.scrollWidth,
-    clientWidth: document.documentElement.clientWidth,
-  }));
-  expect(scrollWidth).toBeLessThanOrEqual(clientWidth);
-}

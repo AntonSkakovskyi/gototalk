@@ -1,8 +1,8 @@
 import { relations } from 'drizzle-orm/relations';
 import {
   users,
-  goals,
   sessions,
+  goals,
   mistakePatterns,
   theoryLinks,
   mistakeCategories,
@@ -17,22 +17,6 @@ import {
   profiles,
 } from './schema.js';
 
-export const goalsRelations = relations(goals, ({ one }) => ({
-  user: one(users, {
-    fields: [goals.userId],
-    references: [users.id],
-  }),
-}));
-
-export const usersRelations = relations(users, ({ many }) => ({
-  goals: many(goals),
-  sessions: many(sessions),
-  mistakePatterns: many(mistakePatterns),
-  refreshTokens: many(refreshTokens),
-  profiles: many(profiles),
-  words: many(words),
-}));
-
 export const sessionsRelations = relations(sessions, ({ one, many }) => ({
   user: one(users, {
     fields: [sessions.userId],
@@ -41,6 +25,22 @@ export const sessionsRelations = relations(sessions, ({ one, many }) => ({
   hints: many(hints),
   sessionReports: many(sessionReports),
   utterances: many(utterances),
+}));
+
+export const usersRelations = relations(users, ({ many }) => ({
+  sessions: many(sessions),
+  goals: many(goals),
+  mistakePatterns: many(mistakePatterns),
+  refreshTokens: many(refreshTokens),
+  profiles: many(profiles),
+  words: many(words),
+}));
+
+export const goalsRelations = relations(goals, ({ one }) => ({
+  user: one(users, {
+    fields: [goals.userId],
+    references: [users.id],
+  }),
 }));
 
 export const mistakePatternsRelations = relations(

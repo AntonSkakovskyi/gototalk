@@ -34,10 +34,6 @@ function patternsGroup() {
   return screen.findByRole('group', { name: text.weakAreas.title });
 }
 
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
-
 describe('LearnerModelSection', () => {
   it('[TC-02-05] lists exactly the returned patterns in order with names and counts', async () => {
     stubModel(TOP_FIVE_LEARNER_MODEL);
@@ -114,7 +110,7 @@ describe('LearnerModelSection', () => {
     renderSection();
 
     expect(
-      screen.getByRole('status', { name: uk.profile.loading }),
+      screen.getByRole('status', { name: uk.common.loading }),
     ).toBeInTheDocument();
     expect(
       await screen.findByText(uk.mistakeCategories.articles),
@@ -133,12 +129,12 @@ describe('LearnerModelSection', () => {
     });
     renderSection();
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      uk.profile.errors.generic,
+      uk.errors.generic,
     );
 
     failing = false;
     await user.click(
-      screen.getByRole('button', { name: uk.profile.actions.retry }),
+      screen.getByRole('button', { name: uk.common.actions.retry }),
     );
 
     expect(

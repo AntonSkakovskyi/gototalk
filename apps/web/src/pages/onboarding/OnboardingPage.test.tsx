@@ -15,10 +15,6 @@ const SESSION = {
   user: { ...TEST_USER, consentAt: '2026-01-01T10:00:00.000Z' },
 };
 
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
-
 describe('OnboardingPage', () => {
   it('[TC-02-03] renders the wizard without the bottom navigation', async () => {
     stubNewUserApi();

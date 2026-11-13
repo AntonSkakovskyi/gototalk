@@ -11,10 +11,10 @@ export function LoadError({ onRetry }: LoadErrorProps) {
   return (
     <Stack gap="sm" align="flex-start">
       <Alert color="red" role="alert" w="100%">
-        {t('profile.errors.generic')}
+        {t('errors.generic')}
       </Alert>
       <Button variant="light" size="lg" onClick={onRetry}>
-        {t('profile.actions.retry')}
+        {t('common.actions.retry')}
       </Button>
     </Stack>
   );

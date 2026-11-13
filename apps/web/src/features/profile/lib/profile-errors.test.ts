@@ -30,10 +30,10 @@ describe('profileErrorKey', () => {
 
   it('[TC-02-02] falls back to the generic key for other errors', () => {
     expect(profileErrorKey(new ApiError(500, 'UNKNOWN_ERROR', 'boom'))).toEqual(
-      { key: 'profile.errors.generic' },
+      { key: 'errors.generic' },
     );
     expect(profileErrorKey(new TypeError('Failed to fetch'))).toEqual({
-      key: 'profile.errors.generic',
+      key: 'errors.generic',
     });
   });
 

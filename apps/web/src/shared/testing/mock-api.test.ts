@@ -1,10 +1,6 @@
 import { jsonResponse } from '@/shared/testing/test-fixtures';
 import { mockApi } from './mock-api';
 
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
-
 describe('mockApi', () => {
   it('[TC-02-02] dispatches by method and path and records requests', async () => {
     const { requests } = mockApi({

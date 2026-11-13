@@ -13,6 +13,7 @@ import type pg from 'pg';
 import request from 'supertest';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { PG_POOL } from '../src/core/db/db.tokens.js';
+import { GoalsService } from '../src/modules/profile/goals.service.js';
 import { createTestApp } from './support/test-app.js';
 import { resetUserData } from './support/test-db.js';
 
@@ -394,4 +395,38 @@ describe('Goals endpoints', () => {
       );
     },
   );
+
+  it('[TC-03-01] listActive returns only active goals in creation order', async () => {
+    const { token, id } = await registerUser();
+    const goals = await addGoals(token, 3);
+    await patchGoal(token, goalAt(goals, 1).id, { status: 'done' });
+
+    const active = await app.get(GoalsService).listActive(id);
+
+    expect(active.map((goal) => goal.id)).toEqual([
+      goalAt(goals, 0).id,
+      goalAt(goals, 2).id,
+    ]);
+    expect(active.every((goal) => goal.status === 'active')).toBe(true);
+    expect(GoalListSchema.parse(active)).toEqual(active);
+  });
+
+  it('[TC-03-01] listActive excludes goals of other users', async () => {
+    const owner = await registerUser();
+    const other = await registerUser();
+    await addGoal(owner.token, 'Mine');
+    const theirs = await addGoal(other.token, 'Theirs');
+
+    const active = await app.get(GoalsService).listActive(other.id);
+
+    expect(active.map((goal) => goal.id)).toEqual([theirs.id]);
+  });
+
+  it('[TC-03-01] listActive is empty for a user without goals and for an unknown user', async () => {
+    const { id } = await registerUser();
+    const service = app.get(GoalsService);
+
+    expect(await service.listActive(id)).toEqual([]);
+    expect(await service.listActive(MISSING_USER_ID)).toEqual([]);
+  });
 });
