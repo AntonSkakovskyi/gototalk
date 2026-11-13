@@ -246,6 +246,8 @@ describe('Me and consent endpoints', () => {
         'GET /api/me',
         'GET /api/me/consent',
         'POST /api/me/consent',
+        'GET /api/profile',
+        'PUT /api/profile',
       ]),
     );
   });

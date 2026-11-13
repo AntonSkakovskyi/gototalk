@@ -52,3 +52,5 @@
 | Створити `shared/ui/` разом з першим компонентом, потрібним двом і більше фічам | рефакторинг структури коду | будь-яка |
 | Розкласти `packages/shared` за доменами, коли схем стане ~6+ | рефакторинг структури коду | будь-яка |
 | Додати тести shared: `GoalSchema`, `ProfileSchema`, `MAX_ACTIVE_GOALS === 3`, відхилення `LearnerModelSchema.vocabulary` без стану | рев'ю 02-01 | будь-яка |
+| Swagger-тіло `PUT /api/profile` дублює ліміти сцен (6, 60, uniqueItems): винести `MAX_SCENES`/`MAX_SCENE_LENGTH` у shared | рев'ю 02-03 | будь-яка |
+| `profile.test.ts`: прибрати `as object` у `putProfile` і перевірку `updatedAt` через `Date.now()`; unit-тести 404/401 сервісу переткати з `[TC-02-01]` на `[TC-02-02]` | рев'ю 02-03 | будь-яка |
