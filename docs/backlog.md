@@ -12,7 +12,6 @@
 | Лічильник журналу міграцій у `db-schema.test.ts`: замість `count === 3` порівнювати з кількістю `entries` у `_journal.json` | 00-09, на потім | 01 (задача 01-02) |
 | `COLLATE "C"` в `ORDER BY` тесту `db-schema.test.ts` | 00-09, на потім | 01 (задача 01-02) |
 | Кириличні коментарі в `.env.example` перекласти англійською | Відкладене після PR #1 | 01 (задача 01-03) |
-| Нижні вкладки на Mantine `NavLink`/`UnstyledButton` замість голого `NavLink` react-router | 00-14, на потім | 02 |
 | Fake-поведінка за `docs/specs/stubs.md`: `planSession` | 00 «Fake-адаптери – мінімум» | 03 |
 | Fake-поведінка за `docs/specs/stubs.md`: `transcribe` (разом із `reset()` лічильника, який stubs.md припускає), `analyzeUtterance`, `nextTurn`, `hint` | 00 «Fake-адаптери – мінімум» | 04 |
 | Fake-поведінка за `docs/specs/stubs.md`: `summarizeSession` | 00 «Fake-адаптери – мінімум» | 05 |
@@ -60,3 +59,4 @@
 | Редагування профілю використовує валідатори й ключі онбордингу (`goalErrorMessage`, `addCustomScene`, `profile.onboarding.errors.*`): винести у нейтральний `lib/` і групу ключів | рев'ю 02-08 | будь-яка |
 | У `test-cases.md` теги [TC-02-03]/[TC-02-04] означають e2e/inspection, а компонентні тести 02-07/02-08 їх також використовують: узгодити | рев'ю 02-08 | будь-яка |
 | Два гарди профілю (`RequireProfile`/`RequireNoProfile`) повторюють скелет із чотирьох гілок: можна винести `useProfileGate()` | рев'ю 02-10 | будь-яка |
+| `BottomNav.module.scss` і `maw={120}`: прибрати px-літерали (`rem()`/змінні Mantine) | рев'ю 02-12 | будь-яка |

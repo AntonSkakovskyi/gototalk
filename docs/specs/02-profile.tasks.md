@@ -92,7 +92,7 @@
   - Відхилення: гарди профілю в `profile-guards.tsx`, екрани очікування й повтору в `GateScreens`; логіка `data`-first (невдалий фоновий refetch не викидає користувача); `RequireNoProfile` редіректить на безпечний `from`; валідація `from` винесена в `shared/router/safe-path.ts` (`onboarding-redirect.ts` видалено); `from` зберігається через згоду; `RequireAuth` пише `from` і після виходу (прийнято: наступний вхід на пристрої повертає на останню сторінку). Перевірено в Playwright MCP на 360x800.
 - [x] **02-11. e2e.** `e2e/profile.spec.ts`, фікстури, `auth.spec.ts`; `pnpm test:e2e`. `[TC-02-03]`.
   - Відхилення: фікстури `consentedPage` (без профілю) і `signedInPage` (з профілем через PUT); хелпери `support/onboarding.ts`; тест виходу → входу тепер очікує повернення на `/profile` (рішення 02-10), окремий `[TC-01-03]` тест перевіряє вхід без `from` → `/`; e2e 13 (було 8), дві послідовні зелені прогони. Перевірку casts через `@gototalk/shared` пропущено: пакет недоступний з `e2e`.
-- [ ] **02-12. Backlog: нижні вкладки на Mantine.**
+- [x] **02-12. Backlog: нижні вкладки на Mantine.** `UnstyledButton component={NavLink}`, тест `BottomNav.test.tsx`; px-літерали в SCSS (рамка 2px, outline) успадковані з попередньої версії, на 360 px виміряно 4 вкладки по 90x55 px.
 - [ ] **02-13. Backlog: офлайн-старт.** 5xx/мережа при тихому refresh → екран з повтором.
 - [ ] **02-14. Backlog: помилка виходу.** `logout()` не чистить сесію мовчки.
 - [ ] **02-15. Документація рішень.** `docs/tech-decisions.md` (рішення 30), `db/seed.sql` і `docs/specs/stubs.md` (коди сцен), `docs/backlog.md`.

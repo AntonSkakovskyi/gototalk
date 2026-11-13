@@ -1,3 +1,4 @@
+import { UnstyledButton } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router';
 import classes from './BottomNav.module.scss';
@@ -9,16 +10,17 @@ export function BottomNav() {
   return (
     <nav className={classes.nav} aria-label={t('nav.label')}>
       {TABS.map((tab) => (
-        <NavLink
+        <UnstyledButton
           key={tab.path}
+          component={NavLink}
           to={tab.path}
           end
-          className={({ isActive }) =>
-            isActive ? `${classes.link} ${classes.active}` : classes.link
-          }
+          className={classes.tab}
+          fw={500}
+          maw={120}
         >
           {t(`nav.${tab.key}`)}
-        </NavLink>
+        </UnstyledButton>
       ))}
     </nav>
   );
