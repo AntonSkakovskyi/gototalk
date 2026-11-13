@@ -19,10 +19,6 @@ import {
   text,
 } from './goals-test-helpers';
 
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
-
 describe('GoalsSection list', () => {
   it('[TC-02-03] lists active goals first, then done ones, with status and counter', async () => {
     stubGoals([TRAVEL, FLUENT, MEETINGS]);

@@ -14,10 +14,6 @@ import {
   text,
 } from './goals-test-helpers';
 
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
-
 function titleField() {
   return screen.getByLabelText(text.edit.label);
 }

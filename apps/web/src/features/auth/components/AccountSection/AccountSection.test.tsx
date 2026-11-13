@@ -63,10 +63,6 @@ beforeEach(() => {
   vi.stubGlobal('fetch', routeFetch);
 });
 
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
-
 describe('AccountSection', () => {
   it('[TC-01-03] keeps the page heading and shows the email with the account actions', async () => {
     renderProfile();

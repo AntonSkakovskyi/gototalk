@@ -71,10 +71,6 @@ async function failBackgroundRefetch(
   );
 }
 
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
-
 describe('RequireProfile', () => {
   it('[TC-02-03] sends a user without a profile to onboarding and back to the requested page', async () => {
     stubNewUserApi();

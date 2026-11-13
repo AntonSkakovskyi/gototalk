@@ -16,7 +16,6 @@ describe('clearQueryCacheOnSessionEnd', () => {
 
   afterEach(() => {
     unbind();
-    vi.unstubAllGlobals();
   });
 
   it('[TC-01-03] clears the query cache when the session is cleared', () => {

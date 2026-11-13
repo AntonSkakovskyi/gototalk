@@ -23,10 +23,6 @@ beforeEach(() => {
   });
 });
 
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
-
 describe('App', () => {
   it('[TC-00-04] renders the root element of the app', async () => {
     renderWithProviders(<App />, { session: SESSION });

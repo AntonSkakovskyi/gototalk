@@ -34,10 +34,6 @@ function renderPage() {
   });
 }
 
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
-
 describe('ProfilePage', () => {
   it('[TC-02-03] shows the level, preset and custom scenes, goals, learner model and the account section', async () => {
     mockApi({

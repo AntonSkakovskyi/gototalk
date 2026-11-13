@@ -41,10 +41,6 @@ beforeEach(() => {
   vi.stubGlobal('fetch', fetchMock);
 });
 
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
-
 describe('ConsentPage', () => {
   it.each([
     ['fake', 'fake'],

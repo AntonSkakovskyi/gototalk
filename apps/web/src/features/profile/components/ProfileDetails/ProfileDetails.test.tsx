@@ -27,10 +27,6 @@ const PROFILE = {
 
 type User = ReturnType<typeof userEvent.setup>;
 
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
-
 function renderDetails() {
   return renderWithProviders(<ProfileDetails />);
 }

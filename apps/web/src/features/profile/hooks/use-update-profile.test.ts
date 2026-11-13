@@ -13,10 +13,6 @@ import {
 import { profileKeys } from '@/features/profile/api/profile-queries';
 import { useUpdateProfile } from './use-update-profile';
 
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
-
 describe('useUpdateProfile', () => {
   it('[TC-02-02] stores the saved profile in the cache', async () => {
     const saved: Profile = { ...TEST_PROFILE, level: 'C1' };

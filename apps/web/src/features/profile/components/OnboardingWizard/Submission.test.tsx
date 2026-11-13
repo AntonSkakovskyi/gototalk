@@ -17,10 +17,6 @@ import {
   text,
 } from './wizard-test-helpers';
 
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
-
 describe('OnboardingWizard submission', () => {
   it('[TC-02-03] creates goals, saves the profile last and reports completion', async () => {
     const user = userEvent.setup();

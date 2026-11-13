@@ -39,7 +39,7 @@ describe('ProfileService.get', () => {
     expect(repository.findByUserId).toHaveBeenCalledWith(USER_ID);
   });
 
-  it('[TC-02-01] a missing profile gives 404 PROFILE_NOT_FOUND', async () => {
+  it('[TC-02-02] a missing profile gives 404 PROFILE_NOT_FOUND', async () => {
     const { service } = setup({
       findByUserId: vi.fn().mockResolvedValue(null),
     });
@@ -69,7 +69,7 @@ describe('ProfileService.update', () => {
     expect(profile.updatedAt).toBe('2026-11-13T10:00:00.123Z');
   });
 
-  it('[TC-02-01] a user that no longer exists gives 401 UnauthorizedException', async () => {
+  it('[TC-02-02] a user that no longer exists gives 401 UnauthorizedException', async () => {
     const { service } = setup({
       upsert: vi.fn().mockRejectedValue(new ProfileOwnerMissingError()),
     });

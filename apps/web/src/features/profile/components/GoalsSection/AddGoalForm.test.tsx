@@ -21,10 +21,6 @@ import {
   text,
 } from './goals-test-helpers';
 
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
-
 describe('GoalsSection add goal', () => {
   it('[TC-02-03] creates a trimmed goal, clears the field and lists the goal', async () => {
     const user = userEvent.setup();

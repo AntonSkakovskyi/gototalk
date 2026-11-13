@@ -32,10 +32,6 @@ beforeEach(() => {
   vi.stubGlobal('fetch', fetchMock);
 });
 
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
-
 describe('AuthBootstrap', () => {
   it('[TC-01-03] shows an accessible loader until the refresh settles, then the children', async () => {
     let respond: (response: Response) => void = () => {};

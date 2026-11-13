@@ -52,10 +52,6 @@ function stubApi(loggedIn: typeof TEST_USER) {
   });
 }
 
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
-
 describe('redirect after login', () => {
   it('[TC-02-03] sends an anonymous user to /login and returns to the requested page after login', async () => {
     stubApi(CONSENTED_USER);

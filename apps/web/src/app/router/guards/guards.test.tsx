@@ -24,10 +24,6 @@ beforeEach(() => {
   });
 });
 
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
-
 describe('route guards', () => {
   it('[TC-01-03] redirects an anonymous user from a protected route to /login', async () => {
     renderWithProviders(<App />, { route: '/words', session: 'anonymous' });

@@ -1,6 +1,6 @@
 export const TABS = [
-  { path: '/', key: 'session' },
-  { path: '/words', key: 'words' },
-  { path: '/history', key: 'history' },
-  { path: '/profile', key: 'profile' },
+  { path: '/', key: 'session', activePaths: ['/', '/sessions/*'] },
+  { path: '/words', key: 'words', activePaths: ['/words'] },
+  { path: '/history', key: 'history', activePaths: ['/history'] },
+  { path: '/profile', key: 'profile', activePaths: ['/profile'] },
 ] as const;

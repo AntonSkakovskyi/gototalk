@@ -34,10 +34,6 @@ function patternsGroup() {
   return screen.findByRole('group', { name: text.weakAreas.title });
 }
 
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
-
 describe('LearnerModelSection', () => {
   it('[TC-02-05] lists exactly the returned patterns in order with names and counts', async () => {
     stubModel(TOP_FIVE_LEARNER_MODEL);
