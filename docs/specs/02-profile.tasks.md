@@ -90,7 +90,8 @@
   - Відхилення: частота з українською плюралізацією (`_one/_few/_many/_other`); назви категорій у `uk.json` збігаються з `mistake_categories.title_uk`; блоки як `role=group` + `dl`; `ModelBlock` – спільний заголовок блоків. Перевірено в Playwright MCP на 360x800 (демо-користувач і порожній стан).
 - [x] **02-10. Гарди й редірект.** `RequireProfile`, `RequireNoProfile`, `from` після входу (backlog), оновлення наявних тестів на `mockApi`. `[TC-02-03]`.
   - Відхилення: гарди профілю в `profile-guards.tsx`, екрани очікування й повтору в `GateScreens`; логіка `data`-first (невдалий фоновий refetch не викидає користувача); `RequireNoProfile` редіректить на безпечний `from`; валідація `from` винесена в `shared/router/safe-path.ts` (`onboarding-redirect.ts` видалено); `from` зберігається через згоду; `RequireAuth` пише `from` і після виходу (прийнято: наступний вхід на пристрої повертає на останню сторінку). Перевірено в Playwright MCP на 360x800.
-- [ ] **02-11. e2e.** `e2e/profile.spec.ts`, фікстури, `auth.spec.ts`; `pnpm test:e2e`. `[TC-02-03]`.
+- [x] **02-11. e2e.** `e2e/profile.spec.ts`, фікстури, `auth.spec.ts`; `pnpm test:e2e`. `[TC-02-03]`.
+  - Відхилення: фікстури `consentedPage` (без профілю) і `signedInPage` (з профілем через PUT); хелпери `support/onboarding.ts`; тест виходу → входу тепер очікує повернення на `/profile` (рішення 02-10), окремий `[TC-01-03]` тест перевіряє вхід без `from` → `/`; e2e 13 (було 8), дві послідовні зелені прогони. Перевірку casts через `@gototalk/shared` пропущено: пакет недоступний з `e2e`.
 - [ ] **02-12. Backlog: нижні вкладки на Mantine.**
 - [ ] **02-13. Backlog: офлайн-старт.** 5xx/мережа при тихому refresh → екран з повтором.
 - [ ] **02-14. Backlog: помилка виходу.** `logout()` не чистить сесію мовчки.

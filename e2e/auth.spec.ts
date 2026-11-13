@@ -1,7 +1,12 @@
 import { expect, test } from './support/fixtures.js';
+import {
+  DEFAULT_ANSWERS,
+  completeOnboarding,
+  expectOnboardingScreen,
+} from './support/onboarding.js';
 
 test.describe('[TC-01-03] auth: registration, consent, logout and login', () => {
-  test('[TC-01-03] registration → consent → main screen, reload keeps the session', async ({
+  test('[TC-01-03] registration → consent → onboarding → main screen, reload keeps the session', async ({
     page,
     account,
   }) => {
@@ -14,6 +19,9 @@ test.describe('[TC-01-03] auth: registration, consent, logout and login', () => 
     await expect(page.getByRole('heading', { name: 'Згода' })).toBeVisible();
     await page.getByRole('button', { name: 'Погоджуюсь' }).click();
 
+    await expectOnboardingScreen(page);
+    await completeOnboarding(page, DEFAULT_ANSWERS);
+
     await expect(page).toHaveURL((url) => url.pathname === '/');
     await expect(page.getByRole('heading', { name: 'Сесія' })).toBeVisible();
 
@@ -22,7 +30,7 @@ test.describe('[TC-01-03] auth: registration, consent, logout and login', () => 
     await expect(page).toHaveURL((url) => url.pathname === '/');
   });
 
-  test('[TC-01-03] logout → login page → login again → main screen', async ({
+  test('[TC-01-03] logout → login page → login again → back to the last page', async ({
     signedInPage: { page, account },
   }) => {
     await page.goto('/profile');
@@ -30,6 +38,19 @@ test.describe('[TC-01-03] auth: registration, consent, logout and login', () => 
     await expect(page).toHaveURL((url) => url.pathname === '/login');
     await expect(page.getByRole('heading', { name: 'Вхід' })).toBeVisible();
 
+    await page.getByLabel('Email', { exact: true }).fill(account.email);
+    await page.getByLabel('Пароль', { exact: true }).fill(account.password);
+    await page.getByRole('button', { name: 'Увійти' }).click();
+
+    await expect(page).toHaveURL((url) => url.pathname === '/profile');
+    await expect(page.getByRole('heading', { name: 'Профіль' })).toBeVisible();
+  });
+
+  test('[TC-01-03] login from a fresh visit to the login page lands on the main screen', async ({
+    signedInPage: { page, account },
+  }) => {
+    await page.context().clearCookies();
+    await page.goto('/login');
     await page.getByLabel('Email', { exact: true }).fill(account.email);
     await page.getByLabel('Пароль', { exact: true }).fill(account.password);
     await page.getByRole('button', { name: 'Увійти' }).click();
