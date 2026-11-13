@@ -185,7 +185,8 @@ docs/  tech-decisions.md · stubs.md · backlog.md · README.md
 ## Задачі
 
 Блок shared/integrations/API:
-- [ ] **03-01. Контракти shared.** `session.ts` + тест, межі `PlanSchema`, `ERROR_CODES`, `index.ts`; фіксація бази тестів. `[TC-03-01]`
+- [x] **03-01. Контракти shared.** `session.ts` + тест, межі `PlanSchema`, `ERROR_CODES`, `index.ts`; фіксація бази тестів. `[TC-03-01]`
+  - Відхилення: `TOPIC_MAX`, `QUESTION_MAX`, `PLAN_QUESTIONS`, `TopicSchema` і `QuestionSchema` лежать у `plan-bounds.ts` (а не в `session.ts`), щоб уникнути циклу `session.ts` ↔ `llm.ts`; публічні експорти пакета без змін. Додано enum-схеми `FeedbackModeSchema`, `TopicSourceSchema`, `SessionStatusSchema`, `UtteranceRoleSchema`. База shared: 36 → 58 тестів (22 нових, усі `[TC-03-01]`).
 - [ ] **03-02. Промпт планувальника.** `packages/prompts` (`exports`, `session-plan.v1.md`, README), залежність api + lockfile, `prompt-loader.ts`, `session-plan-prompt.ts` (+тести), `goals` у `PlanSessionInput`. `[TC-03-04]` `[risk]`
 - [ ] **03-03. Fake `planSession` за stubs.md 2.2.** `fake-session-plans.ts` (банк 5×5, шаблони питань мета/досвід/думка/порівняння + «What would you do differently next time?», питання під патерни, власна тема, власна сцена → перший пресет або `small_talk`), Fake викликає рендер, `fake-adapters.test.ts` (індекс за `previousTopics`, verb_tense → минулий час, власна тема, власна сцена). Закриває backlog «Fake planSession». `[TC-03-01]`
 - [ ] **03-04. Міграція 0003.** Скіл `/db-migration`: SQL вище, journal, тестова БД з нуля, `pnpm db:migrate`, `pnpm db:pull`, `db-schema.test.ts` (CHECK, частковий індекс, вставка двох активних падає), рядок у `tech-decisions.md` розділ 3. `[risk]`

@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { MistakeCategoryCodeSchema } from './mistake-categories.js';
+import { PLAN_QUESTIONS, QuestionSchema, TopicSchema } from './plan-bounds.js';
 
 export const TranscriptSchema = z.object({
   /** Mistake positions are offsets in this text. */
@@ -52,8 +53,8 @@ export const AnalysisResultSchema = z.object({
 export type AnalysisResult = z.infer<typeof AnalysisResultSchema>;
 
 export const PlanSchema = z.object({
-  topic: z.string().min(1),
-  questions: z.array(z.string().min(1)).length(5),
+  topic: TopicSchema,
+  questions: z.array(QuestionSchema).length(PLAN_QUESTIONS),
 });
 
 export type Plan = z.infer<typeof PlanSchema>;
