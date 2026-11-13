@@ -50,9 +50,11 @@
 
 Для кожної відповіді з помилками заглушка додає до 2 кращих формулювань `{ original, better }`: речення, у яких є помилки, із застосованими `suggestion`.
 
-### 2.2 planSession(profile, patterns, previousTopics)
+### 2.2 planSession(input)
 
-Банк тем за сценою профілю (5 тем × 5 питань). Тема береться за індексом `(кількість раніше запропонованих тем) mod 5` у першій сцені профілю; `Інша тема` бере наступну. Питання англійською. Ключі банку – коди пресетів сцен із `SCENE_PRESETS` (`packages/shared`); у `profiles.scenes` зберігаються саме коди або вільний текст.
+Вхід `input`: `level`, `scenes`, `goals` (заголовки активних цілей), `patterns` (коди категорій, від найчастішої), `previousTopics` (теми, які клієнт уже показав, ≤ 3), `customTopic` (необов’язково). Fake спершу рендерить промпт `session-plan.v1` (як це зробить реальний адаптер) і відкидає текст, тож зламаний шаблон промпту валить виклик, а потім повертає детерміновану відповідь `{ topic, questions }`; `topicSource` додає викликач. `level` і `goals` Fake ігнорує (їх використовує лише промпт).
+
+Банк тем за сценою профілю (5 тем × 5 питань). Тема береться за індексом `previousTopics.length mod 5` у першій сцені профілю, тож той самий запит дає ту саму тему; `Інша тема` (клієнт додає показану тему до `previousTopics`) бере наступну. Питання англійською. Ключі банку – коди пресетів сцен із `SCENE_PRESETS` (`packages/shared`); у `profiles.scenes` зберігаються саме коди або вільний текст.
 
 | Сцена (код) | Теми (за порядком) |
 |---|---|
@@ -62,9 +64,9 @@
 | `daily_services` | At the doctor; Renting a flat; Ordering food; A problem with an order; Using public transport |
 | `travel` | My last trip; Booking a hotel; A dream destination; Getting lost in a city; Travel plans |
 
-Власна сцена (вільний текст, якого немає серед пресетів): береться перша сцена-пресет профілю, а якщо пресетів у профілі немає – `small_talk`. Поведінка Fake-адаптера реалізується в spec 03.
+Власна сцена (вільний текст, якого немає серед пресетів): береться перша сцена-пресет профілю, а якщо пресетів у профілі немає – `small_talk`.
 
-Кожна тема має 5 питань: перші чотири універсальні (мета, досвід, думка, порівняння), п’яте – узагальнююче («What would you do differently next time?»). Якщо в `patterns` є елементи, питання №1 замінюється питанням, що провокує найчастіший патерн:
+Кожна тема має 5 питань: перші чотири універсальні (мета, досвід, думка, порівняння), п’яте – узагальнююче й без теми. Тема береться в лапки: `What is your main goal when you talk about "{topic}"?`, `Tell me about your own experience with "{topic}".`, `What do you think is the most important part of "{topic}"?`, `How is "{topic}" different from what you did before?`, `What would you do differently next time?`. Якщо в `patterns` є елементи, питання №1 замінюється питанням, що провокує найчастіший патерн (`patterns[0]`):
 
 | Категорія | Питання, що провокує патерн |
 |---|---|
@@ -75,7 +77,7 @@
 | question_form | Ask me three questions about my job. |
 | інші | Tell me about a typical day in your life. |
 
-Власна тема (`topic_source = custom`): тема лишається як введена, питання за шаблоном: `What is the first thing that comes to mind when you think about "{topic}"?`, `Why did you choose to talk about "{topic}"?`, `Tell me about your experience with "{topic}".`, `What do you find most difficult about "{topic}"?`, `How do you see "{topic}" in the future?`.
+Власна тема (`customTopic`, `topic_source = custom`): тема лишається як введена (після trim), `previousTopics` ігнорується, питання за шаблоном: `What is the first thing that comes to mind when you think about "{topic}"?`, `Why did you choose to talk about "{topic}"?`, `Tell me about your experience with "{topic}".`, `What do you find most difficult about "{topic}"?`, `How do you see "{topic}" in the future?`. Правило патерну діє й для власної теми: якщо `patterns` не порожній, питання №1 так само замінюється.
 
 ### 2.3 nextTurn(plan, history)
 

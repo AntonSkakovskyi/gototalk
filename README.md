@@ -54,17 +54,40 @@ Scenes are stored as an array of strings: either a preset code (`work_meetings`,
 
 Profile endpoints are protected by the access JWT and do not require consent (see Swagger for the schemas):
 
-| Method and path | Description |
-| --- | --- |
-| `GET /api/profile` | Current profile; `404 PROFILE_NOT_FOUND` if it does not exist yet |
-| `PUT /api/profile` | Create or replace the profile (level, scenes) |
-| `GET /api/goals` | Goals of the user |
-| `POST /api/goals` | Create a goal; at most 3 active goals, otherwise `409 ACTIVE_GOALS_LIMIT` |
-| `PATCH /api/goals/:id` | Update a goal |
-| `DELETE /api/goals/:id` | Delete a goal |
-| `GET /api/profile/learner-model` | Top 5 error patterns and word counts by state |
+| Method and path                  | Description                                                               |
+| -------------------------------- | ------------------------------------------------------------------------- |
+| `GET /api/profile`               | Current profile; `404 PROFILE_NOT_FOUND` if it does not exist yet         |
+| `PUT /api/profile`               | Create or replace the profile (level, scenes)                             |
+| `GET /api/goals`                 | Goals of the user                                                         |
+| `POST /api/goals`                | Create a goal; at most 3 active goals, otherwise `409 ACTIVE_GOALS_LIMIT` |
+| `PATCH /api/goals/:id`           | Update a goal                                                             |
+| `DELETE /api/goals/:id`          | Delete a goal                                                             |
+| `GET /api/profile/learner-model` | Top 5 error patterns and word counts by state                             |
 
 Foreign and unknown goal ids both return `404 GOAL_NOT_FOUND`.
+
+## Sessions
+
+Starting a session: the home page (`/`) has a "Start session" button that opens `/sessions/new`. The page proposes a topic and five questions built from the profile (level, scenes, active goals and the most frequent error patterns). The user can ask for another topic (up to 3 times), enter their own topic, and choose the feedback mode (`immediate` by default, or `deferred`). "Start" creates the session and opens `/sessions/:id`, which shows the topic and the first question. Recording and the dialogue itself come later. The home page lists the 10 most recent sessions; an active one has a "Continue" action.
+
+A user has at most one active session: starting a new one finishes the previous one in the same transaction (the user row is locked with `FOR NO KEY UPDATE`, and the partial unique index `sessions_one_active_per_user` is the backstop). All five planned questions are stored in `sessions.plan` (JSONB, never returned by the API); the first question is also saved as the first assistant utterance.
+
+Sessions endpoints are protected by the access JWT (see Swagger for the schemas):
+
+| Method and path           | Consent      | Description                                                                                                                                                                                                                                                      |
+| ------------------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `POST /api/sessions/plan` | required     | Proposes `{ topic, topicSource, questions }`; nothing is stored. Body: `previousTopics` (at most 3, otherwise `400 VALIDATION_ERROR`) and optional `customTopic`. Errors: `403 CONSENT_REQUIRED`, `404 PROFILE_NOT_FOUND`, `502 LANGUAGE_MODEL_INVALID_RESPONSE` |
+| `POST /api/sessions`      | required     | Starts a session from the plan the user was shown (topic, topicSource, five questions, feedbackMode); `201` with the session and its first utterance. Errors: `400`, `401`, `403 CONSENT_REQUIRED`                                                               |
+| `GET /api/sessions`       | not required | The 10 most recent sessions, newest first                                                                                                                                                                                                                        |
+| `GET /api/sessions/:id`   | not required | A session with its utterances ordered by `seq`; a foreign, unknown or malformed id gives `404 SESSION_NOT_FOUND`                                                                                                                                                 |
+
+The planning request sends the level, scenes, goals and custom topic to the language model, which is why consent is required for `plan` and start but not for reads.
+
+The planning prompt is `packages/prompts/session-plan.v1.md`. The package has no build step: the api resolves the file through `createRequire().resolve('@gototalk/prompts/session-plan.v1.md')`, which works from both source and `dist`. The prompt id is the file name without `.md`, and the learner data is inserted as JSON at the single `{{input}}` placeholder. The model response must pass the Zod schema; an invalid response is retried once and then returns `502 LANGUAGE_MODEL_INVALID_RESPONSE`.
+
+Migration 0003 adds `sessions.plan` and the one-active-session index; apply it with `pnpm db:migrate`. `pnpm db:seed` upserts the demo profile and goals and fills the plan of the seeded demo session, so it can be re-run.
+
+With `LLM_PROVIDER=fake` the planner is deterministic: the topic is taken from a bank of five topics per scene preset by the number of previous topics, and the first question is replaced by a question that provokes the user's most frequent error pattern. A custom topic is used as typed, with template questions.
 
 ## Android and PWA
 
@@ -94,7 +117,7 @@ Web (`apps/web/src`) is split into layers that import only downward: `app → pa
 
 ```
 app/       App, layout (AppLayout, BottomNav), providers (AuthBootstrap), router guards, Mantine theme
-pages/     one folder per route: login, register, consent, session, words, history, profile
+pages/     one folder per route: login, register, consent, onboarding, session, new-session, dialog, words, history, profile
 features/  one folder per domain, e.g. auth/{api,lib,components}
 shared/    api (HTTP client, refresh), session (client state), i18n, testing
 ```
