@@ -24,7 +24,7 @@
   - `eslint.config.js`: виняток i18next `apps/web/src/test-utils.tsx` → `apps/web/src/shared/testing/**`.
   - Коміт: `refactor(web): move i18n, test utilities and theme`
 
-- [ ] **W4. `features/auth`**
+- [x] **W4. `features/auth`**
   - `auth/auth-api.ts` (+test) → `features/auth/api/`; `auth-form.ts` → `features/auth/lib/`; `AuthLayout.*` → `features/auth/components/AuthLayout/`; `AccountSection.*` (tsx, scss, test) → `components/AccountSection/`; `DeleteAccountDialog.*` → `components/DeleteAccountDialog/`.
   - Коміт: `refactor(web): group auth feature api, lib and components`
 

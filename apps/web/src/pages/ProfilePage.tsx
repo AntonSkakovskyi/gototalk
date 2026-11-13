@@ -1,6 +1,6 @@
 import { Stack, Title } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
-import { AccountSection } from '../auth/AccountSection';
+import { AccountSection } from '@/features/auth/components/AccountSection/AccountSection';
 
 export function ProfilePage() {
   const { t } = useTranslation();

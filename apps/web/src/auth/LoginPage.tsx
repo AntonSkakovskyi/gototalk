@@ -13,9 +13,13 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
-import { apiErrorKey, emailErrorKey, passwordErrorKey } from './auth-form';
-import { login } from './auth-api';
-import { AuthLayout } from './AuthLayout';
+import {
+  apiErrorKey,
+  emailErrorKey,
+  passwordErrorKey,
+} from '@/features/auth/lib/auth-form';
+import { login } from '@/features/auth/api/auth-api';
+import { AuthLayout } from '@/features/auth/components/AuthLayout/AuthLayout';
 
 export function LoginPage() {
   const { t } = useTranslation();

@@ -16,8 +16,11 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { ApiError } from '@/shared/api/api-error';
-import { deleteAccount } from './auth-api';
-import { deleteAccountErrorKey, passwordErrorKey } from './auth-form';
+import { deleteAccount } from '@/features/auth/api/auth-api';
+import {
+  deleteAccountErrorKey,
+  passwordErrorKey,
+} from '@/features/auth/lib/auth-form';
 import classes from './DeleteAccountDialog.module.scss';
 
 interface DeleteAccountFormProps {

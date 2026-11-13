@@ -3,7 +3,7 @@ import {
   errorResponse,
   jsonResponse,
 } from '@/shared/testing/test-fixtures';
-import { logout } from '@/auth/auth-api';
+import { logout } from '@/features/auth/api/auth-api';
 import { refreshSession } from './refresh';
 import {
   clearSession,

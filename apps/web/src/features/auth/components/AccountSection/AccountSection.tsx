@@ -2,9 +2,9 @@ import { Button, Stack, Text, Title } from '@mantine/core';
 import { useMutation } from '@tanstack/react-query';
 import { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { logout } from './auth-api';
+import { logout } from '@/features/auth/api/auth-api';
 import classes from './AccountSection.module.scss';
-import { DeleteAccountDialog } from './DeleteAccountDialog';
+import { DeleteAccountDialog } from '@/features/auth/components/DeleteAccountDialog/DeleteAccountDialog';
 import { useSession } from '@/shared/session/session-store';
 
 export function AccountSection() {
