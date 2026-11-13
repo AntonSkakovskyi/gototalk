@@ -1,9 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { and, desc, eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import type { Utterance } from '@gototalk/shared';
 import { DRIZZLE } from '../../../core/db/db.tokens.js';
 import type { Database, DbTransaction } from '../../../core/db/db.tokens.js';
-import { sessions, utterances } from '../../../core/db/schema.js';
+import { utterances } from '../../../core/db/schema.js';
+import { lockSession } from '../../session/persistence/lock-session.js';
 import { WordUsageService } from '../../vocabulary/word-usage.service.js';
 import {
   AnswerNotExpectedError,
@@ -65,13 +66,9 @@ export class DialogueRepository {
     userId: string,
     sessionId: string,
   ): Promise<void> {
-    const [session] = await tx
-      .select({ status: sessions.status })
-      .from(sessions)
-      .where(and(eq(sessions.id, sessionId), eq(sessions.userId, userId)))
-      .for('update');
-    if (!session) throw new SessionNotFoundError();
-    if (session.status !== 'active') throw new SessionFinishedError();
+    const status = await lockSession(tx, userId, sessionId);
+    if (status === null) throw new SessionNotFoundError();
+    if (status !== 'active') throw new SessionFinishedError();
   }
 
   private async nextSeqAfterQuestion(

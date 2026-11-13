@@ -146,7 +146,7 @@ export class SessionsController {
   @ApiOperation({
     summary: 'Finish the session',
     description:
-      'Idempotent: a repeat call returns the stored session and keeps ended_at. Needs no consent. A foreign, unknown or malformed id gives the same 404.',
+      'Idempotent: finishing a finished session returns it unchanged and keeps its original endedAt. Needs no consent. 404 SESSION_NOT_FOUND for a foreign, unknown or malformed id.',
   })
   @ApiParam({ name: 'id', format: 'uuid' })
   @ApiResponse({

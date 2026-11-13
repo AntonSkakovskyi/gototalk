@@ -8,6 +8,7 @@ import {
 import { DRIZZLE } from '../../../core/db/db.tokens.js';
 import type { Database, DbTransaction } from '../../../core/db/db.tokens.js';
 import { sessions, utterances } from '../../../core/db/schema.js';
+import { lockSession } from '../../session/persistence/lock-session.js';
 import { parsePlanQuestions } from '../../session/lib/plan-questions.js';
 import type { AnalysisOutcome } from '../../analysis/mistake-analyzer.types.js';
 import {
@@ -95,13 +96,9 @@ export class TurnRepository {
     userId: string,
     sessionId: string,
   ): Promise<boolean> {
-    const [session] = await tx
-      .select({ status: sessions.status })
-      .from(sessions)
-      .where(and(eq(sessions.id, sessionId), eq(sessions.userId, userId)))
-      .for('update');
-    if (!session) throw new SessionNotFoundError();
-    return SessionStatusSchema.parse(session.status) === 'active';
+    const status = await lockSession(tx, userId, sessionId);
+    if (status === null) throw new SessionNotFoundError();
+    return SessionStatusSchema.parse(status) === 'active';
   }
 
   private async insertReply(

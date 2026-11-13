@@ -21,6 +21,5 @@ import { TurnService } from './turn.service.js';
     TurnRepository,
     TurnService,
   ],
-  exports: [NextTurnService],
 })
 export class DialogueModule {}

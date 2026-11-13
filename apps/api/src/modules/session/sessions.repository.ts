@@ -19,6 +19,7 @@ import { DRIZZLE } from '../../core/db/db.tokens.js';
 import type { Database, DbTransaction } from '../../core/db/db.tokens.js';
 import { pgTimestampToDate } from '../../core/db/pg-timestamp.js';
 import { mistakes, sessions, users, utterances } from '../../core/db/schema.js';
+import { lockSession } from './persistence/lock-session.js';
 import { toMistakeView } from './lib/mistake-view.js';
 import type { MistakeRow } from './lib/mistake-view.js';
 import {
@@ -177,20 +178,18 @@ export class SessionsRepository {
   finish(userId: string, sessionId: string): Promise<Session | null> {
     return this.db.transaction(async (tx) => {
       // The row lock serialises the finish against answers and analysis of the session
-      const [session] = await tx
-        .select()
-        .from(sessions)
-        .where(and(eq(sessions.id, sessionId), eq(sessions.userId, userId)))
-        .for('update');
-      if (!session) return null;
-      if (session.status !== 'active') return toSession(session);
-      const [finished] = await tx
-        .update(sessions)
-        .set({ status: 'finished', endedAt: sql`clock_timestamp()` })
-        .where(eq(sessions.id, session.id))
-        .returning();
-      if (!finished) throw new Error('Session update returned no row');
-      return toSession(finished);
+      const status = await lockSession(tx, userId, sessionId);
+      if (status === null) return null;
+      const [row] =
+        status === 'active'
+          ? await tx
+              .update(sessions)
+              .set({ status: 'finished', endedAt: sql`clock_timestamp()` })
+              .where(eq(sessions.id, sessionId))
+              .returning()
+          : await tx.select().from(sessions).where(eq(sessions.id, sessionId));
+      if (!row) throw new Error('Session row disappeared under its lock');
+      return toSession(row);
     });
   }
 

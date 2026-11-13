@@ -39,7 +39,7 @@ export class DialogueController {
   @ApiOperation({
     summary: 'Submit a text answer to the current question (step 1)',
     description:
-      'Stores the answer as a pending user utterance (text_verbatim = text_clean = text) and marks the vocabulary words it uses. No language model or speech call is made; analysis is a separate step. A foreign, unknown or malformed session id gives the same 404.',
+      'Stores the answer as a pending user utterance. No language model or speech call is made; analysis is a separate step. Needs consent. 404 SESSION_NOT_FOUND for a foreign, unknown or malformed session id. 409 when the session is finished or the last utterance is not an assistant question.',
   })
   @ApiParam({ name: 'id', format: 'uuid' })
   @ApiBody({
@@ -81,7 +81,7 @@ export class DialogueController {
   @ApiOperation({
     summary: 'Analyse an answer and get the next question (step 2)',
     description:
-      'Idempotent: runs the mistake analysis if the utterance is still pending and asks the language model for the next question if there is none yet, then stores the missing parts. Already stored parts are returned without a model call. A failed analysis (invalid model response twice) is stored as failed, not as an error. If a model call is unavailable or invalid, the successful part is stored first and the error is returned; a repeat call completes the rest. A finished session is analysed but gets no reply. Foreign, unknown and malformed session or utterance ids give the same 404.',
+      'Idempotent: analyses the answer if it is still pending and produces the next question if there is none yet. Parts already done are returned as they are. If the analysis cannot be completed, the utterance is reported as failed instead of returning an error. If the next question cannot be produced, the analysis result is kept and the error is returned; repeating the call completes the rest. A finished session is analysed but gets no next question. 404 SESSION_NOT_FOUND or UTTERANCE_NOT_FOUND for foreign, unknown or malformed ids.',
   })
   @ApiParam({ name: 'id', format: 'uuid' })
   @ApiParam({ name: 'utteranceId', format: 'uuid' })

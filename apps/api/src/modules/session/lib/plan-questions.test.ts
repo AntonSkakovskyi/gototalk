@@ -19,13 +19,22 @@ describe('remainingQuestions', () => {
     expect(remainingQuestions(['a', 'b', 'c'], ['b'])).toEqual(['a', 'c']);
   });
 
-  it('[TC-04-01] treats a different text as not asked', () => {
-    expect(remainingQuestions(['Tell me more.'], ['tell me more.'])).toEqual([
-      'Tell me more.',
-    ]);
+  it('[TC-04-01] treats a question differing only in case or whitespace as asked', () => {
+    expect(
+      remainingQuestions(
+        ['Tell me more.', 'What is your job?', 'Why?'],
+        ['tell me more.', '  What  is\nyour job?  '],
+      ),
+    ).toEqual(['Why?']);
   });
 
-  it('[TC-04-01] collapses plan duplicates together', () => {
+  it('[TC-04-01] treats a genuinely different text as not asked', () => {
+    expect(
+      remainingQuestions(['Tell me more.'], ['Tell me more please.']),
+    ).toEqual(['Tell me more.']);
+  });
+
+  it('[TC-04-01] drops every plan duplicate of an asked question and keeps unasked duplicates', () => {
     expect(remainingQuestions(['a', 'a', 'b'], ['a'])).toEqual(['b']);
     expect(remainingQuestions(['a', 'a'], [])).toEqual(['a', 'a']);
   });

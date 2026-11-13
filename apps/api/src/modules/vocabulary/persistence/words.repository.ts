@@ -26,7 +26,7 @@ export class WordsRepository {
         and(
           eq(words.userId, userId),
           ne(words.state, ACTIVE),
-          inArray(sql`lower(${words.lemma})`, candidates),
+          sql`lower(${words.lemma}) = ANY(${sql.param(candidates)}::text[])`,
         ),
       )
       .returning({ id: words.id });

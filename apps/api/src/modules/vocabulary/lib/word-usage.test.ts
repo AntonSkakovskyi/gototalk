@@ -63,11 +63,11 @@ describe('usageCandidates', () => {
     expect(usageCandidates('5 years')).toEqual(['5', 'years', '5 years']);
   });
 
-  it('[TC-04-01] yields Cyrillic tokens harmlessly', () => {
-    expect(usageCandidates('Привіт світ')).toEqual([
-      'привіт',
-      'світ',
-      'привіт світ',
+  it('[TC-04-01] yields non-ASCII letter tokens harmlessly', () => {
+    expect(usageCandidates('Café Müller')).toEqual([
+      'café',
+      'müller',
+      'café müller',
     ]);
   });
 });

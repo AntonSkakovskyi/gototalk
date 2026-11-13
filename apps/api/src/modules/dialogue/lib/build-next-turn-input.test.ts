@@ -35,6 +35,21 @@ describe('buildNextTurnInput', () => {
     ]);
   });
 
+  it('[TC-04-01] orders history by seq even when utterances arrive unordered', () => {
+    const input = buildNextTurnInput({
+      topic: 'Work',
+      planQuestions: ['q1', 'q2'],
+      utterances: [
+        utterance(3, 'assistant', 'q2'),
+        utterance(1, 'assistant', 'q1'),
+        utterance(2, 'user', 'a1'),
+      ],
+    });
+
+    expect(input.history.map(({ text }) => text)).toEqual(['q1', 'a1', 'q2']);
+    expect(input.remainingQuestions).toEqual([]);
+  });
+
   it('[TC-04-01] keeps only the last NEXT_TURN_HISTORY_LIMIT entries in history', () => {
     const utterances = Array.from({ length: 20 }, (_, index) =>
       utterance(

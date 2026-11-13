@@ -7,11 +7,15 @@ export function parsePlanQuestions(plan: unknown): string[] {
   return parsed.success ? parsed.data.questions : [];
 }
 
-// A plan question counts as asked once its exact text is an assistant utterance
+function normalise(text: string): string {
+  return text.trim().replace(/\s+/g, ' ').toLowerCase();
+}
+
+// A plan question counts as asked once an assistant utterance has the same text ignoring case and whitespace
 export function remainingQuestions(
   planQuestions: string[],
   askedTexts: string[],
 ): string[] {
-  const asked = new Set(askedTexts);
-  return planQuestions.filter((question) => !asked.has(question));
+  const asked = new Set(askedTexts.map(normalise));
+  return planQuestions.filter((question) => !asked.has(normalise(question)));
 }

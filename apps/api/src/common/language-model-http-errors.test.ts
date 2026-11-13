@@ -15,7 +15,8 @@ describe('toLanguageModelHttpError', () => {
     );
 
     expect(error).toBeInstanceOf(BadGatewayException);
-    expect((error as BadGatewayException).getResponse()).toEqual({
+    if (!(error instanceof BadGatewayException)) return;
+    expect(error.getResponse()).toEqual({
       code: ERROR_CODES.LANGUAGE_MODEL_INVALID_RESPONSE,
       message: 'The language model returned an invalid response',
     });
@@ -25,7 +26,8 @@ describe('toLanguageModelHttpError', () => {
     const error = toLanguageModelHttpError(new LanguageModelUnavailableError());
 
     expect(error).toBeInstanceOf(ServiceUnavailableException);
-    expect((error as ServiceUnavailableException).getResponse()).toEqual({
+    if (!(error instanceof ServiceUnavailableException)) return;
+    expect(error.getResponse()).toEqual({
       code: ERROR_CODES.LANGUAGE_MODEL_UNAVAILABLE,
       message: 'The language model is unavailable',
     });

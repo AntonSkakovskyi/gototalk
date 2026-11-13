@@ -13,7 +13,6 @@ interface DialogueUtterance {
 export interface BuildNextTurnInput {
   topic: string;
   planQuestions: string[];
-  /** Ordered by seq. */
   utterances: DialogueUtterance[];
 }
 
@@ -22,13 +21,14 @@ export function buildNextTurnInput({
   planQuestions,
   utterances,
 }: BuildNextTurnInput): NextTurnInput {
-  const askedTexts = utterances
+  const ordered = [...utterances].sort((a, b) => a.seq - b.seq);
+  const askedTexts = ordered
     .filter(({ role }) => role === 'assistant')
     .map(({ text }) => text);
   return {
     topic,
     remainingQuestions: remainingQuestions(planQuestions, askedTexts),
-    history: utterances
+    history: ordered
       .slice(-NEXT_TURN_HISTORY_LIMIT)
       .map(({ role, text }) => ({ role, text })),
   };

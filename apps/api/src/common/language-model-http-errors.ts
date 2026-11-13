@@ -7,7 +7,9 @@ import { LanguageModelUnavailableError } from '../integrations/language-model/la
 import { LanguageModelInvalidResponseError } from '../integrations/language-model/validated-call.js';
 
 /** Returns the HTTP exception for a language model failure, or the error itself when it is not one. */
-export function toLanguageModelHttpError(error: unknown): unknown {
+export function toLanguageModelHttpError<E>(
+  error: E,
+): E | BadGatewayException | ServiceUnavailableException {
   if (error instanceof LanguageModelUnavailableError) {
     return new ServiceUnavailableException({
       code: ERROR_CODES.LANGUAGE_MODEL_UNAVAILABLE,

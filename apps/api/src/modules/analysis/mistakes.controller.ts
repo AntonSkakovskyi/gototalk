@@ -29,7 +29,7 @@ export class MistakesController {
   @ApiOperation({
     summary: 'Mark a mistake as "not a mistake"',
     description:
-      'Sets is_false and lowers the frequency of the mistake category pattern by one, never below 0. Idempotent: repeating the call returns the same mistake and lowers nothing. Works on finished sessions and needs no consent. Foreign, unknown and malformed session ids give one 404; foreign, other-session, unknown and malformed mistake ids give another.',
+      "Marks the mistake as not a mistake and lowers its weight in the learner's weak areas. Idempotent. Works on finished sessions and needs no consent. 404 SESSION_NOT_FOUND for a foreign, unknown or malformed session id; 404 MISTAKE_NOT_FOUND for a foreign, other-session, unknown or malformed mistake id.",
   })
   @ApiParam({ name: 'id', format: 'uuid' })
   @ApiParam({ name: 'mistakeId', format: 'uuid' })

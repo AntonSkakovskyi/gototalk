@@ -40,6 +40,6 @@ describe('Core service skeletons', () => {
     expect(moduleRef.get(MistakeAnalyzerService)).toBeInstanceOf(
       MistakeAnalyzerService,
     );
-    expect(moduleRef.get(NextTurnService)).toBeInstanceOf(NextTurnService);
+    expect(moduleRef.get(NextTurnService, { strict: false })).toBeInstanceOf(NextTurnService);
   });
 });
