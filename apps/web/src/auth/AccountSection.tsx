@@ -2,10 +2,10 @@ import { Button, Stack, Text, Title } from '@mantine/core';
 import { useMutation } from '@tanstack/react-query';
 import { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { logout } from './auth-api.js';
+import { logout } from './auth-api';
 import classes from './AccountSection.module.scss';
-import { DeleteAccountDialog } from './DeleteAccountDialog.js';
-import { useSession } from './session-store.js';
+import { DeleteAccountDialog } from './DeleteAccountDialog';
+import { useSession } from './session-store';
 
 export function AccountSection() {
   const { t } = useTranslation();

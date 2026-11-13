@@ -1,8 +1,8 @@
 import { QueryClient } from '@tanstack/react-query';
-import { authResponse, emptyResponse } from '../test-fixtures.js';
-import { logout } from './auth-api.js';
-import { clearQueryCacheOnSessionEnd } from './query-cache.js';
-import { clearSession, setSession } from './session-store.js';
+import { authResponse, emptyResponse } from '../test-fixtures';
+import { logout } from './auth-api';
+import { clearQueryCacheOnSessionEnd } from './query-cache';
+import { clearSession, setSession } from './session-store';
 
 describe('clearQueryCacheOnSessionEnd', () => {
   let queryClient: QueryClient;

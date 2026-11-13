@@ -1,8 +1,8 @@
-import { getSession } from '../auth/session-store.js';
-import { refreshSession } from '../auth/refresh.js';
-import { toApiError } from './api-error.js';
+import { getSession } from '../auth/session-store';
+import { refreshSession } from '../auth/refresh';
+import { toApiError } from './api-error';
 
-export { ApiError } from './api-error.js';
+export { ApiError } from './api-error';
 
 interface Parser<T> {
   parse(data: unknown): T;

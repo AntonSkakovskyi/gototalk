@@ -5,7 +5,7 @@ import {
   emptyResponse,
   errorResponse,
   jsonResponse,
-} from '../test-fixtures.js';
+} from '../test-fixtures';
 import {
   deleteAccount,
   getConsentInfo,
@@ -13,8 +13,8 @@ import {
   login,
   logout,
   register,
-} from './auth-api.js';
-import { getSession, setSession } from './session-store.js';
+} from './auth-api';
+import { getSession, setSession } from './session-store';
 
 const fetchMock = vi.fn<typeof fetch>();
 

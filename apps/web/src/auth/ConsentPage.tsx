@@ -1,8 +1,8 @@
 import { Alert, Button, List, Loader, Stack, Text } from '@mantine/core';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { getConsentInfo, grantConsent, logout } from './auth-api.js';
-import { AuthLayout } from './AuthLayout.js';
+import { getConsentInfo, grantConsent, logout } from './auth-api';
+import { AuthLayout } from './AuthLayout';
 import classes from './ConsentPage.module.scss';
 
 export function ConsentPage() {

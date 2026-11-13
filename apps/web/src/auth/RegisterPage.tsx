@@ -13,9 +13,9 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
-import { register as registerAccount } from './auth-api.js';
-import { apiErrorKey, emailErrorKey, passwordErrorKey } from './auth-form.js';
-import { AuthLayout } from './AuthLayout.js';
+import { register as registerAccount } from './auth-api';
+import { apiErrorKey, emailErrorKey, passwordErrorKey } from './auth-form';
+import { AuthLayout } from './AuthLayout';
 
 export function RegisterPage() {
   const { t } = useTranslation();

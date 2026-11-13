@@ -1,18 +1,18 @@
 import { Navigate, Route, Routes } from 'react-router';
-import { AppLayout } from './app/AppLayout.js';
-import { ConsentPage } from './auth/ConsentPage.js';
+import { AppLayout } from './app/AppLayout';
+import { ConsentPage } from './auth/ConsentPage';
 import {
   PublicOnly,
   RequireAuth,
   RequireConsent,
   RequireNoConsent,
-} from './auth/guards.js';
-import { LoginPage } from './auth/LoginPage.js';
-import { RegisterPage } from './auth/RegisterPage.js';
-import { HistoryPage } from './pages/HistoryPage.js';
-import { ProfilePage } from './pages/ProfilePage.js';
-import { SessionPage } from './pages/SessionPage.js';
-import { WordsPage } from './pages/WordsPage.js';
+} from './auth/guards';
+import { LoginPage } from './auth/LoginPage';
+import { RegisterPage } from './auth/RegisterPage';
+import { HistoryPage } from './pages/HistoryPage';
+import { ProfilePage } from './pages/ProfilePage';
+import { SessionPage } from './pages/SessionPage';
+import { WordsPage } from './pages/WordsPage';
 
 export function App() {
   return (

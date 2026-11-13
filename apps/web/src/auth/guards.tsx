@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from 'react-router';
-import { useSession } from './session-store.js';
+import { useSession } from './session-store';
 
 // While the session is unknown AuthBootstrap shows the loader, so guards render nothing.
 export function RequireAuth() {

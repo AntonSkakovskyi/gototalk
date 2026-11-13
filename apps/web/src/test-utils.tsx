@@ -5,9 +5,9 @@ import { render, type RenderResult } from '@testing-library/react';
 import type { ReactElement } from 'react';
 import { I18nextProvider } from 'react-i18next';
 import { MemoryRouter } from 'react-router';
-import { clearSession, setSession } from './auth/session-store.js';
-import i18n from './i18n/index.js';
-import { theme } from './theme.js';
+import { clearSession, setSession } from './auth/session-store';
+import i18n from './i18n/index';
+import { theme } from './theme';
 
 interface RenderOptions {
   queryClient?: QueryClient;

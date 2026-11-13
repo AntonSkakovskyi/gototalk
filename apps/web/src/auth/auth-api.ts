@@ -6,8 +6,8 @@ import {
   type LoginRequest,
   type RegisterRequest,
 } from '@gototalk/shared';
-import { apiFetch } from '../api/http.js';
-import { clearSession, setSession, updateUser } from './session-store.js';
+import { apiFetch } from '../api/http';
+import { clearSession, setSession, updateUser } from './session-store';
 
 export async function register(request: RegisterRequest): Promise<void> {
   const auth = await apiFetch('/api/auth/register', {

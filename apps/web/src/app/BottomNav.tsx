@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router';
 import classes from './BottomNav.module.scss';
-import { TABS } from './routes.js';
+import { TABS } from './routes';
 
 export function BottomNav() {
   const { t } = useTranslation();

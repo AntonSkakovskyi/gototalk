@@ -1,4 +1,4 @@
-import i18n from './index.js';
+import i18n from './index';
 import uk from './uk.json';
 
 describe('i18n', () => {

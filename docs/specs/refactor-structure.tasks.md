@@ -4,7 +4,7 @@
 
 ## Частина 1: web (у гілці `feat/01-auth`, без нових гілок)
 
-- [ ] **W1. Базова лінія й tooling**
+- [x] **W1. Базова лінія й tooling**
   - Базова лінія: api 193, web 112, shared 19, e2e 8 (записати фактичні числа).
   - `pnpm add -Dw eslint-plugin-import-x eslint-import-resolver-typescript` (перевірити, що `allowBuilds` не потрібен).
   - `apps/web/tsconfig.json`: `"paths": { "@/*": ["./src/*"] }`; `vite.config.ts`: `resolve: { tsconfigPaths: true }`.

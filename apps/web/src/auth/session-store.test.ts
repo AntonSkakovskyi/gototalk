@@ -1,5 +1,5 @@
 import { act, renderHook } from '@testing-library/react';
-import { TEST_USER } from '../test-fixtures.js';
+import { TEST_USER } from '../test-fixtures';
 import {
   clearSession,
   getSession,
@@ -8,7 +8,7 @@ import {
   setSession,
   updateUser,
   useSession,
-} from './session-store.js';
+} from './session-store';
 
 describe('session store', () => {
   it('[TC-01-03] starts as unknown without token or user', () => {

@@ -6,10 +6,10 @@ import {
   authResponse,
   errorResponse,
   jsonResponse,
-} from '../test-fixtures.js';
-import { renderWithProviders } from '../test-utils.js';
-import { AuthBootstrap } from './AuthBootstrap.js';
-import { getSession } from './session-store.js';
+} from '../test-fixtures';
+import { renderWithProviders } from '../test-utils';
+import { AuthBootstrap } from './AuthBootstrap';
+import { getSession } from './session-store';
 
 const fetchMock = vi.fn<typeof fetch>();
 

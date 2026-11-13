@@ -2,12 +2,12 @@ import { ERROR_CODES } from '@gototalk/shared';
 import { QueryClient } from '@tanstack/react-query';
 import { act, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { App } from '../App.js';
+import { App } from '../App';
 import uk from '../i18n/uk.json';
-import { TEST_USER, emptyResponse, errorResponse } from '../test-fixtures.js';
-import { renderWithProviders } from '../test-utils.js';
-import { clearQueryCacheOnSessionEnd } from './query-cache.js';
-import { getSession } from './session-store.js';
+import { TEST_USER, emptyResponse, errorResponse } from '../test-fixtures';
+import { renderWithProviders } from '../test-utils';
+import { clearQueryCacheOnSessionEnd } from './query-cache';
+import { getSession } from './session-store';
 
 const fetchMock = vi.fn<typeof fetch>();
 

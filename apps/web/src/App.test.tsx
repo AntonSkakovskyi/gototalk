@@ -1,9 +1,9 @@
 import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { App } from './App.js';
+import { App } from './App';
 import uk from './i18n/uk.json';
-import { TEST_USER } from './test-fixtures.js';
-import { renderWithProviders } from './test-utils.js';
+import { TEST_USER } from './test-fixtures';
+import { renderWithProviders } from './test-utils';
 
 const SESSION = {
   accessToken: 'access-1',

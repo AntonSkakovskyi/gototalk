@@ -6,11 +6,11 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { I18nextProvider } from 'react-i18next';
 import { BrowserRouter } from 'react-router';
-import { App } from './App.js';
-import { AuthBootstrap } from './auth/AuthBootstrap.js';
-import { clearQueryCacheOnSessionEnd } from './auth/query-cache.js';
-import i18n from './i18n/index.js';
-import { theme } from './theme.js';
+import { App } from './App';
+import { AuthBootstrap } from './auth/AuthBootstrap';
+import { clearQueryCacheOnSessionEnd } from './auth/query-cache';
+import i18n from './i18n/index';
+import { theme } from './theme';
 
 const container = document.getElementById('root');
 if (!container) {

@@ -1,11 +1,11 @@
 import { ERROR_CODES } from '@gototalk/shared';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { App } from '../App.js';
+import { App } from '../App';
 import uk from '../i18n/uk.json';
-import { authResponse, errorResponse, jsonResponse } from '../test-fixtures.js';
-import { renderWithProviders } from '../test-utils.js';
-import { getSession } from './session-store.js';
+import { authResponse, errorResponse, jsonResponse } from '../test-fixtures';
+import { renderWithProviders } from '../test-utils';
+import { getSession } from './session-store';
 
 const fetchMock = vi.fn<typeof fetch>();
 

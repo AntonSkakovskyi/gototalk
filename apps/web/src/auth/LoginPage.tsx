@@ -13,9 +13,9 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
-import { apiErrorKey, emailErrorKey, passwordErrorKey } from './auth-form.js';
-import { login } from './auth-api.js';
-import { AuthLayout } from './AuthLayout.js';
+import { apiErrorKey, emailErrorKey, passwordErrorKey } from './auth-form';
+import { login } from './auth-api';
+import { AuthLayout } from './AuthLayout';
 
 export function LoginPage() {
   const { t } = useTranslation();
