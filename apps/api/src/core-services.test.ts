@@ -18,8 +18,6 @@ const env = {
   LLM_PROVIDER: 'fake',
 };
 
-const userId = '00000000-0000-4000-8000-000000000001';
-
 describe('Core service skeletons', () => {
   let moduleRef: TestingModule;
 
@@ -44,21 +42,6 @@ describe('Core service skeletons', () => {
       MistakeAnalyzerService,
     );
     expect(moduleRef.get(DialogueService)).toBeInstanceOf(DialogueService);
-  });
-
-  it('[TC-00-04] LearnerModelService.applyAnalysis points to spec 04', async () => {
-    const service = moduleRef.get(LearnerModelService);
-    const input = {
-      userId,
-      utteranceId: userId,
-      textClean: 'I go there yesterday.',
-      analysis: { mistakes: [], better: [] },
-    };
-
-    await expect(service.applyAnalysis(input)).rejects.toThrow(
-      NotImplementedException,
-    );
-    await expect(service.applyAnalysis(input)).rejects.toThrow(/04-dialog/);
   });
 
   it('[TC-00-04] DialogueService.nextTurn points to spec 04', async () => {
