@@ -1,5 +1,6 @@
 import 'reflect-metadata';
-import { UnauthorizedException } from '@nestjs/common';
+import { NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { ERROR_CODES, RECENT_SESSIONS_LIMIT } from '@gototalk/shared';
 import type { SessionDetails, StartSessionRequest } from '@gototalk/shared';
 import { describe, expect, it, vi } from 'vitest';
 import { SessionOwnerMissingError } from './session.errors.js';
@@ -59,5 +60,59 @@ describe('SessionsService.start', () => {
     const start = vi.fn().mockRejectedValue(failure);
 
     await expect(setup(start).start(USER_ID, REQUEST)).rejects.toBe(failure);
+  });
+});
+
+describe('SessionsService reads', () => {
+  const SESSION_ID = DETAILS.id;
+  const SESSION = {
+    id: DETAILS.id,
+    topic: DETAILS.topic,
+    topicSource: DETAILS.topicSource,
+    feedbackMode: DETAILS.feedbackMode,
+    status: DETAILS.status,
+    startedAt: DETAILS.startedAt,
+    endedAt: DETAILS.endedAt,
+  };
+
+  function setupReads(repository: object) {
+    return new SessionsService(repository as unknown as SessionsRepository);
+  }
+
+  it('[TC-03-02] lists the recent sessions with the shared limit', async () => {
+    const listRecent = vi.fn().mockResolvedValue([SESSION]);
+
+    await expect(setupReads({ listRecent }).list(USER_ID)).resolves.toEqual([
+      SESSION,
+    ]);
+    expect(listRecent).toHaveBeenCalledWith(USER_ID, RECENT_SESSIONS_LIMIT);
+  });
+
+  it('[TC-03-02] returns the session details of the owner', async () => {
+    const findDetails = vi.fn().mockResolvedValue(DETAILS);
+
+    await expect(
+      setupReads({ findDetails }).details(USER_ID, SESSION_ID),
+    ).resolves.toEqual(DETAILS);
+    expect(findDetails).toHaveBeenCalledWith(USER_ID, SESSION_ID);
+  });
+
+  it('[TC-03-02] maps a missing session to 404 SESSION_NOT_FOUND', async () => {
+    const findDetails = vi.fn().mockResolvedValue(null);
+
+    await expect(
+      setupReads({ findDetails }).details(USER_ID, SESSION_ID),
+    ).rejects.toMatchObject({
+      response: { code: ERROR_CODES.SESSION_NOT_FOUND },
+    });
+  });
+
+  it('[TC-03-02] answers 404 for a non-uuid id without querying', async () => {
+    const findDetails = vi.fn();
+
+    await expect(
+      setupReads({ findDetails }).details(USER_ID, 'not-a-uuid'),
+    ).rejects.toBeInstanceOf(NotFoundException);
+    expect(findDetails).not.toHaveBeenCalled();
   });
 });

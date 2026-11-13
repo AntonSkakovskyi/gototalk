@@ -1,9 +1,18 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiBody,
   ApiCreatedResponse,
   ApiOperation,
+  ApiParam,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -11,6 +20,7 @@ import {
   FEEDBACK_MODES,
   MAX_TOPIC_REROLLS,
   PLAN_QUESTIONS,
+  RECENT_SESSIONS_LIMIT,
   PlanSessionRequestSchema,
   QUESTION_MAX,
   StartSessionRequestSchema,
@@ -19,6 +29,7 @@ import {
 } from '@gototalk/shared';
 import type {
   PlanSessionRequest,
+  Session,
   SessionDetails,
   SessionPlan,
   StartSessionRequest,
@@ -128,5 +139,41 @@ export class SessionsController {
     @Body(new ZodBodyPipe(StartSessionRequestSchema)) body: StartSessionRequest,
   ): Promise<SessionDetails> {
     return this.sessions.start(requireUserId(user), body);
+  }
+
+  @Get()
+  @ApiOperation({
+    summary: 'List the most recent sessions of the user',
+    description: `Newest first, at most ${RECENT_SESSIONS_LIMIT}. No pagination. Needs no consent: nothing is sent to providers.`,
+  })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Session[] { id, topic, topicSource, feedbackMode, status, startedAt, endedAt }',
+  })
+  @ApiResponse({ status: 401, description: 'UNAUTHORIZED' })
+  list(@CurrentUser() user: AuthenticatedUser | undefined): Promise<Session[]> {
+    return this.sessions.list(requireUserId(user));
+  }
+
+  @Get(':id')
+  @ApiOperation({
+    summary: 'Get a session with its utterances',
+    description:
+      'Utterances are ordered by seq. The stored plan is never returned. A foreign, unknown or malformed id gives the same 404 (a malformed id is not a 400).',
+  })
+  @ApiParam({ name: 'id', format: 'uuid' })
+  @ApiResponse({
+    status: 200,
+    description:
+      'SessionDetails { id, topic, topicSource, feedbackMode, status, startedAt, endedAt, utterances }',
+  })
+  @ApiResponse({ status: 401, description: 'UNAUTHORIZED' })
+  @ApiResponse({ status: 404, description: 'SESSION_NOT_FOUND' })
+  details(
+    @CurrentUser() user: AuthenticatedUser | undefined,
+    @Param('id') id: string,
+  ): Promise<SessionDetails> {
+    return this.sessions.details(requireUserId(user), id);
   }
 }

@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { and, eq, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, sql } from 'drizzle-orm';
 import {
   FeedbackModeSchema,
   SessionStatusSchema,
@@ -100,6 +100,33 @@ export class SessionsRepository {
 
       return toSessionDetails(session, [utterance]);
     });
+  }
+
+  listRecent(userId: string, limit: number): Promise<Session[]> {
+    return this.db
+      .select()
+      .from(sessions)
+      .where(eq(sessions.userId, userId))
+      .orderBy(desc(sessions.startedAt), desc(sessions.id))
+      .limit(limit)
+      .then((rows) => rows.map(toSession));
+  }
+
+  async findDetails(
+    userId: string,
+    sessionId: string,
+  ): Promise<SessionDetails | null> {
+    const [session] = await this.db
+      .select()
+      .from(sessions)
+      .where(and(eq(sessions.id, sessionId), eq(sessions.userId, userId)));
+    if (!session) return null;
+    const rows = await this.db
+      .select()
+      .from(utterances)
+      .where(eq(utterances.sessionId, session.id))
+      .orderBy(asc(utterances.seq));
+    return toSessionDetails(session, rows);
   }
 
   // Serialises one user's session starts so only one session stays active
