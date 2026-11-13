@@ -7,6 +7,7 @@ import type {
 } from '@nestjs/common';
 import type { HttpAdapterHost } from '@nestjs/core';
 import type { ErrorResponse } from '@gototalk/shared';
+import { ERROR_CODES } from '@gototalk/shared';
 import { DrizzleQueryError } from 'drizzle-orm';
 import { ZodError } from 'zod';
 import { codeFromStatus } from './error-code.js';
@@ -22,13 +23,22 @@ function clientErrorStatus(exception: unknown): number | undefined {
     : undefined;
 }
 
+const APPLICATION_CODES: ReadonlySet<string> = new Set(
+  Object.values(ERROR_CODES),
+);
+
 function httpExceptionCode(exception: HttpException, status: number): string {
-  // Custom codes are client-facing only: 5xx bodies may carry driver or library codes
-  if (status >= 500) return codeFromStatus(status);
   const response = exception.getResponse();
   if (typeof response === 'object' && response !== null) {
     const code = (response as { code?: unknown }).code;
-    if (typeof code === 'string' && code !== '') return code;
+    // 5xx bodies may carry driver or library codes, so only application codes pass
+    if (
+      typeof code === 'string' &&
+      code !== '' &&
+      (status < 500 || APPLICATION_CODES.has(code))
+    ) {
+      return code;
+    }
   }
   return codeFromStatus(status);
 }

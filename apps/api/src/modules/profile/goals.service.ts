@@ -55,6 +55,10 @@ export class GoalsService {
     return (await this.goals.list(userId)).map(toGoal);
   }
 
+  async listActive(userId: string): Promise<Goal[]> {
+    return (await this.goals.listActive(userId)).map(toGoal);
+  }
+
   async create(userId: string, { title }: CreateGoalRequest): Promise<Goal> {
     const record = await this.withLockedUser(userId, async (unit) => {
       await assertFreeSlot(unit, userId);

@@ -93,6 +93,15 @@ export class GoalsRepository {
     return rows.map(toRecord);
   }
 
+  async listActive(userId: string): Promise<GoalRecord[]> {
+    const rows = await this.db
+      .select()
+      .from(goals)
+      .where(and(eq(goals.userId, userId), eq(goals.status, 'active')))
+      .orderBy(asc(goals.createdAt), asc(goals.id));
+    return rows.map(toRecord);
+  }
+
   async delete(userId: string, id: string): Promise<boolean> {
     const rows = await this.db
       .delete(goals)
