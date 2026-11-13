@@ -66,7 +66,7 @@
   - `password-hasher.test.ts`: `'../../../../db/seed.sql'` → `'../../../../../../db/seed.sql'`.
   - Коміт: `refactor(api): split auth module into guards, decorators, persistence and lib`
 
-- [ ] **A5. Правила в `error`, документація, перевірка**
+- [x] **A5. Правила в `error`, документація, перевірка**
   - Api-зона → `error`; перевірити тимчасовим імпортом `core → modules` і відкотити.
   - `pnpm db:pull` без diff; `pnpm --filter api build`; `pnpm test:e2e`; `reviewer`.
   - CLAUDE.md (структура модуля NestJS, межі), README, `.claude/skills/db-migration/SKILL.md` (`apps/api/src/core/db/schema.ts`), `.claude/agents/reviewer.md` (шляхи портів/адаптерів), `docs/tech-decisions.md` (доповнення рішення 29), `docs/backlog.md` (шляхи).
