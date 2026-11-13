@@ -27,6 +27,26 @@ describe('cleanTranscript', () => {
     expect(cleanTranscript('I do well in tests.')).toBe('I do well in tests.');
   });
 
+  it('[TC-04-01] anchors the "well," opener to a sentence start', () => {
+    expect(cleanTranscript('I do it as well, I think.')).toBe(
+      'I do it as well, I think.',
+    );
+    expect(cleanTranscript('Fine. Well, I agree.')).toBe('Fine. I agree.');
+    expect(cleanTranscript('Um, well, I agree.')).toBe('I agree.');
+  });
+
+  it('[TC-04-01] does not treat "uh" inside "uh-huh" as a filler', () => {
+    expect(cleanTranscript('He said uh-huh to me.')).toBe(
+      'He said uh-huh to me.',
+    );
+  });
+
+  it('[TC-04-01] leaves no space before punctuation after a filler', () => {
+    expect(cleanTranscript('I think, um.')).toBe('I think.');
+    expect(cleanTranscript('Is it, uh?')).toBe('Is it?');
+    expect(cleanTranscript('Wow, er! Fine, um, ok.')).toBe('Wow! Fine ok.');
+  });
+
   it('[TC-04-01] collapses whitespace to single spaces and trims', () => {
     expect(cleanTranscript('  I   go \n home  ')).toBe('I go home');
   });

@@ -48,4 +48,29 @@ describe('fake analysis rules', () => {
       }
     }
   });
+
+  it.each([
+    'I have 3 years in this company.',
+    'I have 5 years of experience.',
+    'I have 2 years at the university.',
+    'I have 4 years with them.',
+    'I have 3 years ago.',
+  ])('[TC-04-01] rule 4 does not flag a duration: "%s"', (text) => {
+    expect(analyzeText(text).mistakes).toEqual([]);
+  });
+
+  it.each([
+    'Did he go there?',
+    'Let it go.',
+    "Let's he go now.",
+    'Can she work today?',
+    'To make it work, we try.',
+    'They help it work.',
+    'Should he have time?',
+  ])(
+    '[TC-04-01] rule 2 does not flag an auxiliary or modal context: "%s"',
+    (text) => {
+      expect(analyzeText(text).mistakes).toEqual([]);
+    },
+  );
 });

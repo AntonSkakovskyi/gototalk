@@ -33,7 +33,7 @@ export const FAKE_ANALYSIS_RULES: FakeAnalysisRule[] = [
   },
   {
     pattern:
-      /\b(he|she|it)\s+(go|have|do|work|like|want|live|make|play|need)\b/gi,
+      /(?<!\b(?:did|does|do|can|could|will|would|should|must|let|let's|make|to|help)\s+)\b(he|she|it)\s+(go|have|do|work|like|want|live|make|play|need)\b/gi,
     category: 'subject_verb_agreement',
     suggest: (g) => `${g[0]} ${thirdPerson(g[1])}`,
     explanation_en: 'With he/she/it the present simple verb takes -s.',
@@ -52,7 +52,8 @@ export const FAKE_ANALYSIS_RULES: FakeAnalysisRule[] = [
     translation_uk: '«For» – для тривалості, «since» – для моменту початку.',
   },
   {
-    pattern: /\bI\s+have\s+(\d+)\s+years(?:\s+old)?\b/gi,
+    pattern:
+      /\bI\s+have\s+(\d+)\s+years(?!\s+(?:of|in|at|with|as|on|ago|experience|before)\b)(?:\s+old)?\b/gi,
     category: 'l1_calque',
     suggest: (g) => `I am ${g[0]} years old`,
     explanation_en: 'In English age is expressed with "to be", not "to have".',

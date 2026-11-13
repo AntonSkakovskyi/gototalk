@@ -1,3 +1,4 @@
+import { ANALYSIS_MAX_MISTAKES } from '@gototalk/shared';
 import type { BetterPhrasing, Mistake } from '@gototalk/shared';
 import { FAKE_ANALYSIS_RULES } from './fake-analysis-rules.js';
 
@@ -41,6 +42,7 @@ function findMistakes(text: string): Mistake[] {
   const accepted: Mistake[] = [];
   let lastEnd = 0;
   for (const mistake of candidates) {
+    if (accepted.length === ANALYSIS_MAX_MISTAKES) break;
     if (mistake.start < lastEnd) continue;
     accepted.push(mistake);
     lastEnd = mistake.end;

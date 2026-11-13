@@ -173,6 +173,7 @@ describe('SessionPlannerService.plan', () => {
       .fn()
       .mockRejectedValue(new LanguageModelUnavailableError());
     const { service } = setup(planSession);
+    const warn = silenceWarnings();
 
     const error = await failureOf(service.plan(USER_ID, REQUEST));
 
@@ -181,6 +182,7 @@ describe('SessionPlannerService.plan', () => {
       code: ERROR_CODES.LANGUAGE_MODEL_UNAVAILABLE,
     });
     expect(planSession).toHaveBeenCalledTimes(1);
+    expect(warn).toHaveBeenCalledWith('Language model unavailable');
   });
 
   it('[TC-03-01] propagates provider errors untouched', async () => {

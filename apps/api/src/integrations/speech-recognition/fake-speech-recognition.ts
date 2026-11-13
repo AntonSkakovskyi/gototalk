@@ -29,9 +29,13 @@ export class FakeSpeechRecognition implements SpeechRecognitionPort {
     if (this.failMode === 'unavailable') {
       return Promise.reject(new SpeechRecognitionUnavailableError());
     }
-    const position = index ?? this.counter++;
+    const position =
+      typeof index === 'number' && Number.isInteger(index)
+        ? index
+        : this.counter++;
     const size = FAKE_TRANSCRIPTS.length;
-    const verbatim = FAKE_TRANSCRIPTS[((position % size) + size) % size]!;
+    const verbatim = FAKE_TRANSCRIPTS[((position % size) + size) % size];
+    if (verbatim === undefined) throw new Error('No fake transcripts');
     return Promise.resolve({ verbatim, clean: cleanTranscript(verbatim) });
   }
 }

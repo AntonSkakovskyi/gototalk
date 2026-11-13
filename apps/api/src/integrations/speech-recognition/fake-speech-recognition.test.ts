@@ -76,6 +76,33 @@ describe('FakeSpeechRecognition', () => {
     expect(next.verbatim).toBe(FAKE_TRANSCRIPTS[0]);
   });
 
+  it.each([[1.5], [Number.NaN], [Number.POSITIVE_INFINITY]])(
+    '[TC-00-05] a non-integer index %s falls back to the internal counter',
+    async (index) => {
+      const stt = new FakeSpeechRecognition();
+
+      const first = await stt.transcribe(audio, 'audio/webm', index);
+      const second = await stt.transcribe(audio, 'audio/webm', index);
+
+      expect(first.verbatim).toBe(FAKE_TRANSCRIPTS[0]);
+      expect(second.verbatim).toBe(FAKE_TRANSCRIPTS[1]);
+    },
+  );
+
+  it.each([
+    [-1, 4],
+    [-5, 0],
+    [-6, 4],
+  ])('[TC-00-05] a negative index %i wraps to transcript %i', async (index, expected) => {
+    const result = await new FakeSpeechRecognition().transcribe(
+      audio,
+      'audio/webm',
+      index,
+    );
+
+    expect(result.verbatim).toBe(FAKE_TRANSCRIPTS[expected]);
+  });
+
   it('[TC-00-05] reset() restarts the counter and gives the same sequence again', async () => {
     const stt = new FakeSpeechRecognition();
     const first = await transcribeAll(stt, 3);

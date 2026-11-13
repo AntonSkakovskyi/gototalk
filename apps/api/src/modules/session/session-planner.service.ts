@@ -68,6 +68,7 @@ export class SessionPlannerService {
       );
     } catch (error) {
       if (error instanceof LanguageModelUnavailableError) {
+        this.logger.warn('Language model unavailable');
         throw new ServiceUnavailableException({
           code: ERROR_CODES.LANGUAGE_MODEL_UNAVAILABLE,
           message: error.message,

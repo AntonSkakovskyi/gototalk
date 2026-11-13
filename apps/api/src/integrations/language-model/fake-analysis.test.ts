@@ -1,4 +1,7 @@
-import { AnalysisEnvelopeSchema } from '@gototalk/shared';
+import {
+  AnalysisEnvelopeSchema,
+  ANALYSIS_MAX_MISTAKES,
+} from '@gototalk/shared';
 import { AnalysisResultSchema } from '../testing/analysis-result-schema.js';
 import { describe, expect, it } from 'vitest';
 import { analyzeText } from './fake-analysis.js';
@@ -92,4 +95,15 @@ describe('analyzeText', () => {
     expect(AnalysisResultSchema.safeParse(result).success).toBe(true);
     expect(result.better.length).toBeLessThanOrEqual(2);
   });
+
+  it.each([['he go '.repeat(166)], ['if I will '.repeat(100)]])(
+    '[TC-04-01] a 1000-character answer is capped at the schema limits',
+    (text) => {
+      const result = analyzeText(text);
+
+      expect(result.mistakes).toHaveLength(ANALYSIS_MAX_MISTAKES);
+      expect(result.better.length).toBeLessThanOrEqual(2);
+      expect(AnalysisEnvelopeSchema.safeParse(result).success).toBe(true);
+    },
+  );
 });
