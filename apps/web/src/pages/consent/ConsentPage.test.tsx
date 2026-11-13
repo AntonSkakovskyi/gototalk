@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { App } from '@/app/App';
 import uk from '@/shared/i18n/uk.json';
 import {
+  TEST_PROFILE,
   TEST_USER,
   authResponse,
   emptyResponse,
@@ -108,6 +109,7 @@ describe('ConsentPage', () => {
     fetchMock.mockResolvedValueOnce(
       jsonResponse({ ...TEST_USER, consentAt: CONSENT_DATE }),
     );
+    fetchMock.mockResolvedValueOnce(jsonResponse(TEST_PROFILE));
     const user = userEvent.setup();
     renderConsent();
     await screen.findAllByRole('listitem');
@@ -165,12 +167,25 @@ describe('ConsentPage', () => {
     expect(getSession().status).toBe('anonymous');
   });
 
-  it('[TC-01-03] still goes to the login screen when the logout request fails', async () => {
+  it('[TC-01-03] stays signed in with an error when the logout request fails and logs out on retry', async () => {
     fetchMock.mockResolvedValueOnce(jsonResponse(consentInfo('fake', 'fake')));
     fetchMock.mockResolvedValueOnce(errorResponse(500, 'INTERNAL_ERROR'));
+    fetchMock.mockResolvedValueOnce(emptyResponse());
     const user = userEvent.setup();
     renderConsent();
     await screen.findAllByRole('listitem');
+
+    await user.click(
+      screen.getByRole('button', { name: uk.pages.consent.logout }),
+    );
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      uk.auth.errors.logoutFailed,
+    );
+    expect(getSession().status).toBe('authenticated');
+    expect(
+      screen.getByRole('heading', { level: 1, name: uk.pages.consent.title }),
+    ).toBeInTheDocument();
 
     await user.click(
       screen.getByRole('button', { name: uk.pages.consent.logout }),

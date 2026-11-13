@@ -108,12 +108,15 @@ describe('auth schemas', () => {
     );
   });
 
-  it('[TC-01-02] ERROR_CODES lists the auth error codes', () => {
+  it('[TC-01-02] ERROR_CODES lists the error codes', () => {
     expect(ERROR_CODES).toEqual({
       INVALID_CREDENTIALS: 'INVALID_CREDENTIALS',
       EMAIL_TAKEN: 'EMAIL_TAKEN',
       INVALID_PASSWORD: 'INVALID_PASSWORD',
       CONSENT_REQUIRED: 'CONSENT_REQUIRED',
+      PROFILE_NOT_FOUND: 'PROFILE_NOT_FOUND',
+      GOAL_NOT_FOUND: 'GOAL_NOT_FOUND',
+      ACTIVE_GOALS_LIMIT: 'ACTIVE_GOALS_LIMIT',
     });
   });
 });

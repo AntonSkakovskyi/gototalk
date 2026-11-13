@@ -5,15 +5,30 @@ import userEvent from '@testing-library/user-event';
 import { App } from '@/app/App';
 import uk from '@/shared/i18n/uk.json';
 import {
+  EMPTY_LEARNER_MODEL,
+  TEST_PROFILE,
   TEST_USER,
   emptyResponse,
   errorResponse,
+  jsonResponse,
 } from '@/shared/testing/test-fixtures';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 import { clearQueryCacheOnSessionEnd } from '@/shared/session/query-cache';
 import { getSession } from '@/shared/session/session-store';
 
 const fetchMock = vi.fn<typeof fetch>();
+
+// The profile page also loads the profile, goals and learner model; fetchMock only sees the account requests.
+const PAGE_READS: Record<string, Response> = {
+  '/api/profile': jsonResponse(TEST_PROFILE),
+  '/api/goals': jsonResponse([]),
+  '/api/profile/learner-model': jsonResponse(EMPTY_LEARNER_MODEL),
+};
+
+function routeFetch(input: RequestInfo | URL, init?: RequestInit) {
+  const pageRead = PAGE_READS[String(input)];
+  return pageRead ? Promise.resolve(pageRead.clone()) : fetchMock(input, init);
+}
 
 const account = uk.pages.profile.account;
 
@@ -30,7 +45,9 @@ function renderProfile() {
 }
 
 async function openDeleteDialog(user: ReturnType<typeof userEvent.setup>) {
-  await user.click(screen.getByRole('button', { name: account.delete.open }));
+  await user.click(
+    await screen.findByRole('button', { name: account.delete.open }),
+  );
   return screen.findByRole('dialog', { name: account.delete.title });
 }
 
@@ -43,7 +60,7 @@ function loginHeading() {
 
 beforeEach(() => {
   fetchMock.mockReset();
-  vi.stubGlobal('fetch', fetchMock);
+  vi.stubGlobal('fetch', routeFetch);
 });
 
 afterEach(() => {
@@ -51,11 +68,14 @@ afterEach(() => {
 });
 
 describe('AccountSection', () => {
-  it('[TC-01-03] keeps the page heading and shows the email with the account actions', () => {
+  it('[TC-01-03] keeps the page heading and shows the email with the account actions', async () => {
     renderProfile();
 
     expect(
-      screen.getByRole('heading', { level: 1, name: uk.pages.profile.title }),
+      await screen.findByRole('heading', {
+        level: 1,
+        name: uk.pages.profile.title,
+      }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole('heading', { level: 2, name: account.title }),
@@ -74,7 +94,9 @@ describe('AccountSection', () => {
     const user = userEvent.setup();
     renderProfile();
 
-    await user.click(screen.getByRole('button', { name: account.logout }));
+    await user.click(
+      await screen.findByRole('button', { name: account.logout }),
+    );
 
     expect(await loginHeading()).toBeInTheDocument();
     const [url, init] = fetchMock.mock.calls[0]!;
@@ -83,15 +105,29 @@ describe('AccountSection', () => {
     expect(getSession().status).toBe('anonymous');
   });
 
-  it('[TC-01-03] still lands on the login screen when the logout request fails', async () => {
+  it('[TC-01-03] stays signed in with an error when the logout request fails and logs out on retry', async () => {
     fetchMock.mockResolvedValueOnce(errorResponse(500, 'INTERNAL_ERROR'));
+    fetchMock.mockResolvedValueOnce(emptyResponse());
     const user = userEvent.setup();
     renderProfile();
+
+    await user.click(
+      await screen.findByRole('button', { name: account.logout }),
+    );
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      uk.auth.errors.logoutFailed,
+    );
+    expect(getSession().status).toBe('authenticated');
+    expect(
+      screen.getByRole('heading', { level: 1, name: uk.pages.profile.title }),
+    ).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: account.logout }));
 
     expect(await loginHeading()).toBeInTheDocument();
     expect(getSession().status).toBe('anonymous');
+    expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
   it('[TC-01-02] opens a dialog that warns about irreversible removal and asks for the password', async () => {

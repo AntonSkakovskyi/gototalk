@@ -1,8 +1,14 @@
 import { screen } from '@testing-library/react';
 import { App } from '@/app/App';
 import uk from '@/shared/i18n/uk.json';
-import { TEST_USER } from '@/shared/testing/test-fixtures';
+import { mockApi } from '@/shared/testing/mock-api';
+import {
+  TEST_PROFILE,
+  TEST_USER,
+  jsonResponse,
+} from '@/shared/testing/test-fixtures';
 import { renderWithProviders } from '@/shared/testing/test-utils';
+import { heading } from './guard-test-helpers';
 
 const WITH_CONSENT = {
   accessToken: 'access-1',
@@ -10,28 +16,32 @@ const WITH_CONSENT = {
 };
 const WITHOUT_CONSENT = { accessToken: 'access-1', user: TEST_USER };
 
-function heading(name: string) {
-  return screen.getByRole('heading', { level: 1, name });
-}
+beforeEach(() => {
+  mockApi({ 'GET /api/profile': jsonResponse(TEST_PROFILE) });
+});
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
 
 describe('route guards', () => {
-  it('[TC-01-03] redirects an anonymous user from a protected route to /login', () => {
+  it('[TC-01-03] redirects an anonymous user from a protected route to /login', async () => {
     renderWithProviders(<App />, { route: '/words', session: 'anonymous' });
 
-    expect(heading(uk.auth.login.title)).toBeInTheDocument();
+    expect(await heading(uk.auth.login.title)).toBeInTheDocument();
     expect(screen.queryByRole('navigation')).not.toBeInTheDocument();
   });
 
-  it('[TC-01-03] redirects an anonymous user from an unknown path to /login', () => {
+  it('[TC-01-03] redirects an anonymous user from an unknown path to /login', async () => {
     renderWithProviders(<App />, { route: '/nope', session: 'anonymous' });
 
-    expect(heading(uk.auth.login.title)).toBeInTheDocument();
+    expect(await heading(uk.auth.login.title)).toBeInTheDocument();
   });
 
-  it('[TC-01-03] redirects an anonymous user from /consent to /login', () => {
+  it('[TC-01-03] redirects an anonymous user from /consent to /login', async () => {
     renderWithProviders(<App />, { route: '/consent', session: 'anonymous' });
 
-    expect(heading(uk.auth.login.title)).toBeInTheDocument();
+    expect(await heading(uk.auth.login.title)).toBeInTheDocument();
   });
 
   it('[TC-01-03] renders nothing while the session is still unknown', () => {
@@ -40,46 +50,46 @@ describe('route guards', () => {
     expect(screen.queryByRole('heading')).not.toBeInTheDocument();
   });
 
-  it('[TC-01-03] redirects an authenticated user without consent from a protected route to /consent', () => {
+  it('[TC-01-03] redirects an authenticated user without consent from a protected route to /consent', async () => {
     renderWithProviders(<App />, { route: '/words', session: WITHOUT_CONSENT });
 
-    expect(heading(uk.pages.consent.title)).toBeInTheDocument();
+    expect(await heading(uk.pages.consent.title)).toBeInTheDocument();
     expect(screen.queryByRole('navigation')).not.toBeInTheDocument();
   });
 
-  it('[TC-01-03] redirects an authenticated user without consent from an unknown path to /consent', () => {
+  it('[TC-01-03] redirects an authenticated user without consent from an unknown path to /consent', async () => {
     renderWithProviders(<App />, { route: '/nope', session: WITHOUT_CONSENT });
 
-    expect(heading(uk.pages.consent.title)).toBeInTheDocument();
+    expect(await heading(uk.pages.consent.title)).toBeInTheDocument();
   });
 
-  it('[TC-01-03] lets a user with consent open protected routes', () => {
+  it('[TC-01-03] lets a user with consent open protected routes', async () => {
     renderWithProviders(<App />, { route: '/words', session: WITH_CONSENT });
 
-    expect(heading(uk.pages.words.title)).toBeInTheDocument();
+    expect(await heading(uk.pages.words.title)).toBeInTheDocument();
   });
 
-  it('[TC-01-03] redirects a user with consent from /consent to /', () => {
+  it('[TC-01-03] redirects a user with consent from /consent to /', async () => {
     renderWithProviders(<App />, { route: '/consent', session: WITH_CONSENT });
 
-    expect(heading(uk.pages.session.title)).toBeInTheDocument();
+    expect(await heading(uk.pages.session.title)).toBeInTheDocument();
   });
 
-  it('[TC-01-03] redirects an authenticated user with consent from /login and /register to /', () => {
+  it('[TC-01-03] redirects an authenticated user with consent from /login and /register to /', async () => {
     const { unmount } = renderWithProviders(<App />, {
       route: '/login',
       session: WITH_CONSENT,
     });
-    expect(heading(uk.pages.session.title)).toBeInTheDocument();
+    expect(await heading(uk.pages.session.title)).toBeInTheDocument();
     unmount();
 
     renderWithProviders(<App />, { route: '/register', session: WITH_CONSENT });
-    expect(heading(uk.pages.session.title)).toBeInTheDocument();
+    expect(await heading(uk.pages.session.title)).toBeInTheDocument();
   });
 
-  it('[TC-01-03] redirects an authenticated user without consent from /login to /consent', () => {
+  it('[TC-01-03] redirects an authenticated user without consent from /login to /consent', async () => {
     renderWithProviders(<App />, { route: '/login', session: WITHOUT_CONSENT });
 
-    expect(heading(uk.pages.consent.title)).toBeInTheDocument();
+    expect(await heading(uk.pages.consent.title)).toBeInTheDocument();
   });
 });

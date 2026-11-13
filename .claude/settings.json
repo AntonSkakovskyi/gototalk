@@ -24,7 +24,12 @@
       "Bash(podman compose ps:*)",
       "Bash(podman compose up:*)",
       "Bash(podman compose logs:*)",
-      "Bash(podman compose exec:*)"
+      "Bash(podman compose exec:*)",
+      "Bash(git push -u origin feat/:*)",
+      "Bash(git push origin feat/:*)",
+      "Bash(gh pr create:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr checks:*)"
     ],
     "deny": [
       "Read(./.env.local)",
@@ -34,7 +39,11 @@
       "Bash(npx drizzle-kit push:*)",
       "Bash(pnpm drizzle-kit push:*)",
       "Bash(podman compose down -v:*)",
-      "Bash(podman volume rm:*)"
+      "Bash(podman volume rm:*)",
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(git push origin main:*)",
+      "Bash(gh pr merge:*)"
     ],
     "defaultMode": "acceptEdits"
   },

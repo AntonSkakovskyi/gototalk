@@ -1,0 +1,21 @@
+$touch-target: 2.75rem;
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.title {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.wrap {
+  overflow-wrap: anywhere;
+}
+
+.action {
+  min-height: $touch-target;
+}

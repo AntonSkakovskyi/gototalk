@@ -1,10 +1,9 @@
-import { Button, Stack, Text, Title } from '@mantine/core';
-import { useMutation } from '@tanstack/react-query';
+import { Alert, Button, Stack, Text, Title } from '@mantine/core';
 import { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { logout } from '@/features/auth/api/auth-api';
 import classes from './AccountSection.module.scss';
 import { DeleteAccountDialog } from '@/features/auth/components/DeleteAccountDialog/DeleteAccountDialog';
+import { useLogout } from '@/features/auth/hooks/use-logout';
 import { useSession } from '@/shared/session/session-store';
 
 export function AccountSection() {
@@ -12,8 +11,7 @@ export function AccountSection() {
   const { user } = useSession();
   const titleId = useId();
   const [deleteOpened, setDeleteOpened] = useState(false);
-  // logout() clears the session even when the request fails, so its error needs no handling.
-  const signOut = useMutation({ mutationFn: logout });
+  const signOut = useLogout();
 
   return (
     <Stack gap="md" component="section" aria-labelledby={titleId}>
@@ -26,6 +24,9 @@ export function AccountSection() {
         </Text>
         <Text className={classes.email}>{user?.email}</Text>
       </Stack>
+      {signOut.isError && (
+        <Alert color="red">{t('auth.errors.logoutFailed')}</Alert>
+      )}
       <div className={classes.actions}>
         <Button
           variant="default"

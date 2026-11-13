@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { App } from '@/app/App';
 import uk from '@/shared/i18n/uk.json';
 import {
+  TEST_PROFILE,
   TEST_USER,
   authResponse,
   errorResponse,
@@ -64,6 +65,7 @@ describe('LoginPage', () => {
     fetchMock.mockResolvedValueOnce(
       jsonResponse(authResponse('login-token', CONSENTED_USER)),
     );
+    fetchMock.mockResolvedValueOnce(jsonResponse(TEST_PROFILE));
     renderLogin();
 
     await fillAndSubmit('anna@example.com', 'secret-pass');

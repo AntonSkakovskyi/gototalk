@@ -2,7 +2,12 @@ import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { App } from './App';
 import uk from '@/shared/i18n/uk.json';
-import { TEST_USER } from '@/shared/testing/test-fixtures';
+import { mockApi } from '@/shared/testing/mock-api';
+import {
+  TEST_PROFILE,
+  TEST_USER,
+  jsonResponse,
+} from '@/shared/testing/test-fixtures';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 
 const SESSION = {
@@ -10,17 +15,27 @@ const SESSION = {
   user: { ...TEST_USER, consentAt: '2026-01-01T10:00:00.000Z' },
 };
 
+beforeEach(() => {
+  mockApi({ 'GET /api/profile': jsonResponse(TEST_PROFILE) });
+});
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
+
 describe('App', () => {
-  it('[TC-00-04] renders the root element of the app', () => {
+  it('[TC-00-04] renders the root element of the app', async () => {
     renderWithProviders(<App />, { session: SESSION });
 
-    expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { level: 1 }),
+    ).toBeInTheDocument();
   });
 
-  it('[TC-00-02] shows the bottom navigation tabs in Ukrainian', () => {
+  it('[TC-00-02] shows the bottom navigation tabs in Ukrainian', async () => {
     renderWithProviders(<App />, { session: SESSION });
 
-    const nav = screen.getByRole('navigation');
+    const nav = await screen.findByRole('navigation');
     const labels = within(nav)
       .getAllByRole('link')
       .map((link) => link.textContent);
@@ -34,11 +49,14 @@ describe('App', () => {
     ]);
   });
 
-  it('[TC-00-02] index opens the Session page and its tab is active', () => {
+  it('[TC-00-02] index opens the Session page and its tab is active', async () => {
     renderWithProviders(<App />, { session: SESSION });
 
     expect(
-      screen.getByRole('heading', { level: 1, name: uk.pages.session.title }),
+      await screen.findByRole('heading', {
+        level: 1,
+        name: uk.pages.session.title,
+      }),
     ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: uk.nav.session })).toHaveAttribute(
       'aria-current',
@@ -49,6 +67,7 @@ describe('App', () => {
   it('[TC-00-02] clicking a tab switches the route', async () => {
     const user = userEvent.setup();
     renderWithProviders(<App />, { session: SESSION });
+    await screen.findByRole('navigation');
 
     const tabs = [
       { nav: uk.nav.words, title: uk.pages.words.title },
@@ -70,19 +89,25 @@ describe('App', () => {
     }
   });
 
-  it('[TC-00-02] direct navigation to a route opens the matching page', () => {
+  it('[TC-00-02] direct navigation to a route opens the matching page', async () => {
     renderWithProviders(<App />, { route: '/history', session: SESSION });
 
     expect(
-      screen.getByRole('heading', { level: 1, name: uk.pages.history.title }),
+      await screen.findByRole('heading', {
+        level: 1,
+        name: uk.pages.history.title,
+      }),
     ).toBeInTheDocument();
   });
 
-  it('[TC-00-02] unknown path redirects to Session', () => {
+  it('[TC-00-02] unknown path redirects to Session', async () => {
     renderWithProviders(<App />, { route: '/no-such-page', session: SESSION });
 
     expect(
-      screen.getByRole('heading', { level: 1, name: uk.pages.session.title }),
+      await screen.findByRole('heading', {
+        level: 1,
+        name: uk.pages.session.title,
+      }),
     ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: uk.nav.session })).toHaveAttribute(
       'aria-current',

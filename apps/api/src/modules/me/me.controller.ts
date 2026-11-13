@@ -7,7 +7,6 @@ import {
   HttpStatus,
   Post,
   Res,
-  UnauthorizedException,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -18,17 +17,15 @@ import {
 } from '@nestjs/swagger';
 import { DeleteAccountRequestSchema } from '@gototalk/shared';
 import type { ConsentInfo, DeleteAccountRequest, Me } from '@gototalk/shared';
-import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
+import {
+  CurrentUser,
+  requireUserId,
+} from '../auth/decorators/current-user.decorator.js';
 import type { AuthenticatedUser } from '../auth/decorators/current-user.decorator.js';
 import { clearRefreshCookie } from '../auth/lib/refresh-cookie.js';
 import type { CookieResponse } from '../auth/lib/refresh-cookie.js';
 import { ZodBodyPipe } from '../../common/zod-body.pipe.js';
 import { MeService } from './me.service.js';
-
-function requireUser(user: AuthenticatedUser | undefined): string {
-  if (!user) throw new UnauthorizedException('Missing or invalid access token');
-  return user.id;
-}
 
 @ApiTags('me')
 @ApiBearerAuth()
@@ -41,7 +38,7 @@ export class MeController {
   @ApiResponse({ status: 200, description: 'Me { id, email, consentAt }' })
   @ApiResponse({ status: 401, description: 'UNAUTHORIZED' })
   getMe(@CurrentUser() user: AuthenticatedUser | undefined): Promise<Me> {
-    return this.me.getMe(requireUser(user));
+    return this.me.getMe(requireUserId(user));
   }
 
   @Get('consent')
@@ -56,7 +53,7 @@ export class MeController {
   getConsent(
     @CurrentUser() user: AuthenticatedUser | undefined,
   ): Promise<ConsentInfo> {
-    return this.me.getConsentInfo(requireUser(user));
+    return this.me.getConsentInfo(requireUserId(user));
   }
 
   @Post('consent')
@@ -71,7 +68,7 @@ export class MeController {
   grantConsent(
     @CurrentUser() user: AuthenticatedUser | undefined,
   ): Promise<Me> {
-    return this.me.grantConsent(requireUser(user));
+    return this.me.grantConsent(requireUserId(user));
   }
 
   @Delete()
@@ -103,7 +100,7 @@ export class MeController {
     body: DeleteAccountRequest,
     @Res({ passthrough: true }) res: CookieResponse,
   ): Promise<void> {
-    await this.me.deleteAccount(requireUser(user), body.password);
+    await this.me.deleteAccount(requireUserId(user), body.password);
     clearRefreshCookie(res);
   }
 }

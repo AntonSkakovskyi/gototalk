@@ -46,22 +46,19 @@ describe('Core service skeletons', () => {
     expect(moduleRef.get(DialogueService)).toBeInstanceOf(DialogueService);
   });
 
-  it('[TC-00-04] LearnerModelService: methods throw NotImplementedException pointing to the spec', async () => {
+  it('[TC-00-04] LearnerModelService.applyAnalysis points to spec 04', async () => {
     const service = moduleRef.get(LearnerModelService);
+    const input = {
+      userId,
+      utteranceId: userId,
+      textClean: 'I go there yesterday.',
+      analysis: { mistakes: [], better: [] },
+    };
 
-    await expect(service.weakAreas(userId)).rejects.toThrow(
+    await expect(service.applyAnalysis(input)).rejects.toThrow(
       NotImplementedException,
     );
-    await expect(service.weakAreas(userId)).rejects.toThrow(/02-profile/);
-    await expect(service.vocabularyStats(userId)).rejects.toThrow(/02-profile/);
-    await expect(
-      service.applyAnalysis({
-        userId,
-        utteranceId: userId,
-        textClean: 'I go there yesterday.',
-        analysis: { mistakes: [], better: [] },
-      }),
-    ).rejects.toThrow(/04-dialog/);
+    await expect(service.applyAnalysis(input)).rejects.toThrow(/04-dialog/);
   });
 
   it('[TC-00-04] SessionPlannerService.planSession points to spec 03', async () => {

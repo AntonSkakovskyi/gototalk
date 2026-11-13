@@ -1,0 +1,21 @@
+$touch-target: 2.75rem;
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mantine-spacing-xs);
+}
+
+.root {
+  max-width: 100%;
+}
+
+.chip {
+  align-items: center;
+  height: auto;
+  min-height: $touch-target;
+  max-width: 100%;
+  line-height: var(--mantine-line-height);
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
