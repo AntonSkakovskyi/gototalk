@@ -3,7 +3,9 @@ import userEvent from '@testing-library/user-event';
 import uk from '@/shared/i18n/uk.json';
 import { mockApi } from '@/shared/testing/mock-api';
 import {
+  EMPTY_LEARNER_MODEL,
   TEST_PROFILE,
+  TOP_FIVE_LEARNER_MODEL,
   TEST_USER,
   errorResponse,
   jsonResponse,
@@ -37,10 +39,11 @@ afterEach(() => {
 });
 
 describe('ProfilePage', () => {
-  it('[TC-02-03] shows the level, preset and custom scenes, goals and the account section', async () => {
+  it('[TC-02-03] shows the level, preset and custom scenes, goals, learner model and the account section', async () => {
     mockApi({
       'GET /api/profile': jsonResponse(PROFILE),
       'GET /api/goals': jsonResponse([DONE_GOAL, ACTIVE_GOAL]),
+      'GET /api/profile/learner-model': jsonResponse(TOP_FIVE_LEARNER_MODEL),
     });
     renderPage();
 
@@ -57,6 +60,9 @@ describe('ProfilePage', () => {
     expect(await screen.findByText(ACTIVE_GOAL.title)).toBeInTheDocument();
     expect(screen.getByText(DONE_GOAL.title)).toBeInTheDocument();
     expect(
+      await screen.findByText(uk.mistakeCategories.articles),
+    ).toBeInTheDocument();
+    expect(
       screen.getByRole('heading', {
         level: 2,
         name: uk.pages.profile.account.title,
@@ -69,6 +75,7 @@ describe('ProfilePage', () => {
     mockApi({
       'GET /api/profile': jsonResponse(PROFILE),
       'GET /api/goals': jsonResponse([]),
+      'GET /api/profile/learner-model': jsonResponse(EMPTY_LEARNER_MODEL),
     });
     renderPage();
 
@@ -77,22 +84,24 @@ describe('ProfilePage', () => {
     for (const name of [
       uk.profile.details.title,
       uk.profile.goals.title,
+      uk.profile.learnerModel.title,
       uk.pages.profile.account.title,
     ]) {
       expect(screen.getByRole('region', { name })).toBeInTheDocument();
     }
   });
 
-  it('[TC-02-03] shows loading placeholders for both sections', () => {
+  it('[TC-02-03] shows loading placeholders for every section', () => {
     mockApi({
       'GET /api/profile': jsonResponse(PROFILE),
       'GET /api/goals': jsonResponse([]),
+      'GET /api/profile/learner-model': jsonResponse(EMPTY_LEARNER_MODEL),
     });
     renderPage();
 
     expect(
       screen.getAllByRole('status', { name: uk.profile.loading }),
-    ).toHaveLength(2);
+    ).toHaveLength(3);
   });
 
   it('[TC-02-03] shows an error with retry only for the section that failed', async () => {
@@ -104,6 +113,7 @@ describe('ProfilePage', () => {
           ? errorResponse(404, 'PROFILE_NOT_FOUND')
           : jsonResponse(PROFILE),
       'GET /api/goals': jsonResponse([ACTIVE_GOAL]),
+      'GET /api/profile/learner-model': jsonResponse(EMPTY_LEARNER_MODEL),
     });
     renderPage();
 

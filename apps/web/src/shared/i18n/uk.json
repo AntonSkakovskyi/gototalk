@@ -86,6 +86,27 @@
         "notFound": "Цілі більше немає. Список оновлено."
       }
     },
+    "learnerModel": {
+      "title": "Модель учня",
+      "empty": "Поки що даних немає. Після перших сесій тут з’являться ваші найчастіші помилки та слова зі станами.",
+      "weakAreas": {
+        "title": "Найчастіші помилки",
+        "empty": "Помилок поки не зафіксовано. Вони з’являться після перших сесій.",
+        "times_one": "{{count}} раз",
+        "times_few": "{{count}} рази",
+        "times_many": "{{count}} разів",
+        "times_other": "{{count}} раза"
+      },
+      "vocabulary": {
+        "title": "Словник"
+      },
+      "states": {
+        "new": "Нові",
+        "partial": "Частково знаю",
+        "passive": "Знаю (пасивні)",
+        "active": "Активні"
+      }
+    },
     "scenes": {
       "presets": {
         "work_meetings": "Робота й мітинги",
@@ -147,6 +168,21 @@
         "goalTooLong": "Ціль має містити не більше {{max}} символів"
       }
     }
+  },
+  "mistakeCategories": {
+    "articles": "Артиклі",
+    "verb_tense": "Часи дієслів",
+    "subject_verb_agreement": "Узгодження підмета й присудка",
+    "missing_be": "Пропущене дієслово be",
+    "prepositions": "Прийменники",
+    "word_order": "Порядок слів",
+    "question_form": "Побудова питань",
+    "plural_countable": "Множина й злічуваність",
+    "conditionals": "Умовні речення",
+    "collocation": "Сполучуваність слів",
+    "word_choice": "Вибір слова",
+    "l1_calque": "Калька з української",
+    "other": "Інше"
   },
   "nav": {
     "label": "Основна навігація",

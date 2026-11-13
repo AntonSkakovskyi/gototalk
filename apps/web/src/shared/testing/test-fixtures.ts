@@ -65,3 +65,19 @@ export const TEST_LEARNER_MODEL: LearnerModel = {
   ],
   vocabulary: { new: 12, partial: 5, passive: 3, active: 1 },
 };
+
+export const TOP_FIVE_LEARNER_MODEL: LearnerModel = {
+  weakAreas: [
+    { category: 'articles', frequency: 7, lastSeenAt: null },
+    { category: 'prepositions', frequency: 5, lastSeenAt: null },
+    { category: 'verb_tense', frequency: 3, lastSeenAt: null },
+    { category: 'word_order', frequency: 2, lastSeenAt: null },
+    { category: 'l1_calque', frequency: 1, lastSeenAt: null },
+  ],
+  vocabulary: { new: 12, partial: 5, passive: 3, active: 1 },
+};
+
+export const EMPTY_LEARNER_MODEL: LearnerModel = {
+  weakAreas: [],
+  vocabulary: { new: 0, partial: 0, passive: 0, active: 0 },
+};

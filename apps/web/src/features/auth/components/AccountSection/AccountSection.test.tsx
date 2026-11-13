@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { App } from '@/app/App';
 import uk from '@/shared/i18n/uk.json';
 import {
+  EMPTY_LEARNER_MODEL,
   TEST_PROFILE,
   TEST_USER,
   emptyResponse,
@@ -17,10 +18,11 @@ import { getSession } from '@/shared/session/session-store';
 
 const fetchMock = vi.fn<typeof fetch>();
 
-// The profile page also loads the profile and goals; fetchMock only sees the account requests.
+// The profile page also loads the profile, goals and learner model; fetchMock only sees the account requests.
 const PAGE_READS: Record<string, Response> = {
   '/api/profile': jsonResponse(TEST_PROFILE),
   '/api/goals': jsonResponse([]),
+  '/api/profile/learner-model': jsonResponse(EMPTY_LEARNER_MODEL),
 };
 
 function routeFetch(input: RequestInfo | URL, init?: RequestInit) {
