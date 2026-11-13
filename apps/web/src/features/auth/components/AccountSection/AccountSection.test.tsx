@@ -146,7 +146,7 @@ describe('AccountSection', () => {
       within(dialog).getByRole('button', { name: account.delete.confirm }),
     ).toBeInTheDocument();
     expect(
-      within(dialog).getByRole('button', { name: account.delete.cancel }),
+      within(dialog).getByRole('button', { name: uk.common.actions.cancel }),
     ).toBeInTheDocument();
     expect(fetchMock).not.toHaveBeenCalled();
   });
@@ -266,7 +266,7 @@ describe('AccountSection', () => {
     await within(dialog).findByRole('alert');
 
     await user.click(
-      within(dialog).getByRole('button', { name: account.delete.cancel }),
+      within(dialog).getByRole('button', { name: uk.common.actions.cancel }),
     );
 
     await waitFor(() =>
@@ -311,7 +311,7 @@ describe('AccountSection', () => {
       buttonsBefore - 1,
     );
     expect(
-      within(dialog).getByRole('button', { name: account.delete.cancel }),
+      within(dialog).getByRole('button', { name: uk.common.actions.cancel }),
     ).toBeDisabled();
 
     rejectRequest(new TypeError('Failed to fetch'));

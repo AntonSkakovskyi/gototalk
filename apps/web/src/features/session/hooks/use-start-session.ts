@@ -9,7 +9,14 @@ export function useStartSession() {
     onSuccess: (details) =>
       queryClient.setQueryData(sessionKeys.details(details.id), details),
     // Also on failure: a previous active session may have been finished server-side.
-    onSettled: () =>
-      queryClient.invalidateQueries({ queryKey: sessionKeys.list() }),
+    onSettled: async (details) => {
+      await Promise.all([
+        queryClient.resetQueries({ queryKey: sessionKeys.list() }),
+        queryClient.invalidateQueries({
+          queryKey: sessionKeys.allDetails(),
+          predicate: (query) => query.queryKey[2] !== details?.id,
+        }),
+      ]);
+    },
   });
 }

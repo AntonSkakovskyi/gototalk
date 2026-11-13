@@ -1,9 +1,9 @@
 import type { Session } from '@gototalk/shared';
-import { Group, Stack, Text, Title } from '@mantine/core';
+import { Group, Stack, Text } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
 import { SessionStatusBadge } from '@/features/session/components/SessionStatusBadge/SessionStatusBadge';
-
-const TOPIC_LANGUAGE = 'en';
+import { topicLanguage } from '@/features/session/lib/topic-language';
+import { FocusedTitle } from './FocusedTitle';
 
 interface SessionSummaryProps {
   session: Session;
@@ -20,9 +20,9 @@ export function SessionSummary({ session }: SessionSummaryProps) {
         </Text>
         <SessionStatusBadge status={session.status} />
       </Group>
-      <Title order={1} lang={TOPIC_LANGUAGE}>
+      <FocusedTitle lang={topicLanguage(session.topicSource)}>
         {session.topic}
-      </Title>
+      </FocusedTitle>
       <Text size="sm" c="dimmed">
         {t(`session.details.feedbackMode.${session.feedbackMode}`)}
       </Text>

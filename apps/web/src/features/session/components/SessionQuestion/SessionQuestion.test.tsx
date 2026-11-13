@@ -1,5 +1,5 @@
 import { ERROR_CODES } from '@gototalk/shared';
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { sessionKeys } from '@/features/session/api/session-queries';
 import uk from '@/shared/i18n/uk.json';
@@ -43,6 +43,57 @@ describe('SessionQuestion', () => {
     expect(screen.getByText(uk.session.details.answerSoon)).toBeInTheDocument();
     expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
     expect(requests).toHaveLength(1);
+  });
+
+  it('[TC-03-03] keeps exactly one generic h1 while loading', () => {
+    mockApi({ [PATH]: () => new Promise<Response>(() => undefined) });
+    renderQuestion();
+
+    expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
+    expect(
+      screen.getByRole('heading', {
+        level: 1,
+        name: uk.session.details.pageTitle,
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it('[TC-03-03] moves focus to the topic heading once the content appears', async () => {
+    mockApi({ [PATH]: jsonResponse(DETAILS) });
+    renderQuestion();
+
+    const heading = await screen.findByRole('heading', {
+      level: 1,
+      name: DETAILS.topic,
+    });
+
+    await waitFor(() => expect(heading).toHaveFocus());
+  });
+
+  it('[TC-03-03] moves focus to the not-found heading', async () => {
+    mockApi({ [PATH]: errorResponse(404, ERROR_CODES.SESSION_NOT_FOUND) });
+    renderQuestion();
+
+    const heading = await screen.findByRole('heading', {
+      level: 1,
+      name: uk.session.errors.notFound,
+    });
+
+    await waitFor(() => expect(heading).toHaveFocus());
+  });
+
+  it('[TC-03-03] marks a suggested topic as English and leaves a custom topic unmarked', async () => {
+    mockApi({
+      [PATH]: jsonResponse(
+        testSessionDetails({ topic: 'Мій кіт', topicSource: 'custom' }),
+      ),
+    });
+    renderQuestion();
+
+    expect(
+      await screen.findByRole('heading', { level: 1, name: 'Мій кіт' }),
+    ).not.toHaveAttribute('lang');
+    expect(screen.getByText(FIRST_QUESTION)).toHaveAttribute('lang', 'en');
   });
 
   it('[TC-03-03] shows a freshly started session from the cache without a request', () => {
@@ -145,6 +196,7 @@ describe('SessionQuestion', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(
       uk.errors.generic,
     );
+    expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
     expect(
       screen.getByRole('link', { name: uk.common.actions.home }),
     ).toBeInTheDocument();
@@ -155,6 +207,7 @@ describe('SessionQuestion', () => {
     );
 
     expect(await screen.findByText(FIRST_QUESTION)).toBeInTheDocument();
+    expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 

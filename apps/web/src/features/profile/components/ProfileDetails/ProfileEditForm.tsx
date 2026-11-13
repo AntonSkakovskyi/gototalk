@@ -35,7 +35,7 @@ export function ProfileEditForm({ profile, onDone }: ProfileEditFormProps) {
               disabled={edit.isPending}
               onClick={onDone}
             >
-              {t('profile.actions.cancel')}
+              {t('common.actions.cancel')}
             </Button>
             <Button type="submit" size="lg" loading={edit.isPending}>
               {t('profile.actions.save')}

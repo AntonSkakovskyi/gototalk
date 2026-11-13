@@ -7,6 +7,7 @@ import { isSessionNotFound } from '@/features/session/lib/session-errors';
 import { LoadError } from '@/shared/ui/LoadError/LoadError';
 import { SectionSkeleton } from '@/shared/ui/SectionSkeleton/SectionSkeleton';
 import { CurrentQuestion } from './CurrentQuestion';
+import { FocusedTitle } from './FocusedTitle';
 import { SessionSummary } from './SessionSummary';
 
 interface SessionQuestionProps {
@@ -20,12 +21,20 @@ export function SessionQuestion({ sessionId }: SessionQuestionProps) {
 
   return (
     <Stack gap="lg">
-      {details.isPending && <SectionSkeleton />}
+      {details.isPending && (
+        <>
+          <Title order={1}>{t('session.details.pageTitle')}</Title>
+          <SectionSkeleton />
+        </>
+      )}
       {details.isError && isSessionNotFound(details.error) && (
-        <Title order={1}>{t('session.errors.notFound')}</Title>
+        <FocusedTitle>{t('session.errors.notFound')}</FocusedTitle>
       )}
       {details.isError && !isSessionNotFound(details.error) && (
-        <LoadError onRetry={() => void details.refetch()} />
+        <>
+          <Title order={1}>{t('session.details.pageTitle')}</Title>
+          <LoadError onRetry={() => void details.refetch()} />
+        </>
       )}
       {details.data && <SessionSummary session={details.data} />}
       {question && <CurrentQuestion question={question} />}

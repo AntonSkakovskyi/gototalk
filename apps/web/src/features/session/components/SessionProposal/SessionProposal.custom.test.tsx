@@ -91,6 +91,12 @@ describe('SessionProposal custom topic', () => {
       screen.getByRole('list', { name: text.questionsLabel }),
     ).getAllByRole('listitem');
     expect(questions.map((item) => item.textContent)).toEqual(CUSTOM_QUESTIONS);
+    expect(
+      screen.getByRole('heading', { level: 2, name: 'My cat' }),
+    ).not.toHaveAttribute('lang');
+    expect(
+      screen.getByRole('list', { name: text.questionsLabel }),
+    ).toHaveAttribute('lang', 'en');
     expect(topicField()).not.toBeInTheDocument();
   });
 
@@ -117,7 +123,9 @@ describe('SessionProposal custom topic', () => {
     await user.click(opener());
     expect(topicField()).toHaveFocus();
 
-    await user.click(screen.getByRole('button', { name: text.custom.cancel }));
+    await user.click(
+      screen.getByRole('button', { name: uk.common.actions.cancel }),
+    );
 
     expect(topicField()).not.toBeInTheDocument();
     await waitFor(() => expect(opener()).toHaveFocus());

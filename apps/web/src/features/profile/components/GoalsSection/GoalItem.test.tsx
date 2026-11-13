@@ -60,7 +60,7 @@ describe('GoalsSection edit title', () => {
     await user.type(titleField(), ' changed');
 
     await user.click(
-      screen.getByRole('button', { name: uk.profile.actions.cancel }),
+      screen.getByRole('button', { name: uk.common.actions.cancel }),
     );
 
     expect(screen.getByText(FLUENT.title)).toBeInTheDocument();
@@ -93,7 +93,7 @@ describe('GoalsSection edit title', () => {
     );
 
     expect(
-      screen.getByRole('button', { name: uk.profile.actions.cancel }),
+      screen.getByRole('button', { name: uk.common.actions.cancel }),
     ).toBeDisabled();
     release();
     await waitFor(() =>
@@ -178,7 +178,7 @@ describe('GoalsSection delete goal', () => {
     const dialog = await screen.findByRole('dialog');
 
     await user.click(
-      within(dialog).getByRole('button', { name: uk.profile.actions.cancel }),
+      within(dialog).getByRole('button', { name: uk.common.actions.cancel }),
     );
 
     await waitFor(() =>

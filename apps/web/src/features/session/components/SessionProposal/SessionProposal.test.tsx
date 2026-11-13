@@ -91,6 +91,12 @@ describe('SessionProposal', () => {
 
     expect(questions).toHaveLength(5);
     expect(questions[0]).toHaveTextContent(testSessionPlan().questions[0]!);
+    expect(
+      screen.getByRole('heading', { level: 2, name: 'Topic 0' }),
+    ).toHaveAttribute('lang', 'en');
+    expect(
+      screen.getByRole('list', { name: text.questionsLabel }),
+    ).toHaveAttribute('lang', 'en');
     expect(screen.queryByRole('status')).not.toBeInTheDocument();
     expect(startButton()).toBeEnabled();
   });

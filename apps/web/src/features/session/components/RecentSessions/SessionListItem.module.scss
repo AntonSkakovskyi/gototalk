@@ -1,4 +1,4 @@
-$touch-target: 2.75rem;
+@use '../../../../shared/styles/tokens' as *;
 
 .item {
   display: block;

@@ -21,13 +21,13 @@ export function CustomTopicForm({ onSubmit, onCancel }: CustomTopicFormProps) {
           size="lg"
           label={t('session.proposal.custom.label')}
           maxLength={TOPIC_MAX}
-          error={message && t(message.key, message.values)}
+          error={message && t(message.key, message.values ?? {})}
           errorProps={ANNOUNCED_ERROR_PROPS}
           {...form.field}
         />
         <Group justify="flex-end" gap="sm">
           <Button variant="default" size="lg" onClick={onCancel}>
-            {t('session.proposal.custom.cancel')}
+            {t('common.actions.cancel')}
           </Button>
           <Button type="submit" size="lg">
             {t('session.proposal.custom.submit')}

@@ -13,9 +13,10 @@ import type { UseQueryResult } from '@tanstack/react-query';
 import { useEffect, useId, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { sessionErrorKey } from '@/features/session/lib/session-errors';
+import { topicLanguage } from '@/features/session/lib/topic-language';
 import { SectionSkeleton } from '@/shared/ui/SectionSkeleton/SectionSkeleton';
 
-const TOPIC_LANGUAGE = 'en';
+const QUESTION_LANGUAGE = 'en';
 
 interface ProposalPlanProps {
   plan: UseQueryResult<SessionPlan>;
@@ -51,7 +52,12 @@ function PlanContent({ plan, focusTopic }: PlanContentProps) {
             </Badge>
           )}
         </Group>
-        <Title order={2} lang={TOPIC_LANGUAGE} tabIndex={-1} ref={topicRef}>
+        <Title
+          order={2}
+          lang={topicLanguage(plan.topicSource)}
+          tabIndex={-1}
+          ref={topicRef}
+        >
           {plan.topic}
         </Title>
       </Stack>
@@ -62,7 +68,7 @@ function PlanContent({ plan, focusTopic }: PlanContentProps) {
         <List
           type="ordered"
           spacing="sm"
-          lang={TOPIC_LANGUAGE}
+          lang={QUESTION_LANGUAGE}
           aria-labelledby={questionsId}
         >
           {plan.questions.map((question) => (

@@ -5,6 +5,7 @@ import { Link } from 'react-router';
 import classes from './SessionListItem.module.scss';
 import { SessionStatusBadge } from '@/features/session/components/SessionStatusBadge/SessionStatusBadge';
 import { formatSessionDate } from '@/features/session/lib/format-session-date';
+import { topicLanguage } from '@/features/session/lib/topic-language';
 
 interface SessionListItemProps {
   session: Session;
@@ -23,7 +24,9 @@ export function SessionListItem({ session }: SessionListItemProps) {
       className={classes.item}
     >
       <Stack gap="xs">
-        <Text fw={500}>{session.topic}</Text>
+        <Text fw={500} lang={topicLanguage(session.topicSource)}>
+          {session.topic}
+        </Text>
         <Group justify="space-between" gap="xs">
           <Text size="sm" c="dimmed">
             {formatSessionDate(session.startedAt, i18n.language)}

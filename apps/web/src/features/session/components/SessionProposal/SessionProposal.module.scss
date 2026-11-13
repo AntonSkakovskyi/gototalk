@@ -1,9 +1,7 @@
 // Sits right above the fixed bottom nav of the app shell.
 .actions {
   position: sticky;
-  bottom: calc(
-    var(--app-shell-footer-height, 0rem) + env(safe-area-inset-bottom, 0rem)
-  );
+  bottom: var(--app-shell-footer-height, 0rem);
   z-index: 1;
   margin-inline: calc(-1 * var(--mantine-spacing-md));
   padding: var(--mantine-spacing-sm) var(--mantine-spacing-md);

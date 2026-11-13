@@ -95,7 +95,9 @@ describe('CustomTopicForm', () => {
     const { user, onSubmit, onCancel } = setup();
 
     await user.type(field(), 'My cat');
-    await user.click(screen.getByRole('button', { name: text.cancel }));
+    await user.click(
+      screen.getByRole('button', { name: uk.common.actions.cancel }),
+    );
 
     expect(onCancel).toHaveBeenCalledTimes(1);
     expect(onSubmit).not.toHaveBeenCalled();

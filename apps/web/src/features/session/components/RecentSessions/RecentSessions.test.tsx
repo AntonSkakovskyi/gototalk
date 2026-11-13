@@ -105,4 +105,14 @@ describe('RecentSessions', () => {
     ).not.toBeInTheDocument();
     expect(within(finished!).getByText(/12 лист\. 2026/)).toBeInTheDocument();
   });
+
+  it('[TC-03-03] marks only suggested topics as English', async () => {
+    stubSessions([ACTIVE, testSession({ ...FINISHED, topicSource: 'custom' })]);
+    renderWithProviders(<RecentSessions />);
+
+    await screen.findAllByRole('listitem');
+
+    expect(screen.getByText(ACTIVE.topic)).toHaveAttribute('lang', 'en');
+    expect(screen.getByText(FINISHED.topic)).not.toHaveAttribute('lang');
+  });
 });

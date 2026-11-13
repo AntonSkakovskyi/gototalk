@@ -213,7 +213,7 @@ describe('ConsentPage', () => {
     expect(agreeButton()).toBeDisabled();
 
     await user.click(
-      within(alert).getByRole('button', { name: uk.pages.consent.retry }),
+      within(alert).getByRole('button', { name: uk.common.actions.retry }),
     );
 
     const items = await screen.findAllByRole('listitem');

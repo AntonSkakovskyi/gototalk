@@ -1,4 +1,5 @@
 import { ERROR_CODES } from '@gototalk/shared';
+import { useQuery } from '@tanstack/react-query';
 import { renderHook, waitFor } from '@testing-library/react';
 import { mockApi } from '@/shared/testing/mock-api';
 import {
@@ -12,56 +13,122 @@ import {
   testSessionDetails,
   testSessionPlan,
 } from '@/shared/testing/test-fixtures';
-import { sessionKeys } from '@/features/session/api/session-queries';
+import {
+  sessionKeys,
+  sessionListQueryOptions,
+} from '@/features/session/api/session-queries';
 import { useStartSession } from './use-start-session';
 
 const REQUEST = { ...testSessionPlan(), feedbackMode: 'immediate' as const };
+const PREVIOUS = testSession({
+  id: '7c2e8b64-5f0a-4d1b-8e3a-2a9b4c6d0002',
+  topic: 'My hometown',
+});
+const STARTED = testSessionDetails({
+  id: '7c2e8b64-5f0a-4d1b-8e3a-2a9b4c6d0003',
+});
 
 function setup() {
   const queryClient = createTestQueryClient();
-  queryClient.setQueryData(sessionKeys.list(), [testSession()]);
+  queryClient.setQueryData(sessionKeys.list(), [PREVIOUS]);
   return { queryClient, wrapper: createQueryWrapper(queryClient) };
 }
 
+function startedList() {
+  return [
+    testSession({ id: STARTED.id }),
+    { ...PREVIOUS, status: 'finished' as const },
+  ];
+}
+
 describe('useStartSession', () => {
-  it('[TC-03-03] seeds the details cache and invalidates the list', async () => {
+  it('[TC-03-03] seeds the details cache and refetches the observed list with the new session first', async () => {
     const { queryClient, wrapper } = setup();
-    const details = testSessionDetails();
     const { requests } = mockApi({
-      'POST /api/sessions': jsonResponse(details, 201),
+      'POST /api/sessions': jsonResponse(STARTED, 201),
+      'GET /api/sessions': jsonResponse(startedList()),
     });
-    const { result } = renderHook(() => useStartSession(), { wrapper });
-
-    result.current.mutate(REQUEST);
-
-    await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(requests[0]?.body).toEqual(REQUEST);
-    expect(queryClient.getQueryData(sessionKeys.details(details.id))).toEqual(
-      details,
+    const { result } = renderHook(
+      () => ({
+        start: useStartSession(),
+        list: useQuery(sessionListQueryOptions()),
+      }),
+      { wrapper },
     );
-    expect(queryClient.getQueryState(sessionKeys.list())?.isInvalidated).toBe(
-      true,
+
+    result.current.start.mutate(REQUEST);
+
+    await waitFor(() =>
+      expect(result.current.list.data?.map((item) => item.id)).toEqual([
+        STARTED.id,
+        PREVIOUS.id,
+      ]),
+    );
+    expect(result.current.list.data?.map((item) => item.status)).toEqual([
+      'active',
+      'finished',
+    ]);
+    expect(requests.find((request) => request.method === 'POST')?.body).toEqual(
+      REQUEST,
+    );
+    expect(queryClient.getQueryData(sessionKeys.details(STARTED.id))).toEqual(
+      STARTED,
     );
   });
 
-  it('[TC-03-03] the seeded details are readable without a refetch', async () => {
+  it('[TC-03-03] drops the cached list when nothing observes it', async () => {
     const { queryClient, wrapper } = setup();
-    const details = testSessionDetails();
+    mockApi({ 'POST /api/sessions': jsonResponse(STARTED, 201) });
+    const { result } = renderHook(() => useStartSession(), { wrapper });
+
+    result.current.mutate(REQUEST);
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(queryClient.getQueryData(sessionKeys.list())).toBeUndefined();
+  });
+
+  it('[TC-03-03] invalidates the details of other sessions and keeps the new ones readable', async () => {
+    const { queryClient, wrapper } = setup();
+    queryClient.setQueryData(sessionKeys.details(PREVIOUS.id), {
+      ...PREVIOUS,
+      utterances: [],
+    });
     const { requests } = mockApi({
-      'POST /api/sessions': jsonResponse(details, 201),
+      'POST /api/sessions': jsonResponse(STARTED, 201),
     });
     const { result } = renderHook(() => useStartSession(), { wrapper });
 
     result.current.mutate(REQUEST);
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-    expect(queryClient.getQueryData(sessionKeys.details(details.id))).toEqual(
-      details,
-    );
+    expect(
+      queryClient.getQueryState(sessionKeys.details(PREVIOUS.id))
+        ?.isInvalidated,
+    ).toBe(true);
+    const seeded = queryClient.getQueryState(sessionKeys.details(STARTED.id));
+    expect(seeded?.isInvalidated).toBe(false);
+    expect(seeded?.data).toEqual(STARTED);
     expect(requests).toHaveLength(1);
   });
 
-  it('[TC-03-03] a failed start surfaces the error and still invalidates the list', async () => {
+  it('[TC-03-03] does not invalidate the plan', async () => {
+    const { queryClient, wrapper } = setup();
+    queryClient.setQueryData(sessionKeys.plan({ previousTopics: [] }), {
+      ...testSessionPlan(),
+    });
+    mockApi({ 'POST /api/sessions': jsonResponse(STARTED, 201) });
+    const { result } = renderHook(() => useStartSession(), { wrapper });
+
+    result.current.mutate(REQUEST);
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(
+      queryClient.getQueryState(sessionKeys.plan({ previousTopics: [] }))
+        ?.isInvalidated,
+    ).toBe(false);
+  });
+
+  it('[TC-03-03] a failed start surfaces the error and still resets the list', async () => {
     const { queryClient, wrapper } = setup();
     mockApi({
       'POST /api/sessions': errorResponse(403, ERROR_CODES.CONSENT_REQUIRED),
@@ -75,8 +142,6 @@ describe('useStartSession', () => {
       status: 403,
       code: ERROR_CODES.CONSENT_REQUIRED,
     });
-    expect(queryClient.getQueryState(sessionKeys.list())?.isInvalidated).toBe(
-      true,
-    );
+    expect(queryClient.getQueryData(sessionKeys.list())).toBeUndefined();
   });
 });

@@ -39,7 +39,6 @@ describe('topicErrorMessage', () => {
   it('maps every other issue to the required message', () => {
     expect(topicErrorMessage({ type: 'too_small' })).toEqual({
       key: 'session.proposal.custom.errors.required',
-      values: { max: TOPIC_MAX },
     });
   });
 });

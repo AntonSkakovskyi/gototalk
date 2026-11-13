@@ -48,7 +48,7 @@ describe('AuthBootstrap', () => {
     renderBootstrap();
 
     expect(
-      screen.getByRole('status', { name: uk.auth.loading }),
+      screen.getByRole('status', { name: uk.common.loading }),
     ).toBeInTheDocument();
     expect(screen.queryByText('App content')).not.toBeInTheDocument();
 
@@ -98,7 +98,7 @@ describe('AuthBootstrap', () => {
       uk.app.gate.error,
     );
     expect(
-      screen.getByRole('button', { name: uk.app.gate.retry }),
+      screen.getByRole('button', { name: uk.common.actions.retry }),
     ).toBeInTheDocument();
     expect(screen.queryByText('App content')).not.toBeInTheDocument();
     expect(getSession().status).toBe('unknown');
@@ -127,7 +127,7 @@ describe('AuthBootstrap', () => {
 
     renderBootstrap();
     await user.click(
-      await screen.findByRole('button', { name: uk.app.gate.retry }),
+      await screen.findByRole('button', { name: uk.common.actions.retry }),
     );
 
     expect(screen.getByRole('status')).toBeInTheDocument();
@@ -150,7 +150,7 @@ describe('AuthBootstrap', () => {
 
     renderBootstrap();
     await user.click(
-      await screen.findByRole('button', { name: uk.app.gate.retry }),
+      await screen.findByRole('button', { name: uk.common.actions.retry }),
     );
 
     expect(await screen.findByText('App content')).toBeInTheDocument();
@@ -164,7 +164,7 @@ describe('AuthBootstrap', () => {
 
     renderBootstrap();
     await user.click(
-      await screen.findByRole('button', { name: uk.app.gate.retry }),
+      await screen.findByRole('button', { name: uk.common.actions.retry }),
     );
 
     expect(await screen.findByRole('alert')).toBeInTheDocument();

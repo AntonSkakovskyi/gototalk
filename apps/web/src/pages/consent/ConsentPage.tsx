@@ -23,7 +23,7 @@ export function ConsentPage() {
           <div
             className={classes.loader}
             role="status"
-            aria-label={t('auth.loading')}
+            aria-label={t('common.loading')}
           >
             <Loader size="sm" />
           </div>
@@ -39,7 +39,7 @@ export function ConsentPage() {
                 loading={info.isFetching}
                 onClick={() => void info.refetch()}
               >
-                {t('pages.consent.retry')}
+                {t('common.actions.retry')}
               </Button>
             </Stack>
           </Alert>
@@ -65,9 +65,7 @@ export function ConsentPage() {
         <Text>{t('pages.consent.transfer')}</Text>
         <Text>{t('pages.consent.audioNotStored')}</Text>
         <Text>{t('pages.consent.deletion')}</Text>
-        {consent.isError && (
-          <Alert color="red">{t('errors.generic')}</Alert>
-        )}
+        {consent.isError && <Alert color="red">{t('errors.generic')}</Alert>}
         {signOut.isError && (
           <Alert color="red">{t('auth.errors.logoutFailed')}</Alert>
         )}

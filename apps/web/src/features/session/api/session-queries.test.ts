@@ -9,6 +9,7 @@ import {
 import {
   sessionDetailsQueryOptions,
   sessionKeys,
+  sessionListQueryOptions,
   sessionPlanQueryOptions,
 } from './session-queries';
 
@@ -80,6 +81,32 @@ describe('session queries', () => {
     expect(options.gcTime).toBe(0);
     expect(options.refetchOnWindowFocus).toBe(false);
     expect(options.refetchOnReconnect).toBe(false);
+  });
+
+  it('[TC-03-03] list query does not retry a 4xx', async () => {
+    const { requests } = mockApi({
+      'GET /api/sessions': errorResponse(403, ERROR_CODES.CONSENT_REQUIRED),
+    });
+
+    await expect(
+      new QueryClient().query({ ...sessionListQueryOptions(), retryDelay: 0 }),
+    ).rejects.toMatchObject({ status: 403 });
+
+    expect(requests).toHaveLength(1);
+  });
+
+  it('[TC-03-03] list query retries a server error once', async () => {
+    const queue = [errorResponse(500, 'BOOM'), jsonResponse([])];
+    const { requests } = mockApi({
+      'GET /api/sessions': () =>
+        queue.shift() ?? errorResponse(500, 'RESPONSES_EXHAUSTED'),
+    });
+
+    await expect(
+      new QueryClient().query({ ...sessionListQueryOptions(), retryDelay: 0 }),
+    ).resolves.toEqual([]);
+
+    expect(requests).toHaveLength(2);
   });
 
   it('[TC-03-03] details stay fresh for a while so a just-started session is not refetched', () => {

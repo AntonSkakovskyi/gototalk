@@ -214,7 +214,7 @@ describe('ProfileDetails edit', () => {
     await user.click(levelOption('C1'));
 
     await user.click(
-      screen.getByRole('button', { name: uk.profile.actions.cancel }),
+      screen.getByRole('button', { name: uk.common.actions.cancel }),
     );
 
     expect(screen.getByText(uk.profile.levels.B1.title)).toBeInTheDocument();

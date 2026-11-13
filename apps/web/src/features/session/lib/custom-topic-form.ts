@@ -11,7 +11,7 @@ interface FieldIssue {
 
 interface TopicErrorMessage {
   key: string;
-  values: { max: number };
+  values?: { max: number };
 }
 
 const ERRORS = 'session.proposal.custom.errors';
@@ -24,5 +24,5 @@ export function topicErrorMessage(
   }
   return error.type === 'too_big'
     ? { key: `${ERRORS}.tooLong`, values: { max: TOPIC_MAX } }
-    : { key: `${ERRORS}.required`, values: { max: TOPIC_MAX } };
+    : { key: `${ERRORS}.required` };
 }

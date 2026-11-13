@@ -109,7 +109,7 @@ describe('RequireProfile', () => {
     renderApp('/words');
 
     expect(
-      screen.getByRole('status', { name: uk.app.gate.loading }),
+      screen.getByRole('status', { name: uk.common.loading }),
     ).toBeInTheDocument();
     expect(screen.queryByRole('heading')).toBeNull();
     expect(screen.queryByRole('navigation')).toBeNull();
@@ -129,7 +129,7 @@ describe('RequireProfile', () => {
 
     await userEvent
       .setup()
-      .click(screen.getByRole('button', { name: uk.app.gate.retry }));
+      .click(screen.getByRole('button', { name: uk.common.actions.retry }));
 
     expect(await heading(uk.pages.words.title)).toBeInTheDocument();
     expect(currentLocation()).toBe('/words');
@@ -218,7 +218,7 @@ describe('RequireNoProfile', () => {
     renderApp('/onboarding');
 
     expect(
-      screen.getByRole('status', { name: uk.app.gate.loading }),
+      screen.getByRole('status', { name: uk.common.loading }),
     ).toBeInTheDocument();
     expect(screen.queryByRole('heading')).toBeNull();
   });
@@ -234,7 +234,7 @@ describe('RequireNoProfile', () => {
 
     await userEvent
       .setup()
-      .click(screen.getByRole('button', { name: uk.app.gate.retry }));
+      .click(screen.getByRole('button', { name: uk.common.actions.retry }));
 
     expect(await heading(uk.pages.session.title)).toBeInTheDocument();
     expect(currentLocation()).toBe('/');

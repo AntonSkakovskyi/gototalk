@@ -42,7 +42,7 @@ export function GoalTitleForm({
             disabled={pending}
             onClick={onCancel}
           >
-            {t('profile.actions.cancel')}
+            {t('common.actions.cancel')}
           </Button>
           <Button type="submit" size="lg" loading={pending}>
             {t('profile.actions.save')}
