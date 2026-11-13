@@ -1,7 +1,7 @@
 import { ERROR_CODES } from '@gototalk/shared';
 import { ApiError } from '@/shared/api/http';
 import i18n from '@/shared/i18n/index';
-import { sessionErrorKey } from './session-errors';
+import { isSessionNotFound, sessionErrorKey } from './session-errors';
 
 describe('sessionErrorKey', () => {
   it('[TC-03-03] maps a missing consent', () => {
@@ -48,5 +48,22 @@ describe('sessionErrorKey', () => {
     const { key } = sessionErrorKey(error);
 
     expect(i18n.exists(key)).toBe(true);
+  });
+});
+
+describe('isSessionNotFound', () => {
+  it('[TC-03-03] is true only for the missing-session code', () => {
+    expect(
+      isSessionNotFound(
+        new ApiError(404, ERROR_CODES.SESSION_NOT_FOUND, 'missing'),
+      ),
+    ).toBe(true);
+    expect(isSessionNotFound(new ApiError(404, 'UNKNOWN_ERROR', 'x'))).toBe(
+      false,
+    );
+    expect(isSessionNotFound(new ApiError(500, 'UNKNOWN_ERROR', 'x'))).toBe(
+      false,
+    );
+    expect(isSessionNotFound(new TypeError('Failed to fetch'))).toBe(false);
   });
 });

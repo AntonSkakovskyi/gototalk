@@ -1,0 +1,169 @@
+import { ERROR_CODES } from '@gototalk/shared';
+import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { sessionKeys } from '@/features/session/api/session-queries';
+import uk from '@/shared/i18n/uk.json';
+import { mockApi } from '@/shared/testing/mock-api';
+import { createTestQueryClient } from '@/shared/testing/query-wrapper';
+import {
+  errorResponse,
+  jsonResponse,
+  testSessionDetails,
+} from '@/shared/testing/test-fixtures';
+import { renderWithProviders } from '@/shared/testing/test-utils';
+import { SessionQuestion } from './SessionQuestion';
+
+const DETAILS = testSessionDetails();
+const FIRST_QUESTION = DETAILS.utterances[0]!.text;
+const PATH = `GET /api/sessions/${DETAILS.id}`;
+
+function renderQuestion(queryClient = createTestQueryClient()) {
+  return renderWithProviders(<SessionQuestion sessionId={DETAILS.id} />, {
+    queryClient,
+  });
+}
+
+describe('SessionQuestion', () => {
+  it('[TC-03-03] fetches on a direct visit and shows the topic, status, mode and first question', async () => {
+    const { requests } = mockApi({ [PATH]: jsonResponse(DETAILS) });
+    renderQuestion();
+
+    expect(
+      screen.getByRole('status', { name: uk.common.loading }),
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { level: 1, name: DETAILS.topic }),
+    ).toBeInTheDocument();
+    expect(screen.getByText(uk.session.details.topicLabel)).toBeInTheDocument();
+    expect(screen.getByText(uk.session.status.active)).toBeInTheDocument();
+    expect(
+      screen.getByText(uk.session.details.feedbackMode.immediate),
+    ).toBeInTheDocument();
+    expect(screen.getByText(FIRST_QUESTION)).toHaveAttribute('lang', 'en');
+    expect(screen.getByText(uk.session.details.answerSoon)).toBeInTheDocument();
+    expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
+    expect(requests).toHaveLength(1);
+  });
+
+  it('[TC-03-03] shows a freshly started session from the cache without a request', () => {
+    const { requests } = mockApi({});
+    const queryClient = createTestQueryClient();
+    queryClient.setQueryData(sessionKeys.details(DETAILS.id), DETAILS);
+
+    renderQuestion(queryClient);
+
+    expect(
+      screen.getByRole('heading', { level: 1, name: DETAILS.topic }),
+    ).toBeInTheDocument();
+    expect(screen.getByText(FIRST_QUESTION)).toBeInTheDocument();
+    expect(requests).toHaveLength(0);
+  });
+
+  it('[TC-03-03] shows the question of the last assistant utterance', async () => {
+    mockApi({
+      [PATH]: jsonResponse(
+        testSessionDetails({
+          utterances: [
+            {
+              id: '9e4a1c73-6b2d-4f8a-a1c5-3b7d5e8f0011',
+              seq: 1,
+              role: 'assistant',
+              text: 'First question?',
+            },
+            {
+              id: '9e4a1c73-6b2d-4f8a-a1c5-3b7d5e8f0012',
+              seq: 2,
+              role: 'user',
+              text: 'My answer',
+            },
+            {
+              id: '9e4a1c73-6b2d-4f8a-a1c5-3b7d5e8f0013',
+              seq: 3,
+              role: 'assistant',
+              text: 'Next question?',
+            },
+          ],
+        }),
+      ),
+    });
+    renderQuestion();
+
+    expect(await screen.findByText('Next question?')).toBeInTheDocument();
+    expect(screen.queryByText('First question?')).not.toBeInTheDocument();
+  });
+
+  it('[TC-03-03] shows the finished badge and the deferred mode of a finished session', async () => {
+    mockApi({
+      [PATH]: jsonResponse(
+        testSessionDetails({
+          status: 'finished',
+          feedbackMode: 'deferred',
+          endedAt: '2026-11-13T10:20:00.000Z',
+        }),
+      ),
+    });
+    renderQuestion();
+
+    expect(
+      await screen.findByText(uk.session.status.finished),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(uk.session.details.feedbackMode.deferred),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText(uk.session.status.active),
+    ).not.toBeInTheDocument();
+  });
+
+  it('[TC-03-03] explains a missing session and links back to the home screen', async () => {
+    mockApi({
+      [PATH]: errorResponse(404, ERROR_CODES.SESSION_NOT_FOUND),
+    });
+    renderQuestion();
+
+    expect(
+      await screen.findByRole('heading', {
+        level: 1,
+        name: uk.session.errors.notFound,
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: uk.common.actions.home }),
+    ).toHaveAttribute('href', '/');
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('[TC-03-03] shows an error with retry that recovers, keeping the home link', async () => {
+    const user = userEvent.setup();
+    let failing = true;
+    mockApi({
+      [PATH]: () =>
+        failing ? errorResponse(500, 'INTERNAL_ERROR') : jsonResponse(DETAILS),
+    });
+    renderQuestion();
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      uk.errors.generic,
+    );
+    expect(
+      screen.getByRole('link', { name: uk.common.actions.home }),
+    ).toBeInTheDocument();
+
+    failing = false;
+    await user.click(
+      screen.getByRole('button', { name: uk.common.actions.retry }),
+    );
+
+    expect(await screen.findByText(FIRST_QUESTION)).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('[TC-03-03] offers the home link while loading', () => {
+    mockApi({ [PATH]: () => new Promise<Response>(() => undefined) });
+    renderQuestion();
+
+    expect(
+      screen.getByRole('link', { name: uk.common.actions.home }),
+    ).toBeInTheDocument();
+  });
+});

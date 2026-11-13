@@ -12,3 +12,9 @@ export function sessionErrorKey(error: unknown): { key: string } {
   const key = error instanceof ApiError ? KEY_BY_CODE[error.code] : undefined;
   return { key: key ?? 'errors.generic' };
 }
+
+export function isSessionNotFound(error: unknown): boolean {
+  return (
+    error instanceof ApiError && error.code === ERROR_CODES.SESSION_NOT_FOUND
+  );
+}

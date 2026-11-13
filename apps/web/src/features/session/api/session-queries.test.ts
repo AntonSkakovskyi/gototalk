@@ -6,7 +6,11 @@ import {
   jsonResponse,
   testSessionPlan,
 } from '@/shared/testing/test-fixtures';
-import { sessionKeys, sessionPlanQueryOptions } from './session-queries';
+import {
+  sessionDetailsQueryOptions,
+  sessionKeys,
+  sessionPlanQueryOptions,
+} from './session-queries';
 
 function fetchPlanWith(...responses: Response[]) {
   const queue = [...responses];
@@ -76,5 +80,9 @@ describe('session queries', () => {
     expect(options.gcTime).toBe(0);
     expect(options.refetchOnWindowFocus).toBe(false);
     expect(options.refetchOnReconnect).toBe(false);
+  });
+
+  it('[TC-03-03] details stay fresh for a while so a just-started session is not refetched', () => {
+    expect(sessionDetailsQueryOptions('abc').staleTime).toBeGreaterThan(0);
   });
 });

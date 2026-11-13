@@ -1,8 +1,9 @@
 import type { Session } from '@gototalk/shared';
-import { Badge, Button, Group, Paper, Stack, Text } from '@mantine/core';
+import { Button, Group, Paper, Stack, Text } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import classes from './SessionListItem.module.scss';
+import { SessionStatusBadge } from '@/features/session/components/SessionStatusBadge/SessionStatusBadge';
 import { formatSessionDate } from '@/features/session/lib/format-session-date';
 
 interface SessionListItemProps {
@@ -27,9 +28,7 @@ export function SessionListItem({ session }: SessionListItemProps) {
           <Text size="sm" c="dimmed">
             {formatSessionDate(session.startedAt, i18n.language)}
           </Text>
-          <Badge color={isActive ? 'blue' : 'gray'} variant="light">
-            {t(`session.home.status.${session.status}`)}
-          </Badge>
+          <SessionStatusBadge status={session.status} />
         </Group>
         {isActive && (
           <Button component="span" variant="light" fullWidth>

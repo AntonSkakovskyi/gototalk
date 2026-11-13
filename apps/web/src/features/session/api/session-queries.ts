@@ -12,6 +12,8 @@ export const sessionKeys = {
 };
 
 const MAX_PLAN_RETRIES = 1;
+const MAX_DETAILS_RETRIES = 1;
+const DETAILS_STALE_TIME_MS = 30_000;
 
 export function sessionListQueryOptions() {
   return queryOptions({
@@ -24,6 +26,8 @@ export function sessionDetailsQueryOptions(id: string) {
   return queryOptions({
     queryKey: sessionKeys.details(id),
     queryFn: () => getSession(id),
+    staleTime: DETAILS_STALE_TIME_MS,
+    retry: retryUnlessClientError(MAX_DETAILS_RETRIES),
   });
 }
 

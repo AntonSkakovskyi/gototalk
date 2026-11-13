@@ -12,6 +12,7 @@ import { renderWithProviders } from '@/shared/testing/test-utils';
 import { RecentSessions } from './RecentSessions';
 
 const text = uk.session.home;
+const status = uk.session.status;
 
 const ACTIVE = testSession({
   id: '7c2e8b64-5f0a-4d1b-8e3a-2a9b4c6d0001',
@@ -95,12 +96,10 @@ describe('RecentSessions', () => {
 
     const [active, finished] = await screen.findAllByRole('listitem');
 
-    expect(within(active!).getByText(text.status.active)).toBeInTheDocument();
+    expect(within(active!).getByText(status.active)).toBeInTheDocument();
     expect(within(active!).getByText(text.continue)).toBeInTheDocument();
     expect(within(active!).getByText(/13 лист\. 2026/)).toBeInTheDocument();
-    expect(
-      within(finished!).getByText(text.status.finished),
-    ).toBeInTheDocument();
+    expect(within(finished!).getByText(status.finished)).toBeInTheDocument();
     expect(
       within(finished!).queryByText(text.continue),
     ).not.toBeInTheDocument();
