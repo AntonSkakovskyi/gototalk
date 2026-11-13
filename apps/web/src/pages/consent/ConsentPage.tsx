@@ -1,12 +1,9 @@
 import { Alert, Button, List, Loader, Stack, Text } from '@mantine/core';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import {
-  getConsentInfo,
-  grantConsent,
-  logout,
-} from '@/features/auth/api/auth-api';
+import { getConsentInfo, grantConsent } from '@/features/auth/api/auth-api';
 import { AuthLayout } from '@/features/auth/components/AuthLayout/AuthLayout';
+import { useLogout } from '@/features/auth/hooks/use-logout';
 import classes from './ConsentPage.module.scss';
 
 export function ConsentPage() {
@@ -16,7 +13,7 @@ export function ConsentPage() {
     queryFn: getConsentInfo,
   });
   const consent = useMutation({ mutationFn: grantConsent });
-  const signOut = useMutation({ mutationFn: logout });
+  const signOut = useLogout();
 
   return (
     <AuthLayout title={t('pages.consent.title')}>
@@ -70,6 +67,9 @@ export function ConsentPage() {
         <Text>{t('pages.consent.deletion')}</Text>
         {consent.isError && (
           <Alert color="red">{t('auth.errors.generic')}</Alert>
+        )}
+        {signOut.isError && (
+          <Alert color="red">{t('auth.errors.logoutFailed')}</Alert>
         )}
         <Stack gap="xs">
           <Button

@@ -6,7 +6,7 @@ import {
   type LoginRequest,
   type RegisterRequest,
 } from '@gototalk/shared';
-import { apiFetch } from '@/shared/api/http';
+import { ApiError, apiFetch } from '@/shared/api/http';
 import {
   clearSession,
   setSession,
@@ -36,9 +36,13 @@ export async function login(request: LoginRequest): Promise<void> {
 export async function logout(): Promise<void> {
   try {
     await apiFetch('/api/auth/logout', { method: 'POST', auth: false });
-  } finally {
-    clearSession();
+  } catch (error) {
+    // A 4xx is final: retrying cannot help, so the local session is cleared.
+    if (!(error instanceof ApiError) || error.status >= 500) {
+      throw error;
+    }
   }
+  clearSession();
 }
 
 export async function grantConsent(): Promise<void> {

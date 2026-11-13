@@ -105,18 +105,45 @@ describe('auth api', () => {
     expect(getSession().status).toBe('anonymous');
   });
 
-  it('[TC-01-03] logout clears the session even when the request fails', async () => {
-    setSession(authResponse());
+  it('[TC-01-03] logout keeps the session and rejects when the request fails on the network', async () => {
+    setSession(authResponse('tok'));
     fetchMock.mockRejectedValueOnce(new TypeError('Failed to fetch'));
 
     await expect(logout()).rejects.toThrow('Failed to fetch');
 
-    expect(getSession()).toEqual({
-      status: 'anonymous',
-      accessToken: null,
-      user: null,
+    expect(getSession()).toMatchObject({
+      status: 'authenticated',
+      accessToken: 'tok',
     });
   });
+
+  it('[TC-01-03] logout keeps the session and rejects on a server error', async () => {
+    setSession(authResponse('tok'));
+    fetchMock.mockResolvedValueOnce(errorResponse(500, 'INTERNAL_ERROR'));
+
+    await expect(logout()).rejects.toMatchObject({ status: 500 });
+
+    expect(getSession()).toMatchObject({
+      status: 'authenticated',
+      accessToken: 'tok',
+    });
+  });
+
+  it.each([401, 404])(
+    '[TC-01-03] logout clears the session when the server answers %i',
+    async (status) => {
+      setSession(authResponse());
+      fetchMock.mockResolvedValueOnce(errorResponse(status, 'ANY_CODE'));
+
+      await expect(logout()).resolves.toBeUndefined();
+
+      expect(getSession()).toEqual({
+        status: 'anonymous',
+        accessToken: null,
+        user: null,
+      });
+    },
+  );
 
   it('[TC-01-03] grantConsent posts with the Bearer token and updates the user', async () => {
     setSession(authResponse('tok'));

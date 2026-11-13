@@ -105,8 +105,9 @@ describe('AccountSection', () => {
     expect(getSession().status).toBe('anonymous');
   });
 
-  it('[TC-01-03] still lands on the login screen when the logout request fails', async () => {
+  it('[TC-01-03] stays signed in with an error when the logout request fails and logs out on retry', async () => {
     fetchMock.mockResolvedValueOnce(errorResponse(500, 'INTERNAL_ERROR'));
+    fetchMock.mockResolvedValueOnce(emptyResponse());
     const user = userEvent.setup();
     renderProfile();
 
@@ -114,8 +115,19 @@ describe('AccountSection', () => {
       await screen.findByRole('button', { name: account.logout }),
     );
 
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      uk.auth.errors.logoutFailed,
+    );
+    expect(getSession().status).toBe('authenticated');
+    expect(
+      screen.getByRole('heading', { level: 1, name: uk.pages.profile.title }),
+    ).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: account.logout }));
+
     expect(await loginHeading()).toBeInTheDocument();
     expect(getSession().status).toBe('anonymous');
+    expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
   it('[TC-01-02] opens a dialog that warns about irreversible removal and asks for the password', async () => {
