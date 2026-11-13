@@ -1,0 +1,40 @@
+import { Navigate, Route, Routes } from 'react-router';
+import { AppLayout } from '@/app/layout/AppLayout/AppLayout';
+import { ConsentPage } from '@/pages/consent/ConsentPage';
+import {
+  PublicOnly,
+  RequireAuth,
+  RequireConsent,
+  RequireNoConsent,
+} from '@/app/router/guards/guards';
+import { LoginPage } from '@/pages/login/LoginPage';
+import { RegisterPage } from '@/pages/register/RegisterPage';
+import { HistoryPage } from '@/pages/history/HistoryPage';
+import { ProfilePage } from '@/pages/profile/ProfilePage';
+import { SessionPage } from '@/pages/session/SessionPage';
+import { WordsPage } from '@/pages/words/WordsPage';
+
+export function App() {
+  return (
+    <Routes>
+      <Route element={<PublicOnly />}>
+        <Route path="login" element={<LoginPage />} />
+        <Route path="register" element={<RegisterPage />} />
+      </Route>
+      <Route element={<RequireAuth />}>
+        <Route element={<RequireNoConsent />}>
+          <Route path="consent" element={<ConsentPage />} />
+        </Route>
+        <Route element={<RequireConsent />}>
+          <Route element={<AppLayout />}>
+            <Route index element={<SessionPage />} />
+            <Route path="words" element={<WordsPage />} />
+            <Route path="history" element={<HistoryPage />} />
+            <Route path="profile" element={<ProfilePage />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Route>
+        </Route>
+      </Route>
+    </Routes>
+  );
+}

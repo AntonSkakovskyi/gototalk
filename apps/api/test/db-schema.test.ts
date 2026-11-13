@@ -1,5 +1,11 @@
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import pg from 'pg';
 import { afterAll, beforeAll, describe, expect, inject, it } from 'vitest';
+
+const journalPath = fileURLToPath(
+  new URL('../../../db/migrations/meta/_journal.json', import.meta.url),
+);
 
 const EXPECTED_TABLES = [
   'cards',
@@ -55,7 +61,7 @@ describe('DB schema after migrations', () => {
     const { rows } = await pool.query<{ table_name: string }>(
       `SELECT table_name FROM information_schema.tables
        WHERE table_schema = 'public' AND table_type = 'BASE TABLE'
-       ORDER BY table_name`,
+       ORDER BY table_name COLLATE "C"`,
     );
 
     expect(rows.map((row) => row.table_name)).toEqual(
@@ -69,7 +75,7 @@ describe('DB schema after migrations', () => {
       `SELECT c.conrelid::regclass::text || '.' || c.conname AS check_name
        FROM pg_constraint c
        WHERE c.contype = 'c' AND c.connamespace = 'public'::regnamespace
-       ORDER BY check_name`,
+       ORDER BY (c.conrelid::regclass::text || '.' || c.conname) COLLATE "C"`,
     );
 
     expect(rows.map((row) => row.check_name)).toEqual(
@@ -88,11 +94,15 @@ describe('DB schema after migrations', () => {
     expect(rows[0]?.definition).toContain("'active'");
   });
 
-  it('[TC-00-01] drizzle.__drizzle_migrations has 3 rows', async () => {
+  it('[TC-00-01] drizzle.__drizzle_migrations has one row per journal entry', async () => {
+    const journal = JSON.parse(readFileSync(journalPath, 'utf8')) as {
+      entries: unknown[];
+    };
     const { rows } = await pool.query<{ count: string }>(
       'SELECT count(*) AS count FROM drizzle.__drizzle_migrations',
     );
 
-    expect(Number(rows[0]?.count)).toBe(3);
+    expect(journal.entries.length).toBeGreaterThan(0);
+    expect(Number(rows[0]?.count)).toBe(journal.entries.length);
   });
 });

@@ -5,6 +5,10 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import pg from 'pg';
 import type { TestProject } from 'vitest/node';
+import {
+  assertConnectedToTestDatabase,
+  assertTestDatabaseUrl,
+} from './support/test-db.js';
 
 declare module 'vitest' {
   export interface ProvidedContext {
@@ -43,8 +47,12 @@ export default async function setup(project: TestProject): Promise<void> {
     );
   }
 
+  assertTestDatabaseUrl(url);
+
   const pool = new pg.Pool({ connectionString: url });
   try {
+    // pg can take the database from other connection parameters, so the URL check alone is not enough
+    await assertConnectedToTestDatabase(pool);
     await migrate(drizzle({ client: pool }), { migrationsFolder });
   } finally {
     await pool.end();

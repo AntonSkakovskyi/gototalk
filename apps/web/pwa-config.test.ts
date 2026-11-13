@@ -3,7 +3,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import viteConfig from './vite.config.js';
 import { manifest, pwaOptions, THEME_COLOR } from './pwa-config.js';
-import { theme } from './src/theme.js';
+import { theme } from '@/app/theme/theme';
 
 const root = import.meta.dirname;
 

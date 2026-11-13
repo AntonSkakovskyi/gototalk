@@ -11,7 +11,7 @@ if (existsSync(envPath)) {
 // Migrations are hand-written SQL (drizzle-kit generate --custom); the TS schema is not the source of truth.
 export default defineConfig({
   dialect: 'postgresql',
-  schema: './src/db/schema.ts',
+  schema: './src/core/db/schema.ts',
   out: '../../db/migrations',
   dbCredentials: {
     url: process.env['DATABASE_URL'] ?? '',

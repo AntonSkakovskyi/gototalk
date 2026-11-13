@@ -1,6 +1,7 @@
 {
   "permissions": {
     "allow": [
+      "Bash(git mv:*)",
       "Bash(pnpm install)",
       "Bash(pnpm add:*)",
       "Bash(pnpm dev:*)",
@@ -26,8 +27,8 @@
       "Bash(podman compose exec:*)"
     ],
     "deny": [
-      "Read(./.env)",
-      "Read(./.env.*)",
+      "Read(./.env.local)",
+      "Read(./.env.*.local)",
       "Read(./**/.env)",
       "Bash(git push:*)",
       "Bash(npx drizzle-kit push:*)",

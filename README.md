@@ -14,7 +14,7 @@ A PWA speaking trainer for Ukrainian-speaking learners of English (level A2 and 
 
 ```powershell
 Copy-Item .env.example .env
-# Fill in every variable in .env that has no value in .env.example (POSTGRES_*, DATABASE_URL, TEST_DATABASE_URL)
+# Fill in every variable in .env that has no value in .env.example (POSTGRES_*, DATABASE_URL, TEST_DATABASE_URL, JWT_ACCESS_SECRET)
 pnpm install
 podman compose up -d
 pnpm db:migrate
@@ -37,6 +37,14 @@ pnpm test:e2e
 
 - `pnpm test` includes the API integration tests, so `podman compose up -d` must be running and `TEST_DATABASE_URL` must be set; Vitest applies migrations to the test database itself (globalSetup), while `pnpm db:migrate` is needed for the dev database.
 - `pnpm test:e2e` (Playwright, mobile viewport 360×800) needs the database up: `/api/health` checks the connection to it. Playwright starts the apps itself (or reuses an already running `pnpm dev`). Locally the tests run in the installed Edge; another channel can be set with the `PW_CHANNEL` variable. CI uses Playwright Chromium: `pnpm exec playwright install --with-deps chromium`.
+
+## Authentication
+
+Email and password sign-up (no email confirmation). The API issues a 15-minute access JWT, kept only in the memory of the frontend, and a 30-day refresh token in the `gtt_refresh` cookie (HttpOnly, Secure, SameSite=Strict, `Path=/api/auth`); only its SHA-256 hash is stored in `refresh_tokens`. A refresh rotates the token. Presenting a rotated token again within 60 seconds (a reload or a second tab while the new cookie was lost) is not treated as theft: it yields another new token and revokes nothing. A later replay deletes all refresh tokens of that user, and logout deletes the presented token. After the first sign-in the consent screen must be accepted before any recording (`users.consent_at`). The account can be deleted from the profile (password required); the cascade removes the user's data.
+
+- `JWT_ACCESS_SECRET` is required (at least 32 characters). Generate one: `node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"`.
+- `pnpm db:seed` creates the demo user `demo@gototalk.local` with the password `demo-password-1` (local development only).
+- `pnpm test:e2e` runs against the dev database and removes the accounts it creates (`e2e-<uuid>@example.test`); after a killed run, remove leftovers with `DELETE FROM users WHERE email LIKE 'e2e-%@example.test'`.
 
 ## Android and PWA
 
@@ -62,9 +70,27 @@ e2e/             Playwright tests
 docs/            product, technical decisions, specifications
 ```
 
+Web (`apps/web/src`) is split into layers that import only downward: `app → pages → features → shared`. Cross-folder imports use the `@/` alias (→ `apps/web/src`); ESLint (`eslint-plugin-import-x`) enforces the boundaries.
+
+```
+app/       App, layout (AppLayout, BottomNav), providers (AuthBootstrap), router guards, Mantine theme
+pages/     one folder per route: login, register, consent, session, words, history, profile
+features/  one folder per domain, e.g. auth/{api,lib,components}
+shared/    api (HTTP client, refresh), session (client state), i18n, testing
+```
+
+Api (`apps/api/src`) keeps infrastructure apart from domain modules; imports are relative with a `.js` suffix (ESM). `core`, `common` and `integrations` never import `modules`, which ESLint enforces.
+
+```
+core/          config, db (schema, relations), logger, errors, health
+common/        decorators and pipes shared by several modules and core (@Public, ZodBodyPipe)
+integrations/  ports with fake adapters per capability (speech-recognition, language-model); provider SDKs only here
+modules/       one folder per domain: auth (guards, decorators, persistence, lib), me, profile, session, dialogue, analysis
+```
+
 ## Database and migrations
 
-The source of truth is the SQL migrations in `db/migrations` (drizzle-kit, custom migrations). They are written by hand and applied with `pnpm db:migrate`; afterwards `pnpm db:pull` updates the TS schema `apps/api/src/db/schema.ts` (do not edit it manually). Forbidden: `drizzle-kit push`, editing already applied migrations, `podman compose down -v`. The full procedure is the `/db-migration` skill (`.claude/skills/db-migration/SKILL.md`).
+The source of truth is the SQL migrations in `db/migrations` (drizzle-kit, custom migrations). They are written by hand and applied with `pnpm db:migrate`; afterwards `pnpm db:pull` updates the TS schema `apps/api/src/core/db/schema.ts` (do not edit it manually). Forbidden: `drizzle-kit push`, editing already applied migrations, `podman compose down -v`. The full procedure is the `/db-migration` skill (`.claude/skills/db-migration/SKILL.md`).
 
 ## Documentation
 

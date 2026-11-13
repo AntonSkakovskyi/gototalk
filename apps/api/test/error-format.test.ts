@@ -1,4 +1,3 @@
-import 'reflect-metadata';
 import {
   Body,
   Controller,
@@ -7,13 +6,12 @@ import {
   ServiceUnavailableException,
 } from '@nestjs/common';
 import type { INestApplication } from '@nestjs/common';
-import { Test } from '@nestjs/testing';
 import { ErrorResponseSchema } from '@gototalk/shared';
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { z } from 'zod';
-import { AppModule } from '../src/app.module.js';
-import { configureApp } from '../src/configure-app.js';
+import { Public } from '../src/common/public.decorator.js';
+import { createTestApp } from './support/test-app.js';
 
 // Test-only controller: production code has no routes that throw these errors.
 const BodySchema = z.object({
@@ -21,6 +19,7 @@ const BodySchema = z.object({
   count: z.number().int(),
 });
 
+@Public()
 @Controller('test-errors')
 class TestErrorsController {
   @Post('validate')
@@ -40,24 +39,11 @@ class TestErrorsController {
   }
 }
 
-const env = {
-  NODE_ENV: 'production',
-  DATABASE_URL: 'postgres://user:pass@localhost:5432/gototalk_test',
-  PORT: '3456',
-  LOG_LEVEL: 'silent',
-};
-
 describe('error format and Swagger', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({
-      imports: [AppModule.register({ env })],
-      controllers: [TestErrorsController],
-    }).compile();
-    app = moduleRef.createNestApplication();
-    configureApp(app);
-    await app.init();
+    app = await createTestApp({ controllers: [TestErrorsController] });
   });
 
   afterAll(async () => {
@@ -78,14 +64,15 @@ describe('error format and Swagger', () => {
   it('[TC-00-07] invalid body: 400 VALIDATION_ERROR listing fields without values', async () => {
     const res = await request(app.getHttpServer())
       .post('/api/test-errors/validate')
-      .send({ title: '', count: 'leaky-value' });
+      .send({ title: '', count: 'SECRET-VALUE-xyz' });
 
     expect(res.status).toBe(400);
     const { error } = ErrorResponseSchema.parse(res.body);
     expect(error.code).toBe('VALIDATION_ERROR');
-    expect(error.message).toContain('title');
-    expect(error.message).toContain('count');
-    expect(error.message).not.toContain('leaky-value');
+    expect(error.message).toBe(
+      'Validation failed: title: too_small; count: invalid_type',
+    );
+    expect(JSON.stringify(res.body)).not.toContain('SECRET-VALUE-xyz');
   });
 
   it('[TC-00-07] valid body passes without error', async () => {

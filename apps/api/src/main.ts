@@ -4,7 +4,7 @@ import { NestFactory } from '@nestjs/core';
 import { Logger } from 'nestjs-pino';
 import { AppModule } from './app.module.js';
 import { configureApp } from './configure-app.js';
-import type { Env } from './config/env.schema.js';
+import type { Env } from './core/config/env.schema.js';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule.register(), {

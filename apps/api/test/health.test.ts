@@ -1,32 +1,15 @@
-import 'reflect-metadata';
 import type { INestApplication } from '@nestjs/common';
-import { Test } from '@nestjs/testing';
 import { ErrorResponseSchema, HealthResponseSchema } from '@gototalk/shared';
 import request from 'supertest';
-import { afterAll, beforeAll, describe, expect, inject, it } from 'vitest';
-import { AppModule } from '../src/app.module.js';
-import { configureApp } from '../src/configure-app.js';
-import { DRIZZLE } from '../src/db/db.tokens.js';
-
-function buildEnv(): Record<string, string> {
-  return {
-    NODE_ENV: 'production',
-    DATABASE_URL: inject('testDatabaseUrl'),
-    PORT: '3456',
-    LOG_LEVEL: 'silent',
-  };
-}
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { DRIZZLE } from '../src/core/db/db.tokens.js';
+import { createTestApp } from './support/test-app.js';
 
 describe('GET /api/health', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({
-      imports: [AppModule.register({ env: buildEnv() })],
-    }).compile();
-    app = moduleRef.createNestApplication();
-    configureApp(app);
-    await app.init();
+    app = await createTestApp();
   });
 
   afterAll(async () => {
@@ -64,17 +47,14 @@ describe('GET /api/health, DB unavailable', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({
-      imports: [AppModule.register({ env: buildEnv() })],
-    })
-      .overrideProvider(DRIZZLE)
-      .useValue({
-        execute: () => Promise.reject(new Error(secret)),
-      })
-      .compile();
-    app = moduleRef.createNestApplication();
-    configureApp(app);
-    await app.init();
+    app = await createTestApp({
+      providers: [
+        {
+          token: DRIZZLE,
+          useValue: { execute: () => Promise.reject(new Error(secret)) },
+        },
+      ],
+    });
   });
 
   afterAll(async () => {
@@ -96,17 +76,14 @@ describe('GET /api/health, DB not responding', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({
-      imports: [AppModule.register({ env: buildEnv() })],
-    })
-      .overrideProvider(DRIZZLE)
-      .useValue({
-        execute: () => new Promise(() => undefined),
-      })
-      .compile();
-    app = moduleRef.createNestApplication();
-    configureApp(app);
-    await app.init();
+    app = await createTestApp({
+      providers: [
+        {
+          token: DRIZZLE,
+          useValue: { execute: () => new Promise(() => undefined) },
+        },
+      ],
+    });
   });
 
   afterAll(async () => {

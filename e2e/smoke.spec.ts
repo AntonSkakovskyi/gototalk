@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './support/fixtures.js';
 
 const TABS = [
   { label: 'Слова', path: '/words' },
@@ -9,7 +9,7 @@ const TABS = [
 
 test.describe('[TC-00-02] smoke: mobile layout and health', () => {
   test('[TC-00-02] bottom navigation in Ukrainian, click changes the URL', async ({
-    page,
+    signedInPage: { page },
   }) => {
     await page.goto('/');
     const nav = page.getByRole('navigation', { name: 'Основна навігація' });
@@ -28,7 +28,7 @@ test.describe('[TC-00-02] smoke: mobile layout and health', () => {
   });
 
   test('[TC-00-02] no horizontal scroll, navigation at the bottom of the screen', async ({
-    page,
+    signedInPage: { page },
   }) => {
     await page.goto('/');
     const nav = page.getByRole('navigation', { name: 'Основна навігація' });

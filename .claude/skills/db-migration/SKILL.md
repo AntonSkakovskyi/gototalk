@@ -16,7 +16,7 @@ description: Procedure for any change to the GoToTalk PostgreSQL schema (new tab
    - не змінюй і не видаляй уже застосовані міграції.
 4. Перевір на тестовій БД `gototalk_test`: застосуй усі міграції з нуля — без помилок.
 5. Застосуй до dev-БД: `pnpm db:migrate`.
-6. Онови TS-схему: `pnpm db:pull`. Переглянь diff `apps/api/src/db/schema.ts`; не правити його вручну.
+6. Онови TS-схему: `pnpm db:pull`. Переглянь diff `apps/api/src/core/db/schema.ts`; не правити його вручну.
 7. Онови Zod-схеми в `packages/shared`, якщо змінились контракти.
 8. Онови таблицю змін у `docs/tech-decisions.md` (розділ 3).
 9. Додай інтеграційний тест, який перевіряє нове обмеження (наприклад, вставка невалідного значення падає).

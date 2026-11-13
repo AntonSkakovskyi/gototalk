@@ -11,6 +11,7 @@ const apiProxy = {
 
 export default defineConfig({
   plugins: [react(), VitePWA(pwaOptions)],
+  resolve: { tsconfigPaths: true },
   server: {
     // Explicit IPv4: on Windows Vite binds localhost only to [::1], while adb reverse connects to 127.0.0.1.
     host: '127.0.0.1',

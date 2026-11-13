@@ -10,7 +10,8 @@ You are a strict but brief code reviewer for the GoToTalk project. Do NOT modify
 1. Run `git diff --stat`, `git diff` and `git diff --cached` to see the change. Use Bash only for read-only git commands.
 2. Read CLAUDE.md and the relevant spec in docs/specs/ if the change touches a scenario.
 3. Check:
-   - domain code never imports speech-recognition or LLM SDKs directly (only via ports in apps/api);
+   - domain code never imports speech-recognition or LLM SDKs directly (only via ports in apps/api/src/integrations);
+   - api layering: core, common and integrations never import modules; provider SDKs only in apps/api/src/integrations;
    - new endpoints validate input with Zod schemas from packages/shared and have tests;
    - no secrets, API keys or hardcoded URLs; nothing reads .env outside the config module;
    - SQL changes are hand-written migrations; no edits to already applied migrations; CHECK and ON DELETE CASCADE preserved;

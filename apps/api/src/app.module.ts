@@ -2,17 +2,19 @@ import { ConfigService } from '@nestjs/config';
 import { Module } from '@nestjs/common';
 import type { DynamicModule } from '@nestjs/common';
 import { LoggerModule } from 'nestjs-pino';
-import { AppConfigModule } from './config/app-config.module.js';
-import type { AppConfigOptions } from './config/app-config.module.js';
-import type { Env } from './config/env.schema.js';
-import { AnalysisModule } from './analysis/analysis.module.js';
-import { DbModule } from './db/db.module.js';
-import { DialogueModule } from './dialogue/dialogue.module.js';
-import { HealthModule } from './health/health.module.js';
-import { buildPinoHttpOptions } from './logger/pino-options.js';
-import { ProfileModule } from './profile/profile.module.js';
-import { ProvidersModule } from './providers/providers.module.js';
-import { SessionModule } from './session/session.module.js';
+import { AppConfigModule } from './core/config/app-config.module.js';
+import type { AppConfigOptions } from './core/config/app-config.module.js';
+import type { Env } from './core/config/env.schema.js';
+import { AnalysisModule } from './modules/analysis/analysis.module.js';
+import { AuthModule } from './modules/auth/auth.module.js';
+import { DbModule } from './core/db/db.module.js';
+import { DialogueModule } from './modules/dialogue/dialogue.module.js';
+import { HealthModule } from './core/health/health.module.js';
+import { MeModule } from './modules/me/me.module.js';
+import { buildPinoHttpOptions } from './core/logger/pino-options.js';
+import { ProfileModule } from './modules/profile/profile.module.js';
+import { ProvidersModule } from './integrations/providers.module.js';
+import { SessionModule } from './modules/session/session.module.js';
 
 @Module({})
 export class AppModule {
@@ -22,6 +24,8 @@ export class AppModule {
       imports: [
         AppConfigModule.forRoot(options),
         DbModule,
+        AuthModule,
+        MeModule,
         HealthModule,
         ProvidersModule,
         ProfileModule,

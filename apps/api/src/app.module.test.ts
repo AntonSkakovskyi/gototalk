@@ -2,12 +2,13 @@ import 'reflect-metadata';
 import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import { describe, expect, it } from 'vitest';
-import type { Env } from './config/env.schema.js';
+import type { Env } from './core/config/env.schema.js';
 import { AppModule } from './app.module.js';
 
 const env = {
   NODE_ENV: 'production',
   DATABASE_URL: 'postgres://user:pass@localhost:5432/gototalk_test',
+  JWT_ACCESS_SECRET: 'test-only-access-secret-0123456789abcdef',
   PORT: '3456',
   LOG_LEVEL: 'silent',
 };

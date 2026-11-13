@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom/vitest';
-import { vi } from 'vitest';
+import { afterEach, vi } from 'vitest';
+import { resetSessionStore } from '@/shared/session/session-store';
 
 // jsdom lacks browser APIs that Mantine needs.
 Object.defineProperty(window, 'matchMedia', {
@@ -24,3 +25,7 @@ class ResizeObserverMock {
 window.ResizeObserver = ResizeObserverMock;
 
 window.HTMLElement.prototype.scrollIntoView = () => {};
+
+afterEach(() => {
+  resetSessionStore();
+});
