@@ -1,4 +1,4 @@
--- Demo data for development. Apply after all migrations (the plan column comes from 0003); safe to re-run.
+-- Demo data for development. Apply after all migrations (plan comes from 0003, better_phrasings from 0004); safe to re-run.
 -- Re-running resets the demo user's profile and goals to the seeded values, so older seeded databases converge to preset scene codes.
 -- Demo user: demo@gototalk.local, password demo-password-1 (local development only).
 -- Mistake categories come from mistake_categories (0002); mistake positions are offsets in text_verbatim.
@@ -37,12 +37,14 @@ INSERT INTO sessions (id, user_id, topic, topic_source, feedback_mode, status, s
    '{"questions":["Tell me about your last project at work.","Which part of the project was the most difficult for you?","How did your team share the work?","What did you learn from the project?","What would you do differently next time?"]}'::jsonb)
 ON CONFLICT (id) DO UPDATE SET plan = EXCLUDED.plan;
 
-INSERT INTO utterances (id, session_id, seq, role, text_verbatim, text_clean, analysis_status, analysis_prompt_version, analysis_model, analyzed_at, created_at) VALUES
-  ('00000000-0000-4000-8000-000000000201', '00000000-0000-4000-8000-000000000301', 1, 'assistant', 'Tell me about your last project at work.', NULL, 'skipped', NULL, NULL, NULL, now() - interval '1 day' + interval '1 minutes'),
-  ('00000000-0000-4000-8000-000000000202', '00000000-0000-4000-8000-000000000301', 2, 'user', 'Um, yesterday I go to the office and, uh, I have a meeting with my team. I very like my job.', 'Yesterday I go to the office and I have a meeting with my team. I very like my job.', 'done', 'fake-v1', 'fake', now() - interval '1 day', now() - interval '1 day' + interval '2 minutes'),
-  ('00000000-0000-4000-8000-000000000203', '00000000-0000-4000-8000-000000000301', 3, 'assistant', 'Which part of the project was the most difficult for you?', NULL, 'skipped', NULL, NULL, NULL, now() - interval '1 day' + interval '3 minutes'),
-  ('00000000-0000-4000-8000-000000000204', '00000000-0000-4000-8000-000000000301', 4, 'user', 'Well, I work with small team since 2 years. It depends of the deadline.', 'I work with small team since 2 years. It depends of the deadline.', 'done', 'fake-v1', 'fake', now() - interval '1 day', now() - interval '1 day' + interval '4 minutes')
-ON CONFLICT DO NOTHING;
+INSERT INTO utterances (id, session_id, seq, role, text_verbatim, text_clean, analysis_status, analysis_prompt_version, analysis_model, analyzed_at, better_phrasings, created_at) VALUES
+  ('00000000-0000-4000-8000-000000000201', '00000000-0000-4000-8000-000000000301', 1, 'assistant', 'Tell me about your last project at work.', NULL, 'skipped', NULL, NULL, NULL, '[]'::jsonb, now() - interval '1 day' + interval '1 minutes'),
+  ('00000000-0000-4000-8000-000000000202', '00000000-0000-4000-8000-000000000301', 2, 'user', 'Um, yesterday I go to the office and, uh, I have a meeting with my team. I very like my job.', 'Yesterday I go to the office and I have a meeting with my team. I very like my job.', 'done', 'error-analysis.v1', 'fake', now() - interval '1 day', '[{"original":"yesterday I go to the office","better":"yesterday I went to the office"},{"original":"I very like my job","better":"I really like my job"}]'::jsonb, now() - interval '1 day' + interval '2 minutes'),
+  ('00000000-0000-4000-8000-000000000203', '00000000-0000-4000-8000-000000000301', 3, 'assistant', 'Which part of the project was the most difficult for you?', NULL, 'skipped', NULL, NULL, NULL, '[]'::jsonb, now() - interval '1 day' + interval '3 minutes'),
+  ('00000000-0000-4000-8000-000000000204', '00000000-0000-4000-8000-000000000301', 4, 'user', 'Well, I work with small team since 2 years. It depends of the deadline.', 'I work with small team since 2 years. It depends of the deadline.', 'done', 'error-analysis.v1', 'fake', now() - interval '1 day', '[{"original":"I work with small team since 2 years","better":"I have worked with a small team for 2 years"}]'::jsonb, now() - interval '1 day' + interval '4 minutes')
+ON CONFLICT (id) DO UPDATE SET
+  analysis_prompt_version = EXCLUDED.analysis_prompt_version,
+  better_phrasings = EXCLUDED.better_phrasings;
 
 INSERT INTO mistakes (id, utterance_id, pattern_id, category, original, suggestion, explanation_en, translation_uk, start_pos, end_pos) VALUES
   ('00000000-0000-4000-8000-000000000401', '00000000-0000-4000-8000-000000000202', '00000000-0000-4000-8000-000000000302', 'verb_tense', 'I go', 'I went', 'Use the past simple for finished actions with a past time marker.', 'Для завершених дій з маркером минулого вживається Past Simple.', 14, 18),

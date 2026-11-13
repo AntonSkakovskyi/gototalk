@@ -61,6 +61,14 @@ describe('GET /api/sessions/:id analysis data', () => {
       'I go to shop yesterday',
       'done',
     );
+    const better = [
+      { original: 'I go to shop', better: 'I went to the shop' },
+      { original: 'yesterday', better: 'yesterday afternoon' },
+    ];
+    await pool.query(
+      'UPDATE utterances SET better_phrasings = $2::jsonb WHERE id = $1',
+      [userUtteranceId, JSON.stringify(better)],
+    );
     await pool.query(
       `INSERT INTO mistakes (utterance_id, category, original, suggestion, explanation_en, translation_uk, start_pos, end_pos, is_false)
        VALUES ($1, 'articles', 'shop', 'the shop', 'Add an article.', 'Додайте артикль.', 8, 12, true),
@@ -77,7 +85,7 @@ describe('GET /api/sessions/:id analysis data', () => {
       better: [],
     });
     expect(user?.analysisStatus).toBe('done');
-    expect(user?.better).toEqual([]);
+    expect(user?.better).toEqual(better);
     expect(user?.mistakes).toEqual([
       {
         id: expect.any(String),

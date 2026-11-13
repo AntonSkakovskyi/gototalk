@@ -3,6 +3,7 @@ import { and, asc, desc, eq, inArray, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import {
   AnalysisStatusSchema,
+  BetterPhrasingSchema,
   FeedbackModeSchema,
   MistakeCategoryCodeSchema,
   SessionStatusSchema,
@@ -59,15 +60,19 @@ function toMistakeView(row: MistakeRow): MistakeView | null {
   };
 }
 
+const BetterPhrasingsSchema = z.array(BetterPhrasingSchema);
+
 function toUtterance(row: UtteranceRow, mistakeRows: MistakeRow[]): Utterance {
+  const role = UtteranceRoleSchema.parse(row.role);
   return {
     id: row.id,
     seq: row.seq,
-    role: UtteranceRoleSchema.parse(row.role),
+    role,
     text: row.textVerbatim,
     analysisStatus: AnalysisStatusSchema.parse(row.analysisStatus),
     mistakes: mistakeRows.flatMap((mistake) => toMistakeView(mistake) ?? []),
-    better: [],
+    better:
+      role === 'user' ? BetterPhrasingsSchema.parse(row.betterPhrasings) : [],
   };
 }
 

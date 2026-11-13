@@ -96,11 +96,11 @@ export const hintsRelations = relations(hints, ({ one }) => ({
 
 export const utterancesRelations = relations(utterances, ({ one, many }) => ({
   hints: many(hints),
-  mistakes: many(mistakes),
   session: one(sessions, {
     fields: [utterances.sessionId],
     references: [sessions.id],
   }),
+  mistakes: many(mistakes),
 }));
 
 export const wordsRelations = relations(words, ({ one, many }) => ({
