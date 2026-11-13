@@ -72,23 +72,15 @@ describe('FakeLanguageModel', () => {
   });
 
   it('[TC-00-05] planSession, nextTurn, hint, summarizeSession: deterministic and pass Zod', async () => {
-    const plan = await llm.planSession({
+    const planInput = {
       level: 'A2',
       scenes: ['work'],
       goals: [],
       patterns: [],
       previousTopics: [],
-    });
-    expect(
-      await llm.planSession({
-        level: 'A2',
-        scenes: ['work'],
-        goals: [],
-        patterns: [],
-        previousTopics: [],
-      }),
-    ).toEqual(plan);
-    expect(PlanSchema.parse(plan)).toEqual(plan);
+    };
+    const plan = PlanSchema.parse(await llm.planSession(planInput));
+    expect(await llm.planSession(planInput)).toEqual(plan);
 
     const turnInput = { plan, history: [] };
     const turn = await llm.nextTurn(turnInput);
@@ -116,21 +108,25 @@ describe('FakeLanguageModel', () => {
   });
 
   it('[TC-00-05] a call does not affect later answers (mutating a result does not leak)', async () => {
-    const first = await llm.planSession({
-      level: 'A2',
-      scenes: [],
-      goals: [],
-      patterns: [],
-      previousTopics: [],
-    });
+    const first = PlanSchema.parse(
+      await llm.planSession({
+        level: 'A2',
+        scenes: [],
+        goals: [],
+        patterns: [],
+        previousTopics: [],
+      }),
+    );
     first.questions[0] = 'mutated';
-    const second = await llm.planSession({
-      level: 'A2',
-      scenes: [],
-      goals: [],
-      patterns: [],
-      previousTopics: [],
-    });
+    const second = PlanSchema.parse(
+      await llm.planSession({
+        level: 'A2',
+        scenes: [],
+        goals: [],
+        patterns: [],
+        previousTopics: [],
+      }),
+    );
     expect(second.questions[0]).not.toBe('mutated');
   });
 });

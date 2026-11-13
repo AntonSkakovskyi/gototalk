@@ -40,7 +40,8 @@ export interface SummarizeSessionInput {
 
 export interface LanguageModelPort {
   analyzeUtterance(input: AnalyzeUtteranceInput): Promise<AnalysisResult>;
-  planSession(input: PlanSessionInput): Promise<Plan>;
+  /** Raw model response: callers must validate it with PlanSchema. */
+  planSession(input: PlanSessionInput): Promise<unknown>;
   nextTurn(input: NextTurnInput): Promise<Turn>;
   hint(request: HintRequest): Promise<Hint>;
   summarizeSession(input: SummarizeSessionInput): Promise<Summary>;

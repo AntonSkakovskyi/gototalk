@@ -12,7 +12,6 @@
 | Лічильник журналу міграцій у `db-schema.test.ts`: замість `count === 3` порівнювати з кількістю `entries` у `_journal.json` | 00-09, на потім | 01 (задача 01-02) |
 | `COLLATE "C"` в `ORDER BY` тесту `db-schema.test.ts` | 00-09, на потім | 01 (задача 01-02) |
 | Кириличні коментарі в `.env.example` перекласти англійською | Відкладене після PR #1 | 01 (задача 01-03) |
-| Fake-поведінка за `docs/specs/stubs.md`: `planSession` | 00 «Fake-адаптери – мінімум» | 03 |
 | Fake-поведінка за `docs/specs/stubs.md`: `transcribe` (разом із `reset()` лічильника, який stubs.md припускає), `analyzeUtterance`, `nextTurn`, `hint` | 00 «Fake-адаптери – мінімум» | 04 |
 | Fake-поведінка за `docs/specs/stubs.md`: `summarizeSession` | 00 «Fake-адаптери – мінімум» | 05 |
 | Підпис `hint` (union за `kind`) відрізняється від заголовків `stubs.md`: звірити й оновити `stubs.md` (звірити також специфікації 03 і 05) | 00-11, відхилення | 04 |
