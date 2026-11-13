@@ -248,6 +248,7 @@ describe('Me and consent endpoints', () => {
         'POST /api/me/consent',
         'GET /api/profile',
         'PUT /api/profile',
+        'GET /api/profile/learner-model',
         'GET /api/goals',
         'POST /api/goals',
         'PATCH /api/goals/{id}',

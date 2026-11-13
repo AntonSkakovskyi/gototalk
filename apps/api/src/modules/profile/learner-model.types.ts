@@ -15,3 +15,8 @@ export interface ApplyAnalysisInput {
   textClean: string;
   analysis: AnalysisResult;
 }
+
+export interface LearnerModelSnapshot {
+  weakAreas: WeakArea[];
+  vocabulary: VocabularyStats;
+}
