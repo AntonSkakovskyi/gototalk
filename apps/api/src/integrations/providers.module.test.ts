@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { AnalysisResultSchema } from '@gototalk/shared';
+import { AnalysisResultSchema } from './testing/analysis-result-schema.js';
 import { Test } from '@nestjs/testing';
 import { describe, expect, it } from 'vitest';
 import { AppModule } from '../app.module.js';

@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
   AnalysisEnvelopeSchema,
-  AnalysisResultSchema,
   BetterPhrasingSchema,
   HintSchema,
   MistakeSchema,
@@ -36,13 +35,15 @@ describe('LLM/STT result schemas', () => {
     );
   });
 
-  it('[TC-00-05] AnalysisResultSchema: mistakes and better phrasings', () => {
-    const value = {
-      mistakes: [mistake],
-      better: [{ original: 'I go', better: 'I went' }],
-    };
-    expect(AnalysisResultSchema.parse(value)).toEqual(value);
-    expect(AnalysisResultSchema.safeParse({ mistakes: [] }).success).toBe(
+  it('[TC-00-05] AnalysisEnvelopeSchema and BetterPhrasingSchema: item shapes', () => {
+    const better = { original: 'I go', better: 'I went' };
+    expect(
+      AnalysisEnvelopeSchema.parse({ mistakes: [mistake], better: [better] }),
+    ).toEqual({ mistakes: [mistake], better: [better] });
+    expect(AnalysisEnvelopeSchema.safeParse({ mistakes: [] }).success).toBe(
+      false,
+    );
+    expect(BetterPhrasingSchema.safeParse({ original: 'I go' }).success).toBe(
       false,
     );
   });

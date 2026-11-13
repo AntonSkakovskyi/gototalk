@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { AnalysisResultSchema } from './testing/analysis-result-schema.js';
 import {
-  AnalysisResultSchema,
   HintSchema,
   PlanSchema,
   SummarySchema,

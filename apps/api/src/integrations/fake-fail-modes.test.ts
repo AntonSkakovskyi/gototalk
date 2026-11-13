@@ -1,4 +1,5 @@
-import { AnalysisResultSchema, PlanSchema, TurnSchema } from '@gototalk/shared';
+import { PlanSchema, TurnSchema } from '@gototalk/shared';
+import { AnalysisResultSchema } from './testing/analysis-result-schema.js';
 import { describe, expect, it } from 'vitest';
 import { FakeLanguageModel } from './language-model/fake-language-model.js';
 import { LanguageModelUnavailableError } from './language-model/language-model.errors.js';
@@ -33,7 +34,9 @@ function everyMethod(llm: LanguageModelPort): Promise<unknown>[] {
 
 describe('FakeSpeechRecognition fail modes', () => {
   it('[TC-04-08] unavailable: transcribe rejects with SpeechRecognitionUnavailableError', async () => {
-    const stt: SpeechRecognitionPort = new FakeSpeechRecognition({ failMode: 'unavailable' });
+    const stt: SpeechRecognitionPort = new FakeSpeechRecognition({
+      failMode: 'unavailable',
+    });
 
     const error: unknown = await stt
       .transcribe(audio, 'audio/webm')
@@ -54,7 +57,9 @@ describe('FakeSpeechRecognition fail modes', () => {
 
 describe('FakeLanguageModel fail modes', () => {
   it('[TC-04-08] unavailable: every method rejects with LanguageModelUnavailableError', async () => {
-    const llm: LanguageModelPort = new FakeLanguageModel({ failMode: 'unavailable' });
+    const llm: LanguageModelPort = new FakeLanguageModel({
+      failMode: 'unavailable',
+    });
 
     const outcomes = await Promise.allSettled(everyMethod(llm));
 
@@ -75,7 +80,9 @@ describe('FakeLanguageModel fail modes', () => {
   });
 
   it('[TC-04-08] invalid_json: analyzeUtterance returns an output the analysis schema rejects', async () => {
-    const llm: LanguageModelPort = new FakeLanguageModel({ failMode: 'invalid_json' });
+    const llm: LanguageModelPort = new FakeLanguageModel({
+      failMode: 'invalid_json',
+    });
 
     const { output, promptVersion, model } = await llm.analyzeUtterance({
       text: TEXT,
@@ -87,7 +94,9 @@ describe('FakeLanguageModel fail modes', () => {
   });
 
   it('[TC-04-08] invalid_json: the other methods work, so a failed analysis can be followed by a next question', async () => {
-    const llm: LanguageModelPort = new FakeLanguageModel({ failMode: 'invalid_json' });
+    const llm: LanguageModelPort = new FakeLanguageModel({
+      failMode: 'invalid_json',
+    });
 
     expect(PlanSchema.safeParse(await llm.planSession(planInput)).success).toBe(
       true,

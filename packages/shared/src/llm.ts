@@ -56,13 +56,6 @@ export const BetterPhrasingSchema = z.object({
 
 export type BetterPhrasing = z.infer<typeof BetterPhrasingSchema>;
 
-export const AnalysisResultSchema = z.object({
-  mistakes: z.array(MistakeSchema),
-  better: z.array(BetterPhrasingSchema).max(2),
-});
-
-export type AnalysisResult = z.infer<typeof AnalysisResultSchema>;
-
 /** Shape-only envelope: the server validates each item separately and drops the invalid ones. */
 export const AnalysisEnvelopeSchema = z.object({
   mistakes: z.array(z.unknown()).max(ANALYSIS_MAX_MISTAKES),

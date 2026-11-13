@@ -61,21 +61,6 @@ describe('Core service skeletons', () => {
     await expect(service.applyAnalysis(input)).rejects.toThrow(/04-dialog/);
   });
 
-  it('[TC-00-04] MistakeAnalyzerService: analyzeUtterance and groupIntoPatterns point to spec 04', async () => {
-    const service = moduleRef.get(MistakeAnalyzerService);
-
-    await expect(service.analyzeUtterance('I go there.')).rejects.toThrow(
-      NotImplementedException,
-    );
-    await expect(service.analyzeUtterance('I go there.')).rejects.toThrow(
-      /04-dialog/,
-    );
-    expect(() => service.groupIntoPatterns([])).toThrow(
-      NotImplementedException,
-    );
-    expect(() => service.groupIntoPatterns([])).toThrow(/04-dialog/);
-  });
-
   it('[TC-00-04] DialogueService.nextTurn points to spec 04', async () => {
     const service = moduleRef.get(DialogueService);
     const input = {

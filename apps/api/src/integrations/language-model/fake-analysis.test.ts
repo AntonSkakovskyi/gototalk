@@ -1,4 +1,5 @@
-import { AnalysisEnvelopeSchema, AnalysisResultSchema } from '@gototalk/shared';
+import { AnalysisEnvelopeSchema } from '@gototalk/shared';
+import { AnalysisResultSchema } from '../testing/analysis-result-schema.js';
 import { describe, expect, it } from 'vitest';
 import { analyzeText } from './fake-analysis.js';
 

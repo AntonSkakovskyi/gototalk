@@ -1,4 +1,4 @@
-import { AnalysisResultSchema } from '@gototalk/shared';
+import { AnalysisResultSchema } from '../testing/analysis-result-schema.js';
 import { describe, expect, it, vi } from 'vitest';
 import { FakeLanguageModel } from './fake-language-model.js';
 import {

@@ -18,7 +18,7 @@ import type {
   Utterance,
 } from '@gototalk/shared';
 import { DRIZZLE } from '../../core/db/db.tokens.js';
-import type { Database } from '../../core/db/db.tokens.js';
+import type { Database, DbTransaction } from '../../core/db/db.tokens.js';
 import { pgTimestampToDate } from '../../core/db/pg-timestamp.js';
 import { mistakes, sessions, users, utterances } from '../../core/db/schema.js';
 import { SessionOwnerMissingError } from './session.errors.js';
@@ -106,8 +106,6 @@ function toSessionDetails(
     planRemaining: countPlanRemaining(session.plan, utteranceRows),
   };
 }
-
-type Tx = Parameters<Parameters<Database['transaction']>[0]>[0];
 
 @Injectable()
 export class SessionsRepository {
@@ -197,7 +195,7 @@ export class SessionsRepository {
   }
 
   // Serialises one user's session starts so only one session stays active
-  private async lockOwner(tx: Tx, userId: string): Promise<void> {
+  private async lockOwner(tx: DbTransaction, userId: string): Promise<void> {
     const locked = await tx
       .select({ id: users.id })
       .from(users)
@@ -206,7 +204,7 @@ export class SessionsRepository {
     if (locked.length === 0) throw new SessionOwnerMissingError();
   }
 
-  private async finishActive(tx: Tx, userId: string): Promise<void> {
+  private async finishActive(tx: DbTransaction, userId: string): Promise<void> {
     await tx
       .update(sessions)
       .set({ status: 'finished', endedAt: sql`clock_timestamp()` })
