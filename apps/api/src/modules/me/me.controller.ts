@@ -18,11 +18,11 @@ import {
 } from '@nestjs/swagger';
 import { DeleteAccountRequestSchema } from '@gototalk/shared';
 import type { ConsentInfo, DeleteAccountRequest, Me } from '@gototalk/shared';
-import { CurrentUser } from '../auth/current-user.decorator.js';
-import type { AuthenticatedUser } from '../auth/current-user.decorator.js';
-import { clearRefreshCookie } from '../auth/refresh-cookie.js';
-import type { CookieResponse } from '../auth/refresh-cookie.js';
-import { ZodBodyPipe } from '../common/zod-body.pipe.js';
+import { CurrentUser } from '../../auth/current-user.decorator.js';
+import type { AuthenticatedUser } from '../../auth/current-user.decorator.js';
+import { clearRefreshCookie } from '../../auth/refresh-cookie.js';
+import type { CookieResponse } from '../../auth/refresh-cookie.js';
+import { ZodBodyPipe } from '../../common/zod-body.pipe.js';
 import { MeService } from './me.service.js';
 
 function requireUser(user: AuthenticatedUser | undefined): string {

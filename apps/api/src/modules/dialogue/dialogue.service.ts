@@ -1,10 +1,10 @@
 import { Inject, Injectable, NotImplementedException } from '@nestjs/common';
 import type { Turn } from '@gototalk/shared';
-import { LANGUAGE_MODEL_PORT } from '../integrations/language-model/language-model.port.js';
+import { LANGUAGE_MODEL_PORT } from '../../integrations/language-model/language-model.port.js';
 import type {
   LanguageModelPort,
   NextTurnInput,
-} from '../integrations/language-model/language-model.port.js';
+} from '../../integrations/language-model/language-model.port.js';
 
 @Injectable()
 export class DialogueService {

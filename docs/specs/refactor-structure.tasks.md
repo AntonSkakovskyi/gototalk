@@ -57,7 +57,7 @@
   - `eslint.config.js`: виняток SDK `apps/api/src/adapters/**` → `apps/api/src/integrations/**`, текст повідомлення.
   - Коміт: `refactor(api): ports and adapters under integrations`
 
-- [ ] **A3. `modules/` для me, profile, session, dialogue, analysis**
+- [x] **A3. `modules/` для me, profile, session, dialogue, analysis**
   - Папки цілком → `modules/<name>/`; імпорти `auth` тимчасово `../../auth/...`.
   - Коміт: `refactor(api): domain modules under modules`
 

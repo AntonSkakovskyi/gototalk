@@ -5,16 +5,16 @@ import { LoggerModule } from 'nestjs-pino';
 import { AppConfigModule } from './core/config/app-config.module.js';
 import type { AppConfigOptions } from './core/config/app-config.module.js';
 import type { Env } from './core/config/env.schema.js';
-import { AnalysisModule } from './analysis/analysis.module.js';
+import { AnalysisModule } from './modules/analysis/analysis.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { DbModule } from './core/db/db.module.js';
-import { DialogueModule } from './dialogue/dialogue.module.js';
+import { DialogueModule } from './modules/dialogue/dialogue.module.js';
 import { HealthModule } from './core/health/health.module.js';
-import { MeModule } from './me/me.module.js';
+import { MeModule } from './modules/me/me.module.js';
 import { buildPinoHttpOptions } from './core/logger/pino-options.js';
-import { ProfileModule } from './profile/profile.module.js';
+import { ProfileModule } from './modules/profile/profile.module.js';
 import { ProvidersModule } from './integrations/providers.module.js';
-import { SessionModule } from './session/session.module.js';
+import { SessionModule } from './modules/session/session.module.js';
 
 @Module({})
 export class AppModule {
