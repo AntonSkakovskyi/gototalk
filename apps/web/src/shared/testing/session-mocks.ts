@@ -8,17 +8,16 @@ import {
   jsonResponse,
   testSessionDetails,
   testSessionPlan,
+  testUtterance,
 } from './test-fixtures';
 
 export const STARTED_SESSION = testSessionDetails({
   id: '7c2e8b64-5f0a-4d1b-8e3a-2a9b4c6d0099',
   utterances: [
-    {
+    testUtterance({
       id: '9e4a1c73-6b2d-4f8a-a1c5-3b7d5e8f0099',
-      seq: 1,
-      role: 'assistant',
       text: 'Which part of the offsite are you most excited about?',
-    },
+    }),
   ],
 });
 

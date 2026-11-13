@@ -28,8 +28,12 @@ const DETAILS: SessionDetails = {
       seq: 1,
       role: 'assistant',
       text: 'q1',
+      analysisStatus: 'skipped',
+      mistakes: [],
+      better: [],
     },
   ],
+  planRemaining: 4,
 };
 
 function setup(start: unknown) {

@@ -9,6 +9,7 @@ import {
   errorResponse,
   jsonResponse,
   testSessionDetails,
+  testUtterance,
 } from '@/shared/testing/test-fixtures';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 import { SessionQuestion } from './SessionQuestion';
@@ -115,24 +116,24 @@ describe('SessionQuestion', () => {
       [PATH]: jsonResponse(
         testSessionDetails({
           utterances: [
-            {
+            testUtterance({
               id: '9e4a1c73-6b2d-4f8a-a1c5-3b7d5e8f0011',
               seq: 1,
               role: 'assistant',
               text: 'First question?',
-            },
-            {
+            }),
+            testUtterance({
               id: '9e4a1c73-6b2d-4f8a-a1c5-3b7d5e8f0012',
               seq: 2,
               role: 'user',
               text: 'My answer',
-            },
-            {
+            }),
+            testUtterance({
               id: '9e4a1c73-6b2d-4f8a-a1c5-3b7d5e8f0013',
               seq: 3,
               role: 'assistant',
               text: 'Next question?',
-            },
+            }),
           ],
         }),
       ),

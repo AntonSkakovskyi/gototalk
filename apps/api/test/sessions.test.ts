@@ -152,8 +152,17 @@ describe('POST /api/sessions', () => {
       endedAt: null,
     });
     expect(details.utterances).toEqual([
-      { id: expect.any(String), seq: 1, role: 'assistant', text: QUESTIONS[0] },
+      {
+        id: expect.any(String),
+        seq: 1,
+        role: 'assistant',
+        text: QUESTIONS[0],
+        analysisStatus: 'skipped',
+        mistakes: [],
+        better: [],
+      },
     ]);
+    expect(details.planRemaining).toBe(4);
     const rows = await sessionRows(id);
     expect(rows).toHaveLength(1);
     expect(rows[0]?.id).toBe(details.id);

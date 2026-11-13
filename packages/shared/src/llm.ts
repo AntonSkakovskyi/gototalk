@@ -20,16 +20,27 @@ export const TranscriptSchema = z.object({
 
 export type Transcript = z.infer<typeof TranscriptSchema>;
 
-/** Offsets in text_verbatim: 0-based, `end` is exclusive (`text.slice(start, end) === original`). */
+export const MISTAKE_TEXT_MAX = 200;
+
+export const MISTAKE_EXPLANATION_MAX = 500;
+
+export const ANALYSIS_MAX_MISTAKES = 30;
+
+export const ANALYSIS_MAX_BETTER = 5;
+
+/**
+ * Positions are 0-based UTF-16 code unit offsets in text_verbatim, `end` is exclusive, and
+ * `text.slice(start, end) === original` on api and web. Model positions are only a hint: the server aligns them.
+ */
 export const MistakeSchema = z
   .object({
     start: z.int().nonnegative(),
     end: z.int().nonnegative(),
-    original: z.string().min(1),
-    suggestion: z.string(),
+    original: z.string().min(1).max(MISTAKE_TEXT_MAX),
+    suggestion: z.string().max(MISTAKE_TEXT_MAX),
     category: MistakeCategoryCodeSchema,
-    explanation_en: z.string().min(1),
-    translation_uk: z.string().min(1),
+    explanation_en: z.string().min(1).max(MISTAKE_EXPLANATION_MAX),
+    translation_uk: z.string().min(1).max(MISTAKE_EXPLANATION_MAX),
   })
   .refine((m) => m.end > m.start, {
     error: 'end must be greater than start',
@@ -39,8 +50,8 @@ export const MistakeSchema = z
 export type Mistake = z.infer<typeof MistakeSchema>;
 
 export const BetterPhrasingSchema = z.object({
-  original: z.string().min(1),
-  better: z.string().min(1),
+  original: z.string().min(1).max(MISTAKE_TEXT_MAX),
+  better: z.string().min(1).max(MISTAKE_TEXT_MAX),
 });
 
 export type BetterPhrasing = z.infer<typeof BetterPhrasingSchema>;
@@ -52,6 +63,14 @@ export const AnalysisResultSchema = z.object({
 
 export type AnalysisResult = z.infer<typeof AnalysisResultSchema>;
 
+/** Shape-only envelope: the server validates each item separately and drops the invalid ones. */
+export const AnalysisEnvelopeSchema = z.object({
+  mistakes: z.array(z.unknown()).max(ANALYSIS_MAX_MISTAKES),
+  better: z.array(z.unknown()).max(ANALYSIS_MAX_BETTER),
+});
+
+export type AnalysisEnvelope = z.infer<typeof AnalysisEnvelopeSchema>;
+
 export const PlanSchema = z.object({
   topic: TopicSchema,
   questions: z.array(QuestionSchema).length(PLAN_QUESTIONS),
@@ -60,7 +79,7 @@ export const PlanSchema = z.object({
 export type Plan = z.infer<typeof PlanSchema>;
 
 export const TurnSchema = z.object({
-  question: z.string().min(1),
+  question: QuestionSchema,
 });
 
 export type Turn = z.infer<typeof TurnSchema>;

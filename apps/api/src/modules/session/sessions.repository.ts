@@ -1,12 +1,16 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { and, asc, desc, eq, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, inArray, sql } from 'drizzle-orm';
+import { z } from 'zod';
 import {
+  AnalysisStatusSchema,
   FeedbackModeSchema,
+  MistakeCategoryCodeSchema,
   SessionStatusSchema,
   TopicSourceSchema,
   UtteranceRoleSchema,
 } from '@gototalk/shared';
 import type {
+  MistakeView,
   Session,
   SessionDetails,
   StartSessionRequest,
@@ -15,11 +19,14 @@ import type {
 import { DRIZZLE } from '../../core/db/db.tokens.js';
 import type { Database } from '../../core/db/db.tokens.js';
 import { pgTimestampToDate } from '../../core/db/pg-timestamp.js';
-import { sessions, users, utterances } from '../../core/db/schema.js';
+import { mistakes, sessions, users, utterances } from '../../core/db/schema.js';
 import { SessionOwnerMissingError } from './session.errors.js';
 
 type SessionRow = typeof sessions.$inferSelect;
 type UtteranceRow = typeof utterances.$inferSelect;
+type MistakeRow = typeof mistakes.$inferSelect;
+
+const StoredPlanSchema = z.object({ questions: z.array(z.string()) });
 
 function toIso(value: string): string {
   return pgTimestampToDate(value).toISOString();
@@ -37,20 +44,62 @@ function toSession(row: SessionRow): Session {
   };
 }
 
-function toUtterance(row: UtteranceRow): Utterance {
+function toMistakeView(row: MistakeRow): MistakeView | null {
+  if (row.startPos === null || row.endPos === null) return null;
+  return {
+    id: row.id,
+    start: row.startPos,
+    end: row.endPos,
+    original: row.original,
+    suggestion: row.suggestion ?? '',
+    category: MistakeCategoryCodeSchema.parse(row.category),
+    explanationEn: row.explanationEn ?? '',
+    translationUk: row.translationUk ?? '',
+    isFalse: row.isFalse,
+  };
+}
+
+function toUtterance(row: UtteranceRow, mistakeRows: MistakeRow[]): Utterance {
   return {
     id: row.id,
     seq: row.seq,
     role: UtteranceRoleSchema.parse(row.role),
     text: row.textVerbatim,
+    analysisStatus: AnalysisStatusSchema.parse(row.analysisStatus),
+    mistakes: mistakeRows.flatMap((mistake) => toMistakeView(mistake) ?? []),
+    better: [],
   };
+}
+
+// A plan question counts as asked once its exact text is an assistant utterance
+function countPlanRemaining(
+  plan: unknown,
+  utteranceRows: UtteranceRow[],
+): number {
+  const parsed = StoredPlanSchema.safeParse(plan);
+  if (!parsed.success) return 0;
+  const asked = new Set(
+    utteranceRows
+      .filter((row) => row.role === 'assistant')
+      .map((row) => row.textVerbatim),
+  );
+  return parsed.data.questions.filter((question) => !asked.has(question))
+    .length;
 }
 
 function toSessionDetails(
   session: SessionRow,
   utteranceRows: UtteranceRow[],
+  mistakeRows: MistakeRow[],
 ): SessionDetails {
-  return { ...toSession(session), utterances: utteranceRows.map(toUtterance) };
+  const byUtterance = Map.groupBy(mistakeRows, (row) => row.utteranceId);
+  return {
+    ...toSession(session),
+    utterances: utteranceRows.map((row) =>
+      toUtterance(row, byUtterance.get(row.id) ?? []),
+    ),
+    planRemaining: countPlanRemaining(session.plan, utteranceRows),
+  };
 }
 
 type Tx = Parameters<Parameters<Database['transaction']>[0]>[0];
@@ -98,7 +147,7 @@ export class SessionsRepository {
         .returning();
       if (!utterance) throw new Error('Utterance insert returned no row');
 
-      return toSessionDetails(session, [utterance]);
+      return toSessionDetails(session, [utterance], []);
     });
   }
 
@@ -126,7 +175,20 @@ export class SessionsRepository {
       .from(utterances)
       .where(eq(utterances.sessionId, session.id))
       .orderBy(asc(utterances.seq));
-    return toSessionDetails(session, rows);
+    const mistakeRows =
+      rows.length === 0
+        ? []
+        : await this.db
+            .select()
+            .from(mistakes)
+            .where(
+              inArray(
+                mistakes.utteranceId,
+                rows.map((row) => row.id),
+              ),
+            )
+            .orderBy(asc(mistakes.startPos), asc(mistakes.id));
+    return toSessionDetails(session, rows, mistakeRows);
   }
 
   // Serialises one user's session starts so only one session stays active

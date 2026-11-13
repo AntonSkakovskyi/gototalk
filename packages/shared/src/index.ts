@@ -1,4 +1,6 @@
+export * from './analysis-view.js';
 export * from './auth.js';
+export * from './dialogue.js';
 export * from './errors.js';
 export * from './health.js';
 export * from './mistake-categories.js';
