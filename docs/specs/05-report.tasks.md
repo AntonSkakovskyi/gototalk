@@ -86,7 +86,7 @@
 - **g. Тривалість** = `max(created_at)` user-реплік − `started_at` (0 без відповідей). Відкинуто: `ended_at − started_at` (для автозавершених сесій це дні). Хвилини для промпту/Fake: `max(1, round(s/60))`.
 - **h. Активні слова.** `PATCH` з `state = active` → 400; ціль у стані `active` → 409 `WORD_ALREADY_ACTIVE`. Ідемпотентно: той самий стан → 200. Відкинуто: перезапис `active` позначкою (губить головну метрику продукту).
 - **i. Модулі api.** Новий `modules/report` (імпортує Analysis, Vocabulary; `lockSession`, `isSessionId`, `sessionNotFound` – прямі імпорти файлів, не DI). `SessionModule` імпортує `ReportModule` для `finish`; циклу немає. `vocabulary` отримує контролер слів. `Analysis` імпортує `Vocabulary` (слова в writer).
-- **j. Контракт списку сесій.** `GET /api/sessions?cursor&limit` → `SessionPage { items, nextCursor }` (головна бере першу сторінку `limit=10`). Відкинуто: курсор на клієнті з `startedAt` (ISO обрізає мікросекунди → пропуски/дублі), другий ендпоінт історії (дубль ресурсу).
+- **j. Контракт історії сесій.** Новий `GET /api/sessions/history?cursor&limit` → `SessionPage { items, nextCursor }`; `GET /api/sessions` (масив, останні 10) не змінюється. Причина: наявний контракт читають злиті web і e2e (spec 03/04), зміна форми відповіді їх ламає (рішення прийнято самостійно, відхилення від плану, де передбачалась зміна `GET /api/sessions`). Відкинуто: зміна `GET /api/sessions` на сторінку (breaking), курсор на клієнті з `startedAt` (ISO обрізає мікросекунди → пропуски/дублі), поліморфна відповідь за наявності `cursor`.
 - **k. Web.** `AnswerTranscript`, `MistakeDetails`, `BetterPhrasings`, `ReplaceArrow`, `highlight-segments` → `shared/ui/`; `markMistakeFalse` → `shared/api/mistakes.ts`, `useMarkMistake` + `useUpdateDetails` → `shared/hooks/`, `withMistake` → `shared/api/session-details.ts`; ключі i18n `dialogue.mistake.*`, `dialogue.better.*`, `dialogue.replacedBy` → `transcript.*`. `useMarkMistake` додатково інвалідує `sessionKeys.report(id)`. Фіча `report` (самарі, розбір), фіча `vocabulary` (позначки, список слів); сторінки компонують: `ReportPage` = `SessionOverview` (session) + `ReportView` (report) + `SessionWords` (vocabulary); `HistoryPage` = `SessionHistory` (session); `WordsPage` = `WordList` (vocabulary). `SessionRecap` видаляється (замінено серверною статистикою й розбором).
 - **l. Екран звіту.** Маршрут лишається `/sessions/:id/report`. «Детально» – розкриття на сторінці (`aria-expanded`/`aria-controls`), не окремий маршрут (зайвий запит і сторінка). Групи за категоріями в порядку SQL; відповідь із помилками двох категорій є в обох групах, підсвічено лише помилки групи; наприкінці «Відповіді без помилок», тож показано всі репліки. Теорія – зовнішні посилання (`target=_blank`, `rel="noopener noreferrer"`). Позначки слів – `SegmentedControl` (радіогрупа, один дотик, можна змінити; API звірити в context7), поточний стан вибрано. Список сесій: завершена → `reportPath`, активна → `sessionPath`.
 - **m. Теги тестів вкладок** без нових TC (test-cases.md генерується з лаби 9): історія – `[TC-05-03]` (повернення зі списку сесій), список слів – `[TC-05-05]`.
@@ -95,7 +95,7 @@
 `packages/shared/src`:
 - `words.ts`(+тест): `WORD_STATES` (переноситься з `profile.ts`), `WORD_SOURCES = ['hint','session','user']`, `MARKABLE_WORD_STATES = ['new','partial','passive']`, `WordSchema { id, lemma, translationUk: string|null, state, source }`, `MarkWordRequestSchema { state: enum(MARKABLE) }`, `WordPageSchema { items: Word[], nextCursor: string|null }`.
 - `report.ts`(+тест): `REPORT_SUMMARY_MAX = 600`, `TOP_CATEGORIES_LIMIT = 3`; `ReportSummarySchema` = discriminated union `status`: `{ ready, text }` | `{ unavailable }` | `{ no_answers }`; `TheoryLinkSchema { id, title, url }`; `ReportCategorySchema { category, count ≥1, theoryLinks }`; `SessionReportSchema { sessionId, answers, durationSeconds, summary, categories, words: Word[] }` (JSDoc: `categories` за `count DESC, category ASC`, без `is_false`; топ = перші `TOP_CATEGORIES_LIMIT`).
-- `session.ts`: `SessionPageSchema { items: Session[], nextCursor }`, `ListQuerySchema { cursor?: string ≤200, limit?: 1..50 }` (05-13).
+- `session.ts`: `SessionPageSchema { items: Session[], nextCursor: string|null }`, `HistoryQuerySchema { cursor?: string ≤200, limit?: 1..50 }` (05-13).
 - `llm.ts`: `SummarySchema = { summary: trim 1..REPORT_SUMMARY_MAX }` (без `top_categories`: топ рахує SQL); прибрати `HintSchema.message` (backlog).
 - `ERROR_CODES`: `SESSION_NOT_FINISHED`, `WORD_NOT_FOUND`, `WORD_ALREADY_ACTIVE`.
 
@@ -105,7 +105,7 @@
 | `GET /api/sessions/:id/report` | згода | – | 200 `SessionReport` (генерує, якщо немає) | 401, 403, 404 `SESSION_NOT_FOUND`, 409 `SESSION_NOT_FINISHED` |
 | `PATCH /api/words/:id` | – | `{ state }` | 200 `Word` (ідемпотентно) | 400, 401, 404 `WORD_NOT_FOUND`, 409 `WORD_ALREADY_ACTIVE` |
 | `GET /api/words` | – | `?cursor&limit` | 200 `WordPage` (`created_at DESC, id DESC`) | 400, 401 |
-| `GET /api/sessions` | – | `?cursor&limit` (за замовч. 10) | 200 `SessionPage` | 400, 401 |
+| `GET /api/sessions/history` | – | `?cursor&limit` (за замовч. 20) | 200 `SessionPage` (`started_at DESC, id DESC`) | 400, 401 |
 
 Чужий, неіснуючий і не-uuid id → однаковий 404. Порт: `summarizeSession(input: SummarizeSessionInput) → { output: unknown, promptVersion, model }`, `SummarizeSessionInput { answers, minutes, categories: { code, title, count, examples: { original, suggestion }[] ≤2 }[] ≤3 }` (приклади – window-функція в SQL).
 
@@ -150,7 +150,7 @@ apps/api/src/
   modules/dialogue/   turn.service.ts · hints.service.ts / persistence/hints.repository.ts · audio-retention.ts(+test) · dialogue.module.ts
   app.module.ts
 apps/api/test/  report-finish · report-read · report-unavailable · report-aggregates · pending-analysis · session-words
-                words-mark · words-list · sessions-list-page · sessions-finish · db-schema · support/{user-data, controllable-language-model}.ts
+                words-mark · words-list · sessions-history · sessions-finish · db-schema · support/{user-data, controllable-language-model}.ts
 apps/web/src/
   shared/ui/{AnswerTranscript (+scss, highlight-segments), MistakeDetails, BetterPhrasings, ReplaceArrow}/
   shared/api/{mistakes.ts, session-details.ts} · shared/hooks/{use-mark-mistake, use-update-details}.ts · shared/i18n/uk.json
@@ -187,7 +187,7 @@ docs/ tech-decisions.md · stubs.md · backlog.md · README.md
 - [ ] **05-10. `GET /api/sessions/:id/report`.** Контролер, сервіс, `report.errors.ts` (409), модуль, `app.module`; `test/report-read.test.ts`: теорія в звіті, 404 чужа/неіснуюча/не-uuid, 409 активна, 403 без згоди, 401 видалений, сесія, автозавершена новим стартом → звіт ліниво. `[TC-05-06]` `[risk]`
 - [ ] **05-11. `finish` створює звіт.** `SessionsService.finish` → `ensure` (best-effort), `@RequiresConsent` на `finish`; `test/report-finish.test.ts`: finish → один рядок, повторний finish → один рядок і summarize викликано раз, паралельні finish + GET з утриманням блокування → один рядок; `test/report-unavailable.test.ts`: `unavailable` → finish 200 без рядка, GET 200 `unavailable` з агрегатами й словами, відновлення, `pending` доаналізовано до самарі; `sessions-finish.test.ts` («без згоди» → 403). `[TC-05-02]` `[risk]`
 - [ ] **05-12. `PATCH /api/words/:id`.** `words.controller/service(+unit)/errors`, `markState` (`UPDATE … WHERE id AND user_id AND state <> 'active' RETURNING`, потім розрізнення 404/409); `test/words-mark.test.ts`: стан збережено, повтор 200, `active` у тілі → 400, активне слово → 409, чуже/неіснуюче/не-uuid → 404, видалений користувач → 404, без згоди працює. `[TC-05-05]` `[risk]`
-- [ ] **05-13. Пагінація сесій.** `common/keyset-cursor.ts`(+тест), `SessionPageSchema`/`ListQuerySchema`, `listPage` (`LIMIT n+1`), контролер, web `session-api.ts`/`RecentSessions`/фікстури, e2e `listSessions`; `test/sessions-list-page.test.ts`: порядок, однакові `started_at`, без пропусків і дублів між сторінками, невалідний курсор → 400, чужі не видно. Виняток із ліміту (~10 файлів: інакше web typecheck червоний). `[TC-05-03]` `[risk]`
+- [ ] **05-13. Історія сесій (api).** `common/keyset-cursor.ts`(+тест), `SessionPageSchema`/`HistoryQuerySchema`, `sessions.repository.listPage` (`LIMIT n+1`), `GET /api/sessions/history` (маршрут оголошено перед `:id`), Swagger; `test/sessions-history.test.ts`: порядок, однакові `started_at`, без пропусків і дублів між сторінками, невалідний курсор → 400, чужі не видно, видалений користувач → порожньо. `GET /api/sessions` і web не чіпаються. `[TC-05-03]` `[risk]`
 - [ ] **05-14. `GET /api/words`.** `listPage` за `(created_at, id)`, контролер; `test/words-list.test.ts`. Swagger усіх нових маршрутів. **Межа api-блоку**: повний `pnpm test`, рев'ю 05-08, 05-14. `[TC-05-05]`
 
 **Блок E – web: спільні компоненти й звіт**
@@ -228,7 +228,7 @@ TC-05-01 зазначено як unit, але агрегація свідомо 
 ## Ризики
 - **Перенос `AnalysisWriter`** і запис слів у ньому зачіпає гарячий шлях кроку 2: повний набір `dialogue-*` інтеграційних тестів у 05-05/05-07.
 - **Цикл модулів Nest:** Session → Report → Analysis/Vocabulary; Report не імпортує Session/Dialogue через DI (лише файли-функції). Перевіряє `core-services`/старт застосунку.
-- **Зміна `GET /api/sessions`** (масив → сторінка) ламає web і e2e-хелпер: усе в одній задачі 05-13.
+- **Маршрут `GET /api/sessions/history`** конфліктує з `GET /api/sessions/:id`, якщо оголошений після нього: оголосити раніше й покрити тестом.
 - **Мікросекунди в курсорі:** без текстового `timestamptz` keyset пропускає рядки; тест з однаковими й близькими `started_at`.
 - **Перенос у `shared/ui`** зачіпає ~15 тестів діалогу; ключі i18n перейменовуються.
 - **Гонки звіту:** детерміновані тести з `SessionLockHolder`; модель може бути викликана двічі за справжньої гонки (задокументовано).
