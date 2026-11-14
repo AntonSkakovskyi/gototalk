@@ -16,6 +16,7 @@ import {
   testUtterance,
 } from '@/shared/testing/test-fixtures';
 import { renderWithProviders } from '@/shared/testing/test-utils';
+import { LocationProbe } from '@/shared/testing/LocationProbe';
 import { DialogueScreen } from './DialogueScreen';
 
 export const TURN = testTurnResult();
@@ -29,7 +30,12 @@ export const PENDING_ANSWER = {
 
 function Harness() {
   const { data } = useQuery(sessionDetailsQueryOptions(DIALOGUE_SESSION_ID));
-  return data ? <DialogueScreen details={data} /> : null;
+  return (
+    <>
+      {data ? <DialogueScreen details={data} /> : null}
+      <LocationProbe />
+    </>
+  );
 }
 
 export function renderScreen(details: SessionDetails = testSessionDetails()) {

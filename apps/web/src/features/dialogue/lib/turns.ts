@@ -11,3 +11,23 @@ export function currentQuestion(
     .filter((utterance) => utterance.role === 'assistant')
     .at(-1);
 }
+
+export interface AnswerWithQuestion {
+  question: Utterance | undefined;
+  answer: Utterance;
+}
+
+export function answersWithQuestions(
+  utterances: Utterance[],
+): AnswerWithQuestion[] {
+  const pairs: AnswerWithQuestion[] = [];
+  let question: Utterance | undefined;
+  for (const utterance of sortBySeq(utterances)) {
+    if (utterance.role === 'assistant') {
+      question = utterance;
+    } else {
+      pairs.push({ question, answer: utterance });
+    }
+  }
+  return pairs;
+}

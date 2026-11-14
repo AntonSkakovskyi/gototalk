@@ -21,5 +21,6 @@ export function useFinishSession(sessionId: string) {
       mutation.mutate(undefined, { onSuccess: () => onFinished() }),
     isFinishing: mutation.isPending,
     error: mutation.error,
+    reset: mutation.reset,
   };
 }
