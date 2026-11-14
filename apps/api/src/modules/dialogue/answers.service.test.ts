@@ -238,3 +238,46 @@ describe('AnswersService.submitAudio', () => {
     expect(retention.keep).not.toHaveBeenCalled();
   });
 });
+
+describe('AnswersService.answer', () => {
+  it('[TC-04-02] sends an uploaded file to speech recognition and ignores the body', async () => {
+    const { service, speech, repository } = setupVoice();
+
+    await service.answer(USER_ID, SESSION_ID, {
+      audio: AUDIO,
+      body: { text: 'ignored' },
+    });
+
+    expect(speech.transcribe).toHaveBeenCalledOnce();
+    expect(repository.submitAnswer).toHaveBeenCalledWith(
+      USER_ID,
+      SESSION_ID,
+      TRANSCRIPT,
+    );
+  });
+
+  it('[TC-04-03] stores a text body as both verbatim and clean without speech recognition', async () => {
+    const { service, speech, repository } = setupVoice();
+
+    await service.answer(USER_ID, SESSION_ID, {
+      audio: undefined,
+      body: { text: 'I very like it' },
+    });
+
+    expect(speech.transcribe).not.toHaveBeenCalled();
+    expect(repository.submitAnswer).toHaveBeenCalledWith(
+      USER_ID,
+      SESSION_ID,
+      ANSWER,
+    );
+  });
+
+  it('[TC-04-03] rejects a body without text before any lookup', async () => {
+    const { service, repository } = setupVoice();
+
+    await expect(
+      service.answer(USER_ID, SESSION_ID, { audio: undefined, body: {} }),
+    ).rejects.toThrow('Request validation failed');
+    expect(repository.submitAnswer).not.toHaveBeenCalled();
+  });
+});

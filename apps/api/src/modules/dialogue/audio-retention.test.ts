@@ -2,7 +2,8 @@ import { mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import type { ConfigService } from '@nestjs/config';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { Logger } from '@nestjs/common';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Env } from '../../core/config/env.schema.js';
 import { AudioRetention } from './audio-retention.js';
 
@@ -88,5 +89,26 @@ describe('AudioRetention', () => {
         AUDIO,
       ),
     ).resolves.toBeUndefined();
+  });
+
+  it('[TC-04-13] logs only the error code when the copy cannot be written, never the path', async () => {
+    const warn = vi
+      .spyOn(Logger.prototype, 'warn')
+      .mockImplementation(() => {});
+    const blocker = path.join(dir, 'secret-blocker');
+    await writeFile(blocker, 'x');
+
+    await retention({ DEV_KEEP_AUDIO: true, DEV_AUDIO_DIR: blocker }).keep(
+      UTTERANCE_ID,
+      'audio/webm',
+      AUDIO,
+    );
+
+    const logged = warn.mock.calls.map((call) => String(call[0])).join('\n');
+    expect(logged).toContain('Could not write the development audio copy');
+    expect(logged).toMatch(/E[A-Z]+/);
+    expect(logged).not.toContain('secret-blocker');
+    expect(logged).not.toContain(UTTERANCE_ID);
+    warn.mockRestore();
   });
 });

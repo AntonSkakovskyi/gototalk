@@ -7,13 +7,14 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { PG_POOL } from '../src/core/db/db.tokens.js';
 import { postAudio, webmAudio } from './support/audio.js';
 import { startLearner } from './support/dialogue-flow.js';
+import { isolateEnv } from './support/env.js';
 import { createTestApp } from './support/test-app.js';
 import { resetUserData } from './support/test-db.js';
 
 describe('audio retention', () => {
   let audioDir: string;
   let started: INestApplication | undefined;
-  let envKeys: string[] = [];
+  let restoreEnv: (() => void) | undefined;
 
   beforeEach(async () => {
     audioDir = await mkdtemp(path.join(tmpdir(), 'gototalk-audio-'));
@@ -22,14 +23,14 @@ describe('audio retention', () => {
   afterEach(async () => {
     await started?.close();
     started = undefined;
-    // ConfigModule copies the validated env into process.env, which would leak into the next app
-    for (const key of envKeys) delete process.env[key];
-    envKeys = [];
+    restoreEnv?.();
+    restoreEnv = undefined;
     await rm(audioDir, { recursive: true, force: true });
   });
 
   async function startApp(env: Record<string, string>) {
-    envKeys = Object.keys(env);
+    restoreEnv = isolateEnv();
+    Object.assign(process.env, env);
     const app = await createTestApp({ env });
     started = app;
     const pool = app.get<pg.Pool>(PG_POOL);

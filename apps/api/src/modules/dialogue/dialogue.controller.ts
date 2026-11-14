@@ -18,9 +18,8 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { ANSWER_TEXT_MAX, AnswerTextRequestSchema } from '@gototalk/shared';
+import { ANSWER_TEXT_MAX } from '@gototalk/shared';
 import type { TurnResult, Utterance } from '@gototalk/shared';
-import { ZodBodyPipe } from '../../common/zod-body.pipe.js';
 import {
   CurrentUser,
   requireUserId,
@@ -112,10 +111,7 @@ export class DialogueController {
     @UploadedFile() audio: UploadedAudio | undefined,
     @Body() body: unknown,
   ): Promise<Utterance> {
-    const userId = requireUserId(user);
-    if (audio) return this.answers.submitAudio(userId, id, audio);
-    const { text } = new ZodBodyPipe(AnswerTextRequestSchema).transform(body);
-    return this.answers.submit(userId, id, { verbatim: text, clean: text });
+    return this.answers.answer(requireUserId(user), id, { audio, body });
   }
 
   @Post(':utteranceId/analysis')

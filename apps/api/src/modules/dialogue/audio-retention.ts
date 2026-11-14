@@ -11,6 +11,15 @@ const EXTENSIONS: Record<AudioMimeType, string> = {
   'audio/mp4': 'm4a',
 };
 
+// Only the error code or name is logged: messages carry the file path
+function failureReason(error: unknown): string {
+  if (error instanceof Error) {
+    const code = (error as NodeJS.ErrnoException).code;
+    return code ?? error.name;
+  }
+  return 'unknown';
+}
+
 /** Development-only copy of received audio; does nothing unless DEV_KEEP_AUDIO=true. */
 @Injectable()
 export class AudioRetention {
@@ -31,8 +40,10 @@ export class AudioRetention {
         path.join(dir, `${utteranceId}.${EXTENSIONS[mime]}`),
         audio,
       );
-    } catch {
-      this.logger.warn('Could not write the development audio copy');
+    } catch (error) {
+      this.logger.warn(
+        `Could not write the development audio copy (${failureReason(error)})`,
+      );
     }
   }
 }

@@ -3,7 +3,6 @@ import request from 'supertest';
 
 const WEBM_SIGNATURE = Buffer.from([0x1a, 0x45, 0xdf, 0xa3]);
 
-/** Smallest buffer the signature check accepts as webm; the Fake speech recognition ignores the content. */
 export function webmAudio(size = 64): Buffer {
   return Buffer.concat([WEBM_SIGNATURE, Buffer.alloc(size - 4, 7)]);
 }

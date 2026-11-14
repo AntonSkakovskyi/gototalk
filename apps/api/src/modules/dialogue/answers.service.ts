@@ -5,8 +5,9 @@ import {
   ServiceUnavailableException,
   UnsupportedMediaTypeException,
 } from '@nestjs/common';
-import { ERROR_CODES } from '@gototalk/shared';
+import { AnswerTextRequestSchema, ERROR_CODES } from '@gototalk/shared';
 import type { Utterance } from '@gototalk/shared';
+import { ZodBodyPipe } from '../../common/zod-body.pipe.js';
 import { SpeechRecognitionUnavailableError } from '../../integrations/speech-recognition/speech-recognition.errors.js';
 import { SPEECH_RECOGNITION_PORT } from '../../integrations/speech-recognition/speech-recognition.port.js';
 import type { SpeechRecognitionPort } from '../../integrations/speech-recognition/speech-recognition.port.js';
@@ -54,6 +55,16 @@ export class AnswersService {
     private readonly retention: AudioRetention,
   ) {}
 
+  async answer(
+    userId: string,
+    sessionId: string,
+    { audio, body }: { audio: UploadedAudio | undefined; body: unknown },
+  ): Promise<Utterance> {
+    if (audio) return this.submitAudio(userId, sessionId, audio);
+    const { text } = new ZodBodyPipe(AnswerTextRequestSchema).transform(body);
+    return this.submit(userId, sessionId, { verbatim: text, clean: text });
+  }
+
   async submit(
     userId: string,
     sessionId: string,
@@ -67,7 +78,7 @@ export class AnswersService {
     }
   }
 
-  /** The unlocked pre-check keeps audio away from the provider when the answer would be rejected anyway; the transcription runs outside any transaction. */
+  /** Unlocked pre-check; STT must run outside the transaction. */
   async submitAudio(
     userId: string,
     sessionId: string,
