@@ -2,9 +2,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import { and, asc, desc, eq, sql } from 'drizzle-orm';
 import {
   MistakeCategoryCodeSchema,
+  SUMMARY_EXAMPLES_PER_CATEGORY,
   SessionStatusSchema,
-  WordSourceSchema,
-  WordStateSchema,
 } from '@gototalk/shared';
 import type {
   MistakeCategoryCode,
@@ -25,6 +24,10 @@ import {
   words,
 } from '../../../core/db/schema.js';
 import { lockSession } from '../../session/persistence/lock-session.js';
+import {
+  WORD_COLUMNS,
+  toWord,
+} from '../../vocabulary/persistence/word-view.js';
 
 export interface OwnedSession {
   id: string;
@@ -66,8 +69,6 @@ export interface SummaryToSave {
   model: string;
 }
 
-const DEFAULT_EXAMPLES_PER_CATEGORY = 2;
-
 @Injectable()
 export class ReportRepository {
   constructor(@Inject(DRIZZLE) private readonly db: Database) {}
@@ -93,7 +94,7 @@ export class ReportRepository {
   }
 
   /** The duration runs from the session start to the last answer, in whole seconds. */
-  async stats(sessionId: string): Promise<SessionStats> {
+  async stats(userId: string, sessionId: string): Promise<SessionStats> {
     const { rows } = await this.db.execute<{
       answers: number;
       duration_seconds: number;
@@ -105,7 +106,7 @@ export class ReportRepository {
              )::int AS duration_seconds
       FROM ${sessions} s
       LEFT JOIN ${utterances} u ON u.session_id = s.id AND u.role = 'user'
-      WHERE s.id = ${sessionId}
+      WHERE s.id = ${sessionId} AND s.user_id = ${userId}
       GROUP BY s.started_at
     `);
     const row = rows[0];
@@ -116,7 +117,10 @@ export class ReportRepository {
   }
 
   /** Every category with a real (not false) mistake in the session, most frequent first. */
-  async categories(sessionId: string): Promise<CategoryCount[]> {
+  async categories(
+    userId: string,
+    sessionId: string,
+  ): Promise<CategoryCount[]> {
     const count = sql<number>`count(*)::int`;
     const rows = await this.db
       .select({
@@ -126,12 +130,17 @@ export class ReportRepository {
       })
       .from(mistakes)
       .innerJoin(utterances, eq(utterances.id, mistakes.utteranceId))
+      .innerJoin(sessions, eq(sessions.id, utterances.sessionId))
       .innerJoin(
         mistakeCategories,
         eq(mistakeCategories.code, mistakes.category),
       )
       .where(
-        and(eq(utterances.sessionId, sessionId), eq(mistakes.isFalse, false)),
+        and(
+          eq(utterances.sessionId, sessionId),
+          eq(sessions.userId, userId),
+          eq(mistakes.isFalse, false),
+        ),
       )
       .groupBy(mistakes.category, mistakeCategories.titleUk)
       .orderBy(desc(count), asc(sql`${mistakes.category} COLLATE "C"`));
@@ -143,9 +152,10 @@ export class ReportRepository {
   }
 
   async examples(
+    userId: string,
     sessionId: string,
     categoryCodes: string[],
-    perCategory = DEFAULT_EXAMPLES_PER_CATEGORY,
+    perCategory = SUMMARY_EXAMPLES_PER_CATEGORY,
   ): Promise<Map<string, MistakeExample[]>> {
     const result = new Map<string, MistakeExample[]>();
     if (categoryCodes.length === 0) return result;
@@ -162,7 +172,9 @@ export class ReportRepository {
                ) AS rn
         FROM ${mistakes} m
         JOIN ${utterances} u ON u.id = m.utterance_id
+        JOIN ${sessions} s ON s.id = u.session_id
         WHERE u.session_id = ${sessionId}
+          AND s.user_id = ${userId}
           AND NOT m.is_false
           AND m.suggestion IS NOT NULL
           AND m.category = ANY(${sql.param(categoryCodes)}::text[])
@@ -205,13 +217,7 @@ export class ReportRepository {
 
   async sessionWords(userId: string, sessionId: string): Promise<Word[]> {
     const rows = await this.db
-      .select({
-        id: words.id,
-        lemma: words.lemma,
-        translationUk: words.translationUk,
-        state: words.state,
-        source: words.source,
-      })
+      .select(WORD_COLUMNS)
       .from(sessionWords)
       .innerJoin(sessions, eq(sessions.id, sessionWords.sessionId))
       .innerJoin(words, eq(words.id, sessionWords.wordId))
@@ -223,14 +229,13 @@ export class ReportRepository {
         ),
       )
       .orderBy(asc(words.createdAt), asc(words.id));
-    return rows.map((row) => ({
-      ...row,
-      state: WordStateSchema.parse(row.state),
-      source: WordSourceSchema.parse(row.source),
-    }));
+    return rows.map(toWord);
   }
 
-  async findStoredSummary(sessionId: string): Promise<StoredSummary | null> {
+  async findStoredSummary(
+    userId: string,
+    sessionId: string,
+  ): Promise<StoredSummary | null> {
     const [row] = await this.db
       .select({
         summary: sessionReports.summary,
@@ -238,7 +243,13 @@ export class ReportRepository {
         model: sessionReports.model,
       })
       .from(sessionReports)
-      .where(eq(sessionReports.sessionId, sessionId));
+      .innerJoin(sessions, eq(sessions.id, sessionReports.sessionId))
+      .where(
+        and(
+          eq(sessionReports.sessionId, sessionId),
+          eq(sessions.userId, userId),
+        ),
+      );
     return row ?? null;
   }
 

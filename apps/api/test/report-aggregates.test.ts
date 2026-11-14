@@ -34,13 +34,22 @@ describe('report category aggregates in SQL', () => {
     await resetUserData(pool);
   });
 
-  async function newSession(): Promise<string> {
+  async function newOwnedSession(): Promise<{
+    userId: string;
+    sessionId: string;
+  }> {
     const { id: userId } = await registerUser(app);
-    return insertFinished(pool, userId, 'Topic', REPORT_STARTED_AT);
+    const sessionId = await insertFinished(
+      pool,
+      userId,
+      'Topic',
+      REPORT_STARTED_AT,
+    );
+    return { userId, sessionId };
   }
 
   it('[TC-05-01] counts categories without the false mistakes, ordered by count then code', async () => {
-    const sessionId = await newSession();
+    const { userId, sessionId } = await newOwnedSession();
     const first = await insertUtterance(pool, sessionId, 1, 'user', 'one');
     const second = await insertUtterance(pool, sessionId, 2, 'user', 'two');
     await insertMistake(pool, first, 'verb_tense');
@@ -51,7 +60,7 @@ describe('report category aggregates in SQL', () => {
     await insertMistake(pool, first, 'word_order', { isFalse: true });
     await insertMistake(pool, second, 'word_order', { isFalse: true });
 
-    const categories = await repository.categories(sessionId);
+    const categories = await repository.categories(userId, sessionId);
 
     expect(categories).toEqual([
       { category: 'verb_tense', titleUk: expect.any(String), count: 2 },
@@ -66,7 +75,7 @@ describe('report category aggregates in SQL', () => {
   });
 
   it('[TC-05-01] returns every category, the top-three cut is not made in SQL', async () => {
-    const sessionId = await newSession();
+    const { userId, sessionId } = await newOwnedSession();
     const utterance = await insertUtterance(pool, sessionId, 1, 'user', 'one');
     for (const category of [
       'articles',
@@ -78,7 +87,7 @@ describe('report category aggregates in SQL', () => {
       await insertMistake(pool, utterance, category);
     }
 
-    const categories = await repository.categories(sessionId);
+    const categories = await repository.categories(userId, sessionId);
 
     expect(categories.map((item) => item.category)).toEqual([
       'articles',
@@ -90,16 +99,16 @@ describe('report category aggregates in SQL', () => {
   });
 
   it('[TC-05-01] ignores mistakes of other sessions', async () => {
-    const sessionId = await newSession();
-    const otherId = await newSession();
+    const { userId, sessionId } = await newOwnedSession();
+    const { sessionId: otherId } = await newOwnedSession();
     const utterance = await insertUtterance(pool, otherId, 1, 'user', 'x');
     await insertMistake(pool, utterance, 'articles');
 
-    expect(await repository.categories(sessionId)).toEqual([]);
+    expect(await repository.categories(userId, sessionId)).toEqual([]);
   });
 
   it('[TC-05-01] gives at most two examples per category in answer order and skips false or suggestion-less mistakes', async () => {
-    const sessionId = await newSession();
+    const { userId, sessionId } = await newOwnedSession();
     const first = await insertUtterance(pool, sessionId, 1, 'user', 'one');
     const second = await insertUtterance(pool, sessionId, 3, 'user', 'two');
     await pool.query(
@@ -116,7 +125,7 @@ describe('report category aggregates in SQL', () => {
       suggestion: 'FALSE',
     });
 
-    const examples = await repository.examples(sessionId, [
+    const examples = await repository.examples(userId, sessionId, [
       'verb_tense',
       'articles',
     ]);
@@ -131,15 +140,27 @@ describe('report category aggregates in SQL', () => {
   });
 
   it('[TC-05-01] limits examples to the requested categories and returns nothing for an empty list', async () => {
-    const sessionId = await newSession();
+    const { userId, sessionId } = await newOwnedSession();
     const utterance = await insertUtterance(pool, sessionId, 1, 'user', 'one');
     await insertMistake(pool, utterance, 'verb_tense');
     await insertMistake(pool, utterance, 'articles', { pos: 10 });
 
-    const examples = await repository.examples(sessionId, ['articles']);
+    const examples = await repository.examples(userId, sessionId, ['articles']);
 
     expect([...examples.keys()]).toEqual(['articles']);
-    expect((await repository.examples(sessionId, [])).size).toBe(0);
+    expect((await repository.examples(userId, sessionId, [])).size).toBe(0);
+  });
+
+  it('[TC-05-01] returns no categories or examples of a foreign session', async () => {
+    const { sessionId } = await newOwnedSession();
+    const { id: strangerId } = await registerUser(app);
+    const utterance = await insertUtterance(pool, sessionId, 1, 'user', 'one');
+    await insertMistake(pool, utterance, 'articles');
+
+    expect(await repository.categories(strangerId, sessionId)).toEqual([]);
+    expect(
+      (await repository.examples(strangerId, sessionId, ['articles'])).size,
+    ).toBe(0);
   });
 
   it('[TC-05-06] returns theory links per category ordered by title, with no entry for a category without links', async () => {

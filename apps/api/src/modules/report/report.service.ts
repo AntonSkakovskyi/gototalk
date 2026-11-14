@@ -24,7 +24,6 @@ export class ReportService {
 
   async get(userId: string, sessionId: string): Promise<SessionReport> {
     if (!isSessionId(sessionId)) throw sessionNotFound();
-    // The other repository methods take no user id: this is the only ownership check
     const session = await this.repository.findOwnedSession(userId, sessionId);
     if (!session) throw sessionNotFound();
     if (session.status === 'active') throw new SessionNotFinishedError();
@@ -32,8 +31,8 @@ export class ReportService {
     // ensure() may complete pending analyses, so the aggregates are read after it
     const summary = await this.generator.ensure(userId, sessionId);
     const [stats, categories, words] = await Promise.all([
-      this.repository.stats(sessionId),
-      this.repository.categories(sessionId),
+      this.repository.stats(userId, sessionId),
+      this.repository.categories(userId, sessionId),
       this.repository.sessionWords(userId, sessionId),
     ]);
     const links = await this.repository.theoryLinks(

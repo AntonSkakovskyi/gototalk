@@ -68,7 +68,7 @@ describe('report session aggregates in SQL', () => {
   });
 
   it('[TC-05-01] counts user answers and measures whole seconds up to the last answer', async () => {
-    const { sessionId } = await learnerSession();
+    const { userId, sessionId } = await learnerSession();
     const first = await insertUtterance(pool, sessionId, 1, 'user', 'one');
     const assistant = await insertUtterance(
       pool,
@@ -82,28 +82,47 @@ describe('report session aggregates in SQL', () => {
     await setUtteranceCreatedAt(pool, assistant, '2026-11-10T10:09:00Z');
     await setUtteranceCreatedAt(pool, last, '2026-11-10T10:02:30.900Z');
 
-    expect(await repository.stats(sessionId)).toEqual({
+    expect(await repository.stats(userId, sessionId)).toEqual({
       answers: 2,
       durationSeconds: 150,
     });
   });
 
-  it('[TC-05-01] reports zero answers and zero duration for a session with only assistant turns', async () => {
+  it('[TC-05-01] reports no stats or stored summary for a foreign session', async () => {
     const { sessionId } = await learnerSession();
+    const { id: strangerId } = await registerUser(app);
+    await insertUtterance(pool, sessionId, 1, 'user', 'one');
+    await pool.query(
+      `INSERT INTO session_reports (session_id, summary, prompt_version, model)
+       VALUES ($1, 'Stored text', 'session-summary.v1', 'fake')`,
+      [sessionId],
+    );
+
+    expect(await repository.stats(strangerId, sessionId)).toEqual({
+      answers: 0,
+      durationSeconds: 0,
+    });
+    expect(
+      await repository.findStoredSummary(strangerId, sessionId),
+    ).toBeNull();
+  });
+
+  it('[TC-05-01] reports zero answers and zero duration for a session with only assistant turns', async () => {
+    const { userId, sessionId } = await learnerSession();
     await insertUtterance(pool, sessionId, 1, 'assistant', 'q');
 
-    expect(await repository.stats(sessionId)).toEqual({
+    expect(await repository.stats(userId, sessionId)).toEqual({
       answers: 0,
       durationSeconds: 0,
     });
   });
 
   it('[TC-05-01] never reports a negative duration', async () => {
-    const { sessionId } = await learnerSession();
+    const { userId, sessionId } = await learnerSession();
     const answer = await insertUtterance(pool, sessionId, 1, 'user', 'one');
     await setUtteranceCreatedAt(pool, answer, '2026-11-10T09:00:00Z');
 
-    expect(await repository.stats(sessionId)).toEqual({
+    expect(await repository.stats(userId, sessionId)).toEqual({
       answers: 1,
       durationSeconds: 0,
     });
@@ -182,8 +201,8 @@ describe('report session aggregates in SQL', () => {
   });
 
   it('[TC-05-02] returns null without a stored report and the stored summary with its prompt version and model', async () => {
-    const { sessionId } = await learnerSession();
-    expect(await repository.findStoredSummary(sessionId)).toBeNull();
+    const { userId, sessionId } = await learnerSession();
+    expect(await repository.findStoredSummary(userId, sessionId)).toBeNull();
 
     await pool.query(
       `INSERT INTO session_reports (session_id, summary, prompt_version, model)
@@ -191,7 +210,7 @@ describe('report session aggregates in SQL', () => {
       [sessionId],
     );
 
-    expect(await repository.findStoredSummary(sessionId)).toEqual({
+    expect(await repository.findStoredSummary(userId, sessionId)).toEqual({
       summary: 'Stored text',
       promptVersion: 'session-summary.v1',
       model: 'fake',

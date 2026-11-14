@@ -34,28 +34,32 @@ export class ReportGeneratorService {
 
   /** The caller guarantees the session belongs to the user and is finished. Generates the summary once and stores it. */
   async ensure(userId: string, sessionId: string): Promise<ReportSummary> {
-    const existing = await this.repository.findStoredSummary(sessionId);
+    const existing = await this.repository.findStoredSummary(userId, sessionId);
     if (existing) return { status: 'ready', text: existing.summary };
 
-    const stats = await this.repository.stats(sessionId);
+    const stats = await this.repository.stats(userId, sessionId);
     if (stats.answers === 0) return { status: 'no_answers' };
 
     if (!(await this.pending.complete(userId, sessionId))) {
       return { status: 'unavailable' };
     }
 
-    const categories = await this.repository.categories(sessionId);
+    const top = (await this.repository.categories(userId, sessionId)).slice(
+      0,
+      TOP_CATEGORIES_LIMIT,
+    );
     const examples = await this.repository.examples(
+      userId,
       sessionId,
-      categories.slice(0, TOP_CATEGORIES_LIMIT).map((item) => item.category),
+      top.map((item) => item.category),
     );
     const generated = await this.generate(
-      buildSummaryInput(stats, categories, examples),
+      buildSummaryInput(stats, top, examples),
     );
     if (generated === null) return { status: 'unavailable' };
 
     await this.repository.saveSummary(userId, sessionId, generated);
-    const stored = await this.repository.findStoredSummary(sessionId);
+    const stored = await this.repository.findStoredSummary(userId, sessionId);
     if (!stored) return { status: 'unavailable' };
     return { status: 'ready', text: stored.summary };
   }

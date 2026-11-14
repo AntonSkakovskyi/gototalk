@@ -1,4 +1,3 @@
-import 'reflect-metadata';
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 import { RequestValidationError } from './zod-body.pipe.js';

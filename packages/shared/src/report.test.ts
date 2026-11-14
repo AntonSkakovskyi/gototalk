@@ -4,6 +4,7 @@ import {
   ReportCategorySchema,
   ReportSummarySchema,
   SessionReportSchema,
+  SUMMARY_EXAMPLES_PER_CATEGORY,
   TOP_CATEGORIES_LIMIT,
   TheoryLinkSchema,
 } from './index.js';
@@ -26,7 +27,11 @@ const report = {
 
 describe('report schemas', () => {
   it('[TC-05-01] the summary limit is 600 characters and the top is 3 categories', () => {
-    expect([REPORT_SUMMARY_MAX, TOP_CATEGORIES_LIMIT]).toEqual([600, 3]);
+    expect([
+      REPORT_SUMMARY_MAX,
+      TOP_CATEGORIES_LIMIT,
+      SUMMARY_EXAMPLES_PER_CATEGORY,
+    ]).toEqual([600, 3, 2]);
   });
 
   it('[TC-05-01] ReportSummarySchema accepts the three statuses', () => {

@@ -20,10 +20,10 @@ import {
 } from '@nestjs/swagger';
 import {
   FEEDBACK_MODES,
-  HISTORY_PAGE_SIZE_DEFAULT,
-  HISTORY_PAGE_SIZE_MAX,
-  HistoryQuerySchema,
   MAX_TOPIC_REROLLS,
+  PAGE_SIZE_DEFAULT,
+  PAGE_SIZE_MAX,
+  PageQuerySchema,
   PLAN_QUESTIONS,
   RECENT_SESSIONS_LIMIT,
   PlanSessionRequestSchema,
@@ -33,7 +33,7 @@ import {
   TOPIC_SOURCES,
 } from '@gototalk/shared';
 import type {
-  HistoryQuery,
+  PageQuery,
   PlanSessionRequest,
   Session,
   SessionDetails,
@@ -200,8 +200,8 @@ export class SessionsController {
     required: false,
     type: Number,
     minimum: 1,
-    maximum: HISTORY_PAGE_SIZE_MAX,
-    example: HISTORY_PAGE_SIZE_DEFAULT,
+    maximum: PAGE_SIZE_MAX,
+    example: PAGE_SIZE_DEFAULT,
   })
   @ApiResponse({
     status: 200,
@@ -211,7 +211,7 @@ export class SessionsController {
   @ApiResponse({ status: 401, description: 'UNAUTHORIZED' })
   history(
     @CurrentUser() user: AuthenticatedUser | undefined,
-    @Query(new ZodQueryPipe(HistoryQuerySchema)) query: HistoryQuery,
+    @Query(new ZodQueryPipe(PageQuerySchema)) query: PageQuery,
   ): Promise<SessionPage> {
     return this.sessions.history(requireUserId(user), query);
   }

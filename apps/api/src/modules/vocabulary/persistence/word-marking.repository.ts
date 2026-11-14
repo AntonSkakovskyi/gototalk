@@ -1,24 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { and, eq, ne } from 'drizzle-orm';
-import {
-  WordSchema,
-  WordSourceSchema,
-  WordStateSchema,
-} from '@gototalk/shared';
 import type { Word, WordState } from '@gototalk/shared';
 import { DRIZZLE } from '../../../core/db/db.tokens.js';
 import type { Database } from '../../../core/db/db.tokens.js';
 import { words } from '../../../core/db/schema.js';
+import { WORD_COLUMNS, toWord } from './word-view.js';
 
 const ACTIVE: WordState = 'active';
-
-const WORD_COLUMNS = {
-  id: words.id,
-  lemma: words.lemma,
-  translationUk: words.translationUk,
-  state: words.state,
-  source: words.source,
-};
 
 export type MarkStateResult = Word | 'not_found' | 'active';
 
@@ -50,18 +38,4 @@ export class WordMarkingRepository {
       .where(and(eq(words.id, wordId), eq(words.userId, userId)));
     return existing ? 'active' : 'not_found';
   }
-}
-
-function toWord(row: {
-  id: string;
-  lemma: string;
-  translationUk: string | null;
-  state: string;
-  source: string;
-}): Word {
-  return WordSchema.parse({
-    ...row,
-    state: WordStateSchema.parse(row.state),
-    source: WordSourceSchema.parse(row.source),
-  });
 }

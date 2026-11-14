@@ -59,37 +59,4 @@ describe('buildSummaryInput', () => {
       { code: 'verb_tense', title: 'title verb_tense', count: 2, examples: [] },
     ]);
   });
-
-  it('[TC-05-01] cuts the categories to the top three', () => {
-    const input = buildSummaryInput(
-      { answers: 3, durationSeconds: 120 },
-      [
-        category('articles', 5),
-        category('verb_tense', 4),
-        category('collocation', 3),
-        category('other', 2),
-      ],
-      new Map(),
-    );
-
-    expect(input.categories.map((item) => item.code)).toEqual([
-      'articles',
-      'verb_tense',
-      'collocation',
-    ]);
-  });
-
-  it('[TC-05-01] allows at most two examples per category', () => {
-    const examples = new Map([
-      ['articles', [example('a'), example('b'), example('c')]],
-    ]);
-
-    const input = buildSummaryInput(
-      { answers: 1, durationSeconds: 60 },
-      [category('articles', 3)],
-      examples,
-    );
-
-    expect(input.categories[0]?.examples).toEqual([example('a'), example('b')]);
-  });
 });

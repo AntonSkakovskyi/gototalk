@@ -1,13 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { and, asc, desc, eq, inArray, sql } from 'drizzle-orm';
-import type { SQL } from 'drizzle-orm';
 import { z } from 'zod';
 import {
   AnalysisStatusSchema,
   BetterPhrasingSchema,
-  FeedbackModeSchema,
-  SessionStatusSchema,
-  TopicSourceSchema,
   UtteranceRoleSchema,
 } from '@gototalk/shared';
 import type {
@@ -17,10 +13,12 @@ import type {
   Utterance,
 } from '@gototalk/shared';
 import type { KeysetPosition } from '../../common/keyset-cursor.js';
+import { olderThan, toKeysetPage } from '../../common/keyset-page.js';
+import type { KeysetPage } from '../../common/keyset-page.js';
 import { DRIZZLE } from '../../core/db/db.tokens.js';
 import type { Database, DbTransaction } from '../../core/db/db.tokens.js';
-import { pgTimestampToDate } from '../../core/db/pg-timestamp.js';
 import { mistakes, sessions, users, utterances } from '../../core/db/schema.js';
+import { toSession } from './lib/session-view.js';
 import { lockSession } from './persistence/lock-session.js';
 import { toMistakeView } from './lib/mistake-view.js';
 import type { MistakeRow } from './lib/mistake-view.js';
@@ -32,41 +30,6 @@ import { SessionOwnerMissingError } from './session.errors.js';
 
 type SessionRow = typeof sessions.$inferSelect;
 type UtteranceRow = typeof utterances.$inferSelect;
-
-export interface SessionsPageResult {
-  items: Session[];
-  next: KeysetPosition | null;
-}
-
-// started_at stays raw text: a JS Date would truncate microseconds and break the keyset
-function toPage(rows: SessionRow[], limit: number): SessionsPageResult {
-  const last = rows[limit - 1];
-  return {
-    items: rows.slice(0, limit).map(toSession),
-    next:
-      rows.length > limit && last ? { t: last.startedAt, id: last.id } : null,
-  };
-}
-
-function olderThan(after: KeysetPosition): SQL {
-  return sql`(${sessions.startedAt}, ${sessions.id}) < (${after.t}::timestamptz, ${after.id}::uuid)`;
-}
-
-function toIso(value: string): string {
-  return pgTimestampToDate(value).toISOString();
-}
-
-function toSession(row: SessionRow): Session {
-  return {
-    id: row.id,
-    topic: row.topic,
-    topicSource: TopicSourceSchema.parse(row.topicSource),
-    feedbackMode: FeedbackModeSchema.parse(row.feedbackMode),
-    status: SessionStatusSchema.parse(row.status),
-    startedAt: toIso(row.startedAt),
-    endedAt: row.endedAt === null ? null : toIso(row.endedAt),
-  };
-}
 
 const BetterPhrasingsSchema = z.array(BetterPhrasingSchema);
 
@@ -169,16 +132,25 @@ export class SessionsRepository {
   async listPage(
     userId: string,
     { after, limit }: { after?: KeysetPosition; limit: number },
-  ): Promise<SessionsPageResult> {
+  ): Promise<KeysetPage<Session>> {
     const rows = await this.db
       .select()
       .from(sessions)
       .where(
-        and(eq(sessions.userId, userId), after ? olderThan(after) : undefined),
+        and(
+          eq(sessions.userId, userId),
+          after ? olderThan(sessions.startedAt, sessions.id, after) : undefined,
+        ),
       )
       .orderBy(desc(sessions.startedAt), desc(sessions.id))
       .limit(limit + 1);
-    return toPage(rows, limit);
+    // started_at stays raw text: a JS Date would truncate microseconds and break the keyset
+    return toKeysetPage(
+      rows,
+      limit,
+      (row) => ({ t: row.startedAt, id: row.id }),
+      toSession,
+    );
   }
 
   async findDetails(

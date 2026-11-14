@@ -50,13 +50,16 @@ describe('keyset cursor', () => {
   );
 
   it('[TC-05-03] the error reports the cursor path without echoing its value', () => {
+    let caught: unknown;
     try {
       decodeCursor(encodeRaw({ t: 'secret-value', id: ID }));
-      expect.unreachable();
     } catch (error) {
-      const { issues } = error as RequestValidationError;
-      expect(issues.map((issue) => issue.path)).toEqual([['cursor']]);
-      expect(JSON.stringify(issues)).not.toContain('secret-value');
+      caught = error;
     }
+
+    expect(caught).toBeInstanceOf(RequestValidationError);
+    if (!(caught instanceof RequestValidationError)) return;
+    expect(caught.issues.map((issue) => issue.path)).toEqual([['cursor']]);
+    expect(JSON.stringify(caught.issues)).not.toContain('secret-value');
   });
 });

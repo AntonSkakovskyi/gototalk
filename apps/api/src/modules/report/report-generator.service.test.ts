@@ -32,7 +32,6 @@ const EXAMPLES = new Map([
     [
       { original: `${SENTINEL} a`, suggestion: 'the a' },
       { original: 'b', suggestion: 'the b' },
-      { original: 'c', suggestion: 'the c' },
     ],
   ],
 ]);
@@ -68,6 +67,8 @@ function setup(options: { answers?: number; complete?: boolean } = {}) {
   return {
     service,
     findStoredSummary,
+    stats,
+    categories,
     examples,
     saveSummary,
     completePending,
@@ -93,7 +94,7 @@ describe('ReportGeneratorService.ensure', () => {
       text: 'Stored text',
     });
 
-    expect(fixture.findStoredSummary).toHaveBeenCalledWith(SESSION_ID);
+    expect(fixture.findStoredSummary).toHaveBeenCalledWith(USER_ID, SESSION_ID);
     expect(fixture.completePending).not.toHaveBeenCalled();
     expect(fixture.summarizeSession).not.toHaveBeenCalled();
     expect(fixture.saveSummary).not.toHaveBeenCalled();
@@ -163,12 +164,14 @@ describe('ReportGeneratorService.ensure', () => {
     });
   });
 
-  it('[TC-05-02] sends the top three categories, the minutes and at most two examples to the model', async () => {
+  it('[TC-05-02] sends only the top three categories with the minutes and the repository examples to the model', async () => {
     const fixture = setup();
 
     await fixture.service.ensure(USER_ID, SESSION_ID);
 
-    expect(fixture.examples).toHaveBeenCalledWith(SESSION_ID, [
+    expect(fixture.stats).toHaveBeenCalledWith(USER_ID, SESSION_ID);
+    expect(fixture.categories).toHaveBeenCalledWith(USER_ID, SESSION_ID);
+    expect(fixture.examples).toHaveBeenCalledWith(USER_ID, SESSION_ID, [
       'articles',
       'verb_tense',
       'collocation',

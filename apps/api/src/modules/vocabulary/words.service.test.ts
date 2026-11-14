@@ -2,7 +2,9 @@ import 'reflect-metadata';
 import { ERROR_CODES } from '@gototalk/shared';
 import type { Word } from '@gototalk/shared';
 import { describe, expect, it, vi } from 'vitest';
+import { afterOf } from '../../common/keyset-page.js';
 import type { WordMarkingRepository } from './persistence/word-marking.repository.js';
+import type { WordsPageRepository } from './persistence/words-page.repository.js';
 import { WordAlreadyActiveError, WordNotFoundError } from './words.errors.js';
 import { WordsService } from './words.service.js';
 
@@ -16,9 +18,11 @@ const WORD: Word = {
   source: 'hint',
 };
 
-function setup(markState: unknown) {
-  const repository = { markState };
-  return new WordsService(repository as unknown as WordMarkingRepository);
+function setup(markState: unknown, listPage: unknown = vi.fn()) {
+  return new WordsService(
+    { markState } as unknown as WordMarkingRepository,
+    { listPage } as unknown as WordsPageRepository,
+  );
 }
 
 describe('WordsService.mark', () => {
@@ -61,6 +65,39 @@ describe('WordsService.mark', () => {
     await expect(result).rejects.toMatchObject({
       status: 409,
       response: { code: ERROR_CODES.WORD_ALREADY_ACTIVE },
+    });
+  });
+});
+
+describe('WordsService.list', () => {
+  it('passes the decoded cursor and limit on and encodes the next position', async () => {
+    const next = { t: '2026-01-01 10:00:00.000001+00', id: WORD_ID };
+    const listPage = vi.fn().mockResolvedValue({ items: [WORD], next });
+    const after = { t: '2026-02-01 10:00:00+00', id: USER_ID };
+    const cursor = Buffer.from(JSON.stringify(after)).toString('base64url');
+
+    const page = await setup(vi.fn(), listPage).list(USER_ID, {
+      cursor,
+      limit: 5,
+    });
+
+    expect(listPage).toHaveBeenCalledWith(USER_ID, { after, limit: 5 });
+    expect(page.items).toEqual([WORD]);
+    expect(afterOf(page.nextCursor ?? undefined)).toEqual(next);
+  });
+
+  it('returns a null cursor on the last page', async () => {
+    const listPage = vi.fn().mockResolvedValue({ items: [], next: null });
+
+    await expect(
+      setup(vi.fn(), listPage).list(USER_ID, { limit: 5 }),
+    ).resolves.toEqual({
+      items: [],
+      nextCursor: null,
+    });
+    expect(listPage).toHaveBeenCalledWith(USER_ID, {
+      after: undefined,
+      limit: 5,
     });
   });
 });

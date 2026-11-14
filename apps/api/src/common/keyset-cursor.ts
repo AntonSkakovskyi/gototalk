@@ -6,12 +6,12 @@ const PG_TIMESTAMPTZ =
   /^([1-9][0-9]{3})-(0[1-9]|1[0-2])-([0-9]{2}) ([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])(\.[0-9]{1,6})?[+-](0[0-9]|1[0-5])(:[0-5][0-9])?$/;
 
 function isRealDate(value: string): boolean {
-  const match = PG_TIMESTAMPTZ.exec(value);
-  if (!match) return false;
-  const [year, month, day] = [match[1], match[2], match[3]].map(Number) as [
-    number,
-    number,
-    number,
+  const [, yearText, monthText, dayText] = PG_TIMESTAMPTZ.exec(value) ?? [];
+  if (!yearText || !monthText || !dayText) return false;
+  const [year, month, day] = [
+    Number(yearText),
+    Number(monthText),
+    Number(dayText),
   ];
   const date = new Date(Date.UTC(year, month - 1, day));
   return date.getUTCMonth() === month - 1 && date.getUTCDate() === day;

@@ -6,8 +6,13 @@ export const REPORT_SUMMARY_MAX = 600;
 
 export const TOP_CATEGORIES_LIMIT = 3;
 
+export const SUMMARY_EXAMPLES_PER_CATEGORY = 2;
+
 export const ReportSummarySchema = z.discriminatedUnion('status', [
-  z.object({ status: z.literal('ready'), text: z.string().min(1).max(REPORT_SUMMARY_MAX) }),
+  z.object({
+    status: z.literal('ready'),
+    text: z.string().min(1).max(REPORT_SUMMARY_MAX),
+  }),
   z.object({ status: z.literal('unavailable') }),
   z.object({ status: z.literal('no_answers') }),
 ]);

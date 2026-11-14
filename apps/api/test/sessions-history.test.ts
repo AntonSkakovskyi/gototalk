@@ -1,8 +1,8 @@
 import { randomUUID } from 'node:crypto';
 import type { INestApplication } from '@nestjs/common';
 import {
-  HISTORY_PAGE_SIZE_DEFAULT,
-  HISTORY_PAGE_SIZE_MAX,
+  PAGE_SIZE_DEFAULT,
+  PAGE_SIZE_MAX,
   SessionPageSchema,
 } from '@gototalk/shared';
 import type { SessionPage } from '@gototalk/shared';
@@ -169,7 +169,7 @@ describe('GET /api/sessions/history', () => {
 
   it('[TC-05-03] applies the default page size', async () => {
     const { id, token } = await registerUser(app);
-    const total = HISTORY_PAGE_SIZE_DEFAULT + 1;
+    const total = PAGE_SIZE_DEFAULT + 1;
     for (let index = 0; index < total; index += 1) {
       const minute = String(index).padStart(2, '0');
       await insertFinished(id, `n ${index}`, `2026-01-01T10:${minute}:00Z`);
@@ -177,17 +177,17 @@ describe('GET /api/sessions/history', () => {
 
     const result = await page(token);
 
-    expect(result.items).toHaveLength(HISTORY_PAGE_SIZE_DEFAULT);
+    expect(result.items).toHaveLength(PAGE_SIZE_DEFAULT);
     expect(result.nextCursor).not.toBeNull();
   });
 
   it('[TC-05-03] accepts the maximum limit and rejects values outside 1..max', async () => {
     const { token } = await registerUser(app);
 
-    expect(
-      (await getHistory(token, `?limit=${HISTORY_PAGE_SIZE_MAX}`)).status,
-    ).toBe(200);
-    for (const limit of [HISTORY_PAGE_SIZE_MAX + 1, 0, -1, 'abc', '1.5', '']) {
+    expect((await getHistory(token, `?limit=${PAGE_SIZE_MAX}`)).status).toBe(
+      200,
+    );
+    for (const limit of [PAGE_SIZE_MAX + 1, 0, -1, 'abc', '1.5', '']) {
       expectError(
         await getHistory(token, `?limit=${limit}`),
         400,

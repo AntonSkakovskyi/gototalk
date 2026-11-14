@@ -78,7 +78,7 @@ describe('report summary store', () => {
         deep_analysis: null,
       },
     ]);
-    expect(await repository.findStoredSummary(sessionId)).toEqual({
+    expect(await repository.findStoredSummary(userId, sessionId)).toEqual({
       summary: 'First',
       promptVersion: 'session-summary.v1',
       model: 'fake',
