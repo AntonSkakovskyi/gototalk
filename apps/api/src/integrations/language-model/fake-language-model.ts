@@ -77,7 +77,6 @@ export class FakeLanguageModel implements LanguageModelPort {
     if (this.failMode === 'unavailable') return unavailable();
     return Promise.resolve({
       summary: 'Ви відповіли 1 раз за 1 хв. Помилок не знайдено, так тримати.',
-      top_categories: [],
     });
   }
 }

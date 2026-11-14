@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { MistakeCategoryCodeSchema } from './mistake-categories.js';
+import { WordStateSchema } from './words.js';
 
 export const LEVELS = ['A2', 'B1', 'B2', 'C1'] as const;
 
@@ -74,10 +75,6 @@ export const UpdateGoalRequestSchema = z
   })
   .refine((body) => body.title !== undefined || body.status !== undefined);
 
-export const WORD_STATES = ['new', 'partial', 'passive', 'active'] as const;
-
-export const WordStateSchema = z.enum(WORD_STATES);
-
 export const LearnerModelSchema = z.object({
   weakAreas: z.array(
     z.object({
@@ -96,5 +93,4 @@ export type GoalStatus = z.infer<typeof GoalStatusSchema>;
 export type Goal = z.infer<typeof GoalSchema>;
 export type CreateGoalRequest = z.infer<typeof CreateGoalRequestSchema>;
 export type UpdateGoalRequest = z.infer<typeof UpdateGoalRequestSchema>;
-export type WordState = z.infer<typeof WordStateSchema>;
 export type LearnerModel = z.infer<typeof LearnerModelSchema>;

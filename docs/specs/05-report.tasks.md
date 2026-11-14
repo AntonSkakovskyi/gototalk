@@ -169,7 +169,8 @@ docs/ tech-decisions.md · stubs.md · backlog.md · README.md
 Кожна ≤ ~8 файлів, TDD для домену, назви тестів з `[TC-05-NN]`.
 
 **Блок A – контракти, міграція, промпт**
-- [ ] **05-01. Контракти shared.** `words.ts`, `report.ts`, `llm.ts` (`SummarySchema`, без `HintSchema.message`), `ERROR_CODES`, `profile.ts` (імпорт `WORD_STATES` + тести `GoalSchema`/`LearnerModelSchema` з backlog), `index.ts`, тести. `[risk]`
+- [x] **05-01. Контракти shared.** `words.ts`, `report.ts`, `llm.ts` (`SummarySchema`, без `HintSchema.message`), `ERROR_CODES`, `profile.ts` (імпорт `WORD_STATES` + тести `GoalSchema`/`LearnerModelSchema` з backlog), `index.ts`, тести. `[risk]`
+  - Відхилення: `words.ts` (+`WordSourceSchema`, `WordSchema.lemma` без межі довжини), `report.ts` (`ready.text` 1..`REPORT_SUMMARY_MAX`), `SummarySchema` нестрогий (зайве `top_categories` від моделі відкидається, а не валить відповідь; відкинуто `.strict()`), `WORD_STATES` переїхав із `profile.ts` без дубля, `HintSchema.message` видалено; `summarizeSession` порт не змінено (05-04). Backlog: тести `GoalSchema`/`ProfileSchema`/`LearnerModelSchema` зроблено, рядок «Прибрати HintSchema.message» закрито. Рев'ю: 0 high/medium, 3 low виправлено. Shared 91 → 112.
 - [ ] **05-02. Міграція 0005.** SQL вище, journal/snapshot, `db:pull` → `schema.ts`, `db-schema.test.ts`, seed, `test/support/user-data.ts`(+`user-data-fixture` тест), рядок у `tech-decisions.md` розд. 3. Свіжа БД з нуля + `db:seed` двічі. `[risk]` **[Антон]** `pnpm db:migrate` на dev-БД.
 - [ ] **05-03. Промпт.** `session-summary.v1.md`, `prompts.ts` (id + обгортка; прибрати дубль id в обгортках), `prompts.test.ts` (новий кейс + посилити слабкі перевірки з backlog), README. `[TC-05-04]`
 

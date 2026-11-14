@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { HINT_LEMMA_PATTERN, HINT_PHRASE_MAX, HINT_WORD_MAX } from './hint.js';
 import { MistakeCategoryCodeSchema } from './mistake-categories.js';
+import { REPORT_SUMMARY_MAX } from './report.js';
 import { PLAN_QUESTIONS, QuestionSchema, TopicSchema } from './plan-bounds.js';
 
 export const TranscriptSchema = z.object({
@@ -78,7 +79,7 @@ export const TurnSchema = z.object({
 
 export type Turn = z.infer<typeof TurnSchema>;
 
-/** For an unknown word, `word` is null; `message` is optional and not used by the app. */
+/** For an unknown word, `word` is null. */
 export const HintSchema = z.discriminatedUnion('kind', [
   z.object({
     kind: z.literal('phrase_start'),
@@ -93,15 +94,13 @@ export const HintSchema = z.discriminatedUnion('kind', [
       .max(HINT_WORD_MAX)
       .regex(HINT_LEMMA_PATTERN)
       .nullable(),
-    message: z.string().optional(),
   }),
 ]);
 
 export type Hint = z.infer<typeof HintSchema>;
 
 export const SummarySchema = z.object({
-  summary: z.string().min(1),
-  top_categories: z.array(MistakeCategoryCodeSchema).max(3),
+  summary: z.string().trim().min(1).max(REPORT_SUMMARY_MAX),
 });
 
 export type Summary = z.infer<typeof SummarySchema>;

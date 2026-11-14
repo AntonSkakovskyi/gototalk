@@ -9,4 +9,6 @@ export * from './mistake-categories.js';
 export * from './llm.js';
 export * from './profile.js';
 export * from './plan-bounds.js';
+export * from './report.js';
 export * from './session.js';
+export * from './words.js';
