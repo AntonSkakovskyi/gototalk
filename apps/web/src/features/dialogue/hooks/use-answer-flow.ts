@@ -1,9 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import type { Utterance } from '@gototalk/shared';
 import { useCallback, useEffect, useRef } from 'react';
 import {
   analyzeAnswer,
+  submitAudioAnswer,
   submitTextAnswer,
 } from '@/features/dialogue/api/dialogue-api';
+import { canRetryAnswer } from '@/features/dialogue/lib/dialogue-errors';
 import {
   findUnansweredUtteranceId,
   withTurnResult,
@@ -16,7 +19,19 @@ import {
 } from '@/shared/api/session-details';
 import { useUpdateDetails } from './use-update-details';
 
-export type AnswerPhase = 'idle' | 'sending' | 'analyzing';
+export type AnswerPhase = 'idle' | 'sending' | 'recognizing' | 'analyzing';
+
+type AnswerInput =
+  { kind: 'text'; text: string } | { kind: 'audio'; audio: Blob };
+
+function sendAnswerInput(
+  sessionId: string,
+  input: AnswerInput,
+): Promise<Utterance> {
+  return input.kind === 'audio'
+    ? submitAudioAnswer(sessionId, input.audio)
+    : submitTextAnswer(sessionId, input.text);
+}
 
 const HTTP_NOT_FOUND = 404;
 const HTTP_CONFLICT = 409;
@@ -26,11 +41,11 @@ function hasStatus(error: unknown, status: number): boolean {
 }
 
 function phaseOf(
-  send: { isPending: boolean },
+  send: { isPending: boolean; variables: AnswerInput | undefined },
   analysis: { isPending: boolean },
 ): AnswerPhase {
   if (send.isPending) {
-    return 'sending';
+    return send.variables?.kind === 'audio' ? 'recognizing' : 'sending';
   }
   return analysis.isPending ? 'analyzing' : 'idle';
 }
@@ -52,7 +67,7 @@ type UpdateDetails = ReturnType<typeof useUpdateDetails>;
 function useSendAnswer(sessionId: string, updateDetails: UpdateDetails) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (text: string) => submitTextAnswer(sessionId, text),
+    mutationFn: (input: AnswerInput) => sendAnswerInput(sessionId, input),
     onSuccess: (utterance) =>
       updateDetails((current) => withUtterance(current, utterance)),
     onError: (error) => {
@@ -87,22 +102,46 @@ function useAnalysis(sessionId: string, updateDetails: UpdateDetails) {
   return { analysis, analyzeOnce };
 }
 
-export function useAnswerFlow(sessionId: string) {
-  const updateDetails = useUpdateDetails(sessionId);
-  const send = useSendAnswer(sessionId, updateDetails);
-  const { analysis, analyzeOnce } = useAnalysis(sessionId, updateDetails);
-  useRecovery(sessionId, analyzeOnce);
-
-  async function submit(text: string): Promise<boolean> {
+function useSubmission(
+  send: ReturnType<typeof useSendAnswer>,
+  analyzeOnce: (id: string) => void,
+) {
+  async function run(input: AnswerInput): Promise<boolean> {
     try {
-      const utterance = await send.mutateAsync(text);
+      const utterance = await send.mutateAsync(input);
       analyzeOnce(utterance.id);
+      // The recording is no longer needed once the server has accepted it.
+      send.reset();
       return true;
     } catch {
       // The failure is exposed through submitError.
       return false;
     }
   }
+
+  const audioFailed = send.isError && send.variables?.kind === 'audio';
+  const canRetrySend = audioFailed && canRetryAnswer(send.error);
+
+  async function retrySend(): Promise<boolean> {
+    const input = send.variables;
+    return canRetrySend && input !== undefined ? run(input) : false;
+  }
+
+  return {
+    submit: (text: string) => run({ kind: 'text', text }),
+    submitAudio: (audio: Blob) => run({ kind: 'audio', audio }),
+    retrySend,
+    canRetrySend,
+    audioFailed,
+  };
+}
+
+export function useAnswerFlow(sessionId: string) {
+  const updateDetails = useUpdateDetails(sessionId);
+  const send = useSendAnswer(sessionId, updateDetails);
+  const { analysis, analyzeOnce } = useAnalysis(sessionId, updateDetails);
+  useRecovery(sessionId, analyzeOnce);
+  const submission = useSubmission(send, analyzeOnce);
 
   const canRetryAnalysis =
     analysis.isError && !hasStatus(analysis.error, HTTP_NOT_FOUND);
@@ -114,8 +153,8 @@ export function useAnswerFlow(sessionId: string) {
   }
 
   return {
+    ...submission,
     phase: phaseOf(send, analysis),
-    submit,
     retryAnalysis,
     canRetryAnalysis,
     submitError: send.error,

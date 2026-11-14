@@ -10,6 +10,7 @@ import {
   type TurnResult,
   type Utterance,
 } from '@gototalk/shared';
+import { audioFileName } from '@/features/dialogue/lib/recorder-mime';
 import { apiFetch } from '@/shared/api/http';
 
 function sessionPath(sessionId: string): string {
@@ -21,6 +22,19 @@ export function submitTextAnswer(
   text: string,
 ): Promise<Utterance> {
   const body: AnswerTextRequest = { text };
+  return apiFetch(`${sessionPath(sessionId)}/utterances`, {
+    method: 'POST',
+    body,
+    schema: UtteranceSchema,
+  });
+}
+
+export function submitAudioAnswer(
+  sessionId: string,
+  audio: Blob,
+): Promise<Utterance> {
+  const body = new FormData();
+  body.append('audio', audio, audioFileName(audio.type));
   return apiFetch(`${sessionPath(sessionId)}/utterances`, {
     method: 'POST',
     body,

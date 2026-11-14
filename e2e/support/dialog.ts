@@ -30,8 +30,18 @@ export async function startDialogue(
   return sessionIdFromUrl(page);
 }
 
+export async function openTextAnswer(page: Page): Promise<Locator> {
+  await page
+    .getByRole('button', { name: 'Написати відповідь', exact: true })
+    .click();
+  const field = page.getByLabel('Ваша відповідь англійською');
+  await expect(field).toBeEditable();
+  return field;
+}
+
 export async function sendAnswer(page: Page, text: string): Promise<void> {
-  await page.getByLabel('Ваша відповідь англійською').fill(text);
+  const field = await openTextAnswer(page);
+  await field.fill(text);
   await page.getByRole('button', { name: 'Надіслати', exact: true }).click();
 }
 

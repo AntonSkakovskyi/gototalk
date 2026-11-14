@@ -2,10 +2,10 @@ import type { SessionDetails } from '@gototalk/shared';
 import { Button, Stack, Text } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
+import { AnswerComposer } from '@/features/dialogue/components/AnswerComposer/AnswerComposer';
 import { AnswerError } from '@/features/dialogue/components/AnswerError/AnswerError';
 import { FinishAction } from '@/features/dialogue/components/FinishAction/FinishAction';
 import { ProcessingStatus } from '@/features/dialogue/components/ProcessingStatus/ProcessingStatus';
-import { TextAnswerForm } from '@/features/dialogue/components/TextAnswerForm/TextAnswerForm';
 import { TurnList } from '@/features/dialogue/components/TurnList/TurnList';
 import { useAnswerFlow } from '@/features/dialogue/hooks/use-answer-flow';
 import { awaitingReply } from '@/features/dialogue/lib/turns';
@@ -28,7 +28,13 @@ export function DialogueScreen({ details }: DialogueScreenProps) {
       {!finished && (
         <>
           <ProcessingStatus phase={flow.phase} />
-          <AnswerError error={flow.submitError} />
+          <AnswerError
+            error={flow.submitError}
+            onRetry={
+              flow.canRetrySend ? () => void flow.retrySend() : undefined
+            }
+            retryLabel={t('dialogue.voice.resend')}
+          />
           <AnswerError
             error={flow.analysisError}
             onRetry={flow.canRetryAnalysis ? flow.retryAnalysis : undefined}
@@ -37,7 +43,12 @@ export function DialogueScreen({ details }: DialogueScreenProps) {
             <Text c="dimmed">{t('dialogue.planExhausted')}</Text>
           )}
           {canAnswer && (
-            <TextAnswerForm phase={flow.phase} submit={flow.submit} />
+            <AnswerComposer
+              phase={flow.phase}
+              submitText={flow.submit}
+              submitAudio={flow.submitAudio}
+              audioFailed={flow.audioFailed}
+            />
           )}
         </>
       )}

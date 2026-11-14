@@ -19,6 +19,7 @@ describe('ProcessingStatus', () => {
 
   it.each([
     ['sending', uk.dialogue.status.sending],
+    ['recognizing', uk.dialogue.status.recognizing],
     ['analyzing', uk.dialogue.status.analyzing],
   ] as const)('[TC-04-12] announces the %s phase', (phase, text) => {
     const { container } = renderStatus(phase);

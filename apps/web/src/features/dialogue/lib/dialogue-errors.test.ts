@@ -1,7 +1,7 @@
 import { ERROR_CODES } from '@gototalk/shared';
 import { ApiError } from '@/shared/api/http';
 import i18n from '@/shared/i18n/index';
-import { dialogueErrorKey } from './dialogue-errors';
+import { canRetryAnswer, dialogueErrorKey } from './dialogue-errors';
 
 const MAPPED_CODES = [
   [ERROR_CODES.SESSION_FINISHED, 'dialogue.errors.sessionFinished'],
@@ -15,6 +15,12 @@ const MAPPED_CODES = [
     ERROR_CODES.LANGUAGE_MODEL_INVALID_RESPONSE,
     'dialogue.errors.modelInvalidResponse',
   ],
+  [
+    ERROR_CODES.SPEECH_RECOGNITION_UNAVAILABLE,
+    'dialogue.errors.speechUnavailable',
+  ],
+  [ERROR_CODES.AUDIO_TOO_LARGE, 'dialogue.errors.audioTooLarge'],
+  [ERROR_CODES.AUDIO_UNSUPPORTED, 'dialogue.errors.audioUnsupported'],
 ] as const;
 
 describe('dialogueErrorKey', () => {
@@ -41,5 +47,34 @@ describe('dialogueErrorKey', () => {
       key: 'errors.generic',
     });
     expect(i18n.exists('errors.generic')).toBe(true);
+  });
+});
+
+describe('canRetryAnswer', () => {
+  it.each([
+    [503, ERROR_CODES.SPEECH_RECOGNITION_UNAVAILABLE],
+    [500, 'INTERNAL_ERROR'],
+  ])('[TC-04-08] allows a retry after %i %s', (status, code) => {
+    expect(canRetryAnswer(new ApiError(status, code, 'message'))).toBe(true);
+  });
+
+  it('[TC-04-08] allows a retry after a network failure', () => {
+    expect(canRetryAnswer(new TypeError('Failed to fetch'))).toBe(true);
+  });
+
+  it.each([
+    [413, ERROR_CODES.AUDIO_TOO_LARGE],
+    [415, ERROR_CODES.AUDIO_UNSUPPORTED],
+    [409, ERROR_CODES.SESSION_FINISHED],
+    [404, ERROR_CODES.SESSION_NOT_FOUND],
+  ])(
+    '[TC-04-08] does not retry the same upload after %i %s',
+    (status, code) => {
+      expect(canRetryAnswer(new ApiError(status, code, 'message'))).toBe(false);
+    },
+  );
+
+  it('[TC-04-08] has nothing to retry without an error', () => {
+    expect(canRetryAnswer(null)).toBe(false);
   });
 });

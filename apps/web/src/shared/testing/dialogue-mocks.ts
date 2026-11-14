@@ -25,6 +25,14 @@ export const finishOk = () =>
     testSession({ status: 'finished', endedAt: '2026-11-13T10:30:00.000Z' }),
   );
 
+function audioOf(form: FormData): File {
+  const audio = form.get('audio');
+  if (!(audio instanceof File)) {
+    throw new Error('The multipart body has no audio file');
+  }
+  return audio;
+}
+
 function bodiesOf(requests: MockRequest[], method: string, suffix: string) {
   return requests
     .filter(
@@ -36,6 +44,7 @@ function bodiesOf(requests: MockRequest[], method: string, suffix: string) {
 interface DialogueApiReplies {
   details?: () => Reply;
   answer?: (body: AnswerTextRequest) => Reply;
+  voiceAnswer?: (audio: File) => Reply;
   analyze?: () => Reply;
   markMistake?: () => Reply;
   finish?: () => Reply;
@@ -45,6 +54,7 @@ interface DialogueApiReplies {
 export function mockDialogueApi({
   details,
   answer = answerCreated,
+  voiceAnswer = answerCreated,
   analyze = analysisOk,
   markMistake = markMistakeOk,
   finish = finishOk,
@@ -53,7 +63,9 @@ export function mockDialogueApi({
   const { requests } = mockApi({
     ...(details === undefined ? {} : { [`GET ${SESSION_PATH}`]: details }),
     [`POST ${SESSION_PATH}/utterances`]: (request) =>
-      answer(AnswerTextRequestSchema.parse(request.body)),
+      request.body instanceof FormData
+        ? voiceAnswer(audioOf(request.body))
+        : answer(AnswerTextRequestSchema.parse(request.body)),
     [`POST ${SESSION_PATH}/utterances/${turn.utterance.id}/analysis`]: analyze,
     [`PATCH ${SESSION_PATH}/mistakes/${testMistake().id}`]: (request) => {
       MarkMistakeRequestSchema.parse(request.body);
@@ -64,6 +76,10 @@ export function mockDialogueApi({
   return {
     requests,
     answerRequests: () => bodiesOf(requests, 'POST', '/utterances'),
+    audioRequests: () =>
+      bodiesOf(requests, 'POST', '/utterances').flatMap((body) =>
+        body instanceof FormData ? [audioOf(body)] : [],
+      ),
     markMistakeRequests: () => bodiesOf(requests, 'PATCH', testMistake().id),
     finishRequests: () => bodiesOf(requests, 'POST', '/finish'),
   };

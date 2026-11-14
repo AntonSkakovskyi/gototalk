@@ -5,9 +5,11 @@ import { dialogueErrorKey } from '@/features/dialogue/lib/dialogue-errors';
 interface AnswerErrorProps {
   error: unknown;
   onRetry?: () => void;
+  /** Overrides the generic «try again» label, e.g. for resending a recording. */
+  retryLabel?: string;
 }
 
-export function AnswerError({ error, onRetry }: AnswerErrorProps) {
+export function AnswerError({ error, onRetry, retryLabel }: AnswerErrorProps) {
   const { t } = useTranslation();
 
   if (error === null || error === undefined) {
@@ -21,7 +23,7 @@ export function AnswerError({ error, onRetry }: AnswerErrorProps) {
       </Alert>
       {onRetry && (
         <Button variant="light" size="lg" onClick={onRetry}>
-          {t('common.actions.retry')}
+          {retryLabel ?? t('common.actions.retry')}
         </Button>
       )}
     </Stack>

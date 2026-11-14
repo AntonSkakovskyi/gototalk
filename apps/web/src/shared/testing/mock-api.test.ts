@@ -32,6 +32,16 @@ describe('mockApi', () => {
     await expect(again.json()).resolves.toEqual({ ok: true });
   });
 
+  it('[TC-04-05] records a multipart body as FormData', async () => {
+    const { requests } = mockApi({ 'POST /api/a': jsonResponse({}) });
+    const form = new FormData();
+    form.append('audio', new Blob(['x'], { type: 'audio/webm' }), 'a.webm');
+
+    await fetch('/api/a', { method: 'POST', body: form });
+
+    expect(requests[0]?.body).toBeInstanceOf(FormData);
+  });
+
   it('[TC-02-02] rejects an unmatched request', async () => {
     mockApi({});
 

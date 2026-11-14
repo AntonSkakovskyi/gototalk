@@ -7,6 +7,13 @@ export interface MockRequest {
 type MockReply =
   Response | ((request: MockRequest) => Response | Promise<Response>);
 
+function parseBody(body: RequestInit['body']): unknown {
+  if (typeof body === 'string') {
+    return JSON.parse(body);
+  }
+  return body instanceof FormData ? body : undefined;
+}
+
 function toMockRequest(
   input: RequestInfo | URL,
   init?: RequestInit,
@@ -14,7 +21,7 @@ function toMockRequest(
   return {
     method: init?.method ?? 'GET',
     path: String(input),
-    body: typeof init?.body === 'string' ? JSON.parse(init.body) : undefined,
+    body: parseBody(init?.body),
   };
 }
 

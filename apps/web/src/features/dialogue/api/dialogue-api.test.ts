@@ -15,6 +15,7 @@ import {
   analyzeAnswer,
   finishSession,
   markMistakeFalse,
+  submitAudioAnswer,
   submitTextAnswer,
 } from './dialogue-api';
 
@@ -37,6 +38,54 @@ describe('dialogue api', () => {
       },
     ]);
   });
+
+  it('[TC-04-05] submitAudioAnswer uploads the blob as the audio field and returns the pending utterance', async () => {
+    const api = mockDialogueApi();
+    const blob = new Blob(['voice'], { type: 'audio/webm;codecs=opus' });
+
+    await expect(submitAudioAnswer(DIALOGUE_SESSION_ID, blob)).resolves.toEqual(
+      TURN.utterance,
+    );
+
+    expect(api.requests).toHaveLength(1);
+    expect(api.requests[0]).toMatchObject({
+      method: 'POST',
+      path: `${BASE}/utterances`,
+    });
+    const [file] = api.audioRequests();
+    expect(file?.name).toBe('answer.webm');
+    expect(file?.type).toBe('audio/webm;codecs=opus');
+    await expect(file?.text()).resolves.toBe('voice');
+  });
+
+  it.each([
+    ['audio/ogg;codecs=opus', 'answer.ogg'],
+    ['audio/mp4', 'answer.m4a'],
+  ])(
+    '[TC-04-05] submitAudioAnswer names a %s upload %s',
+    async (type, name) => {
+      const api = mockDialogueApi();
+
+      await submitAudioAnswer(DIALOGUE_SESSION_ID, new Blob(['v'], { type }));
+
+      expect(api.audioRequests()[0]?.name).toBe(name);
+    },
+  );
+
+  it.each([
+    [503, ERROR_CODES.SPEECH_RECOGNITION_UNAVAILABLE],
+    [413, ERROR_CODES.AUDIO_TOO_LARGE],
+    [415, ERROR_CODES.AUDIO_UNSUPPORTED],
+  ])(
+    '[TC-04-08] submitAudioAnswer surfaces the %i %s error',
+    async (status, code) => {
+      mockDialogueApi({ voiceAnswer: () => errorResponse(status, code) });
+
+      await expect(
+        submitAudioAnswer(DIALOGUE_SESSION_ID, new Blob(['v'])),
+      ).rejects.toMatchObject({ status, code });
+    },
+  );
 
   it('[TC-04-04] analyzeAnswer posts without a body and returns the turn result', async () => {
     const { requests } = mockDialogueApi();
@@ -99,6 +148,10 @@ describe('dialogue api', () => {
   it.each([
     ['submitTextAnswer', () => submitTextAnswer(DIALOGUE_SESSION_ID, 'text')],
     [
+      'submitAudioAnswer',
+      () => submitAudioAnswer(DIALOGUE_SESSION_ID, new Blob(['v'])),
+    ],
+    [
       'analyzeAnswer',
       () => analyzeAnswer(DIALOGUE_SESSION_ID, TURN.utterance.id),
     ],
@@ -112,6 +165,7 @@ describe('dialogue api', () => {
     async (_name, call) => {
       mockDialogueApi({
         answer: () => jsonResponse({ id: 'not-a-uuid' }),
+        voiceAnswer: () => jsonResponse({ id: 'not-a-uuid' }),
         analyze: () => jsonResponse({ utterance: TURN.utterance }),
         markMistake: () => jsonResponse({ ...testMistake(), end: 0 }),
         finish: () => jsonResponse({ ...testSession(), status: 'paused' }),
