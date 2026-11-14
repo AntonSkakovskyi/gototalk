@@ -1,5 +1,5 @@
 import { ERROR_CODES } from '@gototalk/shared';
-import { screen, waitFor } from '@testing-library/react';
+import { configure, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { installFakeMedia } from '@/features/dialogue/testing/fake-media';
 import uk from '@/shared/i18n/uk.json';
@@ -8,11 +8,18 @@ import { analysisOk, mockDialogueApi } from '@/shared/testing/dialogue-mocks';
 import { errorResponse, jsonResponse } from '@/shared/testing/test-fixtures';
 import {
   PENDING_ANSWER,
+  sendAnswer,
   REPLY,
   TURN,
   currentCard,
   renderScreen,
 } from './dialogue-screen-test-helpers';
+
+const SLOW_MS = 5000;
+
+// Recording state arrives through async media events, which lag under CPU load.
+configure({ asyncUtilTimeout: SLOW_MS });
+vi.setConfig({ testTimeout: SLOW_MS * 3 });
 
 let media: ReturnType<typeof installFakeMedia>;
 
@@ -46,7 +53,10 @@ async function recordAnswer(user: ReturnType<typeof userEvent.setup>) {
   );
   await screen.findByText(uk.dialogue.voice.indicator.recording);
   await user.click(
-    screen.getByRole('button', { name: uk.dialogue.voice.stop }),
+    screen.getByRole('button', {
+      name: uk.dialogue.voice.record,
+      pressed: true,
+    }),
   );
 }
 
@@ -69,7 +79,11 @@ describe('DialogueScreen voice answer', () => {
       expect.stringMatching(/\/utterances$/),
       expect.stringMatching(/\/utterances\/[^/]+\/analysis$/),
     ]);
-    expect(media.streams[0]?.tracks.every((track) => track.stopped)).toBe(true);
+    await waitFor(() =>
+      expect(media.streams[0]?.tracks.every((track) => track.stopped)).toBe(
+        true,
+      ),
+    );
   });
 
   it('[TC-04-05] sends the recording only as the upload and never plays it back', async () => {
@@ -143,7 +157,9 @@ describe('DialogueScreen voice answer', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(
       uk.dialogue.errors.speechUnavailable,
     );
-    expect(screen.getByLabelText(uk.dialogue.form.label)).toBeInTheDocument();
+    expect(
+      await screen.findByLabelText(uk.dialogue.form.label),
+    ).toBeInTheDocument();
 
     failing = false;
     await user.click(
@@ -241,5 +257,54 @@ describe('DialogueScreen voice answer', () => {
     ).toBeInTheDocument();
     expect(api.answerRequests()).toEqual([{ text: 'I very like' }]);
     expect(api.audioRequests()).toHaveLength(0);
+  });
+
+  it('[TC-04-14] blocks finishing and resending while a new recording is in progress', async () => {
+    const user = userEvent.setup();
+    mockDialogueApi({
+      voiceAnswer: () =>
+        errorResponse(503, ERROR_CODES.SPEECH_RECOGNITION_UNAVAILABLE),
+    });
+    renderScreen();
+    await recordAnswer(user);
+    await screen.findByRole('button', { name: uk.dialogue.voice.resend });
+    expect(
+      screen.getByRole('button', { name: uk.dialogue.finish.open }),
+    ).toBeEnabled();
+
+    await user.click(
+      screen.getByRole('button', { name: uk.dialogue.voice.record }),
+    );
+    await screen.findByText(uk.dialogue.voice.indicator.recording);
+
+    await waitFor(() =>
+      expect(
+        screen.queryByRole('button', { name: uk.dialogue.voice.resend }),
+      ).not.toBeInTheDocument(),
+    );
+    await waitFor(() =>
+      expect(
+        screen.getByRole('button', { name: uk.dialogue.finish.open }),
+      ).toBeDisabled(),
+    );
+  });
+
+  it('[TC-04-05] keeps the text form open for the next turn once it was opened', async () => {
+    const user = userEvent.setup();
+    mockDialogueApi({ answer: () => jsonResponse(PENDING_ANSWER, 201) });
+    renderScreen();
+    await user.click(
+      screen.getByRole('button', { name: uk.dialogue.voice.writeInstead }),
+    );
+
+    await sendAnswer(user);
+    await screen.findByRole('button', { name: 'go' });
+
+    await waitFor(() =>
+      expect(screen.getByLabelText(uk.dialogue.form.label)).toBeEnabled(),
+    );
+    expect(
+      screen.queryByRole('button', { name: uk.dialogue.voice.writeInstead }),
+    ).not.toBeInTheDocument();
   });
 });

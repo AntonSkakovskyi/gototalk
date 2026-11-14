@@ -31,10 +31,16 @@ export async function startDialogue(
 }
 
 export async function openTextAnswer(page: Page): Promise<Locator> {
-  await page
-    .getByRole('button', { name: 'Написати відповідь', exact: true })
-    .click();
   const field = page.getByLabel('Ваша відповідь англійською');
+  const opener = page.getByRole('button', {
+    name: 'Написати відповідь',
+    exact: true,
+  });
+  // The form stays open across turns once opened.
+  await expect(field.or(opener)).toBeVisible();
+  if (await opener.isVisible()) {
+    await opener.click();
+  }
   await expect(field).toBeEditable();
   return field;
 }

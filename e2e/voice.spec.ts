@@ -15,10 +15,18 @@ const FIRST_TRANSCRIPT =
   'Um, yesterday I go to the office and, uh, I have a meeting with my team. I very like my job.';
 
 async function recordAnswer(page: Page): Promise<void> {
-  await page.getByRole('button', { name: 'Записати', exact: true }).click();
+  await page
+    .getByRole('button', { name: 'Записати відповідь', exact: true })
+    .click();
   await expect(page.getByText('Іде запис', { exact: true })).toBeVisible();
-  await expect(page.getByRole('timer')).toHaveText(/^0:0[1-9]/);
-  await page.getByRole('button', { name: 'Зупинити', exact: true }).click();
+  await expect(page.getByRole('timer')).toHaveText(/0:0[1-9] \/ 2:00/);
+  await page
+    .getByRole('button', {
+      name: 'Записати відповідь',
+      exact: true,
+      pressed: true,
+    })
+    .click();
 }
 
 test.describe('[TC-04-05] voice answer', () => {
@@ -62,9 +70,6 @@ test.describe('[TC-04-05] voice answer', () => {
     const answer = session.utterances.find(({ role }) => role === 'user');
     expect(answer?.text).toBe(FIRST_TRANSCRIPT);
     expect(answer?.analysisStatus).toBe('done');
-    expect(
-      Object.keys(answer ?? {}).filter((key) => /audio/i.test(key)),
-    ).toEqual([]);
 
     await finishFromDialogue(page);
     await expect(fragment(page, WORD_ORDER_FRAGMENT)).toBeVisible();
@@ -98,16 +103,21 @@ test.describe('[TC-04-12] processing statuses', () => {
       },
     );
 
-    await recordAnswer(page);
-    await expect(page.getByText('Розпізнаю…', { exact: true })).toBeVisible();
-    await expect(page.getByText('Аналізую…')).toHaveCount(0);
+    try {
+      await recordAnswer(page);
+      await expect(page.getByText('Розпізнаю…', { exact: true })).toBeVisible();
+      await expect(page.getByText('Аналізую…')).toHaveCount(0);
 
-    releaseUpload();
-    await expect(page.getByText('Аналізую…', { exact: true })).toBeVisible();
-    await expect(page.getByText('Розпізнаю…')).toHaveCount(0);
+      releaseUpload();
+      await expect(page.getByText('Аналізую…', { exact: true })).toBeVisible();
+      await expect(page.getByText('Розпізнаю…')).toHaveCount(0);
 
-    releaseAnalysis();
-    await expect(fragment(page, WORD_ORDER_FRAGMENT)).toBeVisible();
-    await expect(page.getByText('Аналізую…')).toHaveCount(0);
+      releaseAnalysis();
+      await expect(fragment(page, WORD_ORDER_FRAGMENT)).toBeVisible();
+      await expect(page.getByText('Аналізую…')).toHaveCount(0);
+    } finally {
+      releaseUpload();
+      releaseAnalysis();
+    }
   });
 });

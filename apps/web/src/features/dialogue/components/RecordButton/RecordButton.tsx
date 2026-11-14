@@ -25,7 +25,7 @@ export function RecordButton({
       disabled={disabled}
       onClick={recording ? onStop : onStart}
     >
-      {t(recording ? 'dialogue.voice.stop' : 'dialogue.voice.record')}
+      {t('dialogue.voice.record')}
     </Button>
   );
 }

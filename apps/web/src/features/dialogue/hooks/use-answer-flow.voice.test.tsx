@@ -1,11 +1,12 @@
 import { ERROR_CODES } from '@gototalk/shared';
-import { act, waitFor } from '@testing-library/react';
+import { act, configure, waitFor } from '@testing-library/react';
 import {
   PENDING,
   TURN,
   analysisRequests,
   deferred,
   setup,
+  withAnswered,
 } from '@/shared/testing/answer-flow-setup';
 import { analysisOk, mockDialogueApi } from '@/shared/testing/dialogue-mocks';
 import {
@@ -13,6 +14,12 @@ import {
   jsonResponse,
   testUtterance,
 } from '@/shared/testing/test-fixtures';
+
+const SLOW_MS = 5000;
+
+// Recording state arrives through async media events, which lag under CPU load.
+configure({ asyncUtilTimeout: SLOW_MS });
+vi.setConfig({ testTimeout: SLOW_MS * 3 });
 
 function voice() {
   return new Blob(['voice'], { type: 'audio/webm;codecs=opus' });
@@ -146,6 +153,53 @@ describe('useAnswerFlow voice branch', () => {
     await waitFor(() => expect(result.current.submitError).not.toBeNull());
     expect(result.current.canRetrySend).toBe(false);
     expect(result.current.audioFailed).toBe(false);
+  });
+
+  it('[TC-04-08] a 409 on a resent recording clears the stale error and refreshes the details', async () => {
+    const { cached, render } = setup();
+    let calls = 0;
+    const api = mockDialogueApi({
+      voiceAnswer: () =>
+        calls++ === 0
+          ? errorResponse(503, ERROR_CODES.SPEECH_RECOGNITION_UNAVAILABLE)
+          : errorResponse(409, ERROR_CODES.ANSWER_NOT_EXPECTED),
+      details: () => jsonResponse(withAnswered()),
+    });
+    const { result } = render();
+    await act(async () => {
+      await result.current.submitAudio(voice());
+    });
+    await waitFor(() => expect(result.current.canRetrySend).toBe(true));
+
+    await act(async () => {
+      await result.current.retrySend();
+    });
+
+    await waitFor(() => expect(cached()?.utterances).toHaveLength(2));
+    expect(api.audioRequests()).toHaveLength(2);
+    expect(result.current.submitError).toBeNull();
+    expect(result.current.audioFailed).toBe(false);
+    expect(result.current.canRetrySend).toBe(false);
+  });
+
+  it('[TC-04-08] a failed recording is not kept in the mutation cache after the screen unmounts', async () => {
+    const { queryClient, render } = setup();
+    mockDialogueApi({
+      voiceAnswer: () =>
+        errorResponse(503, ERROR_CODES.SPEECH_RECOGNITION_UNAVAILABLE),
+    });
+    const { result, unmount } = render();
+    await act(async () => {
+      await result.current.submitAudio(voice());
+    });
+    await waitFor(() => expect(result.current.audioFailed).toBe(true));
+    expect(queryClient.getMutationCache().getAll()).not.toHaveLength(0);
+
+    unmount();
+
+    await waitFor(() =>
+      expect(queryClient.getMutationCache().getAll()).toHaveLength(0),
+    );
   });
 
   it('[TC-04-08] a failed analysis after a voice answer reuses the analysis retry only', async () => {

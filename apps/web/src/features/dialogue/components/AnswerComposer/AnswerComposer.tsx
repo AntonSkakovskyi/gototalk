@@ -1,5 +1,5 @@
 import { Button, Stack } from '@mantine/core';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MicPermissionHelp } from '@/features/dialogue/components/MicPermissionHelp/MicPermissionHelp';
 import { RecordButton } from '@/features/dialogue/components/RecordButton/RecordButton';
@@ -7,12 +7,12 @@ import { RecordingIndicator } from '@/features/dialogue/components/RecordingIndi
 import { TextAnswerForm } from '@/features/dialogue/components/TextAnswerForm/TextAnswerForm';
 import type { AnswerPhase } from '@/features/dialogue/hooks/use-answer-flow';
 import { useAudioRecorder } from '@/features/dialogue/hooks/use-audio-recorder';
+import type { ComposerState } from '@/features/dialogue/hooks/use-composer-state';
 import { voiceUnavailable } from '@/features/dialogue/lib/mic-help';
-
-type TextForm = 'closed' | 'requested' | 'automatic';
 
 interface AnswerComposerProps {
   phase: AnswerPhase;
+  composer: ComposerState;
   submitText: (text: string) => Promise<boolean>;
   submitAudio: (audio: Blob) => Promise<boolean>;
   /** The last voice answer failed, so the text form must be within reach. */
@@ -21,27 +21,41 @@ interface AnswerComposerProps {
 
 export function AnswerComposer({
   phase,
+  composer,
   submitText,
   submitAudio,
   audioFailed,
 }: AnswerComposerProps) {
   const { t } = useTranslation();
+  const { textForm, setTextForm, setRecording } = composer;
+  // Focus moves to the field only when the user opens it, not on a later remount.
+  const [openedBeforeMount] = useState(textForm !== 'closed');
+  // Bridges the gap between the recorder going idle and the upload starting.
+  const [submitting, setSubmitting] = useState(false);
   const recorder = useAudioRecorder({
-    onRecorded: (audio) => void submitAudio(audio),
+    onRecorded: (audio) => {
+      setSubmitting(true);
+      void submitAudio(audio).finally(() => setSubmitting(false));
+    },
   });
-  const [textForm, setTextForm] = useState<TextForm>('closed');
+
+  const recording = recorder.status === 'recording';
+  const needsTextForm = voiceUnavailable(recorder.status) || audioFailed;
 
   // Once opened the form stays, so typed text survives the recorder recovering.
-  if (
-    textForm === 'closed' &&
-    (voiceUnavailable(recorder.status) || audioFailed)
-  ) {
-    setTextForm('automatic');
-  }
+  useEffect(() => {
+    if (textForm === 'closed' && needsTextForm) {
+      setTextForm('automatic');
+    }
+  }, [textForm, needsTextForm, setTextForm]);
+
+  useEffect(() => {
+    setRecording(recording);
+    return () => setRecording(false);
+  }, [recording, setRecording]);
 
   const requestTextForm = () => setTextForm('requested');
-  const recording = recorder.status === 'recording';
-  const busy = phase !== 'idle';
+  const busy = phase !== 'idle' || submitting;
   const cannotStart =
     busy ||
     recorder.status === 'unsupported' ||
@@ -65,7 +79,7 @@ export function AnswerComposer({
         errorName={recorder.errorName}
         insecureContext={recorder.insecureContext}
       />
-      {textForm === 'closed' ? (
+      {textForm === 'closed' && !needsTextForm ? (
         <Button
           variant="subtle"
           size="lg"
@@ -78,8 +92,8 @@ export function AnswerComposer({
         <TextAnswerForm
           phase={phase}
           submit={submitText}
-          disabled={recording}
-          autoFocus={textForm === 'requested'}
+          disabled={recording || submitting}
+          autoFocus={textForm === 'requested' && !openedBeforeMount}
         />
       )}
     </Stack>

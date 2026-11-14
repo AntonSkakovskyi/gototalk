@@ -1,5 +1,5 @@
 import { MAX_RECORDING_SECONDS } from '@gototalk/shared';
-import { Group, Progress, Text } from '@mantine/core';
+import { Group, Progress, Text, VisuallyHidden } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
 import type { RecorderStatus } from '@/features/dialogue/hooks/use-audio-recorder';
 import { formatElapsed } from '@/features/dialogue/lib/format-elapsed';
@@ -33,11 +33,10 @@ export function RecordingIndicator({
       </div>
       {recording && (
         <Group gap="md" wrap="nowrap">
-          <Text
-            role="timer"
-            aria-label={t('dialogue.voice.indicator.timerLabel')}
-            ff={TIMER_FONT}
-          >
+          <Text role="timer" ff={TIMER_FONT}>
+            <VisuallyHidden>
+              {t('dialogue.voice.indicator.timerLabel')}{' '}
+            </VisuallyHidden>
             {t('dialogue.voice.indicator.elapsed', {
               elapsed: formatElapsed(elapsedSeconds),
               max: formatElapsed(MAX_RECORDING_SECONDS),

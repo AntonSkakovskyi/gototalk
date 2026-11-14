@@ -5,12 +5,14 @@ export const HINT_PHRASE_MAX = 200;
 /** Plausible English lemma: letters, spaces, apostrophes and hyphens. */
 export const HINT_LEMMA_PATTERN = /^[A-Za-z][A-Za-z' -]*$/;
 
+export const HintTranslationRequestSchema = z.object({
+  kind: z.literal('translation'),
+  word: z.string().trim().min(1).max(HINT_WORD_MAX),
+});
+
 export const HintRequestSchema = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('phrase_start') }),
-  z.object({
-    kind: z.literal('translation'),
-    word: z.string().trim().min(1).max(HINT_WORD_MAX),
-  }),
+  HintTranslationRequestSchema,
 ]);
 
 /** For an unknown word, `word` is null. */

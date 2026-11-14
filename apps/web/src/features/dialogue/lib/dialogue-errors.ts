@@ -39,7 +39,7 @@ export function hintErrorKey(error: unknown): { key: string } {
 }
 
 /** Network failures and 5xx may pass on a repeat; a 4xx would fail again with the same input. */
-export function canRetryAnswer(error: unknown): boolean {
+export function isTransientError(error: unknown): boolean {
   if (error === null || error === undefined) {
     return false;
   }

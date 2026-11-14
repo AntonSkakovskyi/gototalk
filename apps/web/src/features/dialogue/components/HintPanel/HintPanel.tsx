@@ -60,7 +60,11 @@ export function HintPanel({ sessionId }: HintPanelProps) {
             <WordHintForm disabled={hint.isPending} onSubmit={hint.translate} />
           )}
           <HintOutcome
-            request={hint.request}
+            requestedWord={
+              hint.request?.kind === 'translation'
+                ? hint.request.word
+                : undefined
+            }
             result={hint.data}
             error={hint.error}
             isPending={hint.isPending}

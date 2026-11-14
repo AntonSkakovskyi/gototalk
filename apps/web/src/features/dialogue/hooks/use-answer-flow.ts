@@ -6,7 +6,7 @@ import {
   submitAudioAnswer,
   submitTextAnswer,
 } from '@/features/dialogue/api/dialogue-api';
-import { canRetryAnswer } from '@/features/dialogue/lib/dialogue-errors';
+import { isTransientError } from '@/features/dialogue/lib/dialogue-errors';
 import {
   findUnansweredUtteranceId,
   withTurnResult,
@@ -66,18 +66,25 @@ type UpdateDetails = ReturnType<typeof useUpdateDetails>;
 
 function useSendAnswer(sessionId: string, updateDetails: UpdateDetails) {
   const queryClient = useQueryClient();
-  return useMutation({
+  const mutation = useMutation({
     mutationFn: (input: AnswerInput) => sendAnswerInput(sessionId, input),
+    // A failed recording must not outlive the screen in the mutation cache.
+    gcTime: 0,
     onSuccess: (utterance) =>
       updateDetails((current) => withUtterance(current, utterance)),
-    onError: (error) => {
+    onError: (error, input) => {
       if (hasStatus(error, HTTP_CONFLICT)) {
         void queryClient.invalidateQueries({
           queryKey: sessionKeys.details(sessionId),
         });
+        // The server already holds this answer, so a stale error or resend would mislead.
+        if (input.kind === 'audio') {
+          mutation.reset();
+        }
       }
     },
   });
+  return mutation;
 }
 
 function useAnalysis(sessionId: string, updateDetails: UpdateDetails) {
@@ -120,7 +127,7 @@ function useSubmission(
   }
 
   const audioFailed = send.isError && send.variables?.kind === 'audio';
-  const canRetrySend = audioFailed && canRetryAnswer(send.error);
+  const canRetrySend = audioFailed && isTransientError(send.error);
 
   async function retrySend(): Promise<boolean> {
     const input = send.variables;

@@ -2,7 +2,7 @@ import { ERROR_CODES } from '@gototalk/shared';
 import { ApiError } from '@/shared/api/http';
 import i18n from '@/shared/i18n/index';
 import {
-  canRetryAnswer,
+  isTransientError,
   dialogueErrorKey,
   hintErrorKey,
 } from './dialogue-errors';
@@ -91,16 +91,16 @@ describe('hintErrorKey', () => {
   });
 });
 
-describe('canRetryAnswer', () => {
+describe('isTransientError', () => {
   it.each([
     [503, ERROR_CODES.SPEECH_RECOGNITION_UNAVAILABLE],
     [500, 'INTERNAL_ERROR'],
   ])('[TC-04-08] allows a retry after %i %s', (status, code) => {
-    expect(canRetryAnswer(new ApiError(status, code, 'message'))).toBe(true);
+    expect(isTransientError(new ApiError(status, code, 'message'))).toBe(true);
   });
 
   it('[TC-04-08] allows a retry after a network failure', () => {
-    expect(canRetryAnswer(new TypeError('Failed to fetch'))).toBe(true);
+    expect(isTransientError(new TypeError('Failed to fetch'))).toBe(true);
   });
 
   it.each([
@@ -111,11 +111,13 @@ describe('canRetryAnswer', () => {
   ])(
     '[TC-04-08] does not retry the same upload after %i %s',
     (status, code) => {
-      expect(canRetryAnswer(new ApiError(status, code, 'message'))).toBe(false);
+      expect(isTransientError(new ApiError(status, code, 'message'))).toBe(
+        false,
+      );
     },
   );
 
   it('[TC-04-08] has nothing to retry without an error', () => {
-    expect(canRetryAnswer(null)).toBe(false);
+    expect(isTransientError(null)).toBe(false);
   });
 });

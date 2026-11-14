@@ -29,14 +29,14 @@ describe('RecordButton', () => {
     expect(button).toHaveAttribute('aria-pressed', 'false');
   });
 
-  it('[TC-04-14] switches to a different label and a pressed state while recording', () => {
+  it('[TC-04-14] keeps the same name and reports the pressed state while recording', () => {
     renderButton({ recording: true });
 
-    const button = screen.getByRole('button', { name: uk.dialogue.voice.stop });
+    const button = screen.getByRole('button', {
+      name: uk.dialogue.voice.record,
+    });
     expect(button).toHaveAttribute('aria-pressed', 'true');
-    expect(
-      screen.queryByRole('button', { name: uk.dialogue.voice.record }),
-    ).not.toBeInTheDocument();
+    expect(button).toHaveTextContent(uk.dialogue.voice.record);
   });
 
   it('[TC-04-05] starts on click', async () => {

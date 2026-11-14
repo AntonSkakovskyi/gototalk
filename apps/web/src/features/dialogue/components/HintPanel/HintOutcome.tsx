@@ -1,14 +1,15 @@
-import type { HintRequest, HintResult } from '@gototalk/shared';
+import type { HintResult } from '@gototalk/shared';
 import { Alert, Button, Loader, Stack, Text } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
 import {
-  canRetryAnswer,
+  isTransientError,
   hintErrorKey,
 } from '@/features/dialogue/lib/dialogue-errors';
 import { ENGLISH_LANG } from '@/shared/i18n/languages';
 
 interface HintOutcomeProps {
-  request: HintRequest | undefined;
+  /** The word the translation was requested for. */
+  requestedWord: string | undefined;
   result: HintResult | undefined;
   error: unknown;
   isPending: boolean;
@@ -16,7 +17,7 @@ interface HintOutcomeProps {
 }
 
 export function HintOutcome({
-  request,
+  requestedWord,
   result,
   error,
   isPending,
@@ -42,10 +43,10 @@ export function HintOutcome({
       )}
       {result?.kind === 'translation' && (
         <Text size="lg" fw={500}>
-          {result.word === null || request?.kind !== 'translation'
+          {result.word === null
             ? t('dialogue.hint.result.unknown')
             : t('dialogue.hint.result.translation', {
-                word: request.word,
+                word: requestedWord,
                 translation: result.word,
               })}
         </Text>
@@ -55,7 +56,7 @@ export function HintOutcome({
           <Alert color="red" w="100%">
             {t(hintErrorKey(error).key)}
           </Alert>
-          {canRetryAnswer(error) && (
+          {isTransientError(error) && (
             <Button variant="light" size="lg" onClick={onRetry}>
               {t('common.actions.retry')}
             </Button>

@@ -49,11 +49,22 @@ describe('RecordingIndicator', () => {
     expect(container.querySelector('[aria-live="polite"]')).toContainElement(
       label,
     );
-    const timer = screen.getByRole('timer', {
-      name: uk.dialogue.voice.indicator.timerLabel,
-    });
+    const timer = screen.getByRole('timer');
     expect(timer).toHaveTextContent('1:15 / 2:00');
     expect(MAX_RECORDING_SECONDS).toBe(120);
+  });
+
+  it('[TC-04-14] puts the label into the timer content so the elapsed time is announced with it', () => {
+    renderIndicator('recording', 75);
+
+    const timer = screen.getByRole('timer');
+    expect(timer).not.toHaveAttribute('aria-label');
+    expect(timer).toHaveTextContent(
+      uk.dialogue.voice.indicator.timerLabel + ' 1:15 / 2:00',
+    );
+    expect(
+      screen.getByText(uk.dialogue.voice.indicator.timerLabel),
+    ).toBeInTheDocument();
   });
 
   it('[TC-04-05] keeps the timer outside the live region so every second is not announced', () => {

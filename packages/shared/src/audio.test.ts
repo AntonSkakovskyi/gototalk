@@ -4,6 +4,7 @@ import {
   ERROR_CODES,
   HINT_WORD_MAX,
   HintRequestSchema,
+  HintTranslationRequestSchema,
   HintResultSchema,
   MAX_AUDIO_BYTES,
   MAX_RECORDING_SECONDS,
@@ -50,6 +51,17 @@ describe('audio and hint contracts', () => {
     ]) {
       expect(HintRequestSchema.safeParse(input).success).toBe(false);
     }
+  });
+
+  it('[TC-04-05] HintTranslationRequestSchema is the translation branch of HintRequestSchema', () => {
+    const request = { kind: 'translation', word: '  слово ' };
+
+    expect(HintTranslationRequestSchema.parse(request)).toEqual(
+      HintRequestSchema.parse(request),
+    );
+    expect(
+      HintTranslationRequestSchema.safeParse({ kind: 'phrase_start' }).success,
+    ).toBe(false);
   });
 
   it('[TC-04-05] HintResultSchema accepts a phrase, a translation and an unknown word', () => {

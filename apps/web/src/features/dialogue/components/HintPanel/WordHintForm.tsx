@@ -1,4 +1,4 @@
-import { HintRequestSchema } from '@gototalk/shared';
+import { HintTranslationRequestSchema } from '@gototalk/shared';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Stack, TextInput } from '@mantine/core';
 import { useForm } from 'react-hook-form';
@@ -7,8 +7,7 @@ import { hintWordErrorMessage } from '@/features/dialogue/lib/hint-form';
 import { ANNOUNCED_ERROR_PROPS } from '@/shared/forms/field-error-props';
 import { UKRAINIAN_LANG } from '@/shared/i18n/languages';
 
-const [, TRANSLATION_REQUEST] = HintRequestSchema.options;
-const WordSchema = TRANSLATION_REQUEST.pick({ word: true });
+const WordSchema = HintTranslationRequestSchema.pick({ word: true });
 
 interface WordHintFormProps {
   disabled: boolean;
