@@ -276,3 +276,4 @@ docs/ tech-decisions.md · stubs.md · backlog.md · README.md
 - **Оцінка:** 04a ~75 файлів (shared 8, prompts 4, db 4, api ~38, web ~25, e2e 2, docs 4), 04b ~40 (shared 3, api ~15, web ~17, e2e 3, docs 3).
 
 - Повні `pnpm test` (зокрема Stop-хук) не можна запускати паралельно зі сабагентом, що проганяє інтеграційні тести: обидва процеси користуються однією тестовою БД, і `resetUserData` одного стирає рядки іншого (так упав `delete-account.test.ts` під час 04-12; у чистому прогоні зелено).
+- Статус 04a: автоматична частина виконана (`pnpm typecheck`, `pnpm lint`, `pnpm test`: shared 70, web 608, api 750; `pnpm test:e2e` 20/20; фінальне рев'ю всієї гілки: 0 high). `git push` відхилено правилами дозволів середовища: лишаються за Антоном push гілки `feat/04-dialog`, PR (тіло готове), CI, ручний `[TC-04-14]`, після пулу `pnpm db:migrate` і `pnpm db:seed`. 04b (задачі 04-23…04-31) не починалась.
