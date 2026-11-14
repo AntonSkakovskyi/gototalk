@@ -204,7 +204,9 @@ describe('AnswerTranscript', () => {
       'aria-hidden',
       'true',
     );
-    expect(within(phrasing).getByText(uk.dialogue.replacedBy)).toBeInTheDocument();
+    expect(
+      within(phrasing).getByText(uk.dialogue.replacedBy),
+    ).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'go' }));
     const region = screen.getByRole('region');
@@ -213,7 +215,9 @@ describe('AnswerTranscript', () => {
       'aria-hidden',
       'true',
     );
-    expect(within(region).getByText(uk.dialogue.replacedBy)).toBeInTheDocument();
+    expect(
+      within(region).getByText(uk.dialogue.replacedBy),
+    ).toBeInTheDocument();
   });
 
   it('[TC-04-04] omits the better phrasings block when there are none', () => {

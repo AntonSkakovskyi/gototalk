@@ -173,3 +173,27 @@ export async function countMistakes(
   );
   return Number(rows[0]?.count);
 }
+
+export async function seedWords(
+  pool: pg.Pool,
+  userId: string,
+  words: [lemma: string, state: string][],
+): Promise<void> {
+  for (const [lemma, state] of words) {
+    await pool.query(
+      `INSERT INTO words (user_id, lemma, state, times_used) VALUES ($1, $2, $3, 1)`,
+      [userId, lemma, state],
+    );
+  }
+}
+
+export async function wordRows(
+  pool: pg.Pool,
+  userId: string,
+): Promise<{ lemma: string; state: string; times_used: number }[]> {
+  const { rows } = await pool.query(
+    'SELECT lemma, state, times_used FROM words WHERE user_id = $1 ORDER BY lemma',
+    [userId],
+  );
+  return rows;
+}

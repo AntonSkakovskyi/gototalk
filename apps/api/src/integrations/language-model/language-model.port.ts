@@ -22,7 +22,7 @@ export interface NextTurnInput {
   history: { role: 'assistant' | 'user'; text: string }[];
 }
 
-export type HintRequest =
+export type HintInput =
   | { kind: 'phrase_start'; question: string; questionNumber: number }
   | { kind: 'translation'; word: string };
 
@@ -46,6 +46,6 @@ export interface LanguageModelPort {
   ): Promise<AnalyzeUtteranceResponse>;
   planSession(input: PlanSessionInput): Promise<unknown>;
   nextTurn(input: NextTurnInput): Promise<unknown>;
-  hint(request: HintRequest): Promise<unknown>;
+  hint(input: HintInput): Promise<unknown>;
   summarizeSession(input: SummarizeSessionInput): Promise<unknown>;
 }

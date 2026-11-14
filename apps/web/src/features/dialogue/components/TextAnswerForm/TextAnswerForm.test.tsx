@@ -116,6 +116,30 @@ describe('TextAnswerForm', () => {
     expect(field).not.toHaveAttribute('readonly');
   });
 
+  it('[TC-04-05] locks the field and the button while another way of answering is in progress', () => {
+    renderWithProviders(
+      <TextAnswerForm phase="idle" submit={vi.fn()} disabled />,
+    );
+
+    expect(screen.getByLabelText(uk.dialogue.form.label)).toHaveAttribute(
+      'readonly',
+    );
+    expect(
+      screen.getByRole('button', { name: uk.dialogue.form.submit }),
+    ).toBeDisabled();
+  });
+
+  it('[TC-04-05] focuses the field on mount only when asked to', () => {
+    const { unmount } = renderWithProviders(
+      <TextAnswerForm phase="idle" submit={vi.fn()} autoFocus />,
+    );
+    expect(screen.getByLabelText(uk.dialogue.form.label)).toHaveFocus();
+    unmount();
+
+    renderWithProviders(<TextAnswerForm phase="idle" submit={vi.fn()} />);
+    expect(screen.getByLabelText(uk.dialogue.form.label)).not.toHaveFocus();
+  });
+
   it('[TC-04-08] returns focus to the field when the submission failed', async () => {
     const user = userEvent.setup();
     const submit = vi

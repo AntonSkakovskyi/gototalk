@@ -8,7 +8,7 @@
 
 ## 1. FakeSpeechRecognition
 
-`transcribe(audio, mime, index?) → { verbatim, clean }`. Вміст аудіо ігнорується. Відповідь береться з набору нижче за індексом `(кількість user-реплік у сесії) mod 5`; сесія в `transcribe` не відома, тому індекс передає викликач. Явний цілий `index` не рухає внутрішній лічильник; без індексу (або з нецілим) береться внутрішній лічильник адаптера, який по колу йде від 0 до 4. Лише для тестів клас має метод `reset()`, що скидає лічильник (у порту його немає).
+`transcribe(audio, mime, index?) → { verbatim, clean }`. Вміст аудіо ігнорується. `mime` – базовий тип, який визначив сервер за білим списком і сигнатурою файлу (`audio/webm`, `audio/ogg` або `audio/mp4`, без `;codecs=`); справжній адаптер отримує саме його. Відповідь береться з набору нижче за індексом `(кількість user-реплік у сесії до цієї відповіді) mod 5` (перша голосова відповідь сесії має індекс 0); сесія в `transcribe` не відома, тому індекс передає викликач (`DialogueRepository.answerIndexFor` перед викликом STT), а справжній адаптер його ігнорує. Явний цілий `index` не рухає внутрішній лічильник; без індексу (або з нецілим) береться внутрішній лічильник адаптера, який по колу йде від 0 до 4. Лише для тестів клас має метод `reset()`, що скидає лічильник (у порту його немає).
 
 | № | verbatim | Помилки, які знайде FakeLanguageModel |
 |---|---|---|
@@ -28,7 +28,7 @@
 | 3 | I have 25 years and I live in Kyiv. It depends of the weather if I will have time, I travel. |
 | 4 | We have a meeting in Monday and I need more informations. I am boring because it is long. |
 
-Режим збою `FAKE_STT_FAIL=unavailable` (єдине допустиме значення, порожнє – вимкнено): `transcribe` кидає `SpeechRecognitionUnavailableError`, щоб перевірити повідомлення «Не вдалося розпізнати мовлення, спробуйте ще раз» і те, що введені дані сесії не губляться (NFR-6).
+Режим збою `FAKE_STT_FAIL=unavailable` (єдине допустиме значення, порожнє – вимкнено): `transcribe` кидає `SpeechRecognitionUnavailableError`, яку крок голосу `POST /api/sessions/:id/utterances` (multipart `audio`) відображає в 503 `SPEECH_RECOGNITION_UNAVAILABLE`: репліку не записано, сесія без змін; клієнт показує повідомлення «Сервіс розпізнавання мовлення зараз недоступний» (`dialogue.errors.speechUnavailable`), тримає Blob у пам’яті для «Надіслати ще раз» і відкриває текстову форму, тож дані не губляться (NFR-6). На текстову відповідь режим не діє (STT не викликається).
 
 ## 2. FakeLanguageModel
 
@@ -93,10 +93,12 @@
 
 Вхід `input`: `{ topic, remainingQuestions, history }`, де `remainingQuestions` – питання плану, тексту яких ще немає серед реплік `assistant` (порівняння після trim, стискання пробілів і нижнього регістру; рахує сервіс), `history` – останні 12 записів `{ role, text }`. Fake спершу рендерить промпт `next-turn.v1` і відкидає текст, потім повертає `{ question }`: перше з `remainingQuestions`; якщо їх немає – уточнення `Can you tell me more about "{слово}"?`, де слово – останнє слово останньої `user`-репліки довше за 3 літери (токен `[p{L}p{N}]+` з апострофом чи дефісом усередині, без розділових знаків; обрізається, щоб питання вклалось у 300 символів). Якщо такого слова немає, питання `Can you tell me more about that?` (без лапок).
 
-### 2.4 hint(kind, input)
+### 2.4 hint(input)
 
-- `phrase_start`: початок фрази за темою питання: `I think that…`, `In my opinion…`, `One thing I remember is…`, `Last time I…`, `For me, the most important thing is…` (за номером питання mod 5).
-- `translation`: словник UA→EN із ~40 слів: зустріч – meeting; термін – deadline; розклад – schedule; колега – colleague; співбесіда – interview; квиток – ticket; бронювання – booking; готель – hotel; лікар – doctor; квартира – flat; орендувати – rent; замовлення – order; проблема – problem; проєкт – project; команда – team; досвід – experience; навичка – skill; вміти – be able to; звільнитися – quit; зарплата – salary; відпустка – holiday; подорож – trip; погода – weather; вихідні – weekend; сніданок – breakfast; вечеря – dinner; зупинка – stop; потяг – train; літак – plane; аеропорт – airport; валіза – suitcase; допомога – help; рішення – decision; відповідь – answer; питання – question; вибачте – sorry; будь ласка – please; дякую – thank you; відгук – feedback. Невідоме слово: відповідь `{ word: null, message: "Немає в словнику заглушки" }`, нове слово не зберігається.
+Підпис порту: `hint(input: HintInput)`, де `HintInput` – union `{ kind: 'phrase_start', question, questionNumber } | { kind: 'translation', word }` (окремий від `HintRequest` у `packages/shared`, що описує тіло HTTP-запиту). Сервіс (`HintsService`) бере питання з БД: `question` – текст останньої репліки `assistant`, `questionNumber` – кількість реплік `assistant` у сесії (нумерація з 1). Fake спершу рендерить промпт `hint.v1` і відкидає текст, потім повертає відповідь за `HintSchema` (`translation` без `message`). Пошук слова в словнику без урахування регістру, після trim і стискання пробілів. Відповідь проходить `HintSchema` у `requestValidated` (один повтор, далі 502 `LANGUAGE_MODEL_INVALID_RESPONSE`; недоступність → 503): `phrase_start.text` після trim 1–200 символів; `translation.word` після trim 1–60 символів, лише англійська форма (`[A-Za-z][A-Za-z' -]*`) або `null`; `kind` відповіді має збігатися з `kind` запиту. Поле `message` у `HintSchema` лишається опційним, Fake його не ставить, застосунок не читає (`docs/backlog.md`).
+
+- `phrase_start`: початок фрази не залежить від тексту питання (Fake лише передає його в промпт): `I think that…`, `In my opinion…`, `One thing I remember is…`, `Last time I…`, `For me, the most important thing is…` (за `questionNumber` mod 5: 0 – перший початок, 1 – другий і так далі). Оскільки `questionNumber` рахується з 1, перше питання сесії отримує другий початок (`In my opinion…`), п'яте – перший.
+- `translation`: словник UA→EN із ~40 слів: зустріч – meeting; термін – deadline; розклад – schedule; колега – colleague; співбесіда – interview; квиток – ticket; бронювання – booking; готель – hotel; лікар – doctor; квартира – flat; орендувати – rent; замовлення – order; проблема – problem; проєкт – project; команда – team; досвід – experience; навичка – skill; вміти – be able to; звільнитися – quit; зарплата – salary; відпустка – holiday; подорож – trip; погода – weather; вихідні – weekend; сніданок – breakfast; вечеря – dinner; зупинка – stop; потяг – train; літак – plane; аеропорт – airport; валіза – suitcase; допомога – help; рішення – decision; відповідь – answer; питання – question; вибачте – sorry; будь ласка – please; дякую – thank you; відгук – feedback. Невідоме слово: відповідь `{ kind: 'translation', word: null }` без `message` (текст «немає в словнику» показує UI з i18n), нове слово не зберігається.
 
 ### 2.5 summarizeSession(session)
 
@@ -109,7 +111,7 @@
 - `invalid_json` зачіпає лише `analyzeUtterance`: метод повертає `{ mistakes: "broken" }` (конверт не проходить перевірку, після двох спроб `analysis_status = failed`). `nextTurn` лишається робочим, тож після `failed` діалог триває.
 - `unavailable` зачіпає кожен метод `FakeLanguageModel` (`analyzeUtterance`, `planSession`, `nextTurn`, `hint`, `summarizeSession`): кидається `LanguageModelUnavailableError` (NFR-6). Те саме для розпізнавання робить `FAKE_STT_FAIL=unavailable`, що зачіпає `transcribe` (`SpeechRecognitionUnavailableError`).
 
-Відображення в HTTP: `LanguageModelUnavailableError` → 503 `LANGUAGE_MODEL_UNAVAILABLE` (`POST /api/sessions/plan` і крок аналізу `POST /api/sessions/:id/utterances/:utteranceId/analysis`; на кроці аналізу спершу записується те, що вдалося, репліка лишається `pending`, повтор доробляє решту); дві невалідні відповіді → 502 `LANGUAGE_MODEL_INVALID_RESPONSE` (для аналізу натомість `failed`). Без змінної – нормальна робота.
+Відображення в HTTP: `LanguageModelUnavailableError` → 503 `LANGUAGE_MODEL_UNAVAILABLE` (`POST /api/sessions/plan`, `POST /api/sessions/:id/hints` і крок аналізу `POST /api/sessions/:id/utterances/:utteranceId/analysis`; на кроці аналізу спершу записується те, що вдалося, репліка лишається `pending`, повтор доробляє решту); дві невалідні відповіді → 502 `LANGUAGE_MODEL_INVALID_RESPONSE` (для аналізу натомість `failed`); `SpeechRecognitionUnavailableError` → 503 `SPEECH_RECOGNITION_UNAVAILABLE` (крок голосу, нічого не записано). Без змінної – нормальна робота.
 
 ## 3. Перевірка узгодженості
 

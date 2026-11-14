@@ -28,6 +28,13 @@ export default defineConfig({
         deviceScaleFactor: 2,
         isMobile: true,
         hasTouch: true,
+        permissions: ['microphone'],
+        launchOptions: {
+          args: [
+            '--use-fake-ui-for-media-stream',
+            '--use-fake-device-for-media-stream',
+          ],
+        },
       },
     },
   ],

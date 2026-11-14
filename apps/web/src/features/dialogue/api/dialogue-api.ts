@@ -1,15 +1,19 @@
 import {
+  HintResultSchema,
   MistakeViewSchema,
   SessionSchema,
   TurnResultSchema,
   UtteranceSchema,
   type AnswerTextRequest,
+  type HintRequest,
+  type HintResult,
   type MarkMistakeRequest,
   type MistakeView,
   type Session,
   type TurnResult,
   type Utterance,
 } from '@gototalk/shared';
+import { audioFileName } from '@/features/dialogue/lib/recorder-mime';
 import { apiFetch } from '@/shared/api/http';
 
 function sessionPath(sessionId: string): string {
@@ -21,6 +25,19 @@ export function submitTextAnswer(
   text: string,
 ): Promise<Utterance> {
   const body: AnswerTextRequest = { text };
+  return apiFetch(`${sessionPath(sessionId)}/utterances`, {
+    method: 'POST',
+    body,
+    schema: UtteranceSchema,
+  });
+}
+
+export function submitAudioAnswer(
+  sessionId: string,
+  audio: Blob,
+): Promise<Utterance> {
+  const body = new FormData();
+  body.append('audio', audio, audioFileName(audio.type));
   return apiFetch(`${sessionPath(sessionId)}/utterances`, {
     method: 'POST',
     body,
@@ -47,6 +64,17 @@ export function markMistakeFalse(
     `${sessionPath(sessionId)}/mistakes/${encodeURIComponent(mistakeId)}`,
     { method: 'PATCH', body, schema: MistakeViewSchema },
   );
+}
+
+export function requestHint(
+  sessionId: string,
+  request: HintRequest,
+): Promise<HintResult> {
+  return apiFetch(`${sessionPath(sessionId)}/hints`, {
+    method: 'POST',
+    body: request,
+    schema: HintResultSchema,
+  });
 }
 
 export function finishSession(sessionId: string): Promise<Session> {

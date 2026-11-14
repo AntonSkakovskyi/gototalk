@@ -27,13 +27,13 @@ For kind translation:
 
 { "kind": "translation", "word": string | null }
 
-- word: the English translation of the input word, or null.
+- word: the English translation of the input word, or null. It is a single English word or a short phrase made only of ASCII letters, spaces, apostrophes and hyphens, with no punctuation, digits, brackets or annotations.
 
 # Rules
 
 1. For phrase_start, give only the beginning of an answer, never a full answer. Use simple English, at most 8 words before the ellipsis.
-2. For translation, give the most common English equivalent of the input word: one word or a short phrase, without explanations or alternatives.
-3. For translation, return null if the input word is missing, is not a word or a short phrase, is not Ukrainian, or you do not know a translation.
+2. For translation, give the most common English equivalent of the input word: one word or a short phrase, without explanations, annotations or alternatives, and use only ASCII letters, spaces, apostrophes and hyphens.
+3. For translation, return null if the input word is missing, is not a word or a short phrase, is not Ukrainian, you do not know a translation, or the translation would need any other characters.
 4. Return the same kind as in the input.
 
 # Data

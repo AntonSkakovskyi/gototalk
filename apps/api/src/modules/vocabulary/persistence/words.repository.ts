@@ -32,4 +32,34 @@ export class WordsRepository {
       .returning({ id: words.id });
     return updated.length;
   }
+
+  /** Adds a hinted word as new, or finds the existing one without changing its state; returns the word id. */
+  async addFromHint(
+    executor: DbExecutor,
+    userId: string,
+    word: { lemma: string; translationUk: string },
+  ): Promise<string> {
+    // No conflict target: the unique index is on the expression (user_id, lower(lemma))
+    await executor
+      .insert(words)
+      .values({
+        userId,
+        lemma: word.lemma,
+        translationUk: word.translationUk,
+        source: 'hint',
+        state: 'new',
+      })
+      .onConflictDoNothing();
+    const [row] = await executor
+      .select({ id: words.id })
+      .from(words)
+      .where(
+        and(
+          eq(words.userId, userId),
+          sql`lower(${words.lemma}) = lower(${word.lemma})`,
+        ),
+      );
+    if (!row) throw new Error('Hinted word lookup returned no row');
+    return row.id;
+  }
 }

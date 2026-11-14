@@ -53,6 +53,35 @@ describe('apiFetch', () => {
     );
   });
 
+  it('[TC-04-05] sends FormData as is without a content type', async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse({}));
+    const form = new FormData();
+    form.append('audio', new Blob(['a'], { type: 'audio/webm' }), 'a.webm');
+
+    await apiFetch('/api/thing', { method: 'POST', body: form });
+
+    const init = fetchMock.mock.calls[0]![1]!;
+    expect(init.body).toBe(form);
+    expect(new Headers(init.headers).has('Content-Type')).toBe(false);
+  });
+
+  it('[TC-04-05] resends the same FormData on the retry after a refresh', async () => {
+    fetchMock
+      .mockResolvedValueOnce(errorResponse(401, 'UNAUTHORIZED'))
+      .mockResolvedValueOnce(jsonResponse(authResponse('token-2')))
+      .mockResolvedValueOnce(jsonResponse({}));
+    const form = new FormData();
+    form.append('audio', new Blob(['a'], { type: 'audio/webm' }), 'a.webm');
+
+    await apiFetch('/api/thing', { method: 'POST', body: form });
+
+    const calls = callsTo('/api/thing');
+    expect(calls).toHaveLength(2);
+    expect(calls[1]![1]!.body).toBe(form);
+    expect(new Headers(calls[1]![1]!.headers).has('Content-Type')).toBe(false);
+    expect(authorizationOf(calls[1]!)).toBe('Bearer token-2');
+  });
+
   it('[TC-01-03] does not send a Bearer token or retry when auth is disabled', async () => {
     fetchMock.mockResolvedValueOnce(errorResponse(401, 'INVALID_CREDENTIALS'));
 

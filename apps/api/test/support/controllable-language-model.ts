@@ -3,18 +3,26 @@ import { LanguageModelUnavailableError } from '../../src/integrations/language-m
 import type {
   AnalyzeUtteranceInput,
   AnalyzeUtteranceResponse,
-  HintRequest,
+  HintInput,
   LanguageModelPort,
   NextTurnInput,
   PlanSessionInput,
 } from '../../src/integrations/language-model/language-model.port.js';
 
+interface HintHold {
+  started: () => void;
+  released: Promise<void>;
+}
+
 /** Fake model whose calls are counted and whose failures can be switched on and off. */
 export class ControllableLanguageModel implements LanguageModelPort {
-  readonly calls = { analyze: 0, nextTurn: 0 };
+  readonly calls = { analyze: 0, nextTurn: 0, hint: 0 };
   analysisUnavailable = false;
   nextTurnUnavailable = false;
   nextTurnInvalid = false;
+  /** When set, hint() returns it instead of the Fake's answer. */
+  hintOutput: unknown = undefined;
+  private hintHold: HintHold | null = null;
   private readonly inner = new FakeLanguageModel();
 
   analyzeUtterance(
@@ -40,20 +48,41 @@ export class ControllableLanguageModel implements LanguageModelPort {
     this.analysisUnavailable = false;
     this.nextTurnUnavailable = false;
     this.nextTurnInvalid = false;
+    this.hintOutput = undefined;
+    this.hintHold = null;
   }
 
   reset(): void {
     this.recover();
     this.calls.analyze = 0;
     this.calls.nextTurn = 0;
+    this.calls.hint = 0;
+  }
+
+  /** Makes the next hint() calls wait until release() is called; `started` resolves once a call is in flight. */
+  holdHint(): { started: Promise<void>; release: () => void } {
+    let release = (): void => undefined;
+    const released = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const started = new Promise<void>((resolve) => {
+      this.hintHold = { started: resolve, released };
+    });
+    return { started, release };
   }
 
   planSession(input: PlanSessionInput): Promise<unknown> {
     return this.inner.planSession(input);
   }
 
-  hint(request: HintRequest): Promise<unknown> {
-    return this.inner.hint(request);
+  async hint(input: HintInput): Promise<unknown> {
+    this.calls.hint += 1;
+    if (this.hintHold) {
+      this.hintHold.started();
+      await this.hintHold.released;
+    }
+    if (this.hintOutput !== undefined) return this.hintOutput;
+    return this.inner.hint(input);
   }
 
   summarizeSession(): Promise<unknown> {

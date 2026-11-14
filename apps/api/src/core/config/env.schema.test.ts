@@ -114,6 +114,39 @@ describe('parseEnv', () => {
     );
   });
 
+  it('[TC-00-06] DEV_KEEP_AUDIO=true is rejected outside development', () => {
+    for (const NODE_ENV of ['test', 'production']) {
+      expect(
+        errorOf({
+          ...validEnv,
+          NODE_ENV,
+          DEV_KEEP_AUDIO: 'true',
+          DEV_AUDIO_DIR: 'C:/tmp/gototalk-audio',
+        }),
+      ).toContain('DEV_KEEP_AUDIO');
+    }
+  });
+
+  it('[TC-00-06] DEV_AUDIO_DIR must be an absolute path', () => {
+    for (const DEV_AUDIO_DIR of ['audio', './audio', '../audio']) {
+      expect(
+        errorOf({ ...validEnv, DEV_KEEP_AUDIO: 'true', DEV_AUDIO_DIR }),
+      ).toContain('DEV_AUDIO_DIR');
+    }
+  });
+
+  it('[TC-00-06] absolute posix and windows DEV_AUDIO_DIR values are accepted', () => {
+    for (const DEV_AUDIO_DIR of [
+      '/var/tmp/gototalk-audio',
+      String.raw`C:\tmp\audio`,
+    ]) {
+      expect(
+        parseEnv({ ...validEnv, DEV_KEEP_AUDIO: 'true', DEV_AUDIO_DIR })
+          .DEV_AUDIO_DIR,
+      ).toBe(DEV_AUDIO_DIR);
+    }
+  });
+
   it('[TC-00-06] all invalid variables are listed in one message', () => {
     const message = errorOf({ PORT: 'abc', LOG_LEVEL: 'loud' });
     expect(message).toContain('DATABASE_URL');
@@ -131,13 +164,17 @@ describe('parseEnv', () => {
 
     expect(env.FAKE_STT_FAIL).toBe('unavailable');
     expect(env.FAKE_LLM_FAIL).toBe('invalid_json');
-    expect(parseEnv({ ...validEnv, FAKE_LLM_FAIL: 'unavailable' })).toMatchObject(
-      { FAKE_LLM_FAIL: 'unavailable' },
-    );
+    expect(
+      parseEnv({ ...validEnv, FAKE_LLM_FAIL: 'unavailable' }),
+    ).toMatchObject({ FAKE_LLM_FAIL: 'unavailable' });
   });
 
   it('[TC-00-05] empty or missing fail modes are unset', () => {
-    const empty = parseEnv({ ...validEnv, FAKE_STT_FAIL: '', FAKE_LLM_FAIL: '' });
+    const empty = parseEnv({
+      ...validEnv,
+      FAKE_STT_FAIL: '',
+      FAKE_LLM_FAIL: '',
+    });
 
     expect(empty.FAKE_STT_FAIL).toBeUndefined();
     expect(empty.FAKE_LLM_FAIL).toBeUndefined();

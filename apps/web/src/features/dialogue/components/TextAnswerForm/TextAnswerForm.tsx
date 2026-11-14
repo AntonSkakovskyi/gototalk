@@ -18,12 +18,21 @@ const MAX_ROWS = 8;
 interface TextAnswerFormProps {
   phase: AnswerPhase;
   submit: (text: string) => Promise<boolean>;
+  /** Locks the form while another way of answering is in progress. */
+  disabled?: boolean;
+  autoFocus?: boolean;
 }
 
-export function TextAnswerForm({ phase, submit }: TextAnswerFormProps) {
+export function TextAnswerForm({
+  phase,
+  submit,
+  disabled = false,
+  autoFocus = false,
+}: TextAnswerFormProps) {
   const { t } = useTranslation();
   const form = useAnswerForm(submit);
   const { message } = form;
+  const locked = phase !== 'idle' || disabled;
 
   return (
     <form noValidate onSubmit={form.onSubmit}>
@@ -39,17 +48,14 @@ export function TextAnswerForm({ phase, submit }: TextAnswerFormProps) {
           error={message && t(message.key, message.values ?? {})}
           errorProps={ANNOUNCED_ERROR_PROPS}
           lang={ENGLISH_LANG}
-          readOnly={phase !== 'idle'}
+          readOnly={locked}
+          autoFocus={autoFocus}
           autosize
           minRows={MIN_ROWS}
           maxRows={MAX_ROWS}
           {...form.field}
         />
-        <Button
-          type="submit"
-          size="lg"
-          disabled={phase !== 'idle' || form.isSubmitting}
-        >
+        <Button type="submit" size="lg" disabled={locked || form.isSubmitting}>
           {t('dialogue.form.submit')}
         </Button>
       </Stack>

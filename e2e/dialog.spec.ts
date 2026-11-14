@@ -7,6 +7,7 @@ import {
   currentQuestion,
   finishFromDialogue,
   fragment,
+  openTextAnswer,
   sendAnswer,
   startDialogue,
 } from './support/dialog.js';
@@ -55,7 +56,7 @@ test.describe('[TC-04-04] text answer', () => {
     await expect(
       currentQuestion(page).getByText(SECOND_QUESTION, { exact: true }),
     ).toBeVisible();
-    await expect(page.getByLabel('Ваша відповідь англійською')).toBeEditable();
+    await openTextAnswer(page);
     await expectNoHorizontalScroll(page);
 
     const session = await readSessionDetails(page.request, accessToken, id);

@@ -4,6 +4,6 @@ import { WordUsageService } from './word-usage.service.js';
 
 @Module({
   providers: [WordsRepository, WordUsageService],
-  exports: [WordUsageService],
+  exports: [WordsRepository, WordUsageService],
 })
 export class VocabularyModule {}

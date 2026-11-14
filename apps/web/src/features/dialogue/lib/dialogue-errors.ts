@@ -11,9 +11,38 @@ const KEY_BY_CODE: Record<string, string> = {
   [ERROR_CODES.LANGUAGE_MODEL_UNAVAILABLE]: 'dialogue.errors.modelUnavailable',
   [ERROR_CODES.LANGUAGE_MODEL_INVALID_RESPONSE]:
     'dialogue.errors.modelInvalidResponse',
+  [ERROR_CODES.SPEECH_RECOGNITION_UNAVAILABLE]:
+    'dialogue.errors.speechUnavailable',
+  [ERROR_CODES.AUDIO_TOO_LARGE]: 'dialogue.errors.audioTooLarge',
+  [ERROR_CODES.AUDIO_UNSUPPORTED]: 'dialogue.errors.audioUnsupported',
+  [ERROR_CODES.TRANSCRIPT_EMPTY]: 'dialogue.errors.transcriptEmpty',
 };
+
+// A hint failure never touches a saved answer, so the answer-flow texts about it would mislead.
+const HINT_KEY_BY_CODE: Record<string, string> = {
+  [ERROR_CODES.LANGUAGE_MODEL_UNAVAILABLE]:
+    'dialogue.hint.errors.modelUnavailable',
+  [ERROR_CODES.LANGUAGE_MODEL_INVALID_RESPONSE]:
+    'dialogue.hint.errors.modelInvalidResponse',
+};
+
+const HTTP_SERVER_ERROR = 500;
 
 export function dialogueErrorKey(error: unknown): { key: string } {
   const key = error instanceof ApiError ? KEY_BY_CODE[error.code] : undefined;
   return { key: key ?? 'errors.generic' };
+}
+
+export function hintErrorKey(error: unknown): { key: string } {
+  const key =
+    error instanceof ApiError ? HINT_KEY_BY_CODE[error.code] : undefined;
+  return key === undefined ? dialogueErrorKey(error) : { key };
+}
+
+/** Network failures and 5xx may pass on a repeat; a 4xx would fail again with the same input. */
+export function isTransientError(error: unknown): boolean {
+  if (error === null || error === undefined) {
+    return false;
+  }
+  return !(error instanceof ApiError) || error.status >= HTTP_SERVER_ERROR;
 }

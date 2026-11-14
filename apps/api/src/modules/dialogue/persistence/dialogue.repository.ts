@@ -1,16 +1,20 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { desc, eq } from 'drizzle-orm';
+import { and, count, desc, eq } from 'drizzle-orm';
 import type { Utterance } from '@gototalk/shared';
 import { DRIZZLE } from '../../../core/db/db.tokens.js';
-import type { Database, DbTransaction } from '../../../core/db/db.tokens.js';
-import { utterances } from '../../../core/db/schema.js';
-import { lockSession } from '../../session/persistence/lock-session.js';
+import type {
+  Database,
+  DbExecutor,
+  DbTransaction,
+} from '../../../core/db/db.tokens.js';
+import { sessions, utterances } from '../../../core/db/schema.js';
 import { WordUsageService } from '../../vocabulary/word-usage.service.js';
 import {
   AnswerNotExpectedError,
   SessionFinishedError,
   SessionNotFoundError,
 } from '../dialogue.errors.js';
+import { lockActiveSession } from './lock-active-session.js';
 
 export interface AnswerTexts {
   verbatim: string;
@@ -24,13 +28,33 @@ export class DialogueRepository {
     private readonly wordUsage: WordUsageService,
   ) {}
 
+  /** Cheap unlocked check that an answer is expected; returns the number of user utterances, which is the next answer's index. */
+  async answerIndexFor(userId: string, sessionId: string): Promise<number> {
+    const [session] = await this.db
+      .select({ status: sessions.status })
+      .from(sessions)
+      .where(and(eq(sessions.id, sessionId), eq(sessions.userId, userId)));
+    if (!session) throw new SessionNotFoundError();
+    if (session.status !== 'active') throw new SessionFinishedError();
+    const last = await this.lastUtterance(this.db, sessionId);
+    if (last?.role !== 'assistant') throw new AnswerNotExpectedError();
+    const [answers] = await this.db
+      .select({ total: count() })
+      .from(utterances)
+      .where(
+        and(eq(utterances.sessionId, sessionId), eq(utterances.role, 'user')),
+      );
+    return answers?.total ?? 0;
+  }
+
   submitAnswer(
     userId: string,
     sessionId: string,
     answer: AnswerTexts,
   ): Promise<Utterance> {
     return this.db.transaction(async (tx) => {
-      await this.lockActiveSession(tx, userId, sessionId);
+      // The row lock serialises concurrent answers of one session
+      await lockActiveSession(tx, userId, sessionId);
       const nextSeq = await this.nextSeqAfterQuestion(tx, sessionId);
 
       const [row] = await tx
@@ -60,28 +84,25 @@ export class DialogueRepository {
     });
   }
 
-  // The row lock serialises concurrent answers of one session
-  private async lockActiveSession(
-    tx: DbTransaction,
-    userId: string,
-    sessionId: string,
-  ): Promise<void> {
-    const status = await lockSession(tx, userId, sessionId);
-    if (status === null) throw new SessionNotFoundError();
-    if (status !== 'active') throw new SessionFinishedError();
-  }
-
   private async nextSeqAfterQuestion(
     tx: DbTransaction,
     sessionId: string,
   ): Promise<number> {
-    const [last] = await tx
+    const last = await this.lastUtterance(tx, sessionId);
+    if (last?.role !== 'assistant') throw new AnswerNotExpectedError();
+    return last.seq + 1;
+  }
+
+  private async lastUtterance(
+    executor: DbExecutor,
+    sessionId: string,
+  ): Promise<{ seq: number; role: string } | undefined> {
+    const [last] = await executor
       .select({ seq: utterances.seq, role: utterances.role })
       .from(utterances)
       .where(eq(utterances.sessionId, sessionId))
       .orderBy(desc(utterances.seq))
       .limit(1);
-    if (last?.role !== 'assistant') throw new AnswerNotExpectedError();
-    return last.seq + 1;
+    return last;
   }
 }
