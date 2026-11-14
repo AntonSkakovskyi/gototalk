@@ -14,6 +14,7 @@ import {
 } from './support/api-client.js';
 import { ControllableLanguageModel } from './support/controllable-language-model.js';
 import { startLearner } from './support/dialogue-flow.js';
+import { insertUtterance } from './support/session-fixtures.js';
 import { hintRows, hintedWordRows, postHint } from './support/hints-flow.js';
 import { createTestApp } from './support/test-app.js';
 import { resetUserData } from './support/test-db.js';
@@ -162,5 +163,20 @@ describe('hints access and validation', () => {
       'ANSWER_NOT_EXPECTED',
     );
     expect(model.calls.hint).toBe(0);
+  });
+
+  it('[TC-04-10] answers 409 ANSWER_NOT_EXPECTED when the last utterance is an answer without a next question', async () => {
+    const learner = await startLearner(app);
+    await insertUtterance(pool, learner.session.id, 2, 'user', 'I like it');
+
+    expectError(
+      await postHint(app, learner.token, learner.session.id, {
+        kind: 'phrase_start',
+      }),
+      409,
+      'ANSWER_NOT_EXPECTED',
+    );
+    expect(model.calls.hint).toBe(0);
+    expect(await hintRows(pool, learner.session.id)).toEqual([]);
   });
 });

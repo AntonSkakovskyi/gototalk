@@ -25,6 +25,7 @@ const MAPPED_CODES = [
   ],
   [ERROR_CODES.AUDIO_TOO_LARGE, 'dialogue.errors.audioTooLarge'],
   [ERROR_CODES.AUDIO_UNSUPPORTED, 'dialogue.errors.audioUnsupported'],
+  [ERROR_CODES.TRANSCRIPT_EMPTY, 'dialogue.errors.transcriptEmpty'],
 ] as const;
 
 describe('dialogueErrorKey', () => {
@@ -106,6 +107,7 @@ describe('isTransientError', () => {
   it.each([
     [413, ERROR_CODES.AUDIO_TOO_LARGE],
     [415, ERROR_CODES.AUDIO_UNSUPPORTED],
+    [422, ERROR_CODES.TRANSCRIPT_EMPTY],
     [409, ERROR_CODES.SESSION_FINISHED],
     [404, ERROR_CODES.SESSION_NOT_FOUND],
   ])(

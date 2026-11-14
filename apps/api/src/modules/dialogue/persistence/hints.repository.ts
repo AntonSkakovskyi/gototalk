@@ -51,16 +51,17 @@ export class HintsRepository {
       .where(and(eq(sessions.id, sessionId), eq(sessions.userId, userId)));
     if (!session) throw new SessionNotFoundError();
     if (session.status !== 'active') throw new SessionFinishedError();
-    const questions = and(
-      eq(utterances.sessionId, sessionId),
-      eq(utterances.role, 'assistant'),
-    );
     const last = await this.lastQuestion(this.db, sessionId);
     if (!last) throw new AnswerNotExpectedError();
     const [asked] = await this.db
       .select({ total: count() })
       .from(utterances)
-      .where(questions);
+      .where(
+        and(
+          eq(utterances.sessionId, sessionId),
+          eq(utterances.role, 'assistant'),
+        ),
+      );
     return { ...last, number: asked?.total ?? 1 };
   }
 
@@ -81,22 +82,24 @@ export class HintsRepository {
     });
   }
 
+  /** The last utterance when it is an assistant question; an answer without a next question yields none. */
   private async lastQuestion(
     executor: DbExecutor,
     sessionId: string,
   ): Promise<{ id: string; text: string } | undefined> {
     const [last] = await executor
-      .select({ id: utterances.id, text: utterances.textVerbatim })
+      .select({
+        id: utterances.id,
+        text: utterances.textVerbatim,
+        role: utterances.role,
+      })
       .from(utterances)
-      .where(
-        and(
-          eq(utterances.sessionId, sessionId),
-          eq(utterances.role, 'assistant'),
-        ),
-      )
+      .where(eq(utterances.sessionId, sessionId))
       .orderBy(desc(utterances.seq))
       .limit(1);
-    return last;
+    return last?.role === 'assistant'
+      ? { id: last.id, text: last.text }
+      : undefined;
   }
 
   private async resolve(

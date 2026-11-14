@@ -166,6 +166,12 @@ describe('prompt hint.v1 contract', () => {
     expect(template).toMatch(/never a full answer/i);
     expect(template).toMatch(/return null/i);
   });
+
+  it('[TC-04-07] limits the translation word to ASCII letters, spaces, apostrophes and hyphens', () => {
+    expect(template).toMatch(
+      /only of ASCII letters, spaces, apostrophes and hyphens, with no punctuation/i,
+    );
+  });
 });
 
 describe('@gototalk/prompts package', () => {

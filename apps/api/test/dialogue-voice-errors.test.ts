@@ -1,4 +1,4 @@
-import { MAX_AUDIO_BYTES } from '@gototalk/shared';
+import { ANSWER_TEXT_MAX, MAX_AUDIO_BYTES } from '@gototalk/shared';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { expectError } from './support/api-client.js';
 import { postAudio, webmAudio } from './support/audio.js';
@@ -142,6 +142,53 @@ describe('voice answer upload errors', () => {
     expectError(res, 400, 'VALIDATION_ERROR');
     expect(ctx.transcribe).not.toHaveBeenCalled();
     expect(await utteranceRows(ctx.pool, learner.session.id)).toHaveLength(1);
+  });
+});
+
+describe('voice answer with an unusable transcript', () => {
+  let ctx: VoiceApp;
+
+  beforeAll(async () => {
+    ctx = await createVoiceApp();
+  });
+
+  afterAll(async () => {
+    await ctx.close();
+  });
+
+  beforeEach(async () => {
+    await resetUserData(ctx.pool);
+    ctx.transcribe.mockClear();
+  });
+
+  it('[TC-04-02] answers 422 TRANSCRIPT_EMPTY for a blank transcript, stores nothing and still takes a text answer', async () => {
+    const learner = await startLearner(ctx.app);
+    ctx.transcribe.mockResolvedValueOnce({ verbatim: '  ', clean: '' });
+
+    const res = await postAudio(ctx.app, learner.token, learner.session.id);
+
+    expectError(res, 422, 'TRANSCRIPT_EMPTY');
+    expect(await utteranceRows(ctx.pool, learner.session.id)).toHaveLength(1);
+    const retry = await postAnswer(
+      ctx.app,
+      learner.token,
+      learner.session.id,
+      TEXT_ANSWER,
+    );
+    expect(retry.status).toBe(201);
+  });
+
+  it('[TC-04-02] caps a transcript longer than ANSWER_TEXT_MAX when storing it', async () => {
+    const learner = await startLearner(ctx.app);
+    const long = 'a'.repeat(ANSWER_TEXT_MAX + 50);
+    ctx.transcribe.mockResolvedValueOnce({ verbatim: long, clean: long });
+
+    const res = await postAudio(ctx.app, learner.token, learner.session.id);
+
+    expect(res.status).toBe(201);
+    expect(res.body.text).toHaveLength(ANSWER_TEXT_MAX);
+    const rows = await utteranceRows(ctx.pool, learner.session.id);
+    expect(rows[1]?.text_verbatim).toHaveLength(ANSWER_TEXT_MAX);
   });
 });
 

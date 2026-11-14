@@ -15,6 +15,7 @@ const KEY_BY_CODE: Record<string, string> = {
     'dialogue.errors.speechUnavailable',
   [ERROR_CODES.AUDIO_TOO_LARGE]: 'dialogue.errors.audioTooLarge',
   [ERROR_CODES.AUDIO_UNSUPPORTED]: 'dialogue.errors.audioUnsupported',
+  [ERROR_CODES.TRANSCRIPT_EMPTY]: 'dialogue.errors.transcriptEmpty',
 };
 
 // A hint failure never touches a saved answer, so the answer-flow texts about it would mislead.

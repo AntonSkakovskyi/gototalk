@@ -3,9 +3,10 @@ import {
   ConflictException,
   NotFoundException,
   ServiceUnavailableException,
+  UnprocessableEntityException,
   UnsupportedMediaTypeException,
 } from '@nestjs/common';
-import { ERROR_CODES } from '@gototalk/shared';
+import { ANSWER_TEXT_MAX, ERROR_CODES } from '@gototalk/shared';
 import type { Utterance } from '@gototalk/shared';
 import { describe, expect, it, vi } from 'vitest';
 import { SpeechRecognitionUnavailableError } from '../../integrations/speech-recognition/speech-recognition.errors.js';
@@ -223,6 +224,74 @@ describe('AnswersService.submitAudio', () => {
     });
     expect(repository.submitAnswer).not.toHaveBeenCalled();
     expect(retention.keep).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['empty texts', { verbatim: '', clean: '' }],
+    ['whitespace-only texts', { verbatim: '  \n ', clean: ' ' }],
+    ['an empty clean text', { verbatim: 'Um, uh', clean: '' }],
+  ])(
+    '[TC-04-02] answers 422 TRANSCRIPT_EMPTY for %s and stores nothing',
+    async (_label, transcript) => {
+      const { service, repository, retention } = setupVoice({
+        transcribe: vi.fn().mockResolvedValue(transcript),
+      });
+
+      const error = await rejection(
+        service.submitAudio(USER_ID, SESSION_ID, AUDIO),
+      );
+
+      expect(error).toBeInstanceOf(UnprocessableEntityException);
+      expect(
+        (error as UnprocessableEntityException).getResponse(),
+      ).toMatchObject({ code: ERROR_CODES.TRANSCRIPT_EMPTY });
+      expect(repository.submitAnswer).not.toHaveBeenCalled();
+      expect(retention.keep).not.toHaveBeenCalled();
+    },
+  );
+
+  it('[TC-04-02] trims the transcript texts before storing them', async () => {
+    const { service, repository } = setupVoice({
+      transcribe: vi
+        .fn()
+        .mockResolvedValue({ verbatim: ' Um, I go \n', clean: ' I go ' }),
+    });
+
+    await service.submitAudio(USER_ID, SESSION_ID, AUDIO);
+
+    expect(repository.submitAnswer).toHaveBeenCalledWith(USER_ID, SESSION_ID, {
+      verbatim: 'Um, I go',
+      clean: 'I go',
+    });
+  });
+
+  it('[TC-04-02] caps a long transcript at ANSWER_TEXT_MAX like a typed answer', async () => {
+    const { service, repository } = setupVoice({
+      transcribe: vi.fn().mockResolvedValue({
+        verbatim: 'a'.repeat(ANSWER_TEXT_MAX + 50),
+        clean: 'b'.repeat(ANSWER_TEXT_MAX + 1),
+      }),
+    });
+
+    await service.submitAudio(USER_ID, SESSION_ID, AUDIO);
+
+    expect(repository.submitAnswer).toHaveBeenCalledWith(USER_ID, SESSION_ID, {
+      verbatim: 'a'.repeat(ANSWER_TEXT_MAX),
+      clean: 'b'.repeat(ANSWER_TEXT_MAX),
+    });
+  });
+
+  it('[TC-04-08] treats a malformed provider result as an unavailable service', async () => {
+    const { service, repository } = setupVoice({
+      transcribe: vi.fn().mockResolvedValue({ verbatim: 42 }),
+    });
+
+    const error = await rejection(
+      service.submitAudio(USER_ID, SESSION_ID, AUDIO),
+    );
+
+    expect(error).toBeInstanceOf(ServiceUnavailableException);
+    expect(repository.submitAnswer).not.toHaveBeenCalled();
   });
 
   it('[TC-04-02] keeps no dev copy when the answer is rejected under the lock', async () => {

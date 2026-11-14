@@ -117,7 +117,6 @@ function useSubmission(
     try {
       const utterance = await send.mutateAsync(input);
       analyzeOnce(utterance.id);
-      // The recording is no longer needed once the server has accepted it.
       send.reset();
       return true;
     } catch {

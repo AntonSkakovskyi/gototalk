@@ -169,6 +169,26 @@ describe('hints when the model misbehaves or the session changes', () => {
     expect(await hintedWordRows(pool, learner.id)).toEqual([]);
   });
 
+  it('[TC-04-10] answers 409 ANSWER_NOT_EXPECTED and stores nothing when an answer is submitted during the model call', async () => {
+    const learner = await startLearner(app);
+    const hold = model.holdHint();
+
+    const pending = postHint(
+      app,
+      learner.token,
+      learner.session.id,
+      TRANSLATION,
+    ).then((res) => res);
+    await hold.started;
+    await insertUtterance(pool, learner.session.id, 2, 'user', 'I like it');
+    hold.release();
+    const res = await pending;
+
+    expectError(res, 409, 'ANSWER_NOT_EXPECTED');
+    expect(await hintRows(pool, learner.session.id)).toEqual([]);
+    expect(await hintedWordRows(pool, learner.id)).toEqual([]);
+  });
+
   it('[TC-04-10] answers 409 and stores nothing when the session finishes while the write waits for the lock', async () => {
     const learner = await startLearner(app);
     const holder = await SessionLockHolder.acquire(pool, learner.session.id);

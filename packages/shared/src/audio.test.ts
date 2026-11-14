@@ -23,6 +23,7 @@ describe('audio and hint contracts', () => {
     );
     expect(ERROR_CODES.AUDIO_TOO_LARGE).toBe('AUDIO_TOO_LARGE');
     expect(ERROR_CODES.AUDIO_UNSUPPORTED).toBe('AUDIO_UNSUPPORTED');
+    expect(ERROR_CODES.TRANSCRIPT_EMPTY).toBe('TRANSCRIPT_EMPTY');
   });
 
   it('[TC-04-05] HintRequestSchema accepts phrase_start and a trimmed translation word', () => {

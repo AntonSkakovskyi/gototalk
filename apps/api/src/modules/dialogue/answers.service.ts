@@ -2,9 +2,15 @@ import {
   Inject,
   Injectable,
   ServiceUnavailableException,
+  UnprocessableEntityException,
   UnsupportedMediaTypeException,
 } from '@nestjs/common';
-import { AnswerTextRequestSchema, ERROR_CODES } from '@gototalk/shared';
+import {
+  ANSWER_TEXT_MAX,
+  AnswerTextRequestSchema,
+  ERROR_CODES,
+  TranscriptSchema,
+} from '@gototalk/shared';
 import type { Utterance } from '@gototalk/shared';
 import { ZodBodyPipe } from '../../common/zod-body.pipe.js';
 import { SpeechRecognitionUnavailableError } from '../../integrations/speech-recognition/speech-recognition.errors.js';
@@ -17,6 +23,24 @@ import { toDialogueHttpError } from './dialogue.errors.js';
 import { detectAudioFormat } from './lib/audio-format.js';
 import { DialogueRepository } from './persistence/dialogue.repository.js';
 import type { AnswerTexts } from './persistence/dialogue.repository.js';
+
+function storable(text: string): string {
+  return text.trim().slice(0, ANSWER_TEXT_MAX).trimEnd();
+}
+
+function toAnswerTexts(result: unknown): AnswerTexts {
+  const parsed = TranscriptSchema.safeParse(result);
+  if (!parsed.success) throw new SpeechRecognitionUnavailableError();
+  const verbatim = storable(parsed.data.verbatim);
+  const clean = storable(parsed.data.clean);
+  if (verbatim === '' || clean === '') {
+    throw new UnprocessableEntityException({
+      code: ERROR_CODES.TRANSCRIPT_EMPTY,
+      message: 'No speech was recognised in the recording',
+    });
+  }
+  return { verbatim, clean };
+}
 
 function toHttpError(error: unknown): unknown {
   if (error instanceof SpeechRecognitionUnavailableError) {
@@ -76,15 +100,14 @@ export class AnswersService {
           message: 'The audio format is not supported',
         });
       }
-      const { verbatim, clean } = await this.speech.transcribe(
-        audio.buffer,
-        mime,
-        index,
+      const answer = toAnswerTexts(
+        await this.speech.transcribe(audio.buffer, mime, index),
       );
-      const utterance = await this.dialogue.submitAnswer(userId, sessionId, {
-        verbatim,
-        clean,
-      });
+      const utterance = await this.dialogue.submitAnswer(
+        userId,
+        sessionId,
+        answer,
+      );
       await this.retention.keep(utterance.id, mime, audio.buffer);
       return utterance;
     } catch (error) {

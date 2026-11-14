@@ -54,6 +54,7 @@ describe('AnswerError', () => {
   it.each([
     [413, ERROR_CODES.AUDIO_TOO_LARGE, uk.dialogue.errors.audioTooLarge],
     [415, ERROR_CODES.AUDIO_UNSUPPORTED, uk.dialogue.errors.audioUnsupported],
+    [422, ERROR_CODES.TRANSCRIPT_EMPTY, uk.dialogue.errors.transcriptEmpty],
   ])(
     '[TC-04-08] shows the %i message without a retry',
     (status, code, text) => {
