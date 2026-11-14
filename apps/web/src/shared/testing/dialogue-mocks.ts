@@ -34,6 +34,7 @@ function bodiesOf(requests: MockRequest[], method: string, suffix: string) {
 }
 
 interface DialogueApiReplies {
+  details?: () => Reply;
   answer?: (body: AnswerTextRequest) => Reply;
   analyze?: () => Reply;
   markMistake?: () => Reply;
@@ -42,6 +43,7 @@ interface DialogueApiReplies {
 
 /** Routes are keyed by the fixture ids of testTurnResult and testMistake in the test session. */
 export function mockDialogueApi({
+  details,
   answer = answerCreated,
   analyze = analysisOk,
   markMistake = markMistakeOk,
@@ -49,6 +51,7 @@ export function mockDialogueApi({
 }: DialogueApiReplies = {}) {
   const turn = testTurnResult();
   const { requests } = mockApi({
+    ...(details === undefined ? {} : { [`GET ${SESSION_PATH}`]: details }),
     [`POST ${SESSION_PATH}/utterances`]: (request) =>
       answer(AnswerTextRequestSchema.parse(request.body)),
     [`POST ${SESSION_PATH}/utterances/${turn.utterance.id}/analysis`]: analyze,
