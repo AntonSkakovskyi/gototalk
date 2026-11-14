@@ -3,9 +3,9 @@ import { and, eq, sql } from 'drizzle-orm';
 import type { Mistake } from '@gototalk/shared';
 import type { DbTransaction } from '../../../core/db/db.tokens.js';
 import { mistakes, utterances } from '../../../core/db/schema.js';
-import { patternIncrements } from '../../analysis/lib/pattern-increments.js';
-import type { AnalysisOutcome } from '../../analysis/mistake-analyzer.types.js';
-import { PatternsRepository } from '../../analysis/persistence/patterns.repository.js';
+import { patternIncrements } from '../lib/pattern-increments.js';
+import type { AnalysisOutcome } from '../mistake-analyzer.types.js';
+import { PatternsRepository } from './patterns.repository.js';
 
 @Injectable()
 export class AnalysisWriter {
