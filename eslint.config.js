@@ -111,7 +111,11 @@ export default defineConfig(
   },
   {
     files: [`${WEB_SRC}/**/*.{ts,tsx}`],
-    ignores: ['**/*.test.{ts,tsx}', `${WEB_SRC}/shared/testing/**`],
+    ignores: [
+      '**/*.test.{ts,tsx}',
+      `${WEB_SRC}/shared/testing/**`,
+      `${WEB_SRC}/features/*/testing/**`,
+    ],
     rules: {
       'import-x/no-restricted-paths': [
         'error',

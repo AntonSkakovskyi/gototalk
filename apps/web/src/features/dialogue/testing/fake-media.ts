@@ -18,6 +18,8 @@ export class FakeMediaRecorder extends EventTarget {
   static supported = new Set(['audio/webm;codecs=opus']);
   static instances: FakeMediaRecorder[] = [];
   static failOnConstruct = false;
+  static failOnStart = false;
+  static deferEvents = false;
   static isTypeSupported(mime: string) {
     return FakeMediaRecorder.supported.has(mime);
   }
@@ -25,6 +27,8 @@ export class FakeMediaRecorder extends EventTarget {
   state: 'inactive' | 'recording' = 'inactive';
   readonly mimeType: string;
   emitData = true;
+  stopCalls = 0;
+  private pending: Array<() => void> = [];
 
   constructor(
     readonly stream: FakeStream,
@@ -39,21 +43,36 @@ export class FakeMediaRecorder extends EventTarget {
   }
 
   start() {
+    if (FakeMediaRecorder.failOnStart) {
+      throw new DOMException('Cannot start', 'InvalidStateError');
+    }
     this.state = 'recording';
   }
 
   stop() {
+    this.stopCalls += 1;
     this.state = 'inactive';
-    if (this.emitData) {
-      const data = new Blob(['voice'], { type: this.mimeType });
-      this.dispatchEvent(Object.assign(new Event('dataavailable'), { data }));
-    }
-    this.dispatchEvent(new Event('stop'));
+    this.emit(() => {
+      if (this.emitData) {
+        const data = new Blob(['voice'], { type: this.mimeType });
+        this.dispatchEvent(Object.assign(new Event('dataavailable'), { data }));
+      }
+      this.dispatchEvent(new Event('stop'));
+    });
   }
 
   fail() {
     this.state = 'inactive';
-    this.dispatchEvent(new Event('error'));
+    this.emit(() => this.dispatchEvent(new Event('error')));
+  }
+
+  flush() {
+    this.pending.splice(0).forEach((dispatch) => dispatch());
+  }
+
+  private emit(dispatch: () => void) {
+    if (FakeMediaRecorder.deferEvents) this.pending.push(dispatch);
+    else dispatch();
   }
 }
 
@@ -68,15 +87,27 @@ export class FakeAnalyser {
 
 export class FakeAudioContext {
   static instances: FakeAudioContext[] = [];
+  static failOnSetup = false;
+  static initialState: 'running' | 'suspended' = 'running';
+  state = FakeAudioContext.initialState;
   closed = false;
+  resumed = false;
   constructor() {
     FakeAudioContext.instances.push(this);
   }
   createMediaStreamSource() {
+    if (FakeAudioContext.failOnSetup) {
+      throw new DOMException('Bad stream', 'InvalidStateError');
+    }
     return { connect: vi.fn(), disconnect: vi.fn() };
   }
   createAnalyser() {
     return new FakeAnalyser();
+  }
+  resume() {
+    this.resumed = true;
+    this.state = 'running';
+    return Promise.resolve();
   }
   close() {
     this.closed = true;
@@ -95,7 +126,11 @@ export function installFakeMedia() {
   FakeMediaRecorder.supported = new Set(['audio/webm;codecs=opus']);
   FakeMediaRecorder.instances = [];
   FakeMediaRecorder.failOnConstruct = false;
+  FakeMediaRecorder.failOnStart = false;
+  FakeMediaRecorder.deferEvents = false;
   FakeAudioContext.instances = [];
+  FakeAudioContext.failOnSetup = false;
+  FakeAudioContext.initialState = 'running';
   FakeAnalyser.amplitude = 0;
   vi.stubGlobal('MediaRecorder', FakeMediaRecorder);
   vi.stubGlobal('AudioContext', FakeAudioContext);
