@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { VocabularyModule } from '../vocabulary/vocabulary.module.js';
 import { MistakeAnalyzerService } from './mistake-analyzer.service.js';
 import { MistakesController } from './mistakes.controller.js';
 import { MistakesService } from './mistakes.service.js';
@@ -9,6 +10,7 @@ import { PendingAnalysisRepository } from './persistence/pending-analysis.reposi
 import { PatternsRepository } from './persistence/patterns.repository.js';
 
 @Module({
+  imports: [VocabularyModule],
   controllers: [MistakesController],
   providers: [
     AnalysisWriter,

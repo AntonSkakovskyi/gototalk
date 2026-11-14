@@ -1,17 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import { and, eq, sql } from 'drizzle-orm';
-import type { Mistake } from '@gototalk/shared';
+import type { BetterPhrasing, Mistake } from '@gototalk/shared';
 import type { DbTransaction } from '../../../core/db/db.tokens.js';
 import { mistakes, utterances } from '../../../core/db/schema.js';
+import { SessionWordsRepository } from '../../vocabulary/persistence/session-words.repository.js';
+import { WordsRepository } from '../../vocabulary/persistence/words.repository.js';
+import { sessionWordCandidates } from '../../vocabulary/lib/session-word-candidates.js';
 import { patternIncrements } from '../lib/pattern-increments.js';
 import type { AnalysisOutcome } from '../mistake-analyzer.types.js';
 import { PatternsRepository } from './patterns.repository.js';
 
 @Injectable()
 export class AnalysisWriter {
-  constructor(private readonly patterns: PatternsRepository) {}
+  constructor(
+    private readonly patterns: PatternsRepository,
+    private readonly words: WordsRepository,
+    private readonly sessionWords: SessionWordsRepository,
+  ) {}
 
-  /** Claims the pending utterance; the mistakes and pattern increments are written only by the call that claimed it. */
+  /** Only the call that claims the pending utterance writes mistakes, patterns and session words. */
   async save(
     tx: DbTransaction,
     userId: string,
@@ -33,9 +40,22 @@ export class AnalysisWriter {
           eq(utterances.analysisStatus, 'pending'),
         ),
       )
-      .returning({ id: utterances.id });
-    if (claimed.length === 0 || outcome.status !== 'done') return;
+      .returning({ sessionId: utterances.sessionId });
+    const [row] = claimed;
+    if (!row || outcome.status !== 'done') return;
     await this.saveMistakes(tx, userId, utteranceId, outcome.mistakes);
+    await this.saveSessionWords(tx, userId, row.sessionId, outcome.better);
+  }
+
+  private async saveSessionWords(
+    tx: DbTransaction,
+    userId: string,
+    sessionId: string,
+    better: BetterPhrasing[],
+  ): Promise<void> {
+    const candidates = sessionWordCandidates(better);
+    const wordIds = await this.words.addFromSession(tx, userId, candidates);
+    await this.sessionWords.link(tx, userId, sessionId, wordIds);
   }
 
   private async saveMistakes(

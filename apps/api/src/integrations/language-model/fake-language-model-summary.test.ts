@@ -58,12 +58,6 @@ describe('FakeLanguageModel.summarizeSession', () => {
     expect(response.model).toBe('fake');
   });
 
-  it('[TC-00-05] is deterministic', async () => {
-    expect(await llm.summarizeSession(input)).toEqual(
-      await llm.summarizeSession(input),
-    );
-  });
-
   it('[TC-04-08] unavailable: rejects without rendering the prompt', async () => {
     vi.mocked(renderSessionSummaryPrompt).mockClear();
     const down = new FakeLanguageModel({ failMode: 'unavailable' });

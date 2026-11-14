@@ -78,18 +78,18 @@ export class FakeLanguageModel implements LanguageModelPort {
     });
   }
 
-  summarizeSession(
+  async summarizeSession(
     input: SummarizeSessionInput,
   ): Promise<SummarizeSessionResponse> {
-    if (this.failMode === 'unavailable') return unavailable();
-    return Promise.resolve().then(() => {
-      renderSessionSummaryPrompt(input);
-      return {
-        output: buildSummary(input),
-        promptVersion: SESSION_SUMMARY_PROMPT_ID,
-        model: 'fake',
-      };
-    });
+    if (this.failMode === 'unavailable') {
+      throw new LanguageModelUnavailableError();
+    }
+    renderSessionSummaryPrompt(input);
+    return {
+      output: buildSummary(input),
+      promptVersion: SESSION_SUMMARY_PROMPT_ID,
+      model: 'fake',
+    };
   }
 }
 

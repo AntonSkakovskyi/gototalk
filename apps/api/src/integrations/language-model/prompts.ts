@@ -1,4 +1,4 @@
-import type { MistakeCategoryCode } from '@gototalk/shared';
+import type { SummarizeSessionInput } from './language-model.port.js';
 import { renderPrompt } from './render-prompt.js';
 
 export const ERROR_ANALYSIS_PROMPT_ID = 'error-analysis.v1';
@@ -23,17 +23,6 @@ export interface HintPromptInput {
   word?: string;
 }
 
-export interface SessionSummaryPromptInput {
-  answers: number;
-  minutes: number;
-  categories: {
-    code: MistakeCategoryCode;
-    title: string;
-    count: number;
-    examples: { original: string; suggestion: string }[];
-  }[];
-}
-
 export function renderErrorAnalysisPrompt(input: ErrorAnalysisPromptInput): {
   id: typeof ERROR_ANALYSIS_PROMPT_ID;
   text: string;
@@ -55,7 +44,7 @@ export function renderHintPrompt(input: HintPromptInput): {
   return renderPrompt(HINT_PROMPT_ID, input);
 }
 
-export function renderSessionSummaryPrompt(input: SessionSummaryPromptInput): {
+export function renderSessionSummaryPrompt(input: SummarizeSessionInput): {
   id: typeof SESSION_SUMMARY_PROMPT_ID;
   text: string;
 } {

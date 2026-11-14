@@ -8,7 +8,9 @@ import { ControllableLanguageModel } from './support/controllable-language-model
 import {
   MISTAKEN_ANSWER,
   analyse,
+  SEEDED_WORD_SOURCE,
   seedWords,
+  sessionWordRows,
   startLearner,
   submitAnswer,
   utteranceRows,
@@ -60,6 +62,7 @@ describe('hints', () => {
       },
     ]);
     expect(await hintedWordRows(pool, learner.id)).toEqual([]);
+    expect(await sessionWordRows(pool, learner.session.id)).toEqual([]);
   });
 
   it('[TC-04-10] hints on the latest question after the first one was answered', async () => {
@@ -165,7 +168,7 @@ describe('hints', () => {
         expect.objectContaining({
           lemma: 'Meeting',
           state,
-          source: 'session',
+          source: SEEDED_WORD_SOURCE,
           times_used: 1,
           translation_uk: null,
         }),
@@ -191,5 +194,36 @@ describe('hints', () => {
     });
     expect(await hintRows(pool, learner.session.id)).toEqual([]);
     expect(await hintedWordRows(pool, learner.id)).toEqual([]);
+    expect(await sessionWordRows(pool, learner.session.id)).toEqual([]);
   });
+
+  it('[TC-05-01] links a newly hinted word to the session', async () => {
+    const learner = await startLearner(app);
+
+    await postHint(app, learner.token, learner.session.id, {
+      kind: 'translation',
+      word: 'зустріч',
+    });
+
+    expect(await sessionWordRows(pool, learner.session.id)).toEqual([
+      { lemma: 'meeting', state: 'new', source: 'hint' },
+    ]);
+  });
+
+  it.each(['partial', 'passive', 'active'])(
+    '[TC-05-01] links an existing %s word to the session without changing its state',
+    async (state) => {
+      const learner = await startLearner(app);
+      await seedWords(pool, learner.id, [['Meeting', state]]);
+
+      await postHint(app, learner.token, learner.session.id, {
+        kind: 'translation',
+        word: 'зустріч',
+      });
+
+      expect(await sessionWordRows(pool, learner.session.id)).toEqual([
+        { lemma: 'Meeting', state, source: SEEDED_WORD_SOURCE },
+      ]);
+    },
+  );
 });
