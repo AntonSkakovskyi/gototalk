@@ -1,4 +1,4 @@
-import type { AnalysisResult, MistakeCategoryCode, WordState } from '@gototalk/shared';
+import type { MistakeCategoryCode, WordState } from '@gototalk/shared';
 
 export interface WeakArea {
   category: MistakeCategoryCode;
@@ -7,14 +7,6 @@ export interface WeakArea {
 }
 
 export type VocabularyStats = Record<WordState, number>;
-
-export interface ApplyAnalysisInput {
-  userId: string;
-  utteranceId: string;
-  /** text_clean of the utterance: vocabulary words found in it become active. */
-  textClean: string;
-  analysis: AnalysisResult;
-}
 
 export interface LearnerModelSnapshot {
   weakAreas: WeakArea[];

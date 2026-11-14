@@ -141,6 +141,28 @@ export class SessionsController {
     return this.sessions.start(requireUserId(user), body);
   }
 
+  @Post(':id/finish')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Finish the session',
+    description:
+      'Idempotent: finishing a finished session returns it unchanged and keeps its original endedAt. Needs no consent. 404 SESSION_NOT_FOUND for a foreign, unknown or malformed id.',
+  })
+  @ApiParam({ name: 'id', format: 'uuid' })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Session { id, topic, topicSource, feedbackMode, status, startedAt, endedAt }',
+  })
+  @ApiResponse({ status: 401, description: 'UNAUTHORIZED' })
+  @ApiResponse({ status: 404, description: 'SESSION_NOT_FOUND' })
+  finish(
+    @CurrentUser() user: AuthenticatedUser | undefined,
+    @Param('id') id: string,
+  ): Promise<Session> {
+    return this.sessions.finish(requireUserId(user), id);
+  }
+
   @Get()
   @ApiOperation({
     summary: 'List the most recent sessions of the user',

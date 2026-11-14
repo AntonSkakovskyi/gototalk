@@ -36,7 +36,15 @@ const session = {
   endedAt: null,
 };
 
-const utterance = { id, seq: 1, role: 'assistant', text: 'Hello!' };
+const utterance = {
+  id,
+  seq: 1,
+  role: 'assistant',
+  text: 'Hello!',
+  analysisStatus: 'skipped',
+  mistakes: [],
+  better: [],
+};
 
 describe('session constants', () => {
   it('[TC-03-01] constants have the agreed values', () => {
@@ -314,7 +322,7 @@ describe('session response schemas', () => {
   });
 
   it('[TC-03-01] SessionDetailsSchema extends Session with utterances', () => {
-    const details = { ...session, utterances: [utterance] };
+    const details = { ...session, utterances: [utterance], planRemaining: 4 };
     expect(SessionDetailsSchema.parse(details)).toEqual(details);
     expect(SessionDetailsSchema.safeParse(session).success).toBe(false);
   });

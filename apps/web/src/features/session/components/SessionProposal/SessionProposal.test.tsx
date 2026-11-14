@@ -3,7 +3,7 @@ import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { StrictMode } from 'react';
 import { Route, Routes } from 'react-router';
-import { sessionKeys } from '@/features/session/api/session-queries';
+import { sessionKeys } from '@/shared/api/session-details';
 import uk from '@/shared/i18n/uk.json';
 import { LocationProbe } from '@/shared/testing/LocationProbe';
 import { createTestQueryClient } from '@/shared/testing/query-wrapper';

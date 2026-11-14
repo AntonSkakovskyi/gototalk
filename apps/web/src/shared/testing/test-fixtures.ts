@@ -3,10 +3,13 @@ import type {
   Goal,
   LearnerModel,
   Me,
+  MistakeView,
   Profile,
   Session,
   SessionDetails,
   SessionPlan,
+  TurnResult,
+  Utterance,
 } from '@gototalk/shared';
 
 export const TEST_USER: Me = {
@@ -102,19 +105,26 @@ export function testSession(overrides: Partial<Session> = {}): Session {
   };
 }
 
+export function testUtterance(overrides: Partial<Utterance> = {}): Utterance {
+  return {
+    id: '9e4a1c73-6b2d-4f8a-a1c5-3b7d5e8f0001',
+    seq: 1,
+    role: 'assistant',
+    text: 'What would you like to do at the team offsite?',
+    analysisStatus: 'skipped',
+    mistakes: [],
+    better: [],
+    ...overrides,
+  };
+}
+
 export function testSessionDetails(
   overrides: Partial<SessionDetails> = {},
 ): SessionDetails {
   return {
     ...testSession(),
-    utterances: [
-      {
-        id: '9e4a1c73-6b2d-4f8a-a1c5-3b7d5e8f0001',
-        seq: 1,
-        role: 'assistant',
-        text: 'What would you like to do at the team offsite?',
-      },
-    ],
+    utterances: [testUtterance()],
+    planRemaining: 4,
     ...overrides,
   };
 }
@@ -132,6 +142,43 @@ export function testSessionPlan(
       'What could go wrong, and how would you prepare?',
       'How would you measure whether the offsite was a success?',
     ],
+    ...overrides,
+  };
+}
+
+export function testMistake(overrides: Partial<MistakeView> = {}): MistakeView {
+  return {
+    id: '3f6b2d18-9c4e-4a7b-b2d0-5e8a1c7f0001',
+    start: 2,
+    end: 4,
+    original: 'go',
+    suggestion: 'went',
+    category: 'verb_tense',
+    explanationEn: 'Use the past simple for finished actions.',
+    translationUk: 'Використовуйте Past Simple для завершених дій.',
+    isFalse: false,
+    ...overrides,
+  };
+}
+
+export function testTurnResult(
+  overrides: Partial<TurnResult> = {},
+): TurnResult {
+  return {
+    utterance: testUtterance({
+      id: '9e4a1c73-6b2d-4f8a-a1c5-3b7d5e8f0002',
+      seq: 2,
+      role: 'user',
+      text: 'I go to the offsite yesterday',
+      analysisStatus: 'done',
+      mistakes: [testMistake()],
+    }),
+    reply: testUtterance({
+      id: '9e4a1c73-6b2d-4f8a-a1c5-3b7d5e8f0003',
+      seq: 3,
+      text: 'Where would the team go if the budget were unlimited?',
+    }),
+    planRemaining: 3,
     ...overrides,
   };
 }

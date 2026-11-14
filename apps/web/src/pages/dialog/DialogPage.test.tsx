@@ -59,7 +59,38 @@ describe('DialogPage route', () => {
       }),
     ).toBeInTheDocument();
     expect(screen.getByText(FIRST_QUESTION)).toBeInTheDocument();
+    expect(screen.getByText(uk.dialogue.turns.currentQuestion)).toBeVisible();
+    expect(screen.getByLabelText(uk.dialogue.form.label)).toHaveAttribute(
+      'lang',
+      'en',
+    );
+    expect(
+      screen.queryByText(uk.dialogue.planExhausted),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: uk.common.actions.home }),
+    ).toHaveAttribute('href', '/');
     expect(currentLocation()).toBe(`/sessions/${STARTED_SESSION.id}`);
+  });
+
+  it('[TC-03-03] offers the home link while the session is loading', async () => {
+    mockApi({
+      'GET /api/profile': jsonResponse(TEST_PROFILE),
+      [`GET /api/sessions/${STARTED_SESSION.id}`]: () =>
+        new Promise<Response>(() => undefined),
+    });
+
+    renderAppWithProbe({
+      route: `/sessions/${STARTED_SESSION.id}`,
+      session: SESSION,
+    });
+
+    expect(
+      await screen.findByRole('link', { name: uk.common.actions.home }),
+    ).toHaveAttribute('href', '/');
+    expect(
+      screen.queryByLabelText(uk.dialogue.form.label),
+    ).not.toBeInTheDocument();
   });
 
   it.each([
@@ -82,6 +113,12 @@ describe('DialogPage route', () => {
         name: uk.session.errors.notFound,
       }),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: uk.common.actions.home }),
+    ).toHaveAttribute('href', '/');
+    expect(
+      screen.queryByLabelText(uk.dialogue.form.label),
+    ).not.toBeInTheDocument();
   });
 
   it('[TC-03-03] keeps /sessions/new on the proposal, not on a session page', async () => {

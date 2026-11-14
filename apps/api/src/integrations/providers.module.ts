@@ -23,7 +23,9 @@ function unsupported(name: string, value: never): never {
         const provider = config.get('STT_PROVIDER', { infer: true });
         switch (provider) {
           case 'fake':
-            return new FakeSpeechRecognition();
+            return new FakeSpeechRecognition({
+              failMode: config.get('FAKE_STT_FAIL', { infer: true }),
+            });
           default:
             return unsupported('STT_PROVIDER', provider);
         }
@@ -36,7 +38,9 @@ function unsupported(name: string, value: never): never {
         const provider = config.get('LLM_PROVIDER', { infer: true });
         switch (provider) {
           case 'fake':
-            return new FakeLanguageModel();
+            return new FakeLanguageModel({
+              failMode: config.get('FAKE_LLM_FAIL', { infer: true }),
+            });
           default:
             return unsupported('LLM_PROVIDER', provider);
         }

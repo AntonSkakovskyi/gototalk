@@ -11,18 +11,12 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { PG_POOL } from '../src/core/db/db.tokens.js';
 import {
   expectError,
-  grantConsent,
   registerUser,
   tokenOfMissingUser,
 } from './support/api-client.js';
+import { insertFinished as insertFinishedSession } from './support/session-fixtures.js';
 import { createTestApp } from './support/test-app.js';
 import { resetUserData } from './support/test-db.js';
-
-const PLAN = {
-  topic: 'Weekend plans',
-  topicSource: 'suggested',
-  questions: ['q1', 'q2', 'q3', 'q4', 'q5'],
-};
 
 describe('GET /api/sessions and GET /api/sessions/:id', () => {
   let app: INestApplication;
@@ -46,21 +40,8 @@ describe('GET /api/sessions and GET /api/sessions/:id', () => {
       .get(path)
       .set('Authorization', `Bearer ${token}`);
 
-  async function insertFinished(
-    userId: string,
-    topic: string,
-    startedAt: string,
-  ): Promise<string> {
-    const { rows } = await pool.query<{ id: string }>(
-      `INSERT INTO sessions (user_id, topic, status, started_at, ended_at, plan)
-       VALUES ($1, $2, 'finished', $3, $3::timestamptz + interval '5 minutes', $4)
-       RETURNING id`,
-      [userId, topic, startedAt, JSON.stringify({ questions: ['q'] })],
-    );
-    const row = rows[0];
-    if (!row) throw new Error('Session insert returned no row');
-    return row.id;
-  }
+  const insertFinished = (userId: string, topic: string, startedAt: string) =>
+    insertFinishedSession(pool, userId, topic, startedAt);
 
   async function list(token: string) {
     const res = await get('/api/sessions', token);
@@ -189,25 +170,6 @@ describe('GET /api/sessions and GET /api/sessions/:id', () => {
       [1, 'assistant', 'first'],
       [2, 'user', 'second'],
       [3, 'assistant', 'third'],
-    ]);
-    expect(res.body).not.toHaveProperty('plan');
-  });
-
-  it('[TC-03-02] returns exactly the first question for a just started session', async () => {
-    const { token } = await registerUser(app);
-    await grantConsent(app, token);
-    const startRes = await request(app.getHttpServer())
-      .post('/api/sessions')
-      .set('Authorization', `Bearer ${token}`)
-      .send(PLAN);
-    expect(startRes.status).toBe(201);
-    const started = SessionDetailsSchema.parse(startRes.body);
-
-    const res = await get(`/api/sessions/${started.id}`, token);
-
-    expect(SessionDetailsSchema.parse(res.body)).toEqual(started);
-    expect(started.utterances).toEqual([
-      { id: expect.any(String), seq: 1, role: 'assistant', text: 'q1' },
     ]);
     expect(res.body).not.toHaveProperty('plan');
   });

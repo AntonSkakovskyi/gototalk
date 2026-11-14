@@ -27,7 +27,7 @@ describe('OnboardingWizard submission', () => {
     await user.click(button(text.goals.add));
     await user.type(goalField(2), 'Pass interviews');
 
-    await user.click(button(text.actions.finish));
+    await user.click(button(uk.common.actions.finish));
 
     await waitFor(() => expect(onCompleted).toHaveBeenCalledTimes(1));
     expect(requests.map(({ method, path }) => `${method} ${path}`)).toEqual([
@@ -59,13 +59,13 @@ describe('OnboardingWizard submission', () => {
     await reachGoals(user);
     await user.type(goalField(1), 'Speak fluently');
 
-    await user.click(button(text.actions.finish));
+    await user.click(button(uk.common.actions.finish));
 
     await waitFor(() =>
       expect(requests.map(({ method }) => method)).toContain('PUT'),
     );
     expect(button(text.actions.back)).toBeDisabled();
-    expect(button(text.actions.finish)).toBeDisabled();
+    expect(button(uk.common.actions.finish)).toBeDisabled();
 
     release(jsonResponse(TEST_PROFILE));
 
@@ -85,7 +85,7 @@ describe('OnboardingWizard submission', () => {
     await reachGoals(user);
     await user.type(goalField(1), 'Speak fluently');
 
-    await user.click(button(text.actions.finish));
+    await user.click(button(uk.common.actions.finish));
 
     const alert = await screen.findByRole('alert');
     expect(
@@ -115,7 +115,7 @@ describe('OnboardingWizard submission', () => {
     const onCompleted = renderWizard();
     await reachGoals(user);
     await user.type(goalField(1), 'Speak fluently');
-    await user.click(button(text.actions.finish));
+    await user.click(button(uk.common.actions.finish));
     await screen.findByRole('alert');
 
     await user.click(button(uk.common.actions.retry));
@@ -125,7 +125,7 @@ describe('OnboardingWizard submission', () => {
     );
     expect(button(uk.common.actions.retry)).toBeDisabled();
     expect(
-      screen.queryByRole('button', { name: text.actions.finish }),
+      screen.queryByRole('button', { name: uk.common.actions.finish }),
     ).toBeNull();
 
     release(jsonResponse(TEST_PROFILE));

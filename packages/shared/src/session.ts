@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { PlanSchema } from './llm.js';
+import { AnalysisStatusSchema, MistakeViewSchema } from './analysis-view.js';
+import { BetterPhrasingSchema, PlanSchema } from './llm.js';
 import { PLAN_QUESTIONS, QuestionSchema, TopicSchema } from './plan-bounds.js';
 
 export const FEEDBACK_MODES = ['immediate', 'deferred'] as const;
@@ -54,11 +55,16 @@ export const UtteranceSchema = z.object({
   id: z.uuid(),
   seq: z.int().positive(),
   role: UtteranceRoleSchema,
+  /** text_verbatim: mistake positions are offsets in this text. */
   text: z.string(),
+  analysisStatus: AnalysisStatusSchema,
+  mistakes: z.array(MistakeViewSchema),
+  better: z.array(BetterPhrasingSchema),
 });
 
 export const SessionDetailsSchema = SessionSchema.extend({
   utterances: z.array(UtteranceSchema),
+  planRemaining: z.int().nonnegative(),
 });
 
 export type FeedbackMode = z.infer<typeof FeedbackModeSchema>;

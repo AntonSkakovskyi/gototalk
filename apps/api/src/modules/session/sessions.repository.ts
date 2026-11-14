@@ -1,6 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { and, asc, desc, eq, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, inArray, sql } from 'drizzle-orm';
+import { z } from 'zod';
 import {
+  AnalysisStatusSchema,
+  BetterPhrasingSchema,
   FeedbackModeSchema,
   SessionStatusSchema,
   TopicSourceSchema,
@@ -13,9 +16,16 @@ import type {
   Utterance,
 } from '@gototalk/shared';
 import { DRIZZLE } from '../../core/db/db.tokens.js';
-import type { Database } from '../../core/db/db.tokens.js';
+import type { Database, DbTransaction } from '../../core/db/db.tokens.js';
 import { pgTimestampToDate } from '../../core/db/pg-timestamp.js';
-import { sessions, users, utterances } from '../../core/db/schema.js';
+import { mistakes, sessions, users, utterances } from '../../core/db/schema.js';
+import { lockSession } from './persistence/lock-session.js';
+import { toMistakeView } from './lib/mistake-view.js';
+import type { MistakeRow } from './lib/mistake-view.js';
+import {
+  parsePlanQuestions,
+  remainingQuestions,
+} from './lib/plan-questions.js';
 import { SessionOwnerMissingError } from './session.errors.js';
 
 type SessionRow = typeof sessions.$inferSelect;
@@ -37,23 +47,46 @@ function toSession(row: SessionRow): Session {
   };
 }
 
-function toUtterance(row: UtteranceRow): Utterance {
+const BetterPhrasingsSchema = z.array(BetterPhrasingSchema);
+
+function toUtterance(row: UtteranceRow, mistakeRows: MistakeRow[]): Utterance {
+  const role = UtteranceRoleSchema.parse(row.role);
   return {
     id: row.id,
     seq: row.seq,
-    role: UtteranceRoleSchema.parse(row.role),
+    role,
     text: row.textVerbatim,
+    analysisStatus: AnalysisStatusSchema.parse(row.analysisStatus),
+    mistakes: mistakeRows.flatMap((mistake) => toMistakeView(mistake) ?? []),
+    better:
+      role === 'user' ? BetterPhrasingsSchema.parse(row.betterPhrasings) : [],
   };
+}
+
+function countPlanRemaining(
+  plan: unknown,
+  utteranceRows: UtteranceRow[],
+): number {
+  const askedTexts = utteranceRows
+    .filter((row) => row.role === 'assistant')
+    .map((row) => row.textVerbatim);
+  return remainingQuestions(parsePlanQuestions(plan), askedTexts).length;
 }
 
 function toSessionDetails(
   session: SessionRow,
   utteranceRows: UtteranceRow[],
+  mistakeRows: MistakeRow[],
 ): SessionDetails {
-  return { ...toSession(session), utterances: utteranceRows.map(toUtterance) };
+  const byUtterance = Map.groupBy(mistakeRows, (row) => row.utteranceId);
+  return {
+    ...toSession(session),
+    utterances: utteranceRows.map((row) =>
+      toUtterance(row, byUtterance.get(row.id) ?? []),
+    ),
+    planRemaining: countPlanRemaining(session.plan, utteranceRows),
+  };
 }
-
-type Tx = Parameters<Parameters<Database['transaction']>[0]>[0];
 
 @Injectable()
 export class SessionsRepository {
@@ -98,7 +131,7 @@ export class SessionsRepository {
         .returning();
       if (!utterance) throw new Error('Utterance insert returned no row');
 
-      return toSessionDetails(session, [utterance]);
+      return toSessionDetails(session, [utterance], []);
     });
   }
 
@@ -126,11 +159,42 @@ export class SessionsRepository {
       .from(utterances)
       .where(eq(utterances.sessionId, session.id))
       .orderBy(asc(utterances.seq));
-    return toSessionDetails(session, rows);
+    const mistakeRows =
+      rows.length === 0
+        ? []
+        : await this.db
+            .select()
+            .from(mistakes)
+            .where(
+              inArray(
+                mistakes.utteranceId,
+                rows.map((row) => row.id),
+              ),
+            )
+            .orderBy(asc(mistakes.startPos), asc(mistakes.id));
+    return toSessionDetails(session, rows, mistakeRows);
+  }
+
+  finish(userId: string, sessionId: string): Promise<Session | null> {
+    return this.db.transaction(async (tx) => {
+      // The row lock serialises the finish against answers and analysis of the session
+      const status = await lockSession(tx, userId, sessionId);
+      if (status === null) return null;
+      const [row] =
+        status === 'active'
+          ? await tx
+              .update(sessions)
+              .set({ status: 'finished', endedAt: sql`clock_timestamp()` })
+              .where(eq(sessions.id, sessionId))
+              .returning()
+          : await tx.select().from(sessions).where(eq(sessions.id, sessionId));
+      if (!row) throw new Error('Session row disappeared under its lock');
+      return toSession(row);
+    });
   }
 
   // Serialises one user's session starts so only one session stays active
-  private async lockOwner(tx: Tx, userId: string): Promise<void> {
+  private async lockOwner(tx: DbTransaction, userId: string): Promise<void> {
     const locked = await tx
       .select({ id: users.id })
       .from(users)
@@ -139,7 +203,7 @@ export class SessionsRepository {
     if (locked.length === 0) throw new SessionOwnerMissingError();
   }
 
-  private async finishActive(tx: Tx, userId: string): Promise<void> {
+  private async finishActive(tx: DbTransaction, userId: string): Promise<void> {
     await tx
       .update(sessions)
       .set({ status: 'finished', endedAt: sql`clock_timestamp()` })

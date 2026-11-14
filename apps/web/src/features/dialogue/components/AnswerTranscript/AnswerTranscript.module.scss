@@ -1,0 +1,29 @@
+.text {
+  line-height: 1.9;
+  overflow-wrap: anywhere;
+}
+
+.fragment {
+  display: inline;
+  padding: 0 0.125rem;
+  border-radius: var(--mantine-radius-xs);
+  color: inherit;
+  font: inherit;
+  text-align: inherit;
+  background-color: var(--mantine-color-red-light);
+  text-decoration: underline wavy var(--mantine-color-red-filled);
+  text-decoration-thickness: 0.125rem;
+  text-underline-offset: 0.25rem;
+  cursor: pointer;
+  touch-action: manipulation;
+
+  &:focus-visible {
+    outline: 0.125rem solid var(--mantine-color-blue-filled);
+    outline-offset: 0.125rem;
+  }
+
+  &[aria-expanded='true'] {
+    background-color: var(--mantine-color-red-light-hover);
+    box-shadow: 0 0.125rem 0 var(--mantine-color-red-filled);
+  }
+}

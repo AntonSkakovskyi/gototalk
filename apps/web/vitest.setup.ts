@@ -24,6 +24,10 @@ class ResizeObserverMock {
 }
 window.ResizeObserver = ResizeObserverMock;
 
+Object.defineProperty(document, 'fonts', {
+  value: { addEventListener() {}, removeEventListener() {} },
+});
+
 window.HTMLElement.prototype.scrollIntoView = () => {};
 
 afterEach(() => {

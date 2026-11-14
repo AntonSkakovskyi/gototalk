@@ -1,0 +1,12 @@
+.removed {
+  color: var(--mantine-color-red-text);
+  text-decoration: line-through;
+  text-decoration-thickness: 0.125rem;
+}
+
+.added {
+  color: var(--mantine-color-green-text);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 0.125rem;
+}

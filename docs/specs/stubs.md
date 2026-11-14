@@ -4,13 +4,11 @@
 
 Вимоги (лаба 6): BR-7, NFR-4, NFR-6, NFR-12, FR-4, FR-5, FR-6, FR-7, FR-10, FR-11.
 
-Усі коди категорій беруться лише з таблиці `mistake_categories` (0002): `articles`, `verb_tense`, `subject_verb_agreement`, `missing_be`, `prepositions`, `word_order`, `question_form`, `plural_countable`, `conditionals`, `collocation`, `word_choice`, `l1_calque`, `other`. Для `analysis_model` заглушка повертає `fake`, для `analysis_prompt_version` – `fake-v1`.
+Усі коди категорій беруться лише з таблиці `mistake_categories` (0002): `articles`, `verb_tense`, `subject_verb_agreement`, `missing_be`, `prepositions`, `word_order`, `question_form`, `plural_countable`, `conditionals`, `collocation`, `word_choice`, `l1_calque`, `other`. Для `analysis_model` заглушка повертає `fake`, для `analysis_prompt_version` – ідентифікатор промпту аналізу `error-analysis.v1` (ім'я файлу без `.md`, як у `packages/prompts`).
 
 ## 1. FakeSpeechRecognition
 
-`transcribe(audio, mime) → { verbatim, clean }`. Вміст аудіо ігнорується. Відповідь береться з набору нижче за індексом `(кількість user-реплік у сесії) mod 5`; сесія в `transcribe` не відома, тому індекс передає викликач, а за його відсутності береться внутрішній лічильник адаптера (поведінка для тестів: лічильник скидається методом `reset()`).
-
-`clean` = `verbatim` без вагань (`um`, `uh`, `er`, `well,`) і без коми після них, з одним пробілом між словами й великою літерою на початку.
+`transcribe(audio, mime, index?) → { verbatim, clean }`. Вміст аудіо ігнорується. Відповідь береться з набору нижче за індексом `(кількість user-реплік у сесії) mod 5`; сесія в `transcribe` не відома, тому індекс передає викликач. Явний цілий `index` не рухає внутрішній лічильник; без індексу (або з нецілим) береться внутрішній лічильник адаптера, який по колу йде від 0 до 4. Лише для тестів клас має метод `reset()`, що скидає лічильник (у порту його немає).
 
 | № | verbatim | Помилки, які знайде FakeLanguageModel |
 |---|---|---|
@@ -20,7 +18,17 @@
 | 3 | I have 25 years and, uh, I live in Kyiv. It depends of the weather, um, if I will have time, I travel. | l1_calque, prepositions, conditionals |
 | 4 | Um, we have a meeting in Monday and I need more informations. Uh, I am boring because it is long. | prepositions, plural_countable, word_choice |
 
-Режим збою `FAKE_STT_FAIL=1`: `transcribe` кидає помилку, щоб перевірити повідомлення «Не вдалося розпізнати мовлення, спробуйте ще раз» і те, що введені дані сесії не губляться (NFR-6).
+`clean` обчислює чиста функція `cleanTranscript`: вагання `um`, `uh`, `er` (цілі слова, регістр неважливий) прибираються разом із комами до й після них; вступне `well,` на початку тексту або речення прибирається (`well` в інших місцях лишається); пробіли стискаються до одного, пробіл перед `. ? ! ,` зникає, перша літера велика. Тому в №3 зникає й кома перед `if`. Точні `clean` для п'яти транскриптів (зафіксовані тестом `fake-speech-recognition.test.ts`):
+
+| № | clean |
+|---|---|
+| 0 | Yesterday I go to the office and I have a meeting with my team. I very like my job. |
+| 1 | I am agree that remote work is good. I work with small team since 2 years. |
+| 2 | My sister she work in a big company. She busy every day. |
+| 3 | I have 25 years and I live in Kyiv. It depends of the weather if I will have time, I travel. |
+| 4 | We have a meeting in Monday and I need more informations. I am boring because it is long. |
+
+Режим збою `FAKE_STT_FAIL=unavailable` (єдине допустиме значення, порожнє – вимкнено): `transcribe` кидає `SpeechRecognitionUnavailableError`, щоб перевірити повідомлення «Не вдалося розпізнати мовлення, спробуйте ще раз» і те, що введені дані сесії не губляться (NFR-6).
 
 ## 2. FakeLanguageModel
 
@@ -28,27 +36,29 @@
 
 ### 2.1 analyzeUtterance(text)
 
-Заглушка застосовує до `text_verbatim` правила з таблиці (регістронезалежні регулярні вирази). Позиції `start`/`end` рахуються в `text_verbatim` (0-based, `end` не включно). Знайдені збіги сортуються за `start`; збіг, що перетинається з попереднім, відкидається. Якщо збігів немає, повертається порожній список. Правила працюють на довільному тексті, тому текстова відповідь (spec 04, п. 2a) аналізується так само, як голосова.
+Заглушка застосовує до `text_verbatim` правила з таблиці (регістронезалежні регулярні вирази, прапорці `gi`). Позиції `start`/`end` рахуються в `text_verbatim` (0-based, UTF-16 code units, `end` не включно). Знайдені збіги сортуються за `start`, при однаковому `start` перемагає правило з меншим номером; збіг, що перетинається з попереднім, відкидається. Результат обмежений 30 помилками (`ANALYSIS_MAX_MISTAKES`). Якщо збігів немає, повертається порожній список. `suggestion` обчислюється з реального збігу (дієслово відмінюється за словом із тексту, регістр прийменників зберігається), а не береться з таблиці дослівно; приклади в колонці `suggestion` показують лише вигляд. Правила лежать у `fake-analysis-rules.ts`, форми дієслів – у `fake-verb-forms.ts`. Правила працюють на довільному тексті, тому текстова відповідь (spec 04, п. 2a) аналізується так само, як голосова.
 
 | № | Шаблон (приклад) | Категорія | suggestion | explanation_en | translation_uk |
 |---|---|---|---|---|---|
 | 1 | `I am agree` | l1_calque | `I agree` | "Agree" is a verb, so it does not need "am". | «Agree» – це дієслово, «am» не потрібне. |
-| 2 | `(he|she|it) go/have/do/work/like/want/live/make/play/need` без `-s` | subject_verb_agreement | форма на `-s` (go→goes, have→has, do→does) | With he/she/it the present simple verb takes -s. | З he/she/it дієслово в теперішньому часі має закінчення -s. |
+| 2 | `(he|she|it) go/have/do/work/like/want/live/make/play/need` без `-s`; не позначається після `did`, `does`, `do`, `can`, `could`, `will`, `would`, `should`, `must`, `let`, `let's`, `make`, `to`, `help` | subject_verb_agreement | форма на `-s` (go→goes, have→has, do→does) | With he/she/it the present simple verb takes -s. | З he/she/it дієслово в теперішньому часі має закінчення -s. |
 | 3 | `since 2 years`, `since three months` | prepositions | `for 2 years` | Use "for" with a period of time and "since" with a starting point. | «For» – для тривалості, «since» – для моменту початку. |
-| 4 | `I have 25 years` | l1_calque | `I am 25 years old` | In English age is expressed with "to be", not "to have". | Вік виражається дієсловом «be», а не «have». |
-| 5 | `(yesterday|last week|last month|last year|last night),? I go/see/meet/work/visit/buy/make/take/do/have/want/like/play/watch` | verb_tense | `I` + минула форма (go→went, see→saw, meet→met, buy→bought, make→made, take→took, do→did, have→had, інші +ed) | Use the past simple for finished actions with a past time marker. | Для завершених дій з маркером минулого вживається Past Simple. |
+| 4 | `I have 25 years` (хвостове ` old` поглинається: `I have 30 years old` → `I am 30 years old`); не позначається перед `of`, `in`, `at`, `with`, `as`, `on`, `ago`, `experience`, `before` | l1_calque | `I am 25 years old` | In English age is expressed with "to be", not "to have". | Вік виражається дієсловом «be», а не «have». |
+| 5 | `(yesterday|last week|last month|last year|last night),? I go/see/meet/work/visit/buy/make/take/do/have/want/like/play/watch` | verb_tense | маркер часу + `I` + минула форма (`yesterday I went`; go→went, see→saw, meet→met, buy→bought, make→made, take→took, do→did, have→had, інші +ed / +d) | Use the past simple for finished actions with a past time marker. | Для завершених дій з маркером минулого вживається Past Simple. |
 | 6 | `informations`, `advices` | plural_countable | `information`, `advice` | "Information" and "advice" are uncountable and have no plural. | «Information» і «advice» – незлічувані, множини не мають. |
 | 7 | `make a photo`, `make photos` | collocation | `take a photo` | We "take" photos, we do not "make" them. | Фото «беруть» (take), а не «роблять» (make). |
-| 8 | `why you think/want/like/need/say` | question_form | `why do you think` | In questions add "do" before the subject. | У питаннях перед підметом потрібне допоміжне «do». |
+| 8 | `why you think/want/like/need/say` (лише ці п'ять дієслів; `why you are` не покривається) | question_form | `why do you think` | In questions add "do" before the subject. | У питаннях перед підметом потрібне допоміжне «do». |
 | 9 | `I very like/love/enjoy` | word_order | `I really like` | "Very" does not go before a verb; use "really" or "very much" after the object. | «Very» не ставиться перед дієсловом; вживайте «really» або «very much». |
 | 10 | `(I|he|she|it|we|they) busy/tired/ready/late/happy/hungry/interested` без `be` | missing_be | `I am busy` / `she is busy` / `we are busy` | An adjective after the subject needs the verb "be". | Після підмета перед прикметником потрібне дієслово «be». |
-| 11 | `if (I|you|he|she|it|we|they) will + дієслово` | conditionals | `if I have` | After "if" in a real condition use the present simple, not "will". | Після «if» у реальній умові вживається Present Simple, а не «will». |
+| 11 | `if (I|you|he|she|it|we|they) will + дієслово` | conditionals | `if I have` (після `will` дієслово відмінюється: he/she/it → `-s`, `be` → am/is/are) | After "if" in a real condition use the present simple, not "will". | Після «if» у реальній умові вживається Present Simple, а не «will». |
 | 12 | `depends of`, `depend of` | prepositions | `depends on` | The verb "depend" takes the preposition "on". | Дієслово «depend» вживається з прийменником «on». |
 | 13 | `in Monday`…`in Sunday` | prepositions | `on Monday` | Use "on" with days of the week. | З днями тижня вживається «on». |
 | 14 | `(with|in|on|at|for) small/big/new/large/good/nice + team/project/company/office/job` без артикля | articles | `with a small team` | A singular countable noun needs an article. | Злічуваному іменнику в однині потрібен артикль. |
 | 15 | `I am boring`, `I was boring` | word_choice | `I am bored` | "Boring" describes a thing that causes the feeling; "bored" describes how you feel. | «Boring» – те, що викликає нудьгу; «bored» – як почувається людина. |
 
-Для кожної відповіді з помилками заглушка додає до 2 кращих формулювань `{ original, better }`: речення, у яких є помилки, із застосованими `suggestion`.
+Для кожної відповіді з помилками заглушка додає до 2 кращих формулювань `{ original, better }`: речення (до `.`, `?`, `!`), у яких є помилки, із застосованими `suggestion`; речення довше за 200 символів (оригінал чи виправлене) пропускається.
+
+Особливості правил (зафіксовані тестами). Правило 2 може поглинути правило 7: `she make a photo` дає лише `she make` (правило 7 перетинається й відкидається). Правило 5 зберігає маркер часу в `suggestion`, хоч початковий задум казав «`I` + минула форма». Правило 8 не покриває `why you are`.
 
 ### 2.2 planSession(input)
 
@@ -79,9 +89,9 @@
 
 Власна тема (`customTopic`, `topic_source = custom`): тема лишається як введена (після trim), `previousTopics` ігнорується, питання за шаблоном: `What is the first thing that comes to mind when you think about "{topic}"?`, `Why did you choose to talk about "{topic}"?`, `Tell me about your experience with "{topic}".`, `What do you find most difficult about "{topic}"?`, `How do you see "{topic}" in the future?`. Правило патерну діє й для власної теми: якщо `patterns` не порожній, питання №1 так само замінюється.
 
-### 2.3 nextTurn(plan, history)
+### 2.3 nextTurn(input)
 
-Повертає наступне непоставлене питання плану; коли питання вичерпано, питання-уточнення за шаблоном: `Can you tell me more about "{останнє слово відповіді}"?` (останнє слово довше за 3 літери, без розділових знаків).
+Вхід `input`: `{ topic, remainingQuestions, history }`, де `remainingQuestions` – питання плану, тексту яких ще немає серед реплік `assistant` (порівняння після trim, стискання пробілів і нижнього регістру; рахує сервіс), `history` – останні 12 записів `{ role, text }`. Fake спершу рендерить промпт `next-turn.v1` і відкидає текст, потім повертає `{ question }`: перше з `remainingQuestions`; якщо їх немає – уточнення `Can you tell me more about "{слово}"?`, де слово – останнє слово останньої `user`-репліки довше за 3 літери (токен `[p{L}p{N}]+` з апострофом чи дефісом усередині, без розділових знаків; обрізається, щоб питання вклалось у 300 символів). Якщо такого слова немає, питання `Can you tell me more about that?` (без лапок).
 
 ### 2.4 hint(kind, input)
 
@@ -94,7 +104,12 @@
 
 ### 2.6 Режими збою
 
-Змінна `FAKE_LLM_FAIL`: `invalid_json` – заглушка повертає невалідну відповідь (перевірка повтору й `analysis_status = failed` після двох спроб); `unavailable` – кидає помилку недоступності сервісу (NFR-6). Без змінної – нормальна робота.
+Змінна `FAKE_LLM_FAIL` (enum, порожнє – вимкнено):
+
+- `invalid_json` зачіпає лише `analyzeUtterance`: метод повертає `{ mistakes: "broken" }` (конверт не проходить перевірку, після двох спроб `analysis_status = failed`). `nextTurn` лишається робочим, тож після `failed` діалог триває.
+- `unavailable` зачіпає кожен метод `FakeLanguageModel` (`analyzeUtterance`, `planSession`, `nextTurn`, `hint`, `summarizeSession`): кидається `LanguageModelUnavailableError` (NFR-6). Те саме для розпізнавання робить `FAKE_STT_FAIL=unavailable`, що зачіпає `transcribe` (`SpeechRecognitionUnavailableError`).
+
+Відображення в HTTP: `LanguageModelUnavailableError` → 503 `LANGUAGE_MODEL_UNAVAILABLE` (`POST /api/sessions/plan` і крок аналізу `POST /api/sessions/:id/utterances/:utteranceId/analysis`; на кроці аналізу спершу записується те, що вдалося, репліка лишається `pending`, повтор доробляє решту); дві невалідні відповіді → 502 `LANGUAGE_MODEL_INVALID_RESPONSE` (для аналізу натомість `failed`). Без змінної – нормальна робота.
 
 ## 3. Перевірка узгодженості
 

@@ -42,7 +42,12 @@ describe('BottomNav', () => {
     expect(within(nav).getAllByRole('link', { current: 'page' })).toHaveLength(1);
   });
 
-  it.each(['/', '/sessions/new', '/sessions/0f8fad5b-d9cb-469f-a165-70867728950e'])(
+  it.each([
+    '/',
+    '/sessions/new',
+    '/sessions/0f8fad5b-d9cb-469f-a165-70867728950e',
+    '/sessions/0f8fad5b-d9cb-469f-a165-70867728950e/report',
+  ])(
     '[TC-03-03] marks the session tab as current on %s',
     (route) => {
       const nav = renderNav(route);

@@ -306,6 +306,49 @@ export const refreshTokens = pgTable(
   ],
 );
 
+export const utterances = pgTable(
+  'utterances',
+  {
+    id: uuid().defaultRandom().primaryKey().notNull(),
+    sessionId: uuid('session_id').notNull(),
+    seq: integer().notNull(),
+    role: text().notNull(),
+    textVerbatim: text('text_verbatim').notNull(),
+    textClean: text('text_clean'),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .defaultNow()
+      .notNull(),
+    analysisStatus: text('analysis_status').default('pending').notNull(),
+    analysisPromptVersion: text('analysis_prompt_version'),
+    analysisModel: text('analysis_model'),
+    analyzedAt: timestamp('analyzed_at', {
+      withTimezone: true,
+      mode: 'string',
+    }),
+    betterPhrasings: jsonb('better_phrasings').default([]).notNull(),
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.sessionId],
+      foreignColumns: [sessions.id],
+      name: 'utterances_session_id_fkey',
+    }).onDelete('cascade'),
+    unique('utterances_session_id_seq_key').on(table.sessionId, table.seq),
+    check(
+      'utterances_role_check',
+      sql`role = ANY (ARRAY['assistant'::text, 'user'::text])`,
+    ),
+    check(
+      'utterances_analysis_status_check',
+      sql`analysis_status = ANY (ARRAY['pending'::text, 'done'::text, 'failed'::text, 'skipped'::text])`,
+    ),
+    check(
+      'utterances_better_phrasings_check',
+      sql`jsonb_typeof(better_phrasings) = 'array'::text`,
+    ),
+  ],
+);
+
 export const mistakeCategories = pgTable('mistake_categories', {
   code: text().primaryKey().notNull(),
   titleUk: text('title_uk').notNull(),
@@ -350,44 +393,6 @@ export const mistakes = pgTable(
     check(
       'chk_mistakes_span',
       sql`(start_pos IS NULL) OR (end_pos IS NULL) OR ((start_pos >= 0) AND (end_pos > start_pos))`,
-    ),
-  ],
-);
-
-export const utterances = pgTable(
-  'utterances',
-  {
-    id: uuid().defaultRandom().primaryKey().notNull(),
-    sessionId: uuid('session_id').notNull(),
-    seq: integer().notNull(),
-    role: text().notNull(),
-    textVerbatim: text('text_verbatim').notNull(),
-    textClean: text('text_clean'),
-    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
-      .defaultNow()
-      .notNull(),
-    analysisStatus: text('analysis_status').default('pending').notNull(),
-    analysisPromptVersion: text('analysis_prompt_version'),
-    analysisModel: text('analysis_model'),
-    analyzedAt: timestamp('analyzed_at', {
-      withTimezone: true,
-      mode: 'string',
-    }),
-  },
-  (table) => [
-    foreignKey({
-      columns: [table.sessionId],
-      foreignColumns: [sessions.id],
-      name: 'utterances_session_id_fkey',
-    }).onDelete('cascade'),
-    unique('utterances_session_id_seq_key').on(table.sessionId, table.seq),
-    check(
-      'utterances_role_check',
-      sql`role = ANY (ARRAY['assistant'::text, 'user'::text])`,
-    ),
-    check(
-      'utterances_analysis_status_check',
-      sql`analysis_status = ANY (ARRAY['pending'::text, 'done'::text, 'failed'::text, 'skipped'::text])`,
     ),
   ],
 );

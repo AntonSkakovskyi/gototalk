@@ -1,7 +1,6 @@
-import { Injectable, NotImplementedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { LearnerModelRepository } from './persistence/learner-model.repository.js';
 import type {
-  ApplyAnalysisInput,
   LearnerModelSnapshot,
   VocabularyStats,
   WeakArea,
@@ -34,12 +33,5 @@ export class LearnerModelService {
       this.vocabularyStats(userId),
     ]);
     return { weakAreas, vocabulary };
-  }
-
-  async applyAnalysis(input: ApplyAnalysisInput): Promise<void> {
-    void input;
-    throw new NotImplementedException(
-      'Not implemented: LearnerModelService.applyAnalysis (see docs/specs/04-dialog.md)',
-    );
   }
 }

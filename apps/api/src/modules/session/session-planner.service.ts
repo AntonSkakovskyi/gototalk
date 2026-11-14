@@ -1,20 +1,14 @@
-import {
-  BadGatewayException,
-  Inject,
-  Injectable,
-  Logger,
-} from '@nestjs/common';
-import { ERROR_CODES, PlanSchema } from '@gototalk/shared';
+import { Inject, Injectable, Logger } from '@nestjs/common';
+import { PlanSchema } from '@gototalk/shared';
 import type { Plan, PlanSessionRequest, SessionPlan } from '@gototalk/shared';
+import { toLanguageModelHttpError } from '../../common/language-model-http-errors.js';
+import { LanguageModelUnavailableError } from '../../integrations/language-model/language-model.errors.js';
 import { LANGUAGE_MODEL_PORT } from '../../integrations/language-model/language-model.port.js';
 import type {
   LanguageModelPort,
   PlanSessionInput,
 } from '../../integrations/language-model/language-model.port.js';
-import {
-  LanguageModelInvalidResponseError,
-  requestValidated,
-} from '../../integrations/language-model/validated-call.js';
+import { requestValidated } from '../../integrations/language-model/validated-call.js';
 import { GoalsService } from '../profile/goals.service.js';
 import { LearnerModelService } from '../profile/learner-model.service.js';
 import { ProfileService } from '../profile/profile.service.js';
@@ -65,13 +59,10 @@ export class SessionPlannerService {
         this.logger,
       );
     } catch (error) {
-      if (error instanceof LanguageModelInvalidResponseError) {
-        throw new BadGatewayException({
-          code: ERROR_CODES.LANGUAGE_MODEL_INVALID_RESPONSE,
-          message: error.message,
-        });
+      if (error instanceof LanguageModelUnavailableError) {
+        this.logger.warn('Language model unavailable');
       }
-      throw error;
+      throw toLanguageModelHttpError(error);
     }
   }
 }

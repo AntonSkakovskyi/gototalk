@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { startSession } from '@/features/session/api/session-api';
-import { sessionKeys } from '@/features/session/api/session-queries';
+import { sessionKeys } from '@/shared/api/session-details';
 
 export function useStartSession() {
   const queryClient = useQueryClient();

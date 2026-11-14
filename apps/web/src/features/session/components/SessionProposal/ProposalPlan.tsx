@@ -2,7 +2,7 @@ import type { SessionPlan } from '@gototalk/shared';
 import { Alert, Button, Stack } from '@mantine/core';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { useFocusWhen } from '@/features/session/hooks/use-focus-when';
+import { useFocusWhen } from '@/shared/hooks/use-focus-when';
 import { sessionErrorKey } from '@/features/session/lib/session-errors';
 import { SectionSkeleton } from '@/shared/ui/SectionSkeleton/SectionSkeleton';
 import { PlanContent } from './PlanContent';

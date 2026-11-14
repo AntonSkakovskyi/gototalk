@@ -1,6 +1,7 @@
 import { GOAL_TITLE_MAX, MAX_ACTIVE_GOALS } from '@gototalk/shared';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import uk from '@/shared/i18n/uk.json';
 import { TEST_PROFILE, jsonResponse } from '@/shared/testing/test-fixtures';
 import {
   button,
@@ -67,7 +68,7 @@ describe('OnboardingWizard goals step', () => {
     const onCompleted = renderWizard();
     await reachGoals(user);
 
-    await user.click(button(text.actions.finish));
+    await user.click(button(uk.common.actions.finish));
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
       text.errors.goalRequired,
@@ -84,7 +85,7 @@ describe('OnboardingWizard goals step', () => {
 
     await user.click(goalField(1));
     await user.paste('x'.repeat(GOAL_TITLE_MAX + 1));
-    await user.click(button(text.actions.finish));
+    await user.click(button(uk.common.actions.finish));
 
     expect(
       await screen.findByText(withMax(text.errors.goalTooLong, GOAL_TITLE_MAX)),

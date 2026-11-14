@@ -2,10 +2,9 @@ import type { SessionPlan } from '@gototalk/shared';
 import { Badge, Group, List, Stack, Text, Title } from '@mantine/core';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useFocusWhen } from '@/features/session/hooks/use-focus-when';
 import { topicLanguage } from '@/features/session/lib/topic-language';
-
-const QUESTION_LANGUAGE = 'en';
+import { useFocusWhen } from '@/shared/hooks/use-focus-when';
+import { ENGLISH_LANG } from '@/shared/i18n/languages';
 
 interface PlanContentProps {
   plan: SessionPlan;
@@ -52,7 +51,7 @@ function QuestionList({ questions }: { questions: string[] }) {
       <List
         type="ordered"
         spacing="sm"
-        lang={QUESTION_LANGUAGE}
+        lang={ENGLISH_LANG}
         aria-labelledby={labelId}
       >
         {questions.map((question) => (

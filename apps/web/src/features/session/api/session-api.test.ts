@@ -7,12 +7,7 @@ import {
   testSessionDetails,
   testSessionPlan,
 } from '@/shared/testing/test-fixtures';
-import {
-  getSession,
-  listSessions,
-  planSession,
-  startSession,
-} from './session-api';
+import { listSessions, planSession, startSession } from './session-api';
 
 describe('session api', () => {
   it('[TC-03-03] planSession posts the request and returns the parsed plan', async () => {
@@ -69,26 +64,5 @@ describe('session api', () => {
     mockApi({ 'GET /api/sessions': jsonResponse(sessions) });
 
     await expect(listSessions()).resolves.toEqual(sessions);
-  });
-
-  it('[TC-03-03] getSession reads the details by id', async () => {
-    const details = testSessionDetails();
-    mockApi({ [`GET /api/sessions/${details.id}`]: jsonResponse(details) });
-
-    await expect(getSession(details.id)).resolves.toEqual(details);
-  });
-
-  it('[TC-03-03] getSession surfaces SESSION_NOT_FOUND', async () => {
-    mockApi({
-      'GET /api/sessions/missing': errorResponse(
-        404,
-        ERROR_CODES.SESSION_NOT_FOUND,
-      ),
-    });
-
-    await expect(getSession('missing')).rejects.toMatchObject({
-      status: 404,
-      code: ERROR_CODES.SESSION_NOT_FOUND,
-    });
   });
 });

@@ -31,9 +31,3 @@ export function startSession(
 export function listSessions(): Promise<Session[]> {
   return apiFetch('/api/sessions', { schema: SessionListSchema });
 }
-
-export function getSession(id: string): Promise<SessionDetails> {
-  return apiFetch(`/api/sessions/${encodeURIComponent(id)}`, {
-    schema: SessionDetailsSchema,
-  });
-}
