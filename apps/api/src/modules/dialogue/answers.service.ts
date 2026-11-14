@@ -1,5 +1,4 @@
 import {
-  ConflictException,
   Inject,
   Injectable,
   ServiceUnavailableException,
@@ -14,36 +13,19 @@ import type { SpeechRecognitionPort } from '../../integrations/speech-recognitio
 import { isSessionId, sessionNotFound } from '../session/session.errors.js';
 import { AudioRetention } from './audio-retention.js';
 import type { UploadedAudio } from './audio-upload.js';
-import {
-  AnswerNotExpectedError,
-  SessionFinishedError,
-  SessionNotFoundError,
-} from './dialogue.errors.js';
+import { toDialogueHttpError } from './dialogue.errors.js';
 import { detectAudioFormat } from './lib/audio-format.js';
 import { DialogueRepository } from './persistence/dialogue.repository.js';
 import type { AnswerTexts } from './persistence/dialogue.repository.js';
 
 function toHttpError(error: unknown): unknown {
-  if (error instanceof SessionNotFoundError) return sessionNotFound();
-  if (error instanceof SessionFinishedError) {
-    return new ConflictException({
-      code: ERROR_CODES.SESSION_FINISHED,
-      message: 'The session is already finished',
-    });
-  }
-  if (error instanceof AnswerNotExpectedError) {
-    return new ConflictException({
-      code: ERROR_CODES.ANSWER_NOT_EXPECTED,
-      message: 'There is no open question to answer',
-    });
-  }
   if (error instanceof SpeechRecognitionUnavailableError) {
     return new ServiceUnavailableException({
       code: ERROR_CODES.SPEECH_RECOGNITION_UNAVAILABLE,
       message: error.message,
     });
   }
-  return error;
+  return toDialogueHttpError(error);
 }
 
 @Injectable()

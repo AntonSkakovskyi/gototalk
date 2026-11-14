@@ -8,13 +8,13 @@ import type {
   DbTransaction,
 } from '../../../core/db/db.tokens.js';
 import { sessions, utterances } from '../../../core/db/schema.js';
-import { lockSession } from '../../session/persistence/lock-session.js';
 import { WordUsageService } from '../../vocabulary/word-usage.service.js';
 import {
   AnswerNotExpectedError,
   SessionFinishedError,
   SessionNotFoundError,
 } from '../dialogue.errors.js';
+import { lockActiveSession } from './lock-active-session.js';
 
 export interface AnswerTexts {
   verbatim: string;
@@ -53,7 +53,8 @@ export class DialogueRepository {
     answer: AnswerTexts,
   ): Promise<Utterance> {
     return this.db.transaction(async (tx) => {
-      await this.lockActiveSession(tx, userId, sessionId);
+      // The row lock serialises concurrent answers of one session
+      await lockActiveSession(tx, userId, sessionId);
       const nextSeq = await this.nextSeqAfterQuestion(tx, sessionId);
 
       const [row] = await tx
@@ -81,17 +82,6 @@ export class DialogueRepository {
         better: [],
       };
     });
-  }
-
-  // The row lock serialises concurrent answers of one session
-  private async lockActiveSession(
-    tx: DbTransaction,
-    userId: string,
-    sessionId: string,
-  ): Promise<void> {
-    const status = await lockSession(tx, userId, sessionId);
-    if (status === null) throw new SessionNotFoundError();
-    if (status !== 'active') throw new SessionFinishedError();
   }
 
   private async nextSeqAfterQuestion(
