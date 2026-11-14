@@ -22,7 +22,9 @@ async function send(
   accessToken: string | null,
 ): Promise<Response> {
   const headers = new Headers();
-  if (body !== undefined) {
+  const isForm = body instanceof FormData;
+  // The browser sets the multipart content type with its boundary.
+  if (body !== undefined && !isForm) {
     headers.set('Content-Type', 'application/json');
   }
   if (auth && accessToken) {
@@ -32,7 +34,7 @@ async function send(
     method,
     headers,
     credentials: 'same-origin',
-    body: body === undefined ? undefined : JSON.stringify(body),
+    body: isForm || body === undefined ? body : JSON.stringify(body),
   });
 }
 
