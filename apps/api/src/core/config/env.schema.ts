@@ -1,3 +1,4 @@
+import path from 'node:path';
 import { z } from 'zod';
 
 // An empty value (`NAME=` in .env.example) means "not set".
@@ -26,6 +27,10 @@ export type FakeLlmFailMode = (typeof FAKE_LLM_FAIL_MODES)[number];
 const notImplemented = (real: string) => ({
   error: `provider "${real}" is not implemented yet, use "fake"`,
 });
+
+// Checks both flavours so the same .env validates on any host OS
+const isAbsolutePath = (value: string): boolean =>
+  path.posix.isAbsolute(value) || path.win32.isAbsolute(value);
 
 export const EnvSchema = z
   .object({
@@ -73,11 +78,25 @@ export const EnvSchema = z
     DEV_AUDIO_DIR: optional(z.string().optional()),
   })
   .superRefine((env, ctx) => {
+    if (env.DEV_KEEP_AUDIO && env.NODE_ENV !== 'development') {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['DEV_KEEP_AUDIO'],
+        message: 'is allowed only when NODE_ENV=development',
+      });
+    }
     if (env.DEV_KEEP_AUDIO && !env.DEV_AUDIO_DIR) {
       ctx.addIssue({
         code: 'custom',
         path: ['DEV_AUDIO_DIR'],
         message: 'is required when DEV_KEEP_AUDIO=true',
+      });
+    }
+    if (env.DEV_AUDIO_DIR && !isAbsolutePath(env.DEV_AUDIO_DIR)) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['DEV_AUDIO_DIR'],
+        message: 'must be an absolute path',
       });
     }
   });
