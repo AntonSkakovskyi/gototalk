@@ -6,10 +6,13 @@ import {
 } from '@nestjs/common';
 import { RECENT_SESSIONS_LIMIT } from '@gototalk/shared';
 import type {
+  HistoryQuery,
   Session,
   SessionDetails,
+  SessionPage,
   StartSessionRequest,
 } from '@gototalk/shared';
+import { decodeCursor, encodeCursor } from '../../common/keyset-cursor.js';
 import { ReportGeneratorService } from '../report/report-generator.service.js';
 import {
   SessionOwnerMissingError,
@@ -44,6 +47,16 @@ export class SessionsService {
 
   list(userId: string): Promise<Session[]> {
     return this.sessions.listRecent(userId, RECENT_SESSIONS_LIMIT);
+  }
+
+  async history(userId: string, query: HistoryQuery): Promise<SessionPage> {
+    const after =
+      query.cursor === undefined ? undefined : decodeCursor(query.cursor);
+    const { items, next } = await this.sessions.listPage(userId, {
+      after,
+      limit: query.limit,
+    });
+    return { items, nextCursor: next === null ? null : encodeCursor(next) };
   }
 
   async finish(userId: string, id: string): Promise<Session> {

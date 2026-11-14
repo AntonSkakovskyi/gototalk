@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
   FEEDBACK_MODES,
+  HISTORY_PAGE_SIZE_DEFAULT,
+  HISTORY_PAGE_SIZE_MAX,
+  HistoryQuerySchema,
   MAX_TOPIC_REROLLS,
   PLAN_QUESTIONS,
   PlanSchema,
@@ -10,6 +13,7 @@ import {
   SESSION_STATUSES,
   SessionDetailsSchema,
   SessionListSchema,
+  SessionPageSchema,
   SessionPlanSchema,
   SessionSchema,
   StartSessionRequestSchema,
@@ -325,5 +329,54 @@ describe('session response schemas', () => {
     const details = { ...session, utterances: [utterance], planRemaining: 4 };
     expect(SessionDetailsSchema.parse(details)).toEqual(details);
     expect(SessionDetailsSchema.safeParse(session).success).toBe(false);
+  });
+
+  it('[TC-05-03] HistoryQuerySchema defaults the limit and keeps the cursor', () => {
+    expect(HistoryQuerySchema.parse({})).toEqual({
+      limit: HISTORY_PAGE_SIZE_DEFAULT,
+    });
+    expect(HistoryQuerySchema.parse({ cursor: 'abc', limit: '5' })).toEqual({
+      cursor: 'abc',
+      limit: 5,
+    });
+    expect(
+      HistoryQuerySchema.parse({ limit: String(HISTORY_PAGE_SIZE_MAX) }).limit,
+    ).toBe(HISTORY_PAGE_SIZE_MAX);
+  });
+
+  it('[TC-05-03] HistoryQuerySchema rejects a bad limit or cursor', () => {
+    const bad = [
+      { limit: '0' },
+      { limit: String(HISTORY_PAGE_SIZE_MAX + 1) },
+      { limit: 'abc' },
+      { limit: '' },
+      { limit: '1.5' },
+      { limit: '-1' },
+      { limit: ['1', '2'] },
+      { cursor: '' },
+      { cursor: 'x'.repeat(201) },
+      { cursor: ['a', 'b'] },
+    ];
+    for (const query of bad) {
+      expect(
+        HistoryQuerySchema.safeParse(query).success,
+        JSON.stringify(query),
+      ).toBe(false);
+    }
+  });
+
+  it('[TC-05-03] SessionPageSchema wraps sessions with a nullable cursor', () => {
+    expect(
+      SessionPageSchema.parse({ items: [session], nextCursor: null }),
+    ).toEqual({
+      items: [session],
+      nextCursor: null,
+    });
+    expect(
+      SessionPageSchema.parse({ items: [], nextCursor: 'c' }).nextCursor,
+    ).toBe('c');
+    expect(SessionPageSchema.safeParse({ items: [session] }).success).toBe(
+      false,
+    );
   });
 });

@@ -23,6 +23,10 @@ export const MAX_TOPIC_REROLLS = 3;
 
 export const RECENT_SESSIONS_LIMIT = 10;
 
+export const HISTORY_PAGE_SIZE_DEFAULT = 20;
+
+export const HISTORY_PAGE_SIZE_MAX = 50;
+
 export const PlanSessionRequestSchema = z.object({
   previousTopics: z.array(TopicSchema).max(MAX_TOPIC_REROLLS).default([]),
   customTopic: TopicSchema.optional(),
@@ -51,6 +55,23 @@ export const SessionSchema = z.object({
 
 export const SessionListSchema = z.array(SessionSchema);
 
+// Query values arrive as strings, so the limit accepts digits only
+const PageLimitSchema = z
+  .string()
+  .regex(/^[0-9]+$/)
+  .transform(Number)
+  .pipe(z.int().min(1).max(HISTORY_PAGE_SIZE_MAX));
+
+export const HistoryQuerySchema = z.object({
+  cursor: z.string().min(1).max(200).optional(),
+  limit: PageLimitSchema.default(HISTORY_PAGE_SIZE_DEFAULT),
+});
+
+export const SessionPageSchema = z.object({
+  items: z.array(SessionSchema),
+  nextCursor: z.string().nullable(),
+});
+
 export const UtteranceSchema = z.object({
   id: z.uuid(),
   seq: z.int().positive(),
@@ -75,5 +96,7 @@ export type PlanSessionRequest = z.infer<typeof PlanSessionRequestSchema>;
 export type SessionPlan = z.infer<typeof SessionPlanSchema>;
 export type StartSessionRequest = z.infer<typeof StartSessionRequestSchema>;
 export type Session = z.infer<typeof SessionSchema>;
+export type SessionPage = z.infer<typeof SessionPageSchema>;
+export type HistoryQuery = z.infer<typeof HistoryQuerySchema>;
 export type Utterance = z.infer<typeof UtteranceSchema>;
 export type SessionDetails = z.infer<typeof SessionDetailsSchema>;

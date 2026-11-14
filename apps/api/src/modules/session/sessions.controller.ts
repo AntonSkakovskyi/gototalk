@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Query,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -13,11 +14,15 @@ import {
   ApiCreatedResponse,
   ApiOperation,
   ApiParam,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import {
   FEEDBACK_MODES,
+  HISTORY_PAGE_SIZE_DEFAULT,
+  HISTORY_PAGE_SIZE_MAX,
+  HistoryQuerySchema,
   MAX_TOPIC_REROLLS,
   PLAN_QUESTIONS,
   RECENT_SESSIONS_LIMIT,
@@ -28,9 +33,11 @@ import {
   TOPIC_SOURCES,
 } from '@gototalk/shared';
 import type {
+  HistoryQuery,
   PlanSessionRequest,
   Session,
   SessionDetails,
+  SessionPage,
   SessionPlan,
   StartSessionRequest,
 } from '@gototalk/shared';
@@ -41,6 +48,7 @@ import {
 import type { AuthenticatedUser } from '../auth/decorators/current-user.decorator.js';
 import { RequiresConsent } from '../auth/decorators/requires-consent.decorator.js';
 import { ZodBodyPipe } from '../../common/zod-body.pipe.js';
+import { ZodQueryPipe } from '../../common/zod-query.pipe.js';
 import { SessionPlannerService } from './session-planner.service.js';
 import { SessionsService } from './sessions.service.js';
 
@@ -178,6 +186,34 @@ export class SessionsController {
   @ApiResponse({ status: 401, description: 'UNAUTHORIZED' })
   list(@CurrentUser() user: AuthenticatedUser | undefined): Promise<Session[]> {
     return this.sessions.list(requireUserId(user));
+  }
+
+  @Get('history')
+  @ApiOperation({
+    summary: 'Page through all sessions of the user',
+    description:
+      'Newest first (started_at, id) with keyset pagination: pass the returned nextCursor as cursor to get the next page. The cursor is opaque. nextCursor is null on the last page. Active and finished sessions are included. Needs no consent: nothing is sent to providers.',
+  })
+  @ApiQuery({ name: 'cursor', required: false, type: String })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    minimum: 1,
+    maximum: HISTORY_PAGE_SIZE_MAX,
+    example: HISTORY_PAGE_SIZE_DEFAULT,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'SessionPage { items: Session[], nextCursor: string | null }',
+  })
+  @ApiResponse({ status: 400, description: 'VALIDATION_ERROR' })
+  @ApiResponse({ status: 401, description: 'UNAUTHORIZED' })
+  history(
+    @CurrentUser() user: AuthenticatedUser | undefined,
+    @Query(new ZodQueryPipe(HistoryQuerySchema)) query: HistoryQuery,
+  ): Promise<SessionPage> {
+    return this.sessions.history(requireUserId(user), query);
   }
 
   @Get(':id')

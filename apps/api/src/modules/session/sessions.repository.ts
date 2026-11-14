@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { and, asc, desc, eq, inArray, sql } from 'drizzle-orm';
+import type { SQL } from 'drizzle-orm';
 import { z } from 'zod';
 import {
   AnalysisStatusSchema,
@@ -15,6 +16,7 @@ import type {
   StartSessionRequest,
   Utterance,
 } from '@gototalk/shared';
+import type { KeysetPosition } from '../../common/keyset-cursor.js';
 import { DRIZZLE } from '../../core/db/db.tokens.js';
 import type { Database, DbTransaction } from '../../core/db/db.tokens.js';
 import { pgTimestampToDate } from '../../core/db/pg-timestamp.js';
@@ -30,6 +32,25 @@ import { SessionOwnerMissingError } from './session.errors.js';
 
 type SessionRow = typeof sessions.$inferSelect;
 type UtteranceRow = typeof utterances.$inferSelect;
+
+export interface SessionsPageResult {
+  items: Session[];
+  next: KeysetPosition | null;
+}
+
+// started_at stays raw text: a JS Date would truncate microseconds and break the keyset
+function toPage(rows: SessionRow[], limit: number): SessionsPageResult {
+  const last = rows[limit - 1];
+  return {
+    items: rows.slice(0, limit).map(toSession),
+    next:
+      rows.length > limit && last ? { t: last.startedAt, id: last.id } : null,
+  };
+}
+
+function olderThan(after: KeysetPosition): SQL {
+  return sql`(${sessions.startedAt}, ${sessions.id}) < (${after.t}::timestamptz, ${after.id}::uuid)`;
+}
 
 function toIso(value: string): string {
   return pgTimestampToDate(value).toISOString();
@@ -143,6 +164,21 @@ export class SessionsRepository {
       .orderBy(desc(sessions.startedAt), desc(sessions.id))
       .limit(limit)
       .then((rows) => rows.map(toSession));
+  }
+
+  async listPage(
+    userId: string,
+    { after, limit }: { after?: KeysetPosition; limit: number },
+  ): Promise<SessionsPageResult> {
+    const rows = await this.db
+      .select()
+      .from(sessions)
+      .where(
+        and(eq(sessions.userId, userId), after ? olderThan(after) : undefined),
+      )
+      .orderBy(desc(sessions.startedAt), desc(sessions.id))
+      .limit(limit + 1);
+    return toPage(rows, limit);
   }
 
   async findDetails(
