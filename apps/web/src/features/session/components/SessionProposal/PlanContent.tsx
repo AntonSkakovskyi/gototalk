@@ -2,7 +2,7 @@ import type { SessionPlan } from '@gototalk/shared';
 import { Badge, Group, List, Stack, Text, Title } from '@mantine/core';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useFocusWhen } from '@/features/session/hooks/use-focus-when';
+import { useFocusWhen } from '@/shared/hooks/use-focus-when';
 import { topicLanguage } from '@/features/session/lib/topic-language';
 
 const QUESTION_LANGUAGE = 'en';

@@ -5,10 +5,7 @@ import type {
   TurnResult,
   Utterance,
 } from '@gototalk/shared';
-
-function ordered(utterances: Utterance[]): Utterance[] {
-  return [...utterances].sort((a, b) => a.seq - b.seq);
-}
+import { sortBySeq } from './turns';
 
 function hasUtterance(utterances: Utterance[], id: string): boolean {
   return utterances.some((item) => item.id === id);
@@ -22,7 +19,7 @@ export function withUtterance(
   const { utterances } = details;
   return {
     ...details,
-    utterances: ordered(
+    utterances: sortBySeq(
       hasUtterance(utterances, utterance.id)
         ? utterances
         : [...utterances, utterance],
@@ -43,7 +40,7 @@ export function withTurnResult(
     reply === null || hasUtterance(answered, reply.id)
       ? answered
       : [...answered, reply];
-  return { ...details, utterances: ordered(withReply), planRemaining };
+  return { ...details, utterances: sortBySeq(withReply), planRemaining };
 }
 
 export function withMistake(

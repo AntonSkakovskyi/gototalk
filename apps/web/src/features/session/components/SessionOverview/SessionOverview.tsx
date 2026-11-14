@@ -1,24 +1,19 @@
-import { Button, Stack, Title } from '@mantine/core';
-import { useQuery } from '@tanstack/react-query';
+import type { SessionDetails } from '@gototalk/shared';
+import { Stack, Title } from '@mantine/core';
+import type { UseQueryResult } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router';
-import { sessionDetailsQueryOptions } from '@/shared/api/session-details';
-import { currentQuestion } from '@/features/session/lib/current-question';
 import { isSessionNotFound } from '@/features/session/lib/session-errors';
 import { LoadError } from '@/shared/ui/LoadError/LoadError';
 import { SectionSkeleton } from '@/shared/ui/SectionSkeleton/SectionSkeleton';
-import { CurrentQuestion } from './CurrentQuestion';
 import { FocusedTitle } from './FocusedTitle';
 import { SessionSummary } from './SessionSummary';
 
-interface SessionQuestionProps {
-  sessionId: string;
+interface SessionOverviewProps {
+  details: UseQueryResult<SessionDetails>;
 }
 
-export function SessionQuestion({ sessionId }: SessionQuestionProps) {
+export function SessionOverview({ details }: SessionOverviewProps) {
   const { t } = useTranslation();
-  const details = useQuery(sessionDetailsQueryOptions(sessionId));
-  const question = details.data && currentQuestion(details.data.utterances);
 
   return (
     <Stack gap="lg">
@@ -38,10 +33,6 @@ export function SessionQuestion({ sessionId }: SessionQuestionProps) {
         </>
       )}
       {details.data && <SessionSummary session={details.data} />}
-      {question && <CurrentQuestion question={question} />}
-      <Button component={Link} to="/" variant="subtle" size="lg">
-        {t('common.actions.home')}
-      </Button>
     </Stack>
   );
 }
