@@ -46,7 +46,7 @@ function renderReport(reply: Response | (() => Response | Promise<Response>)) {
 }
 
 describe('ReportPage route', () => {
-  it('[TC-04-05] sends an active session back to the dialogue', async () => {
+  it('[TC-04-04] sends an active session back to the dialogue', async () => {
     renderReport(
       jsonResponse({ ...FINISHED, status: 'active', endedAt: null }),
     );
@@ -63,7 +63,7 @@ describe('ReportPage route', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('[TC-04-05] does not redirect on stale cached active data once the refetch says finished', async () => {
+  it('[TC-04-04] does not redirect on stale cached active data once the refetch says finished', async () => {
     const queryClient = createTestQueryClient();
     queryClient.setQueryData(
       sessionKeys.details(FINISHED.id),
@@ -94,7 +94,7 @@ describe('ReportPage route', () => {
     expect(currentLocation()).toBe(ROUTE);
   });
 
-  it('[TC-04-05] shows the topic, the stats and every answer with its question', async () => {
+  it('[TC-04-04] shows the topic, the stats and every answer with its question', async () => {
     renderReport(jsonResponse(FINISHED));
 
     expect(
@@ -128,7 +128,7 @@ describe('ReportPage route', () => {
     ).toBeInTheDocument();
   });
 
-  it('[TC-04-05] shows the loading state with a single heading and the home link', async () => {
+  it('[TC-04-04] shows the loading state with a single heading and the home link', async () => {
     renderReport(() => new Promise<Response>(() => undefined));
 
     expect(

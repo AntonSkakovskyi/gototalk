@@ -71,7 +71,7 @@ describe('dialogue api', () => {
     ]);
   });
 
-  it('[TC-04-05] finishSession posts without a body and returns the finished session', async () => {
+  it('[TC-04-04] finishSession posts without a body and returns the finished session', async () => {
     const { requests } = mockDialogueApi();
 
     await expect(finishSession(DIALOGUE_SESSION_ID)).resolves.toMatchObject({

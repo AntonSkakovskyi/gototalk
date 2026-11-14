@@ -45,7 +45,7 @@ function confirmButton(dialog: HTMLElement) {
 }
 
 describe('FinishAction', () => {
-  it('[TC-04-05] opens a confirmation that explains the consequences', async () => {
+  it('[TC-04-04] opens a confirmation that explains the consequences', async () => {
     const user = userEvent.setup();
     renderAction(testSessionDetails());
 
@@ -58,7 +58,7 @@ describe('FinishAction', () => {
     ).toBeEnabled();
   });
 
-  it('[TC-04-05] closes on cancel without sending a request', async () => {
+  it('[TC-04-04] closes on cancel without sending a request', async () => {
     const user = userEvent.setup();
     const api = mockDialogueApi();
     renderAction(testSessionDetails());
@@ -77,7 +77,7 @@ describe('FinishAction', () => {
     );
   });
 
-  it('[TC-04-05] finishes with exactly one request and opens the report', async () => {
+  it('[TC-04-04] finishes with exactly one request and opens the report', async () => {
     const user = userEvent.setup();
     const api = mockDialogueApi();
     renderAction(testSessionDetails());
@@ -93,7 +93,7 @@ describe('FinishAction', () => {
     expect(api.finishRequests()).toHaveLength(1);
   });
 
-  it('[TC-04-05] shows the loading state and blocks a second request while finishing', async () => {
+  it('[TC-04-04] shows the loading state and blocks a second request while finishing', async () => {
     const user = userEvent.setup();
     const release = deferred();
     const api = mockDialogueApi({ finish: () => release.promise });
@@ -158,7 +158,7 @@ describe('FinishAction', () => {
     expect(within(reopened).queryByRole('alert')).not.toBeInTheDocument();
   });
 
-  it('[TC-04-05] disables the button while an answer is being processed', () => {
+  it('[TC-04-04] disables the button while an answer is being processed', () => {
     renderAction(testSessionDetails(), true);
 
     expect(openButton()).toBeDisabled();
@@ -168,7 +168,7 @@ describe('FinishAction', () => {
     [0, 'filled'],
     [3, 'outline'],
   ])(
-    '[TC-04-05] with %i plan questions left the button variant is %s',
+    '[TC-04-04] with %i plan questions left the button variant is %s',
     (planRemaining, variant) => {
       renderAction(testSessionDetails({ planRemaining }));
 
@@ -176,7 +176,7 @@ describe('FinishAction', () => {
     },
   );
 
-  it('[TC-04-05] renders nothing for a finished session', () => {
+  it('[TC-04-04] renders nothing for a finished session', () => {
     renderAction(
       testSessionDetails({
         status: 'finished',

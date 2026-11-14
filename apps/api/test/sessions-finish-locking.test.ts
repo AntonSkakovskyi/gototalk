@@ -44,7 +44,7 @@ describe('finish session locking', () => {
     }
   }
 
-  it('[TC-04-05] waits for the session row lock and finishes after it is released', async () => {
+  it('[TC-04-04] waits for the session row lock and finishes after it is released', async () => {
     const learner = await startLearner(app);
     const holder = await SessionLockHolder.acquire(pool, learner.session.id);
 
@@ -57,7 +57,7 @@ describe('finish session locking', () => {
     expect(SessionSchema.parse(res.body).status).toBe('finished');
   });
 
-  it('[TC-04-05] keeps the stored ended_at when the session was finished while the call waited', async () => {
+  it('[TC-04-04] keeps the stored ended_at when the session was finished while the call waited', async () => {
     const learner = await startLearner(app);
     const holder = await SessionLockHolder.acquire(pool, learner.session.id);
 

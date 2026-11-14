@@ -40,7 +40,7 @@ function setup() {
 }
 
 describe('useFinishSession', () => {
-  it('[TC-04-05] stores the finished session, invalidates the list only and calls back', async () => {
+  it('[TC-04-04] stores the finished session, invalidates the list only and calls back', async () => {
     const { queryClient, result, cachedDetails } = setup();
     const api = mockDialogueApi();
     const onFinished = vi.fn();
@@ -64,7 +64,7 @@ describe('useFinishSession', () => {
     ).toBe(false);
   });
 
-  it('[TC-04-05] reports finishing while the request is in flight', async () => {
+  it('[TC-04-04] reports finishing while the request is in flight', async () => {
     const { result } = setup();
     let release: (response: Response) => void = () => undefined;
     mockDialogueApi({
@@ -107,7 +107,7 @@ describe('useFinishSession', () => {
     );
   });
 
-  it('[TC-04-05] a late details refetch does not overwrite the finished session', async () => {
+  it('[TC-04-04] a late details refetch does not overwrite the finished session', async () => {
     const { queryClient, result, cachedDetails } = setup();
     let release: (response: Response) => void = () => undefined;
     mockDialogueApi({

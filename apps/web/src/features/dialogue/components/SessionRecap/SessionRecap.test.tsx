@@ -40,7 +40,7 @@ function renderRecap(details: SessionDetails = finished()) {
 }
 
 describe('SessionRecap', () => {
-  it('[TC-04-05] shows the recap heading and the stats', () => {
+  it('[TC-04-04] shows the recap heading and the stats', () => {
     renderRecap();
 
     expect(
@@ -65,7 +65,7 @@ describe('SessionRecap', () => {
     ['2026-11-13T10:12:00.000Z', '12 хвилин'],
     ['2026-11-13T10:14:00.000Z', '14 хвилин'],
     ['2026-11-13T10:21:00.000Z', '21 хвилина'],
-  ])('[TC-04-05] writes the duration until %s as "%s"', (endedAt, text) => {
+  ])('[TC-04-04] writes the duration until %s as "%s"', (endedAt, text) => {
     renderRecap(finished({ endedAt }));
 
     expect(screen.getByText(text)).toBeInTheDocument();
@@ -79,7 +79,7 @@ describe('SessionRecap', () => {
     [12, '12 відповідей'],
     [14, '14 відповідей'],
     [21, '21 відповідь'],
-  ])('[TC-04-05] writes %i answers as "%s"', (count, text) => {
+  ])('[TC-04-04] writes %i answers as "%s"', (count, text) => {
     const answers = Array.from({ length: count }, (_value, index) =>
       testUtterance({
         id: `answer-${index}`,
@@ -94,7 +94,7 @@ describe('SessionRecap', () => {
     expect(screen.getByText(text)).toBeInTheDocument();
   });
 
-  it('[TC-04-05] omits the duration when the session has no end time', () => {
+  it('[TC-04-04] omits the duration when the session has no end time', () => {
     renderRecap(finished({ endedAt: null }));
 
     expect(
@@ -105,7 +105,7 @@ describe('SessionRecap', () => {
     ).toBeInTheDocument();
   });
 
-  it('[TC-04-05] lists every answer after the question it answers', () => {
+  it('[TC-04-04] lists every answer after the question it answers', () => {
     renderRecap();
 
     const items = within(
@@ -142,14 +142,14 @@ describe('SessionRecap', () => {
     expect(screen.getByText(uk.dialogue.better.title)).toBeInTheDocument();
   });
 
-  it('[TC-04-05] shows an answer without a finished analysis as plain text', () => {
+  it('[TC-04-04] shows an answer without a finished analysis as plain text', () => {
     renderRecap();
 
     expect(screen.getByText(FAILED_ANSWER.text)).toBeInTheDocument();
     expect(screen.getAllByRole('button')).toHaveLength(1);
   });
 
-  it('[TC-04-05] shows zero answers and no list for a session without answers', () => {
+  it('[TC-04-04] shows zero answers and no list for a session without answers', () => {
     renderRecap(finished({ utterances: [FIRST_QUESTION] }));
 
     expect(screen.getByText('0 відповідей')).toBeInTheDocument();

@@ -167,7 +167,7 @@ describe('details-cache', () => {
   });
 
   describe('withSession', () => {
-    it('[TC-04-05] replaces session fields and keeps utterances and planRemaining', () => {
+    it('[TC-04-04] replaces session fields and keeps utterances and planRemaining', () => {
       const details = detailsWith(TURN.utterance);
       const finished = testSession({
         status: 'finished',

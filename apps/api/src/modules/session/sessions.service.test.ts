@@ -136,7 +136,7 @@ describe('SessionsService.finish', () => {
     return new SessionsService({ finish } as unknown as SessionsRepository);
   }
 
-  it('[TC-04-05] returns the finished session from the repository', async () => {
+  it('[TC-04-04] returns the finished session from the repository', async () => {
     const finish = vi.fn().mockResolvedValue(SESSION);
 
     await expect(
@@ -145,7 +145,7 @@ describe('SessionsService.finish', () => {
     expect(finish).toHaveBeenCalledWith(USER_ID, DETAILS.id);
   });
 
-  it('[TC-04-05] maps a missing session to 404 SESSION_NOT_FOUND', async () => {
+  it('[TC-04-04] maps a missing session to 404 SESSION_NOT_FOUND', async () => {
     const finish = vi.fn().mockResolvedValue(null);
 
     await expect(
@@ -155,7 +155,7 @@ describe('SessionsService.finish', () => {
     });
   });
 
-  it('[TC-04-05] answers 404 for a non-uuid id without querying', async () => {
+  it('[TC-04-04] answers 404 for a non-uuid id without querying', async () => {
     const finish = vi.fn();
 
     await expect(

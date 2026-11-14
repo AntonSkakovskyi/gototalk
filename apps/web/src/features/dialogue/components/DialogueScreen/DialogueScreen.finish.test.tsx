@@ -27,7 +27,7 @@ const FINISHED = testSessionDetails({
 });
 
 describe('DialogueScreen finishing', () => {
-  it('[TC-04-05] offers the report link instead of the composer for a finished session', () => {
+  it('[TC-04-04] offers the report link instead of the composer for a finished session', () => {
     renderScreen(FINISHED);
 
     expect(
@@ -41,7 +41,7 @@ describe('DialogueScreen finishing', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('[TC-04-05] shows the finish button and no report link for an active session', () => {
+  it('[TC-04-04] shows the finish button and no report link for an active session', () => {
     renderScreen();
 
     expect(
@@ -52,7 +52,7 @@ describe('DialogueScreen finishing', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('[TC-04-05] disables the finish button while an answer is being processed', async () => {
+  it('[TC-04-04] disables the finish button while an answer is being processed', async () => {
     const user = userEvent.setup();
     const answer = deferred();
     mockDialogueApi({ answer: () => answer.promise });
@@ -73,7 +73,7 @@ describe('DialogueScreen finishing', () => {
     );
   });
 
-  it('[TC-04-05] goes to the report after confirming, once the cache holds the finished session', async () => {
+  it('[TC-04-04] goes to the report after confirming, once the cache holds the finished session', async () => {
     const user = userEvent.setup();
     const api = mockDialogueApi();
     renderScreen();

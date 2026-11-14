@@ -150,7 +150,7 @@ describe('DialogueScreen states', () => {
     expect(currentCard().getByText(REPLY.text)).toBeInTheDocument();
   });
 
-  it('[TC-04-05] shows a finished session read-only', () => {
+  it('[TC-04-04] shows a finished session read-only', () => {
     const { container } = renderScreen(
       testSessionDetails({
         status: 'finished',

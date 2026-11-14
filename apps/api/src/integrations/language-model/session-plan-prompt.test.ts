@@ -3,6 +3,9 @@ import { describe, expect, it } from 'vitest';
 import { renderSessionPlanPrompt } from './session-plan-prompt.js';
 import type { PlanSessionInput } from './language-model.port.js';
 
+const escaped = (value: unknown): string =>
+  JSON.stringify(value).replaceAll('`', '\x5Cu0060');
+
 const input: PlanSessionInput = {
   level: 'B1',
   scenes: ['work_meetings', 'travel'],
@@ -45,8 +48,8 @@ describe('renderSessionPlanPrompt', () => {
 
     const { text } = renderSessionPlanPrompt(hostile);
 
-    expect(text).toContain(JSON.stringify(hostile));
-    expect(text.split(JSON.stringify(hostile)).length).toBe(2);
+    expect(text).toContain(escaped(hostile));
+    expect(text.split(escaped(hostile)).length).toBe(2);
   });
 
   it('[TC-03-04] ties the prompt to the shared plan bounds', () => {

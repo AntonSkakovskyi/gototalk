@@ -99,8 +99,8 @@ test.describe('[TC-04-11] deferred feedback', () => {
   });
 });
 
-test.describe('[TC-04-05] finishing the session', () => {
-  test('[TC-04-05] a finished session is read-only with a link to the report', async ({
+test.describe('[TC-04-04] finishing the session', () => {
+  test('[TC-04-04] a finished session is read-only with a link to the report', async ({
     signedInPage: { page, accessToken },
   }) => {
     const id = await startDialogue(page, { deferred: false });

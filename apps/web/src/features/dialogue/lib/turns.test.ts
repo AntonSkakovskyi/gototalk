@@ -53,7 +53,7 @@ describe('sortBySeq', () => {
 });
 
 describe('answersWithQuestions', () => {
-  it('[TC-04-05] pairs every user answer with the question before it, ordered by seq', () => {
+  it('[TC-04-04] pairs every user answer with the question before it, ordered by seq', () => {
     const pairs = answersWithQuestions([
       testUtterance({ id: 'd', seq: 4, role: 'user', text: 'Second answer' }),
       testUtterance({ id: 'b', seq: 2, role: 'user', text: 'First answer' }),
@@ -75,7 +75,7 @@ describe('answersWithQuestions', () => {
     ]);
   });
 
-  it('[TC-04-05] leaves the question empty for an answer without one before it', () => {
+  it('[TC-04-04] leaves the question empty for an answer without one before it', () => {
     const pairs = answersWithQuestions([
       testUtterance({ id: 'b', seq: 1, role: 'user', text: 'Orphan' }),
     ]);
@@ -84,7 +84,7 @@ describe('answersWithQuestions', () => {
     expect(pairs[0]?.question).toBeUndefined();
   });
 
-  it('[TC-04-05] returns nothing for a session without answers', () => {
+  it('[TC-04-04] returns nothing for a session without answers', () => {
     expect(answersWithQuestions([testUtterance()])).toEqual([]);
   });
 });
