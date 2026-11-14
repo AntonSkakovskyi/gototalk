@@ -1,6 +1,8 @@
 import { ERROR_CODES } from '@gototalk/shared';
 import {
   DIALOGUE_SESSION_ID,
+  HINT_PHRASE,
+  HINT_TRANSLATION,
   mockDialogueApi,
 } from '@/shared/testing/dialogue-mocks';
 import { mockApi } from '@/shared/testing/mock-api';
@@ -15,6 +17,7 @@ import {
   analyzeAnswer,
   finishSession,
   markMistakeFalse,
+  requestHint,
   submitAudioAnswer,
   submitTextAnswer,
 } from './dialogue-api';
@@ -133,6 +136,62 @@ describe('dialogue api', () => {
     ]);
   });
 
+  it('[TC-04-05] requestHint posts the phrase start request and returns the phrase', async () => {
+    const { requests } = mockDialogueApi();
+
+    await expect(
+      requestHint(DIALOGUE_SESSION_ID, { kind: 'phrase_start' }),
+    ).resolves.toEqual({ kind: 'phrase_start', text: HINT_PHRASE });
+
+    expect(requests).toEqual([
+      {
+        method: 'POST',
+        path: `${BASE}/hints`,
+        body: { kind: 'phrase_start' },
+      },
+    ]);
+  });
+
+  it('[TC-04-10] requestHint posts the word and returns the translation', async () => {
+    const api = mockDialogueApi();
+
+    await expect(
+      requestHint(DIALOGUE_SESSION_ID, {
+        kind: 'translation',
+        word: 'зустріч',
+      }),
+    ).resolves.toEqual({ kind: 'translation', word: HINT_TRANSLATION });
+
+    expect(api.hintRequests()).toEqual([
+      { kind: 'translation', word: 'зустріч' },
+    ]);
+  });
+
+  it('[TC-04-10] requestHint returns a null word for an unknown word', async () => {
+    mockDialogueApi({
+      hint: () => jsonResponse({ kind: 'translation', word: null }),
+    });
+
+    await expect(
+      requestHint(DIALOGUE_SESSION_ID, { kind: 'translation', word: 'щось' }),
+    ).resolves.toEqual({ kind: 'translation', word: null });
+  });
+
+  it.each([
+    [503, ERROR_CODES.LANGUAGE_MODEL_UNAVAILABLE],
+    [502, ERROR_CODES.LANGUAGE_MODEL_INVALID_RESPONSE],
+    [409, ERROR_CODES.SESSION_FINISHED],
+  ])(
+    '[TC-04-10] requestHint surfaces the %i %s error',
+    async (status, code) => {
+      mockDialogueApi({ hint: () => errorResponse(status, code) });
+
+      await expect(
+        requestHint(DIALOGUE_SESSION_ID, { kind: 'phrase_start' }),
+      ).rejects.toMatchObject({ status, code });
+    },
+  );
+
   it('[TC-04-04] ids are URL-encoded', async () => {
     const { requests } = mockApi({
       'POST /api/sessions/a%2Fb/utterances/c%20d/analysis': jsonResponse(TURN),
@@ -160,6 +219,10 @@ describe('dialogue api', () => {
       () => markMistakeFalse(DIALOGUE_SESSION_ID, testMistake().id),
     ],
     ['finishSession', () => finishSession(DIALOGUE_SESSION_ID)],
+    [
+      'requestHint',
+      () => requestHint(DIALOGUE_SESSION_ID, { kind: 'phrase_start' }),
+    ],
   ])(
     '[TC-04-04] %s rejects a response that breaks the contract',
     async (_name, call) => {
@@ -169,6 +232,7 @@ describe('dialogue api', () => {
         analyze: () => jsonResponse({ utterance: TURN.utterance }),
         markMistake: () => jsonResponse({ ...testMistake(), end: 0 }),
         finish: () => jsonResponse({ ...testSession(), status: 'paused' }),
+        hint: () => jsonResponse({ kind: 'phrase_start', text: '' }),
       });
 
       await expect(call()).rejects.toThrow();

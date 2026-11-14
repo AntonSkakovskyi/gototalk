@@ -5,6 +5,7 @@ import { Link } from 'react-router';
 import { AnswerComposer } from '@/features/dialogue/components/AnswerComposer/AnswerComposer';
 import { AnswerError } from '@/features/dialogue/components/AnswerError/AnswerError';
 import { FinishAction } from '@/features/dialogue/components/FinishAction/FinishAction';
+import { HintPanel } from '@/features/dialogue/components/HintPanel/HintPanel';
 import { ProcessingStatus } from '@/features/dialogue/components/ProcessingStatus/ProcessingStatus';
 import { TurnList } from '@/features/dialogue/components/TurnList/TurnList';
 import { useAnswerFlow } from '@/features/dialogue/hooks/use-answer-flow';
@@ -49,6 +50,9 @@ export function DialogueScreen({ details }: DialogueScreenProps) {
               submitAudio={flow.submitAudio}
               audioFailed={flow.audioFailed}
             />
+          )}
+          {canAnswer && flow.phase === 'idle' && (
+            <HintPanel sessionId={details.id} />
           )}
         </>
       )}

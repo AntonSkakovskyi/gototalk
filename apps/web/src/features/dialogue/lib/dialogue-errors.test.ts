@@ -1,7 +1,11 @@
 import { ERROR_CODES } from '@gototalk/shared';
 import { ApiError } from '@/shared/api/http';
 import i18n from '@/shared/i18n/index';
-import { canRetryAnswer, dialogueErrorKey } from './dialogue-errors';
+import {
+  canRetryAnswer,
+  dialogueErrorKey,
+  hintErrorKey,
+} from './dialogue-errors';
 
 const MAPPED_CODES = [
   [ERROR_CODES.SESSION_FINISHED, 'dialogue.errors.sessionFinished'],
@@ -47,6 +51,43 @@ describe('dialogueErrorKey', () => {
       key: 'errors.generic',
     });
     expect(i18n.exists('errors.generic')).toBe(true);
+  });
+});
+
+describe('hintErrorKey', () => {
+  const HINT_CODES = [
+    [
+      503,
+      ERROR_CODES.LANGUAGE_MODEL_UNAVAILABLE,
+      'dialogue.hint.errors.modelUnavailable',
+    ],
+    [
+      502,
+      ERROR_CODES.LANGUAGE_MODEL_INVALID_RESPONSE,
+      'dialogue.hint.errors.modelInvalidResponse',
+    ],
+    [409, ERROR_CODES.SESSION_FINISHED, 'dialogue.errors.sessionFinished'],
+    [409, ERROR_CODES.ANSWER_NOT_EXPECTED, 'dialogue.errors.answerNotExpected'],
+    [403, ERROR_CODES.CONSENT_REQUIRED, 'dialogue.errors.consentRequired'],
+  ] as const;
+
+  it.each(HINT_CODES)(
+    '[TC-04-10] maps %i %s to %s, present in uk.json',
+    (status, code, key) => {
+      const mapped = hintErrorKey(new ApiError(status, code, 'message'));
+
+      expect(mapped).toEqual({ key });
+      expect(i18n.exists(key)).toBe(true);
+    },
+  );
+
+  it('[TC-04-10] falls back to the generic key for a network failure and unknown errors', () => {
+    expect(hintErrorKey(new TypeError('Failed to fetch'))).toEqual({
+      key: 'errors.generic',
+    });
+    expect(hintErrorKey(new ApiError(500, 'INTERNAL_ERROR', 'boom'))).toEqual({
+      key: 'errors.generic',
+    });
   });
 });
 

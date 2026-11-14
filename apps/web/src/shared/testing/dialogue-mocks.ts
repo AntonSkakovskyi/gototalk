@@ -1,7 +1,9 @@
 import {
   AnswerTextRequestSchema,
+  HintRequestSchema,
   MarkMistakeRequestSchema,
   type AnswerTextRequest,
+  type HintRequest,
 } from '@gototalk/shared';
 import { mockApi, type MockRequest } from './mock-api';
 import {
@@ -20,6 +22,14 @@ export const answerCreated = () =>
   jsonResponse(testTurnResult().utterance, 201);
 export const analysisOk = () => jsonResponse(testTurnResult(), 201);
 export const markMistakeOk = () => jsonResponse(testMistake({ isFalse: true }));
+export const HINT_PHRASE = 'In my opinion, the best way is to';
+export const HINT_TRANSLATION = 'meeting';
+export const hintOk = (request: HintRequest) =>
+  jsonResponse(
+    request.kind === 'phrase_start'
+      ? { kind: 'phrase_start', text: HINT_PHRASE }
+      : { kind: 'translation', word: HINT_TRANSLATION },
+  );
 export const finishOk = () =>
   jsonResponse(
     testSession({ status: 'finished', endedAt: '2026-11-13T10:30:00.000Z' }),
@@ -47,6 +57,7 @@ interface DialogueApiReplies {
   voiceAnswer?: (audio: File) => Reply;
   analyze?: () => Reply;
   markMistake?: () => Reply;
+  hint?: (body: HintRequest) => Reply;
   finish?: () => Reply;
 }
 
@@ -57,6 +68,7 @@ export function mockDialogueApi({
   voiceAnswer = answerCreated,
   analyze = analysisOk,
   markMistake = markMistakeOk,
+  hint = hintOk,
   finish = finishOk,
 }: DialogueApiReplies = {}) {
   const turn = testTurnResult();
@@ -71,6 +83,8 @@ export function mockDialogueApi({
       MarkMistakeRequestSchema.parse(request.body);
       return markMistake();
     },
+    [`POST ${SESSION_PATH}/hints`]: (request) =>
+      hint(HintRequestSchema.parse(request.body)),
     [`POST ${SESSION_PATH}/finish`]: finish,
   });
   return {
@@ -81,6 +95,7 @@ export function mockDialogueApi({
         body instanceof FormData ? [audioOf(body)] : [],
       ),
     markMistakeRequests: () => bodiesOf(requests, 'PATCH', testMistake().id),
+    hintRequests: () => bodiesOf(requests, 'POST', '/hints'),
     finishRequests: () => bodiesOf(requests, 'POST', '/finish'),
   };
 }

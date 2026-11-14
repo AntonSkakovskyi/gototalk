@@ -1,9 +1,12 @@
 import {
+  HintResultSchema,
   MistakeViewSchema,
   SessionSchema,
   TurnResultSchema,
   UtteranceSchema,
   type AnswerTextRequest,
+  type HintRequest,
+  type HintResult,
   type MarkMistakeRequest,
   type MistakeView,
   type Session,
@@ -61,6 +64,17 @@ export function markMistakeFalse(
     `${sessionPath(sessionId)}/mistakes/${encodeURIComponent(mistakeId)}`,
     { method: 'PATCH', body, schema: MistakeViewSchema },
   );
+}
+
+export function requestHint(
+  sessionId: string,
+  request: HintRequest,
+): Promise<HintResult> {
+  return apiFetch(`${sessionPath(sessionId)}/hints`, {
+    method: 'POST',
+    body: request,
+    schema: HintResultSchema,
+  });
 }
 
 export function finishSession(sessionId: string): Promise<Session> {
