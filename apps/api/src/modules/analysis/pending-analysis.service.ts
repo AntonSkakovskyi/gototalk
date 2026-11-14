@@ -25,6 +25,7 @@ export class PendingAnalysisService {
       const outcome = await this.analyze(text);
       if (outcome === null) return false;
       const stored = await this.pending.save(userId, sessionId, id, outcome);
+      // save() is false only when the session is gone: nothing is left to analyse
       if (!stored) return true;
     }
     return true;

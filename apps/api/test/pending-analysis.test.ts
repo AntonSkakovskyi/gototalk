@@ -162,6 +162,24 @@ describe('completing pending analyses', () => {
     expect(model.calls.analyze).toBe(0);
   });
 
+  it('[TC-05-02] does not analyse an answer whose analysis already failed', async () => {
+    const learner = await startLearner(app);
+    await submitAnswer(app, learner, MISTAKEN_ANSWER);
+    await pool.query(
+      `UPDATE utterances SET analysis_status = 'failed'
+       WHERE session_id = $1 AND role = 'user'`,
+      [learner.session.id],
+    );
+
+    await expect(
+      pendingAnalysis.complete(learner.id, learner.session.id),
+    ).resolves.toBe(true);
+
+    expect(model.calls.analyze).toBe(0);
+    const rows = await utteranceRows(pool, learner.session.id);
+    expect(rows.at(-1)?.analysis_status).toBe('failed');
+  });
+
   it('[TC-05-02] stores one set of mistakes when two completions run in parallel', async () => {
     const learner = await startLearner(app);
     await submitAnswer(app, learner, MISTAKEN_ANSWER);

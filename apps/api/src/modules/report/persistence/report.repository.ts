@@ -24,6 +24,7 @@ import {
   utterances,
   words,
 } from '../../../core/db/schema.js';
+import { lockSession } from '../../session/persistence/lock-session.js';
 
 export interface OwnedSession {
   id: string;
@@ -57,6 +58,12 @@ export interface StoredSummary {
   summary: string;
   promptVersion: string | null;
   model: string | null;
+}
+
+export interface SummaryToSave {
+  summary: string;
+  promptVersion: string;
+  model: string;
 }
 
 const DEFAULT_EXAMPLES_PER_CATEGORY = 2;
@@ -233,5 +240,21 @@ export class ReportRepository {
       .from(sessionReports)
       .where(eq(sessionReports.sessionId, sessionId));
     return row ?? null;
+  }
+
+  /** The first writer wins: a later summary for the same session is dropped. */
+  saveSummary(
+    userId: string,
+    sessionId: string,
+    { summary, promptVersion, model }: SummaryToSave,
+  ): Promise<void> {
+    return this.db.transaction(async (tx) => {
+      const status = await lockSession(tx, userId, sessionId);
+      if (status === null) return;
+      await tx
+        .insert(sessionReports)
+        .values({ sessionId, summary, promptVersion, model })
+        .onConflictDoNothing({ target: sessionReports.sessionId });
+    });
   }
 }
