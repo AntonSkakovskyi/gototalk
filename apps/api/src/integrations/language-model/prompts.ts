@@ -16,7 +16,7 @@ export interface NextTurnPromptInput {
 
 export interface HintPromptInput {
   kind: 'phrase_start' | 'translation';
-  question: string;
+  question?: string;
   questionNumber?: number;
   word?: string;
 }

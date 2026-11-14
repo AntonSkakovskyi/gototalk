@@ -3,7 +3,7 @@ import { LanguageModelUnavailableError } from '../../src/integrations/language-m
 import type {
   AnalyzeUtteranceInput,
   AnalyzeUtteranceResponse,
-  HintRequest,
+  HintInput,
   LanguageModelPort,
   NextTurnInput,
   PlanSessionInput,
@@ -52,8 +52,8 @@ export class ControllableLanguageModel implements LanguageModelPort {
     return this.inner.planSession(input);
   }
 
-  hint(request: HintRequest): Promise<unknown> {
-    return this.inner.hint(request);
+  hint(input: HintInput): Promise<unknown> {
+    return this.inner.hint(input);
   }
 
   summarizeSession(): Promise<unknown> {

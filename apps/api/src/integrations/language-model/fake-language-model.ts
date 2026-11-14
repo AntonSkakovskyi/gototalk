@@ -3,7 +3,7 @@ import { LanguageModelUnavailableError } from './language-model.errors.js';
 import type {
   AnalyzeUtteranceInput,
   AnalyzeUtteranceResponse,
-  HintRequest,
+  HintInput,
   LanguageModelPort,
   NextTurnInput,
   PlanSessionInput,
@@ -12,8 +12,10 @@ import { analyzeText } from './fake-analysis.js';
 import {
   ERROR_ANALYSIS_PROMPT_ID,
   renderErrorAnalysisPrompt,
+  renderHintPrompt,
   renderNextTurnPrompt,
 } from './prompts.js';
+import { buildFakeHint } from './fake-hints.js';
 import { buildFakeTurn } from './fake-next-turn.js';
 import { buildFakePlan } from './fake-session-plans.js';
 import { renderSessionPlanPrompt } from './session-plan-prompt.js';
@@ -63,14 +65,12 @@ export class FakeLanguageModel implements LanguageModelPort {
     });
   }
 
-  hint(request: HintRequest): Promise<unknown> {
+  hint(input: HintInput): Promise<unknown> {
     if (this.failMode === 'unavailable') return unavailable();
-    switch (request.kind) {
-      case 'phrase_start':
-        return Promise.resolve({ kind: 'phrase_start', text: 'I think that…' });
-      case 'translation':
-        return Promise.resolve({ kind: 'translation', word: 'meeting' });
-    }
+    return Promise.resolve().then(() => {
+      renderHintPrompt(input);
+      return buildFakeHint(input);
+    });
   }
 
   summarizeSession(): Promise<unknown> {

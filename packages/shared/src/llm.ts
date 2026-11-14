@@ -77,7 +77,7 @@ export const TurnSchema = z.object({
 
 export type Turn = z.infer<typeof TurnSchema>;
 
-/** For an unknown word, `word` is null and `message` is set. */
+/** For an unknown word, `word` is null; `message` is optional and not used by the app. */
 export const HintSchema = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('phrase_start'), text: z.string().min(1) }),
   z.object({

@@ -1,5 +1,7 @@
 import {
   AnalysisEnvelopeSchema,
+  HintResultSchema,
+  HintSchema,
   MistakeSchema,
   type MistakeCategoryCode,
 } from '@gototalk/shared';
@@ -42,4 +44,17 @@ describe('Fake STT and Fake LLM consistency', () => {
       }
     },
   );
+
+  it('[TC-04-01] hints validate against HintSchema and the HTTP HintResultSchema', async () => {
+    const results = await Promise.all([
+      llm.hint({ kind: 'phrase_start', question: 'Why?', questionNumber: 1 }),
+      llm.hint({ kind: 'translation', word: 'зустріч' }),
+      llm.hint({ kind: 'translation', word: 'динозавр' }),
+    ]);
+
+    for (const result of results) {
+      expect(HintSchema.parse(result)).toEqual(result);
+      expect(HintResultSchema.parse(result)).toEqual(result);
+    }
+  });
 });
