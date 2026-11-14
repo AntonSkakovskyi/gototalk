@@ -10,6 +10,7 @@ export const USER_DATA_TABLES = [
   'mistakes',
   'words',
   'hints',
+  'session_words',
   'cards',
   'exercises',
   'session_reports',
@@ -34,6 +35,8 @@ const COUNT_QUERIES: Record<UserDataTable, string> = {
     JOIN sessions s ON s.id = u.session_id WHERE s.user_id = $1`,
   hints: `SELECT count(*) FROM hints h
     JOIN sessions s ON s.id = h.session_id WHERE s.user_id = $1`,
+  session_words: `SELECT count(*) FROM session_words sw
+    JOIN sessions s ON s.id = sw.session_id WHERE s.user_id = $1`,
   session_reports: `SELECT count(*) FROM session_reports r
     JOIN sessions s ON s.id = r.session_id WHERE s.user_id = $1`,
   mistakes: `SELECT count(*) FROM mistakes m
@@ -130,6 +133,10 @@ export async function insertUserData(
      VALUES ($1, $2, 'translation', 'hint', $3)`,
     [sessionId, utteranceId, wordId],
   );
+  await pool.query(
+    `INSERT INTO session_words (session_id, word_id) VALUES ($1, $2)`,
+    [sessionId, wordId],
+  );
   const cardId = await insertId(
     pool,
     `INSERT INTO cards (word_id, front, back) VALUES ($1, 'front', 'back') RETURNING id`,
@@ -140,7 +147,8 @@ export async function insertUserData(
     [cardId],
   );
   await pool.query(
-    `INSERT INTO session_reports (session_id, summary) VALUES ($1, 'Summary')`,
+    `INSERT INTO session_reports (session_id, summary, prompt_version, model)
+     VALUES ($1, 'Summary', 'session-summary.v1', 'fake')`,
     [sessionId],
   );
   await pool.query(

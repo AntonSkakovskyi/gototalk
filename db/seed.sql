@@ -65,8 +65,12 @@ INSERT INTO hints (id, session_id, utterance_id, kind, text, word_id) VALUES
   ('00000000-0000-4000-8000-000000000601', '00000000-0000-4000-8000-000000000301', '00000000-0000-4000-8000-000000000204', 'translation', 'deadline = крайній термін', '00000000-0000-4000-8000-000000000501')
 ON CONFLICT DO NOTHING;
 
-INSERT INTO session_reports (session_id, summary, deep_analysis) VALUES
-  ('00000000-0000-4000-8000-000000000301', 'Ви відповіли 2 рази за 4 хв. Найчастіші помилки: Прийменники, Артиклі, Часи дієслів. Зосередьтеся на категорії «Прийменники» у наступній сесії.', '{"categories":[{"code":"prepositions","count":2},{"code":"articles","count":1},{"code":"verb_tense","count":1},{"code":"word_order","count":1}]}'::jsonb)
+INSERT INTO session_words (session_id, word_id) VALUES
+  ('00000000-0000-4000-8000-000000000301', '00000000-0000-4000-8000-000000000501')
 ON CONFLICT DO NOTHING;
+
+INSERT INTO session_reports (session_id, summary, deep_analysis, prompt_version, model) VALUES
+  ('00000000-0000-4000-8000-000000000301', 'Ви відповіли 2 рази за 4 хв. Найчастіші помилки: Прийменники, Артиклі, Часи дієслів. Зосередьтеся на категорії «Прийменники» у наступній сесії.', '{"categories":[{"code":"prepositions","count":2},{"code":"articles","count":1},{"code":"verb_tense","count":1},{"code":"word_order","count":1}]}'::jsonb, 'session-summary.v1', 'fake')
+ON CONFLICT (session_id) DO UPDATE SET prompt_version = EXCLUDED.prompt_version, model = EXCLUDED.model;
 
 COMMIT;

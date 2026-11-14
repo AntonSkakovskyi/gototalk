@@ -6,15 +6,16 @@ import {
   mistakePatterns,
   theoryLinks,
   mistakeCategories,
+  sessionReports,
   hints,
   utterances,
   words,
-  sessionReports,
   cards,
   exercises,
   refreshTokens,
   mistakes,
   profiles,
+  sessionWords,
 } from './schema.js';
 
 export const sessionsRelations = relations(sessions, ({ one, many }) => ({
@@ -22,9 +23,10 @@ export const sessionsRelations = relations(sessions, ({ one, many }) => ({
     fields: [sessions.userId],
     references: [users.id],
   }),
-  hints: many(hints),
   sessionReports: many(sessionReports),
+  hints: many(hints),
   utterances: many(utterances),
+  sessionWords: many(sessionWords),
 }));
 
 export const usersRelations = relations(users, ({ many }) => ({
@@ -79,6 +81,13 @@ export const mistakeCategoriesRelations = relations(
   }),
 );
 
+export const sessionReportsRelations = relations(sessionReports, ({ one }) => ({
+  session: one(sessions, {
+    fields: [sessionReports.sessionId],
+    references: [sessions.id],
+  }),
+}));
+
 export const hintsRelations = relations(hints, ({ one }) => ({
   session: one(sessions, {
     fields: [hints.sessionId],
@@ -110,13 +119,7 @@ export const wordsRelations = relations(words, ({ one, many }) => ({
     fields: [words.userId],
     references: [users.id],
   }),
-}));
-
-export const sessionReportsRelations = relations(sessionReports, ({ one }) => ({
-  session: one(sessions, {
-    fields: [sessionReports.sessionId],
-    references: [sessions.id],
-  }),
+  sessionWords: many(sessionWords),
 }));
 
 export const cardsRelations = relations(cards, ({ one, many }) => ({
@@ -160,5 +163,16 @@ export const profilesRelations = relations(profiles, ({ one }) => ({
   user: one(users, {
     fields: [profiles.userId],
     references: [users.id],
+  }),
+}));
+
+export const sessionWordsRelations = relations(sessionWords, ({ one }) => ({
+  session: one(sessions, {
+    fields: [sessionWords.sessionId],
+    references: [sessions.id],
+  }),
+  word: one(words, {
+    fields: [sessionWords.wordId],
+    references: [words.id],
   }),
 }));

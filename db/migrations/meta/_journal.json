@@ -36,6 +36,13 @@
       "when": 1794599794854,
       "tag": "0004_better_phrasings",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1794689699549,
+      "tag": "0005_session_words",
+      "breakpoints": true
     }
   ]
 }
