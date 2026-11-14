@@ -1,14 +1,11 @@
 import {
   HintResultSchema,
-  MistakeViewSchema,
   SessionSchema,
   TurnResultSchema,
   UtteranceSchema,
   type AnswerTextRequest,
   type HintRequest,
   type HintResult,
-  type MarkMistakeRequest,
-  type MistakeView,
   type Session,
   type TurnResult,
   type Utterance,
@@ -52,17 +49,6 @@ export function analyzeAnswer(
   return apiFetch(
     `${sessionPath(sessionId)}/utterances/${encodeURIComponent(utteranceId)}/analysis`,
     { method: 'POST', schema: TurnResultSchema },
-  );
-}
-
-export function markMistakeFalse(
-  sessionId: string,
-  mistakeId: string,
-): Promise<MistakeView> {
-  const body: MarkMistakeRequest = { isFalse: true };
-  return apiFetch(
-    `${sessionPath(sessionId)}/mistakes/${encodeURIComponent(mistakeId)}`,
-    { method: 'PATCH', body, schema: MistakeViewSchema },
   );
 }
 

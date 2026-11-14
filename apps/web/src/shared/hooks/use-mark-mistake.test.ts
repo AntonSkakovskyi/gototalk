@@ -116,4 +116,31 @@ describe('useMarkMistake', () => {
 
     expect(cachedMistake()?.isFalse).toBe(true);
   });
+
+  it('[TC-04-04] invalidates the cached report after a successful mark', async () => {
+    const { queryClient, result } = setup();
+    const reportKey = sessionKeys.report(DIALOGUE_SESSION_ID);
+    queryClient.setQueryData(reportKey, { id: 'report' });
+    mockDialogueApi();
+
+    act(() => result.current.mark(testMistake().id));
+
+    await waitFor(() =>
+      expect(queryClient.getQueryState(reportKey)?.isInvalidated).toBe(true),
+    );
+  });
+
+  it('[TC-04-08] leaves the cached report valid when marking fails', async () => {
+    const { queryClient, result } = setup();
+    const reportKey = sessionKeys.report(DIALOGUE_SESSION_ID);
+    queryClient.setQueryData(reportKey, { id: 'report' });
+    mockDialogueApi({
+      markMistake: () => errorResponse(404, ERROR_CODES.MISTAKE_NOT_FOUND),
+    });
+
+    act(() => result.current.mark(testMistake().id));
+
+    await waitFor(() => expect(result.current.error).not.toBeNull());
+    expect(queryClient.getQueryState(reportKey)?.isInvalidated).toBe(false);
+  });
 });

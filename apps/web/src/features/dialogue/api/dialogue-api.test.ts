@@ -9,14 +9,12 @@ import { mockApi } from '@/shared/testing/mock-api';
 import {
   errorResponse,
   jsonResponse,
-  testMistake,
   testSession,
   testTurnResult,
 } from '@/shared/testing/test-fixtures';
 import {
   analyzeAnswer,
   finishSession,
-  markMistakeFalse,
   requestHint,
   submitAudioAnswer,
   submitTextAnswer,
@@ -102,23 +100,6 @@ describe('dialogue api', () => {
         method: 'POST',
         path: `${BASE}/utterances/${TURN.utterance.id}/analysis`,
         body: undefined,
-      },
-    ]);
-  });
-
-  it('[TC-04-04] markMistakeFalse patches the mistake and returns the updated view', async () => {
-    const { requests } = mockDialogueApi();
-    const mistake = testMistake();
-
-    await expect(
-      markMistakeFalse(DIALOGUE_SESSION_ID, mistake.id),
-    ).resolves.toEqual({ ...mistake, isFalse: true });
-
-    expect(requests).toEqual([
-      {
-        method: 'PATCH',
-        path: `${BASE}/mistakes/${mistake.id}`,
-        body: { isFalse: true },
       },
     ]);
   });
@@ -214,10 +195,6 @@ describe('dialogue api', () => {
       'analyzeAnswer',
       () => analyzeAnswer(DIALOGUE_SESSION_ID, TURN.utterance.id),
     ],
-    [
-      'markMistakeFalse',
-      () => markMistakeFalse(DIALOGUE_SESSION_ID, testMistake().id),
-    ],
     ['finishSession', () => finishSession(DIALOGUE_SESSION_ID)],
     [
       'requestHint',
@@ -230,7 +207,6 @@ describe('dialogue api', () => {
         answer: () => jsonResponse({ id: 'not-a-uuid' }),
         voiceAnswer: () => jsonResponse({ id: 'not-a-uuid' }),
         analyze: () => jsonResponse({ utterance: TURN.utterance }),
-        markMistake: () => jsonResponse({ ...testMistake(), end: 0 }),
         finish: () => jsonResponse({ ...testSession(), status: 'paused' }),
         hint: () => jsonResponse({ kind: 'phrase_start', text: '' }),
       });

@@ -1,8 +1,8 @@
 import type { MistakeView } from '@gototalk/shared';
 import { Badge, Button, Paper, Stack, Text } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
-import { useMarkMistake } from '@/features/dialogue/hooks/use-mark-mistake';
-import { dialogueErrorKey } from '@/features/dialogue/lib/dialogue-errors';
+import { markMistakeErrorKey } from '@/shared/api/mistake-errors';
+import { useMarkMistake } from '@/shared/hooks/use-mark-mistake';
 import { ENGLISH_LANG } from '@/shared/i18n/languages';
 import { Correction } from './Correction';
 
@@ -57,7 +57,7 @@ export function MistakeDetails({
         <div aria-live="polite">
           {error && (
             <Text size="sm" c="red">
-              {t(dialogueErrorKey(error).key)}
+              {t(markMistakeErrorKey(error).key)}
             </Text>
           )}
         </div>

@@ -16,6 +16,7 @@ describe('session details', () => {
   it('[TC-03-03] keys are nested under the session root', () => {
     expect(sessionKeys.list()).toEqual(['session', 'list']);
     expect(sessionKeys.details('abc')).toEqual(['session', 'details', 'abc']);
+    expect(sessionKeys.report('abc')).toEqual(['session', 'report', 'abc']);
   });
 
   it('[TC-03-03] plan keys differ per request', () => {

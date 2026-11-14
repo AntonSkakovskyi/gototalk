@@ -12,6 +12,7 @@ export const sessionKeys = {
   list: () => [...sessionKeys.all, 'list'] as const,
   allDetails: () => [...sessionKeys.all, 'details'] as const,
   details: (id: string) => [...sessionKeys.allDetails(), id] as const,
+  report: (id: string) => [...sessionKeys.all, 'report', id] as const,
   plan: (request: PlanSessionRequest) =>
     [...sessionKeys.all, 'plan', request] as const,
 };
