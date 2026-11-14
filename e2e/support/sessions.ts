@@ -68,6 +68,7 @@ export interface MistakeRecord {
 
 export interface UtteranceRecord {
   role: string;
+  text: string;
   analysisStatus: string;
   mistakes: MistakeRecord[];
 }
@@ -93,6 +94,8 @@ function isUtteranceRecord(value: unknown): value is UtteranceRecord {
     value !== null &&
     'role' in value &&
     typeof value.role === 'string' &&
+    'text' in value &&
+    typeof value.text === 'string' &&
     'analysisStatus' in value &&
     typeof value.analysisStatus === 'string' &&
     'mistakes' in value &&
