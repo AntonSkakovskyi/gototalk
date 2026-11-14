@@ -1,9 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { desc, eq } from 'drizzle-orm';
+import { and, count, desc, eq } from 'drizzle-orm';
 import type { Utterance } from '@gototalk/shared';
 import { DRIZZLE } from '../../../core/db/db.tokens.js';
-import type { Database, DbTransaction } from '../../../core/db/db.tokens.js';
-import { utterances } from '../../../core/db/schema.js';
+import type {
+  Database,
+  DbExecutor,
+  DbTransaction,
+} from '../../../core/db/db.tokens.js';
+import { sessions, utterances } from '../../../core/db/schema.js';
 import { lockSession } from '../../session/persistence/lock-session.js';
 import { WordUsageService } from '../../vocabulary/word-usage.service.js';
 import {
@@ -23,6 +27,25 @@ export class DialogueRepository {
     @Inject(DRIZZLE) private readonly db: Database,
     private readonly wordUsage: WordUsageService,
   ) {}
+
+  /** Cheap unlocked check that an answer is expected; returns the number of user utterances, which is the next answer's index. */
+  async answerIndexFor(userId: string, sessionId: string): Promise<number> {
+    const [session] = await this.db
+      .select({ status: sessions.status })
+      .from(sessions)
+      .where(and(eq(sessions.id, sessionId), eq(sessions.userId, userId)));
+    if (!session) throw new SessionNotFoundError();
+    if (session.status !== 'active') throw new SessionFinishedError();
+    const last = await this.lastUtterance(this.db, sessionId);
+    if (last?.role !== 'assistant') throw new AnswerNotExpectedError();
+    const [answers] = await this.db
+      .select({ total: count() })
+      .from(utterances)
+      .where(
+        and(eq(utterances.sessionId, sessionId), eq(utterances.role, 'user')),
+      );
+    return answers?.total ?? 0;
+  }
 
   submitAnswer(
     userId: string,
@@ -75,13 +98,21 @@ export class DialogueRepository {
     tx: DbTransaction,
     sessionId: string,
   ): Promise<number> {
-    const [last] = await tx
+    const last = await this.lastUtterance(tx, sessionId);
+    if (last?.role !== 'assistant') throw new AnswerNotExpectedError();
+    return last.seq + 1;
+  }
+
+  private async lastUtterance(
+    executor: DbExecutor,
+    sessionId: string,
+  ): Promise<{ seq: number; role: string } | undefined> {
+    const [last] = await executor
       .select({ seq: utterances.seq, role: utterances.role })
       .from(utterances)
       .where(eq(utterances.sessionId, sessionId))
       .orderBy(desc(utterances.seq))
       .limit(1);
-    if (last?.role !== 'assistant') throw new AnswerNotExpectedError();
-    return last.seq + 1;
+    return last;
   }
 }

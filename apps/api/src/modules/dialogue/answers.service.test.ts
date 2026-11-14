@@ -1,15 +1,23 @@
 import 'reflect-metadata';
-import { ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  NotFoundException,
+  ServiceUnavailableException,
+  UnsupportedMediaTypeException,
+} from '@nestjs/common';
 import { ERROR_CODES } from '@gototalk/shared';
 import type { Utterance } from '@gototalk/shared';
 import { describe, expect, it, vi } from 'vitest';
+import { SpeechRecognitionUnavailableError } from '../../integrations/speech-recognition/speech-recognition.errors.js';
 import { AnswersService } from './answers.service.js';
+import type { AudioRetention } from './audio-retention.js';
 import {
   AnswerNotExpectedError,
   SessionFinishedError,
   SessionNotFoundError,
 } from './dialogue.errors.js';
 import type { DialogueRepository } from './persistence/dialogue.repository.js';
+import type { SpeechRecognitionPort } from '../../integrations/speech-recognition/speech-recognition.port.js';
 
 const USER_ID = '11111111-1111-4111-8111-111111111111';
 const SESSION_ID = '33333333-3333-4333-8333-333333333333';
@@ -26,7 +34,11 @@ const UTTERANCE: Utterance = {
 
 function setup(submitAnswer: unknown) {
   const repository = { submitAnswer };
-  return new AnswersService(repository as unknown as DialogueRepository);
+  return new AnswersService(
+    repository as unknown as DialogueRepository,
+    { transcribe: vi.fn() },
+    { keep: vi.fn() } as unknown as AudioRetention,
+  );
 }
 
 async function rejection(promise: Promise<unknown>): Promise<unknown> {
@@ -89,5 +101,140 @@ describe('AnswersService.submit', () => {
         ANSWER,
       ),
     ).rejects.toBe(failure);
+  });
+});
+
+const WEBM = Buffer.from([0x1a, 0x45, 0xdf, 0xa3, 0x9f, 0x42]);
+const AUDIO = { buffer: WEBM, mimetype: 'audio/webm;codecs=opus' };
+const TRANSCRIPT = { verbatim: 'Um, I go there', clean: 'I go there' };
+
+function setupVoice(
+  overrides: {
+    answerIndexFor?: unknown;
+    submitAnswer?: unknown;
+    transcribe?: unknown;
+  } = {},
+) {
+  const repository = {
+    answerIndexFor: overrides.answerIndexFor ?? vi.fn().mockResolvedValue(3),
+    submitAnswer:
+      overrides.submitAnswer ?? vi.fn().mockResolvedValue(UTTERANCE),
+  };
+  const speech = {
+    transcribe: overrides.transcribe ?? vi.fn().mockResolvedValue(TRANSCRIPT),
+  };
+  const retention = { keep: vi.fn().mockResolvedValue(undefined) };
+  const service = new AnswersService(
+    repository as unknown as DialogueRepository,
+    speech as unknown as SpeechRecognitionPort,
+    retention as unknown as AudioRetention,
+  );
+  return { service, repository, speech, retention };
+}
+
+describe('AnswersService.submitAudio', () => {
+  it('[TC-04-02] transcribes with the user utterance count and stores both transcript texts', async () => {
+    const { service, repository, speech, retention } = setupVoice();
+
+    await expect(
+      service.submitAudio(USER_ID, SESSION_ID, AUDIO),
+    ).resolves.toEqual(UTTERANCE);
+
+    expect(speech.transcribe).toHaveBeenCalledWith(WEBM, 'audio/webm', 3);
+    expect(repository.submitAnswer).toHaveBeenCalledWith(
+      USER_ID,
+      SESSION_ID,
+      TRANSCRIPT,
+    );
+    expect(retention.keep).toHaveBeenCalledWith(
+      UTTERANCE.id,
+      'audio/webm',
+      WEBM,
+    );
+  });
+
+  it('[TC-04-02] answers 404 for a non-uuid id before any lookup', async () => {
+    const { service, repository, speech } = setupVoice();
+
+    const error = await rejection(
+      service.submitAudio(USER_ID, 'not-a-uuid', AUDIO),
+    );
+
+    expect(error).toBeInstanceOf(NotFoundException);
+    expect(repository.answerIndexFor).not.toHaveBeenCalled();
+    expect(speech.transcribe).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    [new SessionNotFoundError(), NotFoundException, 'SESSION_NOT_FOUND'],
+    [new SessionFinishedError(), ConflictException, 'SESSION_FINISHED'],
+    [new AnswerNotExpectedError(), ConflictException, 'ANSWER_NOT_EXPECTED'],
+  ])(
+    '[TC-04-02] maps the pre-check failure %s to %s and skips speech recognition',
+    async (domain, type, code) => {
+      const { service, speech, repository } = setupVoice({
+        answerIndexFor: vi.fn().mockRejectedValue(domain),
+      });
+
+      const error = await rejection(
+        service.submitAudio(USER_ID, SESSION_ID, AUDIO),
+      );
+
+      expect(error).toBeInstanceOf(type);
+      expect((error as NotFoundException).getResponse()).toMatchObject({
+        code,
+      });
+      expect(speech.transcribe).not.toHaveBeenCalled();
+      expect(repository.submitAnswer).not.toHaveBeenCalled();
+    },
+  );
+
+  it('[TC-04-13] rejects a signature mismatch with 415 AUDIO_UNSUPPORTED before speech recognition', async () => {
+    const { service, speech } = setupVoice();
+
+    const error = await rejection(
+      service.submitAudio(USER_ID, SESSION_ID, {
+        buffer: Buffer.from('not audio'),
+        mimetype: 'audio/webm',
+      }),
+    );
+
+    expect(error).toBeInstanceOf(UnsupportedMediaTypeException);
+    expect(
+      (error as UnsupportedMediaTypeException).getResponse(),
+    ).toMatchObject({ code: ERROR_CODES.AUDIO_UNSUPPORTED });
+    expect(speech.transcribe).not.toHaveBeenCalled();
+  });
+
+  it('[TC-04-08] maps an unavailable provider to 503 and writes nothing', async () => {
+    const { service, repository, retention } = setupVoice({
+      transcribe: vi
+        .fn()
+        .mockRejectedValue(new SpeechRecognitionUnavailableError()),
+    });
+
+    const error = await rejection(
+      service.submitAudio(USER_ID, SESSION_ID, AUDIO),
+    );
+
+    expect(error).toBeInstanceOf(ServiceUnavailableException);
+    expect((error as ServiceUnavailableException).getResponse()).toMatchObject({
+      code: ERROR_CODES.SPEECH_RECOGNITION_UNAVAILABLE,
+    });
+    expect(repository.submitAnswer).not.toHaveBeenCalled();
+    expect(retention.keep).not.toHaveBeenCalled();
+  });
+
+  it('[TC-04-02] keeps no dev copy when the answer is rejected under the lock', async () => {
+    const { service, retention } = setupVoice({
+      submitAnswer: vi.fn().mockRejectedValue(new AnswerNotExpectedError()),
+    });
+
+    const error = await rejection(
+      service.submitAudio(USER_ID, SESSION_ID, AUDIO),
+    );
+
+    expect(error).toBeInstanceOf(ConflictException);
+    expect(retention.keep).not.toHaveBeenCalled();
   });
 });

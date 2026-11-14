@@ -3,6 +3,7 @@ import { AnalysisModule } from '../analysis/analysis.module.js';
 import { SessionModule } from '../session/session.module.js';
 import { VocabularyModule } from '../vocabulary/vocabulary.module.js';
 import { AnswersService } from './answers.service.js';
+import { AudioRetention } from './audio-retention.js';
 import { DialogueController } from './dialogue.controller.js';
 import { NextTurnService } from './next-turn.service.js';
 import { AnalysisWriter } from './persistence/analysis-writer.js';
@@ -16,6 +17,7 @@ import { TurnService } from './turn.service.js';
   providers: [
     AnalysisWriter,
     AnswersService,
+    AudioRetention,
     DialogueRepository,
     NextTurnService,
     TurnRepository,
