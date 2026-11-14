@@ -25,11 +25,8 @@ function inputOf(request: HintRequest, question: CurrentQuestion): HintInput {
   };
 }
 
-// The model must answer the kind that was asked, with no blank text
 function isUsable(hint: Hint, kind: HintRequest['kind']): boolean {
-  if (hint.kind !== kind) return false;
-  const text = hint.kind === 'phrase_start' ? hint.text : hint.word;
-  return text === null || text.trim() !== '';
+  return hint.kind === kind;
 }
 
 function resultOf(hint: Hint): HintResult {
@@ -41,7 +38,7 @@ function resultOf(hint: Hint): HintResult {
 
 function recordOf(request: HintRequest, result: HintResult): HintRecord | null {
   if (result.kind === 'phrase_start') return result;
-  if (result.word === null || request.kind !== 'translation') return null;
+  if (request.kind !== 'translation' || result.word === null) return null;
   return {
     kind: 'translation',
     lemma: result.word,
@@ -75,7 +72,8 @@ export class HintsService {
       );
       const result = resultOf(hint);
       const record = recordOf(request, result);
-      if (record) await this.hints.save(userId, sessionId, question, record);
+      if (record)
+        await this.hints.save({ userId, sessionId, question, record });
       return result;
     } catch (error) {
       throw toLanguageModelHttpError(toDialogueHttpError(error));

@@ -131,6 +131,23 @@ describe('hints', () => {
     ]);
   });
 
+  it('[TC-04-10] concurrent hints for the same new word create one word and both succeed', async () => {
+    const learner = await startLearner(app);
+    const body = { kind: 'translation', word: 'зустріч' };
+
+    const responses = await Promise.all([
+      postHint(app, learner.token, learner.session.id, body),
+      postHint(app, learner.token, learner.session.id, body),
+    ]);
+
+    expect(responses.map((res) => res.status)).toEqual([200, 200]);
+    const words = await hintedWordRows(pool, learner.id);
+    expect(words).toHaveLength(1);
+    expect(
+      (await hintRows(pool, learner.session.id)).map((hint) => hint.word_id),
+    ).toEqual([words[0]?.id, words[0]?.id]);
+  });
+
   it.each(['passive', 'active'])(
     '[TC-04-10] keeps the state and counters of an existing %s word, whatever its case',
     async (state) => {

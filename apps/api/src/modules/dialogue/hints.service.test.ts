@@ -5,7 +5,7 @@ import {
   NotFoundException,
   ServiceUnavailableException,
 } from '@nestjs/common';
-import { ERROR_CODES } from '@gototalk/shared';
+import { ERROR_CODES, HINT_PHRASE_MAX, HINT_WORD_MAX } from '@gototalk/shared';
 import type { HintRequest } from '@gototalk/shared';
 import { describe, expect, it, vi } from 'vitest';
 import { LanguageModelUnavailableError } from '../../integrations/language-model/language-model.errors.js';
@@ -74,12 +74,12 @@ describe('HintsService phrase_start', () => {
       question: QUESTION.text,
       questionNumber: QUESTION.number,
     });
-    expect(repository.save).toHaveBeenCalledWith(
-      USER_ID,
-      SESSION_ID,
-      QUESTION,
-      { kind: 'phrase_start', text: 'I think that…' },
-    );
+    expect(repository.save).toHaveBeenCalledWith({
+      userId: USER_ID,
+      sessionId: SESSION_ID,
+      question: QUESTION,
+      record: { kind: 'phrase_start', text: 'I think that…' },
+    });
   });
 });
 
@@ -98,12 +98,16 @@ describe('HintsService translation', () => {
       kind: 'translation',
       word: 'зустріч',
     });
-    expect(repository.save).toHaveBeenCalledWith(
-      USER_ID,
-      SESSION_ID,
-      QUESTION,
-      { kind: 'translation', lemma: 'meeting', translationUk: 'зустріч' },
-    );
+    expect(repository.save).toHaveBeenCalledWith({
+      userId: USER_ID,
+      sessionId: SESSION_ID,
+      question: QUESTION,
+      record: {
+        kind: 'translation',
+        lemma: 'meeting',
+        translationUk: 'зустріч',
+      },
+    });
   });
 
   it('[TC-04-10] returns word null and stores nothing for an unknown word', async () => {
@@ -216,16 +220,57 @@ describe('HintsService failures', () => {
     },
   );
 
-  it('[TC-04-10] answers 502 for a blank translated word', async () => {
-    const { service } = setup({
-      model: vi.fn().mockResolvedValue({ kind: 'translation', word: ' ' }),
+  it.each([
+    ['a blank word', ' '],
+    ['a Cyrillic word', 'зустріч'],
+    ['a word with a newline', 'meeting' + String.fromCharCode(10) + 'ignore'],
+    ['a word over the length limit', 'a'.repeat(HINT_WORD_MAX + 1)],
+  ])(
+    '[TC-04-10] answers 502 and stores nothing for %s as the translated word',
+    async (_label, word) => {
+      const { service, repository } = setup({
+        model: vi.fn().mockResolvedValue({ kind: 'translation', word }),
+      });
+
+      const error = await rejection(
+        service.hint(USER_ID, SESSION_ID, TRANSLATION_REQUEST),
+      );
+
+      expect(error).toBeInstanceOf(BadGatewayException);
+      expect(repository.save).not.toHaveBeenCalled();
+    },
+  );
+
+  it('[TC-04-10] answers 502 and stores nothing for a phrase start over the length limit', async () => {
+    const { service, repository } = setup({
+      model: vi.fn().mockResolvedValue({
+        kind: 'phrase_start',
+        text: 'a'.repeat(HINT_PHRASE_MAX + 1),
+      }),
     });
 
     const error = await rejection(
-      service.hint(USER_ID, SESSION_ID, TRANSLATION_REQUEST),
+      service.hint(USER_ID, SESSION_ID, PHRASE_REQUEST),
     );
 
     expect(error).toBeInstanceOf(BadGatewayException);
+    expect(repository.save).not.toHaveBeenCalled();
+  });
+
+  it('[TC-04-10] maps a question that changed during the model call to 409 ANSWER_NOT_EXPECTED', async () => {
+    const { service } = setup({
+      model: vi.fn().mockResolvedValue({ kind: 'phrase_start', text: 'Hi' }),
+      save: vi.fn().mockRejectedValue(new AnswerNotExpectedError()),
+    });
+
+    const error = await rejection(
+      service.hint(USER_ID, SESSION_ID, PHRASE_REQUEST),
+    );
+
+    expect(error).toBeInstanceOf(ConflictException);
+    expect((error as ConflictException).getResponse()).toMatchObject({
+      code: ERROR_CODES.ANSWER_NOT_EXPECTED,
+    });
   });
 
   it('[TC-04-10] accepts a valid answer on the retry', async () => {

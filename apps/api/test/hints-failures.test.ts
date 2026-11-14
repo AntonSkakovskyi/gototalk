@@ -17,6 +17,7 @@ import { expectError } from './support/api-client.js';
 import { ControllableLanguageModel } from './support/controllable-language-model.js';
 import { startLearner } from './support/dialogue-flow.js';
 import { hintRows, hintedWordRows, postHint } from './support/hints-flow.js';
+import { insertUtterance } from './support/session-fixtures.js';
 import {
   SessionLockHolder,
   waitForLockWaiter,
@@ -144,6 +145,26 @@ describe('hints when the model misbehaves or the session changes', () => {
     const res = await pending;
 
     expectError(res, 409, 'SESSION_FINISHED');
+    expect(await hintRows(pool, learner.session.id)).toEqual([]);
+    expect(await hintedWordRows(pool, learner.id)).toEqual([]);
+  });
+
+  it('[TC-04-10] answers 409 ANSWER_NOT_EXPECTED and stores nothing when a new question appears during the model call', async () => {
+    const learner = await startLearner(app);
+    const hold = model.holdHint();
+
+    const pending = postHint(
+      app,
+      learner.token,
+      learner.session.id,
+      TRANSLATION,
+    ).then((res) => res);
+    await hold.started;
+    await insertUtterance(pool, learner.session.id, 2, 'assistant', 'Next?');
+    hold.release();
+    const res = await pending;
+
+    expectError(res, 409, 'ANSWER_NOT_EXPECTED');
     expect(await hintRows(pool, learner.session.id)).toEqual([]);
     expect(await hintedWordRows(pool, learner.id)).toEqual([]);
   });

@@ -1,7 +1,7 @@
 import type { Hint } from '@gototalk/shared';
 import type { HintInput } from './language-model.port.js';
 
-const PHRASE_STARTS = [
+const PHRASE_STARTS: readonly [string, ...string[]] = [
   'I think that…',
   'In my opinion…',
   'One thing I remember is…',
@@ -59,7 +59,10 @@ export function buildFakeHint(input: HintInput): Hint {
     const index =
       ((input.questionNumber % PHRASE_STARTS.length) + PHRASE_STARTS.length) %
       PHRASE_STARTS.length;
-    return { kind: 'phrase_start', text: PHRASE_STARTS[index] as string };
+    return {
+      kind: 'phrase_start',
+      text: PHRASE_STARTS[index] ?? PHRASE_STARTS[0],
+    };
   }
   return {
     kind: 'translation',

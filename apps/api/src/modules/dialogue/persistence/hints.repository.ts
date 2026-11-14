@@ -1,7 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { and, count, desc, eq } from 'drizzle-orm';
 import { DRIZZLE } from '../../../core/db/db.tokens.js';
-import type { Database, DbTransaction } from '../../../core/db/db.tokens.js';
+import type {
+  Database,
+  DbExecutor,
+  DbTransaction,
+} from '../../../core/db/db.tokens.js';
 import { hints, sessions, utterances } from '../../../core/db/schema.js';
 import { WordsRepository } from '../../vocabulary/persistence/words.repository.js';
 import {
@@ -16,6 +20,13 @@ export interface CurrentQuestion {
   text: string;
   /** 1-based position among the assistant questions of the session. */
   number: number;
+}
+
+export interface HintToSave {
+  userId: string;
+  sessionId: string;
+  question: CurrentQuestion;
+  record: HintRecord;
 }
 
 export type HintRecord =
@@ -44,12 +55,7 @@ export class HintsRepository {
       eq(utterances.sessionId, sessionId),
       eq(utterances.role, 'assistant'),
     );
-    const [last] = await this.db
-      .select({ id: utterances.id, text: utterances.textVerbatim })
-      .from(utterances)
-      .where(questions)
-      .orderBy(desc(utterances.seq))
-      .limit(1);
+    const last = await this.lastQuestion(this.db, sessionId);
     if (!last) throw new AnswerNotExpectedError();
     const [asked] = await this.db
       .select({ total: count() })
@@ -58,15 +64,12 @@ export class HintsRepository {
     return { ...last, number: asked?.total ?? 1 };
   }
 
-  /** Re-checks the session under its row lock, so nothing is stored once it has finished. */
-  save(
-    userId: string,
-    sessionId: string,
-    question: CurrentQuestion,
-    record: HintRecord,
-  ): Promise<void> {
+  /** Re-checks the session and its current question under the row lock, so nothing stale is stored. */
+  save({ userId, sessionId, question, record }: HintToSave): Promise<void> {
     return this.db.transaction(async (tx) => {
       await lockActiveSession(tx, userId, sessionId);
+      const current = await this.lastQuestion(tx, sessionId);
+      if (current?.id !== question.id) throw new AnswerNotExpectedError();
       const { text, wordId } = await this.resolve(tx, userId, record);
       await tx.insert(hints).values({
         sessionId,
@@ -76,6 +79,24 @@ export class HintsRepository {
         wordId,
       });
     });
+  }
+
+  private async lastQuestion(
+    executor: DbExecutor,
+    sessionId: string,
+  ): Promise<{ id: string; text: string } | undefined> {
+    const [last] = await executor
+      .select({ id: utterances.id, text: utterances.textVerbatim })
+      .from(utterances)
+      .where(
+        and(
+          eq(utterances.sessionId, sessionId),
+          eq(utterances.role, 'assistant'),
+        ),
+      )
+      .orderBy(desc(utterances.seq))
+      .limit(1);
+    return last;
   }
 
   private async resolve(
