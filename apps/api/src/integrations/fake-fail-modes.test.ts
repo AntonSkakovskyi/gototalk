@@ -19,7 +19,7 @@ const planInput = {
   previousTopics: [],
 };
 const turnInput = { topic: 'Work', remainingQuestions: ['q1'], history: [] };
-const sessionInput = { answers: 1, minutes: 1, mistakes: [] };
+const sessionInput = { answers: 1, minutes: 1, categories: [] };
 
 function everyMethod(llm: LanguageModelPort): Promise<unknown>[] {
   return [

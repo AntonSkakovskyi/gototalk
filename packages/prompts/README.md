@@ -16,3 +16,4 @@ The prompt version and the model are recorded on the utterance: `utterances.anal
 - `error-analysis.v1.md`: finds mistakes in a verbatim transcript (positions, category, explanations) and up to two better phrasings. Id: `error-analysis.v1`. Input `{ text }` at the `{{input}}` placeholder.
 - `next-turn.v1.md`: picks the next question of a dialogue from the remaining planned questions and the history. Id: `next-turn.v1`. Input `{ topic, remainingQuestions, history }`.
 - `hint.v1.md`: gives a phrase starter or a translation of one Ukrainian word. Id: `hint.v1`. Input `{ kind, question, questionNumber?, word? }`.
+- `session-summary.v1.md`: writes a short Ukrainian end-of-session summary from the session counts and the most frequent mistake categories. Id: `session-summary.v1`. Input `{ answers, minutes, categories: [{ code, title, count, examples: [{ original, suggestion }] }] }`, at most 3 categories ordered by frequency. Output `{ "summary": string }`.

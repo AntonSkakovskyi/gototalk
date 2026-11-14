@@ -17,10 +17,10 @@ function fillInputPlaceholder(template: string, data: string): string {
   return template.replace(INPUT_PLACEHOLDER, () => data);
 }
 
-export function renderPrompt(
-  id: string,
+export function renderPrompt<Id extends string>(
+  id: Id,
   input: unknown,
-): { id: string; text: string } {
+): { id: Id; text: string } {
   return {
     id,
     text: fillInputPlaceholder(loadPrompt(id), serializeInput(input)),

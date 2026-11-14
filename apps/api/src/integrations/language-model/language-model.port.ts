@@ -29,7 +29,12 @@ export type HintInput =
 export interface SummarizeSessionInput {
   answers: number;
   minutes: number;
-  mistakes: { category: MistakeCategoryCode }[];
+  categories: {
+    code: MistakeCategoryCode;
+    title: string;
+    count: number;
+    examples: { original: string; suggestion: string }[];
+  }[];
 }
 
 export interface AnalyzeUtteranceResponse {
