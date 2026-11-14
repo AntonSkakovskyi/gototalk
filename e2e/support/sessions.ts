@@ -60,3 +60,104 @@ export function sessionIdFromUrl(page: Page): string {
   }
   return id;
 }
+
+export interface MistakeRecord {
+  category: string;
+  isFalse: boolean;
+}
+
+export interface UtteranceRecord {
+  role: string;
+  analysisStatus: string;
+  mistakes: MistakeRecord[];
+}
+
+export interface SessionDetailsRecord extends SessionRecord {
+  utterances: UtteranceRecord[];
+}
+
+function isMistakeRecord(value: unknown): value is MistakeRecord {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'category' in value &&
+    typeof value.category === 'string' &&
+    'isFalse' in value &&
+    typeof value.isFalse === 'boolean'
+  );
+}
+
+function isUtteranceRecord(value: unknown): value is UtteranceRecord {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'role' in value &&
+    typeof value.role === 'string' &&
+    'analysisStatus' in value &&
+    typeof value.analysisStatus === 'string' &&
+    'mistakes' in value &&
+    Array.isArray(value.mistakes) &&
+    value.mistakes.every(isMistakeRecord)
+  );
+}
+
+export async function readSessionDetails(
+  request: APIRequestContext,
+  accessToken: string,
+  id: string,
+): Promise<SessionDetailsRecord> {
+  const response = await request.get(`/api/sessions/${id}`, {
+    headers: authorization(accessToken),
+  });
+  expect(response.status(), 'read session details').toBe(200);
+  const body: unknown = await response.json();
+  if (
+    !isSessionRecord(body) ||
+    !('utterances' in body) ||
+    !Array.isArray(body.utterances) ||
+    !body.utterances.every(isUtteranceRecord)
+  ) {
+    throw new Error('session details response has an unexpected shape');
+  }
+  return { ...body, utterances: body.utterances };
+}
+
+export interface WeakAreaRecord {
+  category: string;
+  frequency: number;
+}
+
+function isWeakAreaRecord(value: unknown): value is WeakAreaRecord {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'category' in value &&
+    typeof value.category === 'string' &&
+    'frequency' in value &&
+    typeof value.frequency === 'number'
+  );
+}
+
+export async function readWeakAreas(
+  request: APIRequestContext,
+  accessToken: string,
+): Promise<WeakAreaRecord[]> {
+  const response = await request.get('/api/profile/learner-model', {
+    headers: authorization(accessToken),
+  });
+  expect(response.status(), 'read learner model').toBe(200);
+  const body: unknown = await response.json();
+  if (
+    typeof body !== 'object' ||
+    body === null ||
+    !('weakAreas' in body) ||
+    !Array.isArray(body.weakAreas) ||
+    !body.weakAreas.every(isWeakAreaRecord)
+  ) {
+    throw new Error('learner model response has an unexpected shape');
+  }
+  return body.weakAreas.map(({ category, frequency }) => ({
+    category,
+    frequency,
+  }));
+}
