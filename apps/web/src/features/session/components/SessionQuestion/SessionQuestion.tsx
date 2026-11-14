@@ -2,7 +2,7 @@ import { Button, Stack, Title } from '@mantine/core';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
-import { sessionDetailsQueryOptions } from '@/features/session/api/session-queries';
+import { sessionDetailsQueryOptions } from '@/shared/api/session-details';
 import { currentQuestion } from '@/features/session/lib/current-question';
 import { isSessionNotFound } from '@/features/session/lib/session-errors';
 import { LoadError } from '@/shared/ui/LoadError/LoadError';

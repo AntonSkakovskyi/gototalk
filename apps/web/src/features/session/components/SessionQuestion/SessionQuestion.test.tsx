@@ -1,7 +1,7 @@
 import { ERROR_CODES } from '@gototalk/shared';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { sessionKeys } from '@/features/session/api/session-queries';
+import { sessionKeys } from '@/shared/api/session-details';
 import uk from '@/shared/i18n/uk.json';
 import { mockApi } from '@/shared/testing/mock-api';
 import { createTestQueryClient } from '@/shared/testing/query-wrapper';
