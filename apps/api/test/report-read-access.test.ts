@@ -39,6 +39,7 @@ describe('GET /api/sessions/:id/report access', () => {
 
   it('[TC-05-02] answers the same 404 for a foreign, unknown and malformed id', async () => {
     const owner = await finishedLearner(app);
+    model.calls.summarize = 0;
     const other = await registerUser(app);
     await grantConsent(app, other.token);
 
@@ -66,6 +67,7 @@ describe('GET /api/sessions/:id/report access', () => {
 
   it('[TC-05-02] requires consent because the endpoint can call the model', async () => {
     const learner = await finishedLearner(app);
+    model.calls.summarize = 0;
     await pool.query('UPDATE users SET consent_at = NULL WHERE id = $1', [
       learner.id,
     ]);

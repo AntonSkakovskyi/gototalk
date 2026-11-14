@@ -7,7 +7,9 @@ import { PG_POOL } from '../src/core/db/db.tokens.js';
 import {
   MISSING_USER_ID,
   expectError,
+  grantConsent,
   registerUser,
+  tokenOfMissingUser,
 } from './support/api-client.js';
 import {
   PLAN,
@@ -134,6 +136,7 @@ describe('POST /api/sessions/:id/finish', () => {
   it('[TC-04-04] answers the same 404 for a foreign, unknown and malformed id', async () => {
     const owner = await startLearner(app);
     const other = await registerUser(app);
+    await grantConsent(app, other.token);
 
     const responses = [
       await finish(other.token, owner.session.id),
@@ -158,14 +161,24 @@ describe('POST /api/sessions/:id/finish', () => {
     expectError(res, 401, 'UNAUTHORIZED');
   });
 
-  it('[TC-04-04] needs no consent', async () => {
+  it('[TC-05-02] requires consent because finish can call the model', async () => {
     const learner = await startLearner(app);
     await pool.query('UPDATE users SET consent_at = NULL WHERE id = $1', [
       learner.id,
     ]);
 
-    const session = await finishOk(learner);
+    const res = await finish(learner.token, learner.session.id);
 
-    expect(session.status).toBe('finished');
+    expectError(res, 403, 'CONSENT_REQUIRED');
+    expect((await fetchDetails(app, learner)).status).toBe('active');
+  });
+
+  it('[TC-05-02] returns 401 for a deleted user with a still valid token', async () => {
+    const learner = await startLearner(app);
+
+    const res = await finish(await tokenOfMissingUser(app), learner.session.id);
+
+    expectError(res, 401, 'UNAUTHORIZED');
+    expect((await fetchDetails(app, learner)).status).toBe('active');
   });
 });
