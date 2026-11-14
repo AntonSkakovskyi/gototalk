@@ -1,7 +1,7 @@
 const TOKEN = /[\p{L}\p{N}]+(?:['’-][\p{L}\p{N}]+)*/gu;
 const MAX_NGRAM = 4;
 
-function tokenize(text: string): string[] {
+export function tokenize(text: string): string[] {
   return (text.match(TOKEN) ?? []).map((token) =>
     token.toLowerCase().replaceAll('’', "'"),
   );
