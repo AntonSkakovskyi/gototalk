@@ -58,7 +58,7 @@ describe('AnswerTranscript', () => {
     const fragment = screen.getByRole('button', { name: 'go' });
 
     expect(fragment).toHaveAccessibleDescription(
-      uk.dialogue.mistake.fragmentHint,
+      uk.transcript.mistake.fragmentHint,
     );
   });
 
@@ -66,7 +66,7 @@ describe('AnswerTranscript', () => {
     renderTranscript(withMistakes());
 
     expect(
-      screen.queryByText(uk.dialogue.mistake.fragmentHint),
+      screen.queryByText(uk.transcript.mistake.fragmentHint),
     ).not.toBeInTheDocument();
   });
 
@@ -88,7 +88,7 @@ describe('AnswerTranscript', () => {
 
     await user.click(fragment);
     const region = screen.getByRole('region', {
-      name: uk.dialogue.mistake.regionLabel,
+      name: uk.transcript.mistake.regionLabel,
     });
 
     expect(fragment).toHaveAttribute('aria-expanded', 'true');
@@ -166,7 +166,7 @@ describe('AnswerTranscript', () => {
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
     expect(screen.queryByRole('region')).not.toBeInTheDocument();
     expect(
-      screen.queryByText(uk.dialogue.better.title),
+      screen.queryByText(uk.transcript.better.title),
     ).not.toBeInTheDocument();
   });
 
@@ -188,7 +188,7 @@ describe('AnswerTranscript', () => {
     expect(
       screen.getByRole('heading', {
         level: 3,
-        name: uk.dialogue.better.title,
+        name: uk.transcript.better.title,
       }),
     ).toBeInTheDocument();
     expect(within(list).getByText('I go')).toHaveAttribute('lang', 'en');
@@ -205,7 +205,7 @@ describe('AnswerTranscript', () => {
       'true',
     );
     expect(
-      within(phrasing).getByText(uk.dialogue.replacedBy),
+      within(phrasing).getByText(uk.transcript.replacedBy),
     ).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'go' }));
@@ -216,7 +216,7 @@ describe('AnswerTranscript', () => {
       'true',
     );
     expect(
-      within(region).getByText(uk.dialogue.replacedBy),
+      within(region).getByText(uk.transcript.replacedBy),
     ).toBeInTheDocument();
   });
 
@@ -224,7 +224,7 @@ describe('AnswerTranscript', () => {
     renderTranscript();
 
     expect(
-      screen.queryByText(uk.dialogue.better.title),
+      screen.queryByText(uk.transcript.better.title),
     ).not.toBeInTheDocument();
   });
 });

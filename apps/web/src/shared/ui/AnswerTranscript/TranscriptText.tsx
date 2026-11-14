@@ -1,5 +1,5 @@
 import { UnstyledButton } from '@mantine/core';
-import type { Segment } from '@/features/dialogue/lib/highlight-segments';
+import type { Segment } from './highlight-segments';
 import classes from './AnswerTranscript.module.scss';
 
 interface TranscriptTextProps {

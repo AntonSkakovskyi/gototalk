@@ -2,9 +2,9 @@ import type { Utterance } from '@gototalk/shared';
 import { Stack, Text, VisuallyHidden } from '@mantine/core';
 import { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { BetterPhrasings } from '@/features/dialogue/components/BetterPhrasings/BetterPhrasings';
-import { MistakeDetails } from '@/features/dialogue/components/MistakeDetails/MistakeDetails';
-import { buildSegments } from '@/features/dialogue/lib/highlight-segments';
+import { BetterPhrasings } from '@/shared/ui/BetterPhrasings/BetterPhrasings';
+import { MistakeDetails } from '@/shared/ui/MistakeDetails/MistakeDetails';
+import { buildSegments } from './highlight-segments';
 import { useFocusWhen } from '@/shared/hooks/use-focus-when';
 import { ENGLISH_LANG } from '@/shared/i18n/languages';
 import classes from './AnswerTranscript.module.scss';
@@ -61,14 +61,14 @@ export function AnswerTranscript({
       </Text>
       {hasFragments && (
         <VisuallyHidden id={hintId}>
-          {t('dialogue.mistake.fragmentHint')}
+          {t('transcript.mistake.fragmentHint')}
         </VisuallyHidden>
       )}
       {selectedId !== null && (
         <div aria-live="polite">
           {markedAway && (
             <Text size="sm" c="dimmed">
-              {t('dialogue.mistake.markedAsNotMistake')}
+              {t('transcript.mistake.markedAsNotMistake')}
             </Text>
           )}
         </div>

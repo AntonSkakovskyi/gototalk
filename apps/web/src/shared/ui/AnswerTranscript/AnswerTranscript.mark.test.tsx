@@ -22,7 +22,7 @@ import { AnswerTranscript } from './AnswerTranscript';
 
 const ANSWER = testTurnResult().utterance;
 const DETAILS = testSessionDetails({ utterances: [ANSWER] });
-const MARK_LABEL = uk.dialogue.mistake.notMistake;
+const MARK_LABEL = uk.transcript.mistake.notMistake;
 
 function CachedTranscript() {
   const { data } = useQuery(sessionDetailsQueryOptions(DIALOGUE_SESSION_ID));
@@ -82,7 +82,7 @@ describe('AnswerTranscript marking a mistake as not a mistake', () => {
     await user.click(markButton());
 
     const message = await screen.findByText(
-      uk.dialogue.mistake.markedAsNotMistake,
+      uk.transcript.mistake.markedAsNotMistake,
     );
     expect(message.closest('[aria-live]')).toHaveAttribute(
       'aria-live',
@@ -94,7 +94,7 @@ describe('AnswerTranscript marking a mistake as not a mistake', () => {
     await setup();
 
     expect(
-      screen.queryByText(uk.dialogue.mistake.markedAsNotMistake),
+      screen.queryByText(uk.transcript.mistake.markedAsNotMistake),
     ).not.toBeInTheDocument();
   });
 
@@ -117,7 +117,9 @@ describe('AnswerTranscript marking a mistake as not a mistake', () => {
 
     await user.click(markButton());
 
-    const message = await screen.findByText(uk.dialogue.errors.mistakeNotFound);
+    const message = await screen.findByText(
+      uk.transcript.errors.mistakeNotFound,
+    );
     expect(message.closest('[aria-live]')).toHaveAttribute(
       'aria-live',
       'polite',

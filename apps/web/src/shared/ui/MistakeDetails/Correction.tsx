@@ -1,6 +1,6 @@
 import { Stack, Text } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
-import { ReplaceArrow } from '@/features/dialogue/components/ReplaceArrow/ReplaceArrow';
+import { ReplaceArrow } from '@/shared/ui/ReplaceArrow/ReplaceArrow';
 import { ENGLISH_LANG } from '@/shared/i18n/languages';
 import classes from './Correction.module.scss';
 
@@ -15,7 +15,7 @@ export function Correction({ original, suggestion }: CorrectionProps) {
   return (
     <Stack gap={0}>
       <Text size="sm" c="dimmed">
-        {t('dialogue.mistake.fixLabel')}
+        {t('transcript.mistake.fixLabel')}
       </Text>
       <Text lang={ENGLISH_LANG}>
         <del className={classes.removed}>{original}</del>

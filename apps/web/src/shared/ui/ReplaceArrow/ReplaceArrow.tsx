@@ -7,7 +7,7 @@ export function ReplaceArrow() {
   return (
     <>
       <span aria-hidden="true"> → </span>
-      <VisuallyHidden>{t('dialogue.replacedBy')}</VisuallyHidden>
+      <VisuallyHidden>{t('transcript.replacedBy')}</VisuallyHidden>
     </>
   );
 }

@@ -1,7 +1,7 @@
 import type { BetterPhrasing } from '@gototalk/shared';
 import { List, Stack, Text, Title } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
-import { ReplaceArrow } from '@/features/dialogue/components/ReplaceArrow/ReplaceArrow';
+import { ReplaceArrow } from '@/shared/ui/ReplaceArrow/ReplaceArrow';
 import { ENGLISH_LANG } from '@/shared/i18n/languages';
 
 interface BetterPhrasingsProps {
@@ -18,7 +18,7 @@ export function BetterPhrasings({ phrasings }: BetterPhrasingsProps) {
   return (
     <Stack gap="xs">
       <Title order={3} size="h4">
-        {t('dialogue.better.title')}
+        {t('transcript.better.title')}
       </Title>
       <List spacing="xs" size="sm">
         {phrasings.map(({ original, better }) => (

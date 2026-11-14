@@ -24,7 +24,7 @@ export function MistakeDetails({
     <Paper
       id={id}
       component="section"
-      aria-label={t('dialogue.mistake.regionLabel')}
+      aria-label={t('transcript.mistake.regionLabel')}
       withBorder
       p="md"
       radius="md"
@@ -39,7 +39,7 @@ export function MistakeDetails({
         />
         <Stack gap={0}>
           <Text size="sm" c="dimmed">
-            {t('dialogue.mistake.explanationLabel')}
+            {t('transcript.mistake.explanationLabel')}
           </Text>
           <Text lang={ENGLISH_LANG}>{mistake.explanationEn}</Text>
         </Stack>
@@ -52,7 +52,7 @@ export function MistakeDetails({
           disabled={isPendingFor(mistake.id)}
           onClick={() => mark(mistake.id)}
         >
-          {t('dialogue.mistake.notMistake')}
+          {t('transcript.mistake.notMistake')}
         </Button>
         <div aria-live="polite">
           {error && (

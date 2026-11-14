@@ -37,7 +37,7 @@ describe('DialogueScreen answer flow', () => {
 
     analysis.resolve(analysisWithBetter());
     const fragment = await screen.findByRole('button', { name: 'go' });
-    expect(screen.getByText(uk.dialogue.better.title)).toBeInTheDocument();
+    expect(screen.getByText(uk.transcript.better.title)).toBeInTheDocument();
 
     await user.click(fragment);
     expect(
@@ -45,7 +45,7 @@ describe('DialogueScreen answer flow', () => {
     ).toBeInTheDocument();
 
     await user.click(
-      screen.getByRole('button', { name: uk.dialogue.mistake.notMistake }),
+      screen.getByRole('button', { name: uk.transcript.mistake.notMistake }),
     );
     await waitFor(() =>
       expect(
@@ -75,7 +75,7 @@ describe('DialogueScreen answer flow', () => {
       screen.queryByRole('button', { name: 'go' }),
     ).not.toBeInTheDocument();
     expect(
-      screen.queryByText(uk.dialogue.better.title),
+      screen.queryByText(uk.transcript.better.title),
     ).not.toBeInTheDocument();
   });
 

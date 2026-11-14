@@ -139,7 +139,7 @@ describe('SessionRecap', () => {
     expect(
       screen.getByText(TURN.utterance.mistakes[0]?.explanationEn ?? ''),
     ).toBeInTheDocument();
-    expect(screen.getByText(uk.dialogue.better.title)).toBeInTheDocument();
+    expect(screen.getByText(uk.transcript.better.title)).toBeInTheDocument();
   });
 
   it('[TC-04-04] shows an answer without a finished analysis as plain text', () => {
