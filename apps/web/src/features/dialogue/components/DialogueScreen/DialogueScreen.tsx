@@ -8,7 +8,8 @@ import { ProcessingStatus } from '@/features/dialogue/components/ProcessingStatu
 import { TextAnswerForm } from '@/features/dialogue/components/TextAnswerForm/TextAnswerForm';
 import { TurnList } from '@/features/dialogue/components/TurnList/TurnList';
 import { useAnswerFlow } from '@/features/dialogue/hooks/use-answer-flow';
-import { reportPath } from '@/features/dialogue/lib/report-path';
+import { awaitingReply } from '@/features/dialogue/lib/turns';
+import { reportPath } from '@/shared/router/session-paths';
 
 interface DialogueScreenProps {
   details: SessionDetails;
@@ -19,6 +20,7 @@ export function DialogueScreen({ details }: DialogueScreenProps) {
   const flow = useAnswerFlow(details.id);
 
   const finished = details.status === 'finished';
+  const canAnswer = !awaitingReply(details.utterances);
 
   return (
     <Stack gap="lg">
@@ -34,7 +36,9 @@ export function DialogueScreen({ details }: DialogueScreenProps) {
           {details.planRemaining === 0 && (
             <Text c="dimmed">{t('dialogue.planExhausted')}</Text>
           )}
-          <TextAnswerForm phase={flow.phase} submit={flow.submit} />
+          {canAnswer && (
+            <TextAnswerForm phase={flow.phase} submit={flow.submit} />
+          )}
         </>
       )}
       <FinishAction details={details} disabled={flow.phase !== 'idle'} />

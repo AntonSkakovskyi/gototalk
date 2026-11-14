@@ -12,7 +12,7 @@ export function useAnswerForm(submit: (text: string) => Promise<boolean>) {
     resolver: zodResolver(AnswerTextRequestSchema),
     defaultValues: { text: '' },
   });
-  const { reset } = form;
+  const { reset, setFocus } = form;
 
   return {
     field: form.register('text'),
@@ -23,6 +23,8 @@ export function useAnswerForm(submit: (text: string) => Promise<boolean>) {
       void form.handleSubmit(async ({ text }) => {
         if (await submit(text)) {
           reset();
+        } else {
+          setFocus('text');
         }
       })(event),
   };

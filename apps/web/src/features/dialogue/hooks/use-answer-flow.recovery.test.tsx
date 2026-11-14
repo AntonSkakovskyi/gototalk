@@ -38,7 +38,6 @@ describe('useAnswerFlow recovery', () => {
     const { result } = render();
 
     await waitFor(() => expect(result.current.phase).toBe('analyzing'));
-    expect(result.current.analyzingUtteranceId).toBe(PENDING.id);
 
     analysis.resolve(analysisOk());
     await waitFor(() => expect(result.current.phase).toBe('idle'));

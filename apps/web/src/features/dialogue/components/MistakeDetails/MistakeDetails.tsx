@@ -3,9 +3,8 @@ import { Badge, Button, Paper, Stack, Text } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
 import { useMarkMistake } from '@/features/dialogue/hooks/use-mark-mistake';
 import { dialogueErrorKey } from '@/features/dialogue/lib/dialogue-errors';
+import { ENGLISH_LANG } from '@/shared/i18n/languages';
 import { Correction } from './Correction';
-
-const EXPLANATION_LANGUAGE = 'en';
 
 interface MistakeDetailsProps {
   id: string;
@@ -25,7 +24,6 @@ export function MistakeDetails({
     <Paper
       id={id}
       component="section"
-      role="region"
       aria-label={t('dialogue.mistake.regionLabel')}
       withBorder
       p="md"
@@ -43,7 +41,7 @@ export function MistakeDetails({
           <Text size="sm" c="dimmed">
             {t('dialogue.mistake.explanationLabel')}
           </Text>
-          <Text lang={EXPLANATION_LANGUAGE}>{mistake.explanationEn}</Text>
+          <Text lang={ENGLISH_LANG}>{mistake.explanationEn}</Text>
         </Stack>
         <Text size="sm" c="dimmed">
           {mistake.translationUk}

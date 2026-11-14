@@ -1,5 +1,10 @@
 import { testUtterance } from '@/shared/testing/test-fixtures';
-import { answersWithQuestions, currentQuestion, sortBySeq } from './turns';
+import {
+  answersWithQuestions,
+  awaitingReply,
+  currentQuestion,
+  sortBySeq,
+} from './turns';
 
 describe('currentQuestion', () => {
   it('[TC-04-04] returns the last assistant utterance', () => {
@@ -81,5 +86,30 @@ describe('answersWithQuestions', () => {
 
   it('[TC-04-05] returns nothing for a session without answers', () => {
     expect(answersWithQuestions([testUtterance()])).toEqual([]);
+  });
+});
+
+describe('awaitingReply', () => {
+  it('[TC-04-08] is true when the last utterance by seq is a user answer', () => {
+    expect(
+      awaitingReply([
+        testUtterance({ id: 'b', seq: 2, role: 'user', text: 'My answer' }),
+        testUtterance({ id: 'a', seq: 1, role: 'assistant', text: 'First?' }),
+      ]),
+    ).toBe(true);
+  });
+
+  it('[TC-04-08] is false when the last utterance by seq is a question', () => {
+    expect(
+      awaitingReply([
+        testUtterance({ id: 'a', seq: 1, role: 'assistant', text: 'First?' }),
+        testUtterance({ id: 'b', seq: 2, role: 'user', text: 'My answer' }),
+        testUtterance({ id: 'c', seq: 3, role: 'assistant', text: 'Next?' }),
+      ]),
+    ).toBe(false);
+  });
+
+  it('[TC-04-08] is false without any utterance', () => {
+    expect(awaitingReply([])).toBe(false);
   });
 });

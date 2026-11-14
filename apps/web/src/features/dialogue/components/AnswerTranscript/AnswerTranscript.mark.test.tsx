@@ -67,6 +67,37 @@ describe('AnswerTranscript marking a mistake as not a mistake', () => {
     ).toBe(true);
   });
 
+  it('[TC-04-04] moves focus to the answer text after the fragment disappears', async () => {
+    const { user } = await setup();
+
+    await user.click(markButton());
+
+    await waitFor(() => expect(screen.getByText(ANSWER.text)).toHaveFocus());
+    expect(screen.getByText(ANSWER.text)).toHaveAttribute('tabindex', '-1');
+  });
+
+  it('[TC-04-04] announces the result in a polite live region', async () => {
+    const { user } = await setup();
+
+    await user.click(markButton());
+
+    const message = await screen.findByText(
+      uk.dialogue.mistake.markedAsNotMistake,
+    );
+    expect(message.closest('[aria-live]')).toHaveAttribute(
+      'aria-live',
+      'polite',
+    );
+  });
+
+  it('[TC-04-04] does not announce anything before a mistake is marked', async () => {
+    await setup();
+
+    expect(
+      screen.queryByText(uk.dialogue.mistake.markedAsNotMistake),
+    ).not.toBeInTheDocument();
+  });
+
   it('[TC-04-04] disables the button while the request is pending', async () => {
     const { api, user } = await setup(
       () => new Promise<Response>(() => undefined),

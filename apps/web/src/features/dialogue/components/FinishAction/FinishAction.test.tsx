@@ -40,7 +40,7 @@ async function openModal(user: ReturnType<typeof userEvent.setup>) {
 
 function confirmButton(dialog: HTMLElement) {
   return within(dialog).getByRole('button', {
-    name: uk.dialogue.finish.confirm,
+    name: uk.common.actions.finish,
   });
 }
 

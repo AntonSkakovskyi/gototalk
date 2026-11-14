@@ -1,6 +1,7 @@
 import { Stack } from '@mantine/core';
 import { useNavigate } from 'react-router';
 import { useSessionProposal } from '@/features/session/hooks/use-session-proposal';
+import { sessionPath } from '@/shared/router/session-paths';
 import { CustomTopicAction } from './CustomTopicAction';
 import { FeedbackModeControl } from './FeedbackModeControl';
 import { ProposalPlan } from './ProposalPlan';
@@ -14,7 +15,7 @@ export function SessionProposal() {
 
   function handleStart() {
     proposal.start(
-      (details) => void navigate(`/sessions/${details.id}`, { replace: true }),
+      (details) => void navigate(sessionPath(details.id), { replace: true }),
     );
   }
 

@@ -85,7 +85,7 @@ describe('DialogueScreen finishing', () => {
       name: uk.dialogue.finish.title,
     });
     await user.click(
-      within(dialog).getByRole('button', { name: uk.dialogue.finish.confirm }),
+      within(dialog).getByRole('button', { name: uk.common.actions.finish }),
     );
 
     await waitFor(() =>

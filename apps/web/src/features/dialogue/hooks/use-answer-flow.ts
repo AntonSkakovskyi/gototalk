@@ -120,9 +120,5 @@ export function useAnswerFlow(sessionId: string) {
     canRetryAnalysis,
     submitError: send.error,
     analysisError: analysis.error,
-    analyzingUtteranceId:
-      analysis.isPending || analysis.isError
-        ? (analysis.variables ?? null)
-        : null,
   };
 }

@@ -5,7 +5,10 @@ import {
   currentLocation,
   renderAppWithProbe,
 } from '@/app/router/guards/guard-test-helpers';
+import { sessionKeys } from '@/shared/api/session-details';
 import uk from '@/shared/i18n/uk.json';
+import { deferred } from '@/shared/testing/answer-flow-setup';
+import { createTestQueryClient } from '@/shared/testing/query-wrapper';
 import { mockApi } from '@/shared/testing/mock-api';
 import {
   TEST_PROFILE,
@@ -58,6 +61,37 @@ describe('ReportPage route', () => {
         name: uk.dialogue.recap.title,
       }),
     ).not.toBeInTheDocument();
+  });
+
+  it('[TC-04-05] does not redirect on stale cached active data once the refetch says finished', async () => {
+    const queryClient = createTestQueryClient();
+    queryClient.setQueryData(
+      sessionKeys.details(FINISHED.id),
+      { ...FINISHED, status: 'active', endedAt: null },
+      { updatedAt: 0 },
+    );
+    const refetch = deferred();
+    mockApi({
+      'GET /api/profile': jsonResponse(TEST_PROFILE),
+      [DETAILS_ROUTE]: () => refetch.promise,
+    });
+    renderAppWithProbe({ route: ROUTE, session: AUTH, queryClient });
+
+    expect(
+      await screen.findByRole('link', { name: uk.common.actions.home }),
+    ).toBeInTheDocument();
+    await waitFor(() => expect(queryClient.isFetching()).toBe(1));
+    expect(currentLocation()).toBe(ROUTE);
+
+    refetch.resolve(jsonResponse(FINISHED));
+
+    expect(
+      await screen.findByRole('heading', {
+        level: 2,
+        name: uk.dialogue.recap.title,
+      }),
+    ).toBeInTheDocument();
+    expect(currentLocation()).toBe(ROUTE);
   });
 
   it('[TC-04-05] shows the topic, the stats and every answer with its question', async () => {

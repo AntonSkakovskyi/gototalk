@@ -31,7 +31,9 @@ describe('DialogueScreen answer flow', () => {
 
     expect(await screen.findByText(uk.dialogue.status.analyzing)).toBeVisible();
     expect(api.answerRequests()).toEqual([{ text: 'I very like' }]);
-    expect(screen.getByLabelText(uk.dialogue.form.label)).toHaveValue('');
+    expect(
+      screen.queryByLabelText(uk.dialogue.form.label),
+    ).not.toBeInTheDocument();
 
     analysis.resolve(analysisWithBetter());
     const fragment = await screen.findByRole('button', { name: 'go' });
@@ -54,6 +56,7 @@ describe('DialogueScreen answer flow', () => {
     expect(screen.getAllByText(uk.dialogue.turns.currentQuestion)).toHaveLength(
       1,
     );
+    expect(screen.getByLabelText(uk.dialogue.form.label)).toHaveValue('');
   });
 
   it('[TC-04-11] shows no highlights and no better phrasings in the deferred mode', async () => {

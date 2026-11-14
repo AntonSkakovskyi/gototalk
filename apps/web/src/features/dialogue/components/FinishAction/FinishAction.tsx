@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { AnswerError } from '@/features/dialogue/components/AnswerError/AnswerError';
 import { useFinishSession } from '@/features/dialogue/hooks/use-finish-session';
-import { reportPath } from '@/features/dialogue/lib/report-path';
+import { reportPath } from '@/shared/router/session-paths';
 
 interface FinishActionProps {
   details: SessionDetails;
@@ -66,7 +66,7 @@ export function FinishAction({ details, disabled }: FinishActionProps) {
                 finish(() => void navigate(reportPath(details.id)))
               }
             >
-              {t('dialogue.finish.confirm')}
+              {t('common.actions.finish')}
             </Button>
           </Group>
         </Stack>

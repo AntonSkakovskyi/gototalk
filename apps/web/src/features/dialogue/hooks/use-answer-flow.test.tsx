@@ -65,7 +65,6 @@ describe('useAnswerFlow', () => {
 
     answer.resolve(jsonResponse(PENDING, 201));
     await waitFor(() => expect(result.current.phase).toBe('analyzing'));
-    expect(result.current.analyzingUtteranceId).toBe(PENDING.id);
     expect(cached()?.utterances.at(-1)).toEqual(PENDING);
 
     analysis.resolve(analysisOk());
@@ -148,7 +147,6 @@ describe('useAnswerFlow', () => {
       code: ERROR_CODES.LANGUAGE_MODEL_UNAVAILABLE,
     });
     expect(result.current.phase).toBe('idle');
-    expect(result.current.analyzingUtteranceId).toBe(PENDING.id);
     expect(cached()?.utterances.at(-1)).toEqual(PENDING);
 
     act(() => result.current.retryAnalysis());

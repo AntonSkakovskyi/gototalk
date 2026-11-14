@@ -2,7 +2,11 @@ import type { SessionDetails } from '@gototalk/shared';
 import { List } from '@mantine/core';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { currentQuestion, sortBySeq } from '@/features/dialogue/lib/turns';
+import {
+  awaitingReply,
+  currentQuestion,
+  sortBySeq,
+} from '@/features/dialogue/lib/turns';
 import { useFocusWhen } from '@/shared/hooks/use-focus-when';
 import { AnswerCard } from './AnswerCard';
 import { QuestionCard } from './QuestionCard';
@@ -16,7 +20,9 @@ interface TurnListProps {
 export function TurnList({ details }: TurnListProps) {
   const { t } = useTranslation();
   const turns = sortBySeq(details.utterances);
-  const currentId = currentQuestion(turns)?.id;
+  const currentId = awaitingReply(turns)
+    ? undefined
+    : currentQuestion(turns)?.id;
   const [initialId] = useState(currentId);
   const currentRef = useFocusWhen<HTMLDivElement>(
     currentId !== initialId,

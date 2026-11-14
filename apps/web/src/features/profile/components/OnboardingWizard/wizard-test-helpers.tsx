@@ -107,7 +107,7 @@ export async function completeOnboarding(user: User) {
   await user.click(chip(presets.travel));
   await user.click(button(text.actions.next));
   await user.type(goalField(1), 'Speak fluently');
-  await user.click(button(text.actions.finish));
+  await user.click(button(uk.common.actions.finish));
 }
 
 export function stubNewUserApi() {

@@ -1,13 +1,14 @@
 import type { Utterance } from '@gototalk/shared';
-import { Stack, Text } from '@mantine/core';
+import { Stack, Text, VisuallyHidden } from '@mantine/core';
 import { useId, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { BetterPhrasings } from '@/features/dialogue/components/BetterPhrasings/BetterPhrasings';
 import { MistakeDetails } from '@/features/dialogue/components/MistakeDetails/MistakeDetails';
 import { buildSegments } from '@/features/dialogue/lib/highlight-segments';
+import { useFocusWhen } from '@/shared/hooks/use-focus-when';
+import { ENGLISH_LANG } from '@/shared/i18n/languages';
 import classes from './AnswerTranscript.module.scss';
 import { TranscriptText } from './TranscriptText';
-
-const ANSWER_LANGUAGE = 'en';
 
 interface AnswerTranscriptProps {
   sessionId: string;
@@ -20,7 +21,9 @@ export function AnswerTranscript({
   utterance,
   showFeedback,
 }: AnswerTranscriptProps) {
+  const { t } = useTranslation();
   const detailsId = useId();
+  const hintId = useId();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const analysed = showFeedback && utterance.analysisStatus === 'done';
   const segments = buildSegments(
@@ -31,21 +34,45 @@ export function AnswerTranscript({
     (segment) =>
       segment.kind === 'mistake' && segment.mistake.id === selectedId,
   );
+  const hasFragments = segments.some((segment) => segment.kind === 'mistake');
+  // The open fragment vanished: it was marked as not a mistake.
+  const markedAway = selectedId !== null && selected === undefined;
+  const textRef = useFocusWhen<HTMLParagraphElement>(markedAway);
 
   if (!showFeedback) {
-    return <Text lang={ANSWER_LANGUAGE}>{utterance.text}</Text>;
+    return <Text lang={ENGLISH_LANG}>{utterance.text}</Text>;
   }
 
   return (
     <Stack gap="sm">
-      <Text lang={ANSWER_LANGUAGE} className={classes.text}>
+      <Text
+        ref={textRef}
+        tabIndex={-1}
+        lang={ENGLISH_LANG}
+        className={classes.text}
+      >
         <TranscriptText
           segments={segments}
           selectedId={selectedId}
           detailsId={detailsId}
+          hintId={hintId}
           onSelect={(id) => setSelectedId(id === selectedId ? null : id)}
         />
       </Text>
+      {hasFragments && (
+        <VisuallyHidden id={hintId}>
+          {t('dialogue.mistake.fragmentHint')}
+        </VisuallyHidden>
+      )}
+      {selectedId !== null && (
+        <div aria-live="polite">
+          {markedAway && (
+            <Text size="sm" c="dimmed">
+              {t('dialogue.mistake.markedAsNotMistake')}
+            </Text>
+          )}
+        </div>
+      )}
       {selected?.kind === 'mistake' && (
         <MistakeDetails
           key={selected.mistake.id}

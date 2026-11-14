@@ -68,7 +68,7 @@ export function OnboardingWizard({ onCompleted }: OnboardingWizardProps) {
                 {t(
                   isRetry
                     ? 'common.actions.retry'
-                    : 'profile.onboarding.actions.finish',
+                    : 'common.actions.finish',
                 )}
               </Button>
             ) : (

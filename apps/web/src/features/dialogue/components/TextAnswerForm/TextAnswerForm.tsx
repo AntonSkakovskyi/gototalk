@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { useAnswerForm } from '@/features/dialogue/hooks/use-answer-form';
 import type { AnswerPhase } from '@/features/dialogue/hooks/use-answer-flow';
 import { ANNOUNCED_ERROR_PROPS } from '@/shared/forms/field-error-props';
+import { ENGLISH_LANG } from '@/shared/i18n/languages';
 
-const ANSWER_LANGUAGE = 'en';
 const WRAPPER_ORDER: InputWrapperProps['inputWrapperOrder'] = [
   'label',
   'input',
@@ -38,7 +38,8 @@ export function TextAnswerForm({ phase, submit }: TextAnswerFormProps) {
           inputWrapperOrder={WRAPPER_ORDER}
           error={message && t(message.key, message.values ?? {})}
           errorProps={ANNOUNCED_ERROR_PROPS}
-          lang={ANSWER_LANGUAGE}
+          lang={ENGLISH_LANG}
+          readOnly={phase !== 'idle'}
           autosize
           minRows={MIN_ROWS}
           maxRows={MAX_ROWS}

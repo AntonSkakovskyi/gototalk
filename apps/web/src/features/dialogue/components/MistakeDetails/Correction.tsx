@@ -1,8 +1,8 @@
 import { Stack, Text } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
+import { ReplaceArrow } from '@/features/dialogue/components/ReplaceArrow/ReplaceArrow';
+import { ENGLISH_LANG } from '@/shared/i18n/languages';
 import classes from './Correction.module.scss';
-
-const CORRECTION_LANGUAGE = 'en';
 
 interface CorrectionProps {
   original: string;
@@ -17,11 +17,11 @@ export function Correction({ original, suggestion }: CorrectionProps) {
       <Text size="sm" c="dimmed">
         {t('dialogue.mistake.fixLabel')}
       </Text>
-      <Text lang={CORRECTION_LANGUAGE}>
+      <Text lang={ENGLISH_LANG}>
         <del className={classes.removed}>{original}</del>
         {suggestion !== '' && (
           <>
-            {' → '}
+            <ReplaceArrow />
             <ins className={classes.added}>{suggestion}</ins>
           </>
         )}

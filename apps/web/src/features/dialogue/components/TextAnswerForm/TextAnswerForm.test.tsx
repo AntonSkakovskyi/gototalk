@@ -100,4 +100,32 @@ describe('TextAnswerForm', () => {
       expect(button).toBeDisabled();
     },
   );
+
+  it.each(['sending', 'analyzing'] as const)(
+    '[TC-04-04] makes the field read-only while the answer is %s',
+    (phase) => {
+      const { field } = renderForm(undefined, phase);
+
+      expect(field).toHaveAttribute('readonly');
+    },
+  );
+
+  it('[TC-04-04] keeps the field editable while idle', () => {
+    const { field } = renderForm();
+
+    expect(field).not.toHaveAttribute('readonly');
+  });
+
+  it('[TC-04-08] returns focus to the field when the submission failed', async () => {
+    const user = userEvent.setup();
+    const submit = vi
+      .fn<(text: string) => Promise<boolean>>()
+      .mockResolvedValue(false);
+    const { field, button } = renderForm(submit);
+
+    await user.type(field, 'I very like');
+    await user.click(button);
+
+    await waitFor(() => expect(field).toHaveFocus());
+  });
 });

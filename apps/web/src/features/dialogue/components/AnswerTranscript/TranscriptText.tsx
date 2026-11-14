@@ -6,6 +6,7 @@ interface TranscriptTextProps {
   segments: Segment[];
   selectedId: string | null;
   detailsId: string;
+  hintId: string;
   onSelect: (mistakeId: string) => void;
 }
 
@@ -13,6 +14,7 @@ export function TranscriptText({
   segments,
   selectedId,
   detailsId,
+  hintId,
   onSelect,
 }: TranscriptTextProps) {
   return segments.map((segment) => {
@@ -27,6 +29,7 @@ export function TranscriptText({
         type="button"
         className={classes.fragment}
         aria-expanded={expanded}
+        aria-describedby={hintId}
         aria-controls={expanded ? detailsId : undefined}
         onClick={() => onSelect(mistake.id)}
       >

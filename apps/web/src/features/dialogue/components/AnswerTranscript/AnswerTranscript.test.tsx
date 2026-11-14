@@ -52,6 +52,24 @@ describe('AnswerTranscript', () => {
     expect(screen.getByRole('button', { name: 'go' })).toBeInTheDocument();
   });
 
+  it('[TC-04-04] describes every fragment with a hint without renaming it', () => {
+    renderTranscript();
+
+    const fragment = screen.getByRole('button', { name: 'go' });
+
+    expect(fragment).toHaveAccessibleDescription(
+      uk.dialogue.mistake.fragmentHint,
+    );
+  });
+
+  it('[TC-04-04] renders no fragment hint for an answer without mistakes', () => {
+    renderTranscript(withMistakes());
+
+    expect(
+      screen.queryByText(uk.dialogue.mistake.fragmentHint),
+    ).not.toBeInTheDocument();
+  });
+
   it('[TC-04-04] marks the answer text as English', () => {
     renderTranscript();
 
@@ -168,10 +186,34 @@ describe('AnswerTranscript', () => {
     const list = screen.getByRole('list');
 
     expect(
-      screen.getByRole('heading', { name: uk.dialogue.better.title }),
+      screen.getByRole('heading', {
+        level: 3,
+        name: uk.dialogue.better.title,
+      }),
     ).toBeInTheDocument();
     expect(within(list).getByText('I go')).toHaveAttribute('lang', 'en');
     expect(within(list).getByText('I went')).toHaveAttribute('lang', 'en');
+  });
+
+  it('[TC-04-04] reads the arrows as a word and hides the symbol from assistive technology', async () => {
+    const user = userEvent.setup();
+    renderTranscript({ ...ANSWER, better: BETTER });
+    const phrasing = within(screen.getByRole('list')).getByRole('listitem');
+
+    expect(within(phrasing).getByText('→')).toHaveAttribute(
+      'aria-hidden',
+      'true',
+    );
+    expect(within(phrasing).getByText(uk.dialogue.replacedBy)).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'go' }));
+    const region = screen.getByRole('region');
+
+    expect(within(region).getByText('→')).toHaveAttribute(
+      'aria-hidden',
+      'true',
+    );
+    expect(within(region).getByText(uk.dialogue.replacedBy)).toBeInTheDocument();
   });
 
   it('[TC-04-04] omits the better phrasings block when there are none', () => {

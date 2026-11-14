@@ -44,7 +44,6 @@ describe('useAnswerFlow errors', () => {
     await waitFor(() => expect(result.current.submitError).not.toBeNull());
 
     expect(result.current.analysisError).toMatchObject({ status: 503 });
-    expect(result.current.analyzingUtteranceId).toBe(PENDING.id);
     act(() => result.current.retryAnalysis());
     await waitFor(() => expect(cached()?.utterances).toHaveLength(3));
     expect(analysisRequests(api.requests)).toHaveLength(2);
