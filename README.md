@@ -68,7 +68,7 @@ Foreign and unknown goal ids both return `404 GOAL_NOT_FOUND`.
 
 ## Sessions
 
-Starting a session: the home page (`/`) has a "Start session" button that opens `/sessions/new`. The page proposes a topic and five questions built from the profile (level, scenes, active goals and the most frequent error patterns). The user can ask for another topic (up to 3 times), enter their own topic, and choose the feedback mode (`immediate` by default, or `deferred`). "Start" creates the session and opens `/sessions/:id`, which shows the topic and the first question. Recording and the dialogue itself come later. The home page lists the 10 most recent sessions; an active one has a "Continue" action.
+Starting a session: the home page (`/`) has a "Start session" button that opens `/sessions/new`. The page proposes a topic and five questions built from the profile (level, scenes, active goals and the most frequent error patterns). The user can ask for another topic (up to 3 times), enter their own topic, and choose the feedback mode (`immediate` by default, or `deferred`). "Start" creates the session and opens `/sessions/:id`, which shows the topic and the dialogue (see Dialogue below). The home page lists the 10 most recent sessions; an active one has a "Continue" action.
 
 A user has at most one active session: starting a new one finishes the previous one in the same transaction (the user row is locked with `FOR NO KEY UPDATE`, and the partial unique index `sessions_one_active_per_user` is the backstop). All five planned questions are stored in `sessions.plan` (JSONB, never returned by the API); the first question is also saved as the first assistant utterance.
 
@@ -88,6 +88,36 @@ The planning prompt is `packages/prompts/session-plan.v1.md`. The package has no
 Migration 0003 adds `sessions.plan` and the one-active-session index; apply it with `pnpm db:migrate`. `pnpm db:seed` upserts the demo profile and goals and fills the plan of the seeded demo session, so it can be re-run.
 
 With `LLM_PROVIDER=fake` the planner is deterministic: the topic is taken from a bank of five topics per scene preset by the number of previous topics, and the first question is replaced by a question that provokes the user's most frequent error pattern. A custom topic is used as typed, with template questions.
+
+## Dialogue
+
+The dialogue screen (`/sessions/:id`) shows the current question, takes a text answer, highlights the mistakes in the verbatim transcript (with the explanation in English, a short Ukrainian translation and a "Not a mistake" action), shows up to two better phrasings and asks the next question. The feedback mode only changes what the client shows: the API always returns the mistakes, and `deferred` hides the highlighting in the dialogue but not in the report. "Finish" asks for confirmation and opens `/sessions/:id/report`, a minimal report with the topic, the number of answers, the duration and all answers with their highlighted mistakes. Voice input arrives in part 04b; for now the answer is typed.
+
+An answer is processed in two requests, so each state the user sees is a real request:
+
+1. `POST /api/sessions/:id/utterances` stores the answer as a `pending` user utterance (no model call) and records the use of saved words.
+2. `POST /api/sessions/:id/utterances/:utteranceId/analysis` analyses the answer and creates the next question.
+
+Step 2 is idempotent: it does only what is still missing (the analysis while the utterance is `pending`, the next question while there is none), so a repeated or parallel call returns the stored result and creates no duplicates. The models are called outside any transaction; the result is written under a lock on the session row with a re-check. If the language model is unavailable, whatever succeeded is stored first, then `503 LANGUAGE_MODEL_UNAVAILABLE` is returned, the utterance stays `pending` and a repeat completes the rest. Two invalid analysis responses in a row make the utterance `failed` (terminal) and the call still returns `200` with the next question; two invalid next-question responses give `502 LANGUAGE_MODEL_INVALID_RESPONSE`. When the page loads, the client calls step 2 itself for an answer that has no reply yet.
+
+| Method and path                                           | Consent      | Description                                                                                                                                                                                                                                                                          |
+| --------------------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `POST /api/sessions/:id/utterances`                       | required     | Body `{ text }` (1 to 1000 characters after trimming). `201` with the pending utterance. Errors: `400 VALIDATION_ERROR`, `401`, `403 CONSENT_REQUIRED`, `404 SESSION_NOT_FOUND`, `409 SESSION_FINISHED`, `409 ANSWER_NOT_EXPECTED` (the last utterance is not an assistant question) |
+| `POST /api/sessions/:id/utterances/:utteranceId/analysis` | required     | No body. `200` with `{ utterance, reply, planRemaining }`; `reply` is `null` for a finished session. Errors: `401`, `403 CONSENT_REQUIRED`, `404 SESSION_NOT_FOUND` or `UTTERANCE_NOT_FOUND`, `502 LANGUAGE_MODEL_INVALID_RESPONSE`, `503 LANGUAGE_MODEL_UNAVAILABLE`                |
+| `PATCH /api/sessions/:id/mistakes/:mistakeId`             | not required | Body `{ isFalse: true }`; `200` with the mistake. Repeating it changes nothing. Errors: `400`, `401`, `404 MISTAKE_NOT_FOUND`                                                                                                                                                        |
+| `POST /api/sessions/:id/finish`                           | not required | `200` with the session; finishing a finished session returns it unchanged (`ended_at` is kept). Errors: `401`, `404 SESSION_NOT_FOUND`                                                                                                                                               |
+
+Consent is required only on the two steps that send data to the providers. A foreign, unknown or malformed id gives the same `404`; for a deleted user a route with the consent guard gives `401` and the others `404`. A request body that fails validation gives `400 VALIDATION_ERROR`, while an internal schema failure (a corrupted row, a bad model response) gives `500 INTERNAL_ERROR`.
+
+Mistake positions (`start`, `end`) are UTF-16 offsets in `utterances.text_verbatim`, `end` exclusive, so `text.slice(start, end)` equals `original`. The model's positions are only a hint: the api keeps a mistake whose slice matches, otherwise moves it to the nearest exact occurrence of `original`, and drops it when there is none or when it overlaps the previous one. The analysis response is validated in two tiers: the envelope (`{ mistakes, better }`, at most 30 and 5 items) is retried once, then each item is checked on its own and invalid items are dropped; at most two `better` phrasings are kept. Each analysed utterance stores `analysis_prompt_version` (the prompt id, for example `error-analysis.v1`) and `analysis_model`. A saved mistake adds 1 to the user's pattern for its category; "Not a mistake" subtracts 1 (not below 0, only once per mistake). A saved word that appears in the cleaned answer (single words and phrases of up to 4 words, no lemmatisation) becomes `active`.
+
+Prompts live in `packages/prompts` (the id is the file name without `.md`): `error-analysis.v1` (mistakes and better phrasings), `next-turn.v1` (the next question from the remaining planned questions and the history) and `hint.v1` (a phrase starter or a word translation; used from part 04b). Migration 0004 adds `utterances.better_phrasings` (JSONB array, default `[]`); apply it with `pnpm db:migrate`.
+
+With `STT_PROVIDER=fake` and `LLM_PROVIDER=fake` the adapters are deterministic and need no keys (the real providers are not implemented yet and are rejected at startup). The fake analysis finds mistakes with 15 case-insensitive rules (see `docs/specs/stubs.md`), and the fake next-turn returns the first remaining planned question or a follow-up about the last long word of the answer. Failure modes for tests and demos are set in `.env`:
+
+- `FAKE_LLM_FAIL=invalid_json`: the analysis response is invalid, so the utterance becomes `failed` while the next question still works.
+- `FAKE_LLM_FAIL=unavailable`: every language model call fails, which gives `503 LANGUAGE_MODEL_UNAVAILABLE` (this also applies to `POST /api/sessions/plan`).
+- `FAKE_STT_FAIL=unavailable`: speech recognition fails; it is used from part 04b, when voice answers appear.
 
 ## Android and PWA
 
@@ -117,7 +147,7 @@ Web (`apps/web/src`) is split into layers that import only downward: `app → pa
 
 ```
 app/       App, layout (AppLayout, BottomNav), providers (AuthBootstrap), router guards, Mantine theme
-pages/     one folder per route: login, register, consent, onboarding, session, new-session, dialog, words, history, profile
+pages/     one folder per route: login, register, consent, onboarding, session, new-session, dialog, report, words, history, profile
 features/  one folder per domain, e.g. auth/{api,lib,components}
 shared/    api (HTTP client, refresh), session (client state), i18n, testing
 ```
@@ -128,7 +158,7 @@ Api (`apps/api/src`) keeps infrastructure apart from domain modules; imports are
 core/          config, db (schema, relations), logger, errors, health
 common/        decorators and pipes shared by several modules and core (@Public, ZodBodyPipe)
 integrations/  ports with fake adapters per capability (speech-recognition, language-model); provider SDKs only here
-modules/       one folder per domain: auth (guards, decorators, persistence, lib), me, profile, session, dialogue, analysis
+modules/       one folder per domain: auth (guards, decorators, persistence, lib), me, profile, session, dialogue, analysis, vocabulary
 ```
 
 ## Database and migrations
