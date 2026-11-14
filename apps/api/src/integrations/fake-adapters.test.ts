@@ -125,7 +125,7 @@ describe('FakeLanguageModel', () => {
     };
     const summary = await llm.summarizeSession(sessionInput);
     expect(await llm.summarizeSession(sessionInput)).toEqual(summary);
-    expect(SummarySchema.parse(summary)).toEqual(summary);
+    expect(SummarySchema.parse(summary.output)).toEqual(summary.output);
   });
 
   it('[TC-00-05] a call does not affect later answers (mutating a result does not leak)', async () => {
