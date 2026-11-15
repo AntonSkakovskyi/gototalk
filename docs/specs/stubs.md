@@ -100,19 +100,35 @@
 - `phrase_start`: початок фрази не залежить від тексту питання (Fake лише передає його в промпт): `I think that…`, `In my opinion…`, `One thing I remember is…`, `Last time I…`, `For me, the most important thing is…` (за `questionNumber` mod 5: 0 – перший початок, 1 – другий і так далі). Оскільки `questionNumber` рахується з 1, перше питання сесії отримує другий початок (`In my opinion…`), п'яте – перший.
 - `translation`: словник UA→EN із ~40 слів: зустріч – meeting; термін – deadline; розклад – schedule; колега – colleague; співбесіда – interview; квиток – ticket; бронювання – booking; готель – hotel; лікар – doctor; квартира – flat; орендувати – rent; замовлення – order; проблема – problem; проєкт – project; команда – team; досвід – experience; навичка – skill; вміти – be able to; звільнитися – quit; зарплата – salary; відпустка – holiday; подорож – trip; погода – weather; вихідні – weekend; сніданок – breakfast; вечеря – dinner; зупинка – stop; потяг – train; літак – plane; аеропорт – airport; валіза – suitcase; допомога – help; рішення – decision; відповідь – answer; питання – question; вибачте – sorry; будь ласка – please; дякую – thank you; відгук – feedback. Невідоме слово: відповідь `{ kind: 'translation', word: null }` без `message` (текст «немає в словнику» показує UI з i18n), нове слово не зберігається.
 
-### 2.5 summarizeSession(session)
+### 2.5 summarizeSession(input)
 
-Шаблон: `Ви відповіли {N} разів за {M} хв. Найчастіші помилки: {cat1}, {cat2}, {cat3}. Зосередьтеся на категорії «{cat1}» у наступній сесії.` Без помилок: `Ви відповіли {N} разів за {M} хв. Помилок не знайдено, так тримати.` Назви категорій беруться з `title_uk`. Глибокий розбір (`deep_analysis`): помилки сесії, згруповані за категоріями, з посиланнями на `theory_links`.
+Вхід `input` (`SummarizeSessionInput`): `answers` (кількість відповідей), `minutes` (тривалість у хвилинах, `max(1, round(секунди / 60))` рахує сервіс) і `categories` – не більше `TOP_CATEGORIES_LIMIT` (3) елементів `{ code, title, count, examples }` від найчастішої категорії (без `is_false`; порядок і обрізання роблять SQL і `buildSummaryInput`). `title` Fake бере зі входу, а не з довідника: сервіс передає `title_uk`. `count` і `examples` Fake ігнорує (їх використовує лише промпт).
+
+Fake спершу рендерить промпт `session-summary.v1` (як це зробить реальний адаптер) і відкидає текст, тож зламаний шаблон промпту валить виклик; потім повертає `{ output: { summary }, promptVersion: 'session-summary.v1', model: 'fake' }`, де `summary` відповідає `SummarySchema` (1–600 символів).
+
+Шаблони (`{N}` – `answers`, `{M}` – `minutes`, `{cat…}` – `title` категорій за порядком входу):
+
+| Категорій | Текст |
+|---|---|
+| 0 | `Ви відповіли {N} {раз} за {M} хв. Помилок не знайдено, так тримати.` |
+| 1 | `Ви відповіли {N} {раз} за {M} хв. Найчастіша помилка: {cat1}. Зосередьтеся на категорії «{cat1}» у наступній сесії.` |
+| 2–3 | `Ви відповіли {N} {раз} за {M} хв. Найчастіші помилки: {cat1}, {cat2}, {cat3}. Зосередьтеся на категорії «{cat1}» у наступній сесії.` |
+
+Форма «раз» залежить від `N` і береться з `Intl.PluralRules('uk')`: 1 → «раз», 2–4 → «рази», 5 і далі та 11–14 → «разів», 21 → «раз», 22 → «рази».
+
+Якщо текст довший за 600 символів (дуже довгі назви), кожна назва скорочується до 50 символів (49 символів і «…»), а речення лишається тим самим шаблоном; назви до 50 символів не змінюються.
+
+Новий звіт не заповнює `session_reports.deep_analysis` (`NULL`): у `session_reports` зберігаються лише `summary`, `prompt_version` і `model`, а категорії з кількістю, посилання на `theory_links` і слова сесії сервер рахує з БД при кожному читанні `GET /api/sessions/:id/report`; групи відповідей у «Детально» клієнт будує з деталей сесії (`GET /api/sessions/:id`). Текст самарі – знімок на момент генерації: пізніша позначка «Це не помилка» його не змінює, хоча категорії й групи у звіті оновлюються одразу.
 
 ### 2.6 Режими збою
 
 Змінна `FAKE_LLM_FAIL` (enum, порожнє – вимкнено):
 
-- `invalid_json` зачіпає лише `analyzeUtterance`: метод повертає `{ mistakes: "broken" }` (конверт не проходить перевірку, після двох спроб `analysis_status = failed`). `nextTurn` лишається робочим, тож після `failed` діалог триває.
+- `invalid_json` зачіпає лише `analyzeUtterance`: метод повертає `{ mistakes: "broken" }` (конверт не проходить перевірку, після двох спроб `analysis_status = failed`). `nextTurn` лишається робочим, тож після `failed` діалог триває. `summarizeSession` режим не зачіпає: самарі завжди коректне (відповіді з `failed` у звіт потрапляють без помилок).
 - `unavailable` зачіпає кожен метод `FakeLanguageModel` (`analyzeUtterance`, `planSession`, `nextTurn`, `hint`, `summarizeSession`): кидається `LanguageModelUnavailableError` (NFR-6). Те саме для розпізнавання робить `FAKE_STT_FAIL=unavailable`, що зачіпає `transcribe` (`SpeechRecognitionUnavailableError`).
 
-Відображення в HTTP: `LanguageModelUnavailableError` → 503 `LANGUAGE_MODEL_UNAVAILABLE` (`POST /api/sessions/plan`, `POST /api/sessions/:id/hints` і крок аналізу `POST /api/sessions/:id/utterances/:utteranceId/analysis`; на кроці аналізу спершу записується те, що вдалося, репліка лишається `pending`, повтор доробляє решту); дві невалідні відповіді → 502 `LANGUAGE_MODEL_INVALID_RESPONSE` (для аналізу натомість `failed`); `SpeechRecognitionUnavailableError` → 503 `SPEECH_RECOGNITION_UNAVAILABLE` (крок голосу, нічого не записано). Без змінної – нормальна робота.
+Відображення в HTTP: `LanguageModelUnavailableError` → 503 `LANGUAGE_MODEL_UNAVAILABLE` (`POST /api/sessions/plan`, `POST /api/sessions/:id/hints` і крок аналізу `POST /api/sessions/:id/utterances/:utteranceId/analysis`; на кроці аналізу спершу записується те, що вдалося, репліка лишається `pending`, повтор доробляє решту). Звіт сесії 503 не дає: недоступність під час генерації самарі (і під час доаналізу реплік `pending`, який передує самарі) дає `summary.status = 'unavailable'` у відповіді `GET /api/sessions/:id/report` (200 з агрегатами й словами), рядок `session_reports` не створюється, а наступне читання повторює спробу; `POST /api/sessions/:id/finish` у цьому разі теж 200. Дві невалідні відповіді → 502 `LANGUAGE_MODEL_INVALID_RESPONSE` (для аналізу натомість `failed`, для самарі звіту – `summary.status = 'unavailable'`); `SpeechRecognitionUnavailableError` → 503 `SPEECH_RECOGNITION_UNAVAILABLE` (крок голосу, нічого не записано). Без змінної – нормальна робота.
 
 ## 3. Перевірка узгодженості
 
-Для кожної з 5 заготовлених відповідей `FakeSpeechRecognition` модульний тест перевіряє, що `FakeLanguageModel.analyzeUtterance` знаходить очікувані категорії з таблиці розділу 1, а позиції `start`/`end` збігаються з підрядком `text_verbatim`, рівним `original`. Для всіх категорій у правилах тест перевіряє наявність коду в `mistake_categories`.
+Для кожної з 5 заготовлених відповідей `FakeSpeechRecognition` модульний тест перевіряє, що `FakeLanguageModel.analyzeUtterance` знаходить очікувані категорії з таблиці розділу 1, а позиції `start`/`end` збігаються з підрядком `text_verbatim`, рівним `original`. Для всіх категорій у правилах тест перевіряє наявність коду в `mistake_categories`. Для `summarizeSession` тест перевіряє шаблони (0, 1, 2–3 категорії, множину «раз», скорочення довгих назв), детермінованість і відповідність `SummarySchema`.
