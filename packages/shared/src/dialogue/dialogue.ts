@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { UtteranceSchema } from './session.js';
+import { UtteranceSchema } from '../session/session.js';
 
 export const ANSWER_TEXT_MAX = 1000;
 

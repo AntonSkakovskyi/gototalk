@@ -7,7 +7,7 @@ import {
   WordPageSchema,
   WordSchema,
   WordStateSchema,
-} from './index.js';
+} from '../index.js';
 
 const word = {
   id: '0b1d3f0e-6f55-4a53-9c43-3a6a6a1c2d10',

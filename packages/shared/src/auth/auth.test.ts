@@ -9,7 +9,7 @@ import {
   MeSchema,
   PasswordSchema,
   RegisterRequestSchema,
-} from './index.js';
+} from '../index.js';
 
 const userId = '3f2b8c1e-6d4a-4e0b-9a57-1c2d3e4f5a6b';
 

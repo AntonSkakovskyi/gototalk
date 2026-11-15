@@ -19,7 +19,7 @@ import {
   TopicSchema,
   UTTERANCE_ROLES,
   UtteranceSchema,
-} from './index.js';
+} from '../index.js';
 
 const id = '3f2b8c1e-6d4a-4e0b-9a57-1c2d3e4f5a6b';
 const startedAt = '2026-11-13T10:00:00.000Z';

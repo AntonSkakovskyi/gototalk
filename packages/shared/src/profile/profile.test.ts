@@ -16,7 +16,7 @@ import {
   ScenesSchema,
   UpdateGoalRequestSchema,
   UpdateProfileRequestSchema,
-} from './index.js';
+} from '../index.js';
 
 describe('profile schemas', () => {
   it('[TC-02-01] LevelSchema rejects a level below A2', () => {

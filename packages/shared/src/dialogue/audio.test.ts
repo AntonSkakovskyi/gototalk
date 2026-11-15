@@ -8,7 +8,7 @@ import {
   HintResultSchema,
   MAX_AUDIO_BYTES,
   MAX_RECORDING_SECONDS,
-} from './index.js';
+} from '../index.js';
 
 describe('audio and hint contracts', () => {
   it('[TC-04-13] audio limits and the MIME whitelist', () => {

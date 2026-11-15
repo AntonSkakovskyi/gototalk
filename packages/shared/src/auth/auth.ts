@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { LLM_PROVIDERS, STT_PROVIDERS } from './common/providers.js';
+import { LLM_PROVIDERS, STT_PROVIDERS } from '../common/providers.js';
 
 export const EmailSchema = z.string().trim().toLowerCase().pipe(z.email());
 

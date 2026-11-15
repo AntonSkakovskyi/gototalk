@@ -121,7 +121,7 @@
   - Перевірка: `pnpm build:shared`, typecheck обох застосунків.
   - Коміт: `refactor(shared): group common schemas and dedupe provider lists`
 
-- [ ] **05. Домени: auth, profile, session, analysis, dialogue, report, vocabulary**
+- [x] **05. Домени: auth, profile, session, analysis, dialogue, report, vocabulary**
   - `auth.ts` (+test) → `auth/auth.ts`; `profile.ts` (+test) → `profile/profile.ts`; `session.ts` (+test) → `session/session.ts`; `plan-bounds.ts` → `session/plan.ts`; `analysis-view.ts` → `analysis/analysis-view.ts`; `mistake-categories.ts` → `analysis/mistake-categories.ts`; `dialogue.ts` (+test), `audio.ts` (+test), `hint.ts` → `dialogue/`; `report.ts` (+test) → `report/report.ts`; `words.ts` (+test) → `vocabulary/words.ts`.
   - `index.ts`: `export *` з нових шляхів; експорти без змін.
   - Перевірка: `pnpm build:shared`; typecheck web і api; `import.meta.url`-шляхи в `schemas.test.ts` (міграція 0002) перерахувати.

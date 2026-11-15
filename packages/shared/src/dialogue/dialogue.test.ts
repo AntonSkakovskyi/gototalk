@@ -9,7 +9,7 @@ import {
   SessionDetailsSchema,
   TurnResultSchema,
   UtteranceSchema,
-} from './index.js';
+} from '../index.js';
 
 const id = '7c2e8b64-5f0a-4d1b-8e3a-2a9b4c6d0001';
 

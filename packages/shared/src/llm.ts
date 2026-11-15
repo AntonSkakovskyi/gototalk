@@ -1,8 +1,8 @@
 import { z } from 'zod';
-import { HINT_LEMMA_PATTERN, HINT_PHRASE_MAX, HINT_WORD_MAX } from './hint.js';
-import { MistakeCategoryCodeSchema } from './mistake-categories.js';
-import { REPORT_SUMMARY_MAX } from './report.js';
-import { PLAN_QUESTIONS, QuestionSchema, TopicSchema } from './plan-bounds.js';
+import { HINT_LEMMA_PATTERN, HINT_PHRASE_MAX, HINT_WORD_MAX } from './dialogue/hint.js';
+import { MistakeCategoryCodeSchema } from './analysis/mistake-categories.js';
+import { REPORT_SUMMARY_MAX } from './report/report.js';
+import { PLAN_QUESTIONS, QuestionSchema, TopicSchema } from './session/plan.js';
 
 export const TranscriptSchema = z.object({
   /** Mistake positions are offsets in this text. */

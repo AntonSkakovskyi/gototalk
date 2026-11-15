@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { MistakeCategoryCodeSchema } from './mistake-categories.js';
-import { WordStateSchema } from './words.js';
+import { MistakeCategoryCodeSchema } from '../analysis/mistake-categories.js';
+import { WordStateSchema } from '../vocabulary/words.js';
 
 export const LEVELS = ['A2', 'B1', 'B2', 'C1'] as const;
 

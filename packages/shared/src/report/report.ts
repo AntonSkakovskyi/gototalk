@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { MistakeCategoryCodeSchema } from './mistake-categories.js';
-import { WordSchema } from './words.js';
+import { MistakeCategoryCodeSchema } from '../analysis/mistake-categories.js';
+import { WordSchema } from '../vocabulary/words.js';
 
 export const REPORT_SUMMARY_MAX = 600;
 

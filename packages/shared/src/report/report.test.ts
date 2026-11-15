@@ -7,7 +7,7 @@ import {
   SUMMARY_EXAMPLES_PER_CATEGORY,
   TOP_CATEGORIES_LIMIT,
   TheoryLinkSchema,
-} from './index.js';
+} from '../index.js';
 
 const sessionId = '4f5b0a52-2c1a-4f6a-8d0e-5a8f0a0b9c11';
 const theory = {
