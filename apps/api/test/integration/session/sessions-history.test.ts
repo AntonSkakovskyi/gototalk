@@ -9,16 +9,16 @@ import type { SessionPage } from '@gototalk/shared';
 import pg from 'pg';
 import request from 'supertest';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { encodeCursor } from '../src/common/pagination/keyset-cursor.js';
-import { PG_POOL } from '../src/core/db/db.tokens.js';
+import { encodeCursor } from '../../../src/common/pagination/keyset-cursor.js';
+import { PG_POOL } from '../../../src/core/db/db.tokens.js';
 import {
   expectError,
   registerUser,
   tokenOfMissingUser,
-} from './support/api-client.js';
-import { insertFinished as insertFinishedSession } from './support/session-fixtures.js';
-import { createTestApp } from './support/test-app.js';
-import { resetUserData } from './support/test-db.js';
+} from '../../support/api-client.js';
+import { insertFinished as insertFinishedSession } from '../../support/session-fixtures.js';
+import { createTestApp } from '../../support/test-app.js';
+import { resetUserData } from '../../support/test-db.js';
 
 describe('GET /api/sessions/history', () => {
   let app: INestApplication;

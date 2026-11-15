@@ -3,15 +3,15 @@ import { SessionDetailsSchema } from '@gototalk/shared';
 import pg from 'pg';
 import request from 'supertest';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { PG_POOL } from '../src/core/db/db.tokens.js';
-import { grantConsent, registerUser } from './support/api-client.js';
+import { PG_POOL } from '../../../src/core/db/db.tokens.js';
+import { grantConsent, registerUser } from '../../support/api-client.js';
 import {
   insertFinished,
   insertUtterance,
   setPlan,
-} from './support/session-fixtures.js';
-import { createTestApp } from './support/test-app.js';
-import { resetUserData } from './support/test-db.js';
+} from '../../support/session-fixtures.js';
+import { createTestApp } from '../../support/test-app.js';
+import { resetUserData } from '../../support/test-db.js';
 
 const PLAN = {
   topic: 'Weekend plans',

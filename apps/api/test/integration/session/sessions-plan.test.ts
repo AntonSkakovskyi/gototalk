@@ -11,17 +11,17 @@ import {
   it,
   vi,
 } from 'vitest';
-import { PG_POOL } from '../src/core/db/db.tokens.js';
-import { LANGUAGE_MODEL_PORT } from '../src/integrations/language-model/language-model.port.js';
+import { PG_POOL } from '../../../src/core/db/db.tokens.js';
+import { LANGUAGE_MODEL_PORT } from '../../../src/integrations/language-model/language-model.port.js';
 import {
   expectError,
   grantConsent,
   putProfile,
   registerUser,
   tokenOfMissingUser,
-} from './support/api-client.js';
-import { createTestApp } from './support/test-app.js';
-import { resetUserData } from './support/test-db.js';
+} from '../../support/api-client.js';
+import { createTestApp } from '../../support/test-app.js';
+import { resetUserData } from '../../support/test-db.js';
 
 const SMALL_TALK_PROFILE = { level: 'B1', scenes: ['small_talk'] };
 

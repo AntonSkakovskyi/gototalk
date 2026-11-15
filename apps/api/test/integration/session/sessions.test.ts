@@ -14,17 +14,17 @@ import {
   it,
   vi,
 } from 'vitest';
-import { PG_POOL } from '../src/core/db/db.tokens.js';
-import { SessionsService } from '../src/modules/session/sessions.service.js';
+import { PG_POOL } from '../../../src/core/db/db.tokens.js';
+import { SessionsService } from '../../../src/modules/session/sessions.service.js';
 import {
   MISSING_USER_ID,
   expectError,
   grantConsent,
   registerUser,
   tokenOfMissingUser,
-} from './support/api-client.js';
-import { createTestApp } from './support/test-app.js';
-import { resetUserData } from './support/test-db.js';
+} from '../../support/api-client.js';
+import { createTestApp } from '../../support/test-app.js';
+import { resetUserData } from '../../support/test-db.js';
 
 const QUESTIONS = [
   'What are you doing this weekend?',
@@ -311,10 +311,9 @@ describe('POST /api/sessions', () => {
     lockHolder = holder;
     await holder.connect();
     await holder.query('BEGIN');
-    await holder.query(
-      'SELECT id FROM users WHERE id = $1 FOR NO KEY UPDATE',
-      [id],
-    );
+    await holder.query('SELECT id FROM users WHERE id = $1 FOR NO KEY UPDATE', [
+      id,
+    ]);
     const {
       rows: [holderBackend],
     } = await holder.query<{ pid: number }>('SELECT pg_backend_pid() AS pid');

@@ -283,7 +283,7 @@
 - [x] **27. `integration/profile/`, `learner-model/`, `hint/`** – `profile`, `goals` → `profile/`; `learner-model` → `learner-model/`; `hints`, `hints-access`, `hints-failures` → `hint/`.
   - Коміт: `refactor(api-test): move profile, learner-model and hint integration tests`
 
-- [ ] **28. `integration/session/`** – `sessions`, `sessions-plan`, `sessions-plan-unavailable`, `sessions-read`, `sessions-history`, `sessions-analysis-read`.
+- [x] **28. `integration/session/`** – `sessions`, `sessions-plan`, `sessions-plan-unavailable`, `sessions-read`, `sessions-history`, `sessions-analysis-read`.
   - Коміт: `refactor(api-test): move session integration tests`
 
 - [ ] **29. `integration/dialogue/` (відповіді й голос)** – `dialogue-answer`, `dialogue-answer-locking`, `dialogue-voice`, `dialogue-voice-access`, `dialogue-voice-errors`, `dialogue-voice-logging`, `audio-retention`.
