@@ -1,6 +1,6 @@
 import { authResponse } from '@/shared/testing/fixtures/auth';
 import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
-import { logout } from '@/features/auth/api/auth-api';
+import { apiFetch } from './http';
 import { refreshSession } from './refresh';
 import {
   clearSession,
@@ -18,6 +18,11 @@ beforeEach(() => {
 afterEach(() => {
   Reflect.deleteProperty(navigator, 'locks');
 });
+
+async function logout() {
+  await apiFetch('/api/auth/logout', { method: 'POST', auth: false });
+  clearSession();
+}
 
 function stubLocks() {
   let tail: Promise<unknown> = Promise.resolve();

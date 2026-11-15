@@ -1,9 +1,13 @@
 import { QueryClient } from '@tanstack/react-query';
 import { authResponse } from '@/shared/testing/fixtures/auth';
 import { emptyResponse } from '@/shared/testing/http-responses';
-import { logout } from '@/features/auth/api/auth-api';
 import { clearQueryCacheOnSessionEnd } from './query-cache';
 import { clearSession, setSession } from './session-store';
+
+async function logout() {
+  await fetch('/api/auth/logout', { method: 'POST' });
+  clearSession();
+}
 
 describe('clearQueryCacheOnSessionEnd', () => {
   let queryClient: QueryClient;

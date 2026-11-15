@@ -464,10 +464,12 @@
   - Відхилення: `TranslationKey` (`ParseKeys` з i18next 27) лежить у `shared/i18n/translation-key.ts`, а не в `resources.ts` (там рантайм-JSON); типізовано 13 файлів (таблиці помилок, форми, `submitError` у сторінках/діалозі), кастів немає; негативна перевірка: неіснуючий ключ у `session-errors.ts` і `t('nonexistent.key')` дали помилки typecheck (TS2418, TS2345), відкочено.
   - Коміт: `refactor(web): type translation keys from the uk resources`
 
-- [ ] **49. Web-правила в `error`, PR3 завершено**
+- [x] **49. Web-правила в `error`, PR3 завершено**
   - `eslint.config.js`: зони `entities`, підобласті фіч, `shared/testing`, `no-cycle` → `error`. Перевірка тимчасовими порушеннями: `shared → entities`, `entities/a → entities/b`, `features/dialogue/recording → features/dialogue/hint`, `shared/testing → features`; кожне дає помилку; відкотити.
   - Фінальна перевірка PR3 (повний набір, Playwright MCP 390 px: login → старт → відповідь → підказка → завершення → звіт).
   - Таблиця «старий шлях → новий» для тестів web (`git diff -M --name-status main HEAD -- apps/web e2e`) додається в задачі 54.
+  - Рішення власника (12 порушень у тестах): виняток лише для імпортів `@/app/**` у `*.test.*` і `testing/**`, решта меж діє й для тестів, у production-коді винятків немає; `refresh.test.ts` і `query-cache.test.ts` переписано без імпорту `features/auth` (локальний `logout()`: у `refresh.test.ts` через `apiFetch`, у `query-cache.test.ts` через `fetch`, бо `shared/auth-session` не імпортує `shared/api`); виняток задокументовано одним рядком у `CLAUDE.md`.
+  - Виконано: усі web-зони, підобласті, `shared/testing` і `no-cycle` – `error` (`import-x-debt` прибрано); тимчасові порушення (`shared → entities`, `entities/b → entities/a`, `recording → hint`, `shared/testing → features`, `feature → feature`, production-файл → `@/app`, shared-тест → feature) дали помилку, дозволені `@/app` у тестах/`testing` проходять; `no-cycle` і заборона `../..` тепер діють і для тестів та `shared/testing`; `eslint .`: 0 помилок, 0 warn.
   - Коміт: `refactor(web): enforce layer, entity and slice boundaries as errors`
 
 ---

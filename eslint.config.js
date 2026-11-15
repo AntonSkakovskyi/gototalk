@@ -72,53 +72,56 @@ const featureSubareaZones = WEB_FEATURES.flatMap((feature) => {
   );
 });
 
-const webErrorZones = [
-  {
-    target: `${WEB_SRC}/shared`,
-    from: [`${WEB_SRC}/features`, `${WEB_SRC}/pages`, `${WEB_SRC}/app`],
-    message: 'shared may not import features, pages or app.',
-  },
-  {
-    target: `${WEB_SRC}/features`,
-    from: [`${WEB_SRC}/pages`, `${WEB_SRC}/app`],
-    message: 'features may not import pages or app.',
-  },
-  {
-    target: `${WEB_SRC}/pages`,
-    from: `${WEB_SRC}/app`,
-    message: 'pages may not import app.',
-  },
-  ...sliceZones(
-    `${WEB_SRC}/features`,
-    WEB_FEATURES,
-    'A feature may not import another feature.',
-  ),
-  {
-    target: `${WEB_SRC}/shared/auth-session`,
-    from: `${WEB_SRC}/shared/api`,
-    message:
-      'shared/auth-session is client state only; dependencies go api -> auth-session.',
-  },
-];
-
-const webDebtZones = [
-  {
-    target: `${WEB_SRC}/shared`,
-    from: `${WEB_SRC}/entities`,
-    message: 'shared may not import entities.',
-  },
-  {
-    target: `${WEB_SRC}/entities`,
-    from: [`${WEB_SRC}/features`, `${WEB_SRC}/pages`, `${WEB_SRC}/app`],
-    message: 'entities may not import features, pages or app.',
-  },
-  ...sliceZones(
-    `${WEB_SRC}/entities`,
-    WEB_ENTITIES,
-    'An entity may not import another entity.',
-  ),
-  ...featureSubareaZones,
-];
+const webZones = ({ allowApp }) => {
+  const app = allowApp ? [] : [`${WEB_SRC}/app`];
+  const zones = [
+    {
+      target: `${WEB_SRC}/shared`,
+      from: [
+        `${WEB_SRC}/features`,
+        `${WEB_SRC}/entities`,
+        `${WEB_SRC}/pages`,
+        ...app,
+      ],
+      message: 'shared may not import entities, features, pages or app.',
+    },
+    {
+      target: `${WEB_SRC}/entities`,
+      from: [`${WEB_SRC}/features`, `${WEB_SRC}/pages`, ...app],
+      message: 'entities may not import features, pages or app.',
+    },
+    {
+      target: `${WEB_SRC}/features`,
+      from: [`${WEB_SRC}/pages`, ...app],
+      message: 'features may not import pages or app.',
+    },
+    {
+      target: `${WEB_SRC}/pages`,
+      from: app,
+      message: 'pages may not import app.',
+    },
+    {
+      target: `${WEB_SRC}/shared/auth-session`,
+      from: `${WEB_SRC}/shared/api`,
+      message:
+        'shared/auth-session is client state only; dependencies go api -> auth-session.',
+    },
+  ];
+  return [
+    ...zones.filter(({ from }) => from.length > 0),
+    ...sliceZones(
+      `${WEB_SRC}/entities`,
+      WEB_ENTITIES,
+      'An entity may not import another entity.',
+    ),
+    ...sliceZones(
+      `${WEB_SRC}/features`,
+      WEB_FEATURES,
+      'A feature may not import another feature.',
+    ),
+    ...featureSubareaZones,
+  ];
+};
 
 const apiModuleZones = (module) => {
   const target = `${API_SRC}/modules/${module}`;
@@ -149,9 +152,9 @@ const apiZones = [
   ...API_MODULES.flatMap(apiModuleZones),
 ];
 
-const webTestFiles = [
+const webAppImportFiles = [
   `${WEB_SRC}/**/*.test.{ts,tsx}`,
-  `${WEB_SRC}/shared/testing/**`,
+  `${WEB_SRC}/**/testing/**`,
 ];
 
 export default defineConfig(
@@ -208,21 +211,8 @@ export default defineConfig(
     languageOptions: { globals: { ...globals.browser } },
   },
   {
-    // Web debt zones are warnings, so they use a second plugin name: severity is per rule, not per zone.
-    plugins: { 'import-x-debt': importX },
-  },
-  {
     files: [`${WEB_SRC}/**/*.{ts,tsx}`],
-    ignores: webTestFiles,
     rules: {
-      'import-x/no-restricted-paths': [
-        'error',
-        { basePath: import.meta.dirname, zones: webErrorZones },
-      ],
-      'import-x-debt/no-restricted-paths': [
-        'warn',
-        { basePath: import.meta.dirname, zones: webDebtZones },
-      ],
       'import-x/no-cycle': 'error',
       'no-restricted-syntax': [
         'error',
@@ -235,14 +225,22 @@ export default defineConfig(
     },
   },
   {
-    files: webTestFiles,
+    files: [`${WEB_SRC}/**/*.{ts,tsx}`],
+    ignores: webAppImportFiles,
     rules: {
-      'import-x-debt/no-restricted-paths': [
-        'warn',
-        {
-          basePath: import.meta.dirname,
-          zones: [...webErrorZones, ...webDebtZones],
-        },
+      'import-x/no-restricted-paths': [
+        'error',
+        { basePath: import.meta.dirname, zones: webZones({ allowApp: false }) },
+      ],
+    },
+  },
+  {
+    // Tests and test helpers act as a composition root and may import @/app.
+    files: webAppImportFiles,
+    rules: {
+      'import-x/no-restricted-paths': [
+        'error',
+        { basePath: import.meta.dirname, zones: webZones({ allowApp: true }) },
       ],
     },
   },
