@@ -1,5 +1,9 @@
-import { describe, expect, it } from 'vitest';
-import { parseEnv } from './env.schema.js';
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import { afterEach, describe, expect, it } from 'vitest';
+import { parseEnv, validateAudioDir } from './env.schema.js';
+import { findRepoRoot } from './repo-root.js';
 
 const validEnv = {
   DATABASE_URL: 'postgres://user:pass@localhost:5432/gototalk',
@@ -145,6 +149,68 @@ describe('parseEnv', () => {
           .DEV_AUDIO_DIR,
       ).toBe(DEV_AUDIO_DIR);
     }
+  });
+
+  describe('DEV_AUDIO_DIR location', () => {
+    const repoRoot = findRepoRoot(process.cwd());
+    const audioEnv = (DEV_AUDIO_DIR: string) => ({
+      ...validEnv,
+      DEV_KEEP_AUDIO: 'true',
+      DEV_AUDIO_DIR,
+    });
+    const temporaryDirs: string[] = [];
+
+    afterEach(() => {
+      for (const dir of temporaryDirs.splice(0)) {
+        rmSync(dir, { recursive: true, force: true });
+      }
+    });
+
+    it('[TC-05-24] the test runs inside a repository', () => {
+      expect(repoRoot).toBeDefined();
+    });
+
+    it('[TC-05-24] a directory inside the repository root is rejected', () => {
+      const message = errorOf(audioEnv(path.join(repoRoot!, 'tmp-audio')));
+      expect(message).toContain('DEV_AUDIO_DIR');
+      expect(message).toContain('outside the repository');
+    });
+
+    it('[TC-05-24] the repository root itself is rejected', () => {
+      expect(errorOf(audioEnv(repoRoot!))).toContain('outside the repository');
+    });
+
+    it('[TC-05-24] a sibling directory sharing the root name prefix is accepted', () => {
+      const sibling = `${repoRoot}-audio`;
+      expect(parseEnv(audioEnv(sibling)).DEV_AUDIO_DIR).toBe(sibling);
+    });
+
+    it('[TC-05-24] a temporary directory outside the repository is accepted', () => {
+      const dir = mkdtempSync(path.join(tmpdir(), 'gototalk-audio-'));
+      temporaryDirs.push(dir);
+      expect(parseEnv(audioEnv(dir)).DEV_AUDIO_DIR).toBe(dir);
+    });
+
+    it('[TC-05-24] the location is not checked when DEV_KEEP_AUDIO is false', () => {
+      const env = parseEnv({
+        ...validEnv,
+        DEV_AUDIO_DIR: path.join(repoRoot!, 'tmp-audio'),
+      });
+      expect(env.DEV_KEEP_AUDIO).toBe(false);
+    });
+
+    it('[TC-05-24] a path of the other platform flavour is never inside the repository', () => {
+      const foreign = path.sep === '/' ? 'C:/tmp/audio' : '/var/tmp/audio';
+      expect(validateAudioDir(true, foreign, repoRoot)).toBeUndefined();
+    });
+
+    it('[TC-05-24] no extra check when the repository root is unknown', () => {
+      const inside = path.join(repoRoot!, 'tmp-audio');
+      expect(validateAudioDir(true, inside, undefined)).toBeUndefined();
+      expect(validateAudioDir(true, inside, repoRoot)).toContain(
+        'outside the repository',
+      );
+    });
   });
 
   it('[TC-00-06] all invalid variables are listed in one message', () => {

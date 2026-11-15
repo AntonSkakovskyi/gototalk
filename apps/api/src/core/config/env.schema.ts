@@ -1,5 +1,6 @@
 import path from 'node:path';
 import { z } from 'zod';
+import { findRepoRoot, isInside } from './repo-root.js';
 
 // An empty value (`NAME=` in .env.example) means "not set".
 const emptyToUndefined = (value: unknown): unknown =>
@@ -31,6 +32,19 @@ const notImplemented = (real: string) => ({
 // Checks both flavours so the same .env validates on any host OS
 const isAbsolutePath = (value: string): boolean =>
   path.posix.isAbsolute(value) || path.win32.isAbsolute(value);
+
+// Foreign-flavour paths (C:/x on Linux) resolve against cwd, so only native absolute paths are compared
+export function validateAudioDir(
+  keepAudio: boolean,
+  dir: string | undefined,
+  repoRoot: string | undefined,
+): string | undefined {
+  if (!keepAudio || !dir || !repoRoot || !path.isAbsolute(dir))
+    return undefined;
+  return isInside(repoRoot, dir)
+    ? 'must be outside the repository (kept audio must not end up in git)'
+    : undefined;
+}
 
 export const EnvSchema = z
   .object({
@@ -97,6 +111,18 @@ export const EnvSchema = z
         code: 'custom',
         path: ['DEV_AUDIO_DIR'],
         message: 'must be an absolute path',
+      });
+    }
+    const locationIssue = validateAudioDir(
+      env.DEV_KEEP_AUDIO,
+      env.DEV_AUDIO_DIR,
+      findRepoRoot(process.cwd()),
+    );
+    if (locationIssue) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['DEV_AUDIO_DIR'],
+        message: locationIssue,
       });
     }
   });
