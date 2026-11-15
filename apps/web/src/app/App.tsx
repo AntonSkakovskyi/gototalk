@@ -14,12 +14,12 @@ import {
 import { OnboardingPage } from '@/pages/onboarding/OnboardingPage';
 import { LoginPage } from '@/pages/login/LoginPage';
 import { RegisterPage } from '@/pages/register/RegisterPage';
-import { DialogPage } from '@/pages/dialog/DialogPage';
+import { DialoguePage } from '@/pages/dialogue/DialoguePage';
 import { HistoryPage } from '@/pages/history/HistoryPage';
 import { NewSessionPage } from '@/pages/new-session/NewSessionPage';
 import { ProfilePage } from '@/pages/profile/ProfilePage';
 import { ReportPage } from '@/pages/report/ReportPage';
-import { SessionPage } from '@/pages/session/SessionPage';
+import { HomePage } from '@/pages/home/HomePage';
 import { WordsPage } from '@/pages/words/WordsPage';
 
 export function App() {
@@ -39,9 +39,9 @@ export function App() {
           </Route>
           <Route element={<RequireProfile />}>
             <Route element={<AppLayout />}>
-              <Route index element={<SessionPage />} />
+              <Route index element={<HomePage />} />
               <Route path="sessions/new" element={<NewSessionPage />} />
-              <Route path="sessions/:id" element={<DialogPage />} />
+              <Route path="sessions/:id" element={<DialoguePage />} />
               <Route path="sessions/:id/report" element={<ReportPage />} />
               <Route path="words" element={<WordsPage />} />
               <Route path="history" element={<HistoryPage />} />

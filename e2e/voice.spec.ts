@@ -7,7 +7,8 @@ import {
   fragment,
   openDeepAnalysis,
   startDialogue,
-} from './support/dialog.js';
+  translateHint,
+} from './support/dialogue.js';
 import { expectNoHorizontalScroll } from './support/layout.js';
 import { readSessionDetails } from './support/sessions.js';
 import type { Page } from '@playwright/test';
@@ -56,15 +57,7 @@ test.describe('[TC-04-05] voice answer', () => {
     ).toBeVisible();
     await expectNoHorizontalScroll(page);
 
-    await page.getByRole('button', { name: 'Підказка', exact: true }).click();
-    await page
-      .getByRole('button', { name: 'Як сказати слово', exact: true })
-      .click();
-    await page.getByLabel('Слово українською').fill('зустріч');
-    await page.getByRole('button', { name: 'Перекласти', exact: true }).click();
-    await expect(
-      page.getByText('зустріч = meeting', { exact: true }),
-    ).toBeVisible();
+    await translateHint(page);
     await expectNoHorizontalScroll(page);
 
     const session = await readSessionDetails(page.request, accessToken, id);

@@ -79,3 +79,15 @@ export async function openDeepAnalysis(page: Page): Promise<void> {
     page.getByRole('heading', { level: 2, name: 'Детальний розбір' }),
   ).toBeVisible();
 }
+
+export async function translateHint(page: Page): Promise<void> {
+  await page.getByRole('button', { name: 'Підказка', exact: true }).click();
+  await page
+    .getByRole('button', { name: 'Як сказати слово', exact: true })
+    .click();
+  await page.getByLabel('Слово українською').fill('зустріч');
+  await page.getByRole('button', { name: 'Перекласти', exact: true }).click();
+  await expect(
+    page.getByText('зустріч = meeting', { exact: true }),
+  ).toBeVisible();
+}

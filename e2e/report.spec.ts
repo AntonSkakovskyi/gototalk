@@ -1,4 +1,3 @@
-import type { Page } from '@playwright/test';
 import { expect, test } from './support/fixtures.js';
 import {
   ANSWER,
@@ -8,7 +7,8 @@ import {
   openDeepAnalysis,
   sendAnswer,
   startDialogue,
-} from './support/dialog.js';
+  translateHint,
+} from './support/dialogue.js';
 import { expectNoHorizontalScroll } from './support/layout.js';
 import {
   markOption,
@@ -17,18 +17,6 @@ import {
   readWordStates,
   sessionWords,
 } from './support/report.js';
-
-async function translateHint(page: Page): Promise<void> {
-  await page.getByRole('button', { name: 'Підказка', exact: true }).click();
-  await page
-    .getByRole('button', { name: 'Як сказати слово', exact: true })
-    .click();
-  await page.getByLabel('Слово українською').fill('зустріч');
-  await page.getByRole('button', { name: 'Перекласти', exact: true }).click();
-  await expect(
-    page.getByText('зустріч = meeting', { exact: true }),
-  ).toBeVisible();
-}
 
 const LEMMAS = ['meeting', 'went', 'really'];
 

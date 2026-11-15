@@ -3,12 +3,12 @@ import uk from '@/shared/i18n/uk.json';
 import { mockApi } from '@/shared/testing/mock-api';
 import { jsonResponse } from '@/shared/testing/http-responses';
 import { renderWithProviders } from '@/shared/testing/test-utils';
-import { SessionPage } from './SessionPage';
+import { HomePage } from './HomePage';
 
-describe('SessionPage', () => {
+describe('HomePage', () => {
   it('[TC-03-06] offers the start button as a link to the proposal before the list loads', () => {
     mockApi({ 'GET /api/sessions': jsonResponse([]) });
-    renderWithProviders(<SessionPage />);
+    renderWithProviders(<HomePage />);
 
     expect(
       screen.getByRole('link', { name: uk.session.home.start }),
@@ -20,7 +20,7 @@ describe('SessionPage', () => {
 
   it('[TC-03-06] keeps the page title', async () => {
     mockApi({ 'GET /api/sessions': jsonResponse([]) });
-    renderWithProviders(<SessionPage />);
+    renderWithProviders(<HomePage />);
 
     expect(
       screen.getByRole('heading', { level: 1, name: uk.pages.session.title }),

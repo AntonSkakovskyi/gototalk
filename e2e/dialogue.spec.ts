@@ -11,7 +11,7 @@ import {
   openTextAnswer,
   sendAnswer,
   startDialogue,
-} from './support/dialog.js';
+} from './support/dialogue.js';
 import { expectNoHorizontalScroll } from './support/layout.js';
 import { readSessionDetails, readWeakAreas } from './support/sessions.js';
 

@@ -6,7 +6,7 @@ import { DialogueScreen } from '@/features/dialogue/components/DialogueScreen/Di
 import { SessionOverview } from '@/features/session/components/SessionOverview/SessionOverview';
 import { sessionDetailsQueryOptions } from '@/entities/session/api/session-details';
 
-export function DialogPage() {
+export function DialoguePage() {
   const { t } = useTranslation();
   const { id = '' } = useParams();
   const details = useQuery(sessionDetailsQueryOptions(id));

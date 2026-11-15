@@ -19,7 +19,7 @@ const SESSION = {
 };
 const FIRST_QUESTION = STARTED_SESSION.utterances[0]!.text;
 
-describe('DialogPage route', () => {
+describe('DialoguePage route', () => {
   it('[TC-03-03] sends an anonymous visitor to the login page', async () => {
     mockApi({});
 

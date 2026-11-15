@@ -439,10 +439,11 @@
   - Відхилення: у `turn-cache.test.ts` `describe('details-cache')` → `describe('turn-cache')` (мітка називала файл); тести `HintPanel` і `use-hint` імпортують кореневий `dialogue-mocks` (лише тести, правилами дозволено); Vitest `src/features/dialogue` + `src/pages` до й після: 382 тести в 46 файлах.
   - Коміт: `refactor(web): extract the hint area and rename the dialogue turn cache`
 
-- [ ] **45. Сторінки `home`/`dialogue` і e2e (W5, r.79) `[e2e]`**
+- [x] **45. Сторінки `home`/`dialogue` і e2e (W5, r.79) `[e2e]`**
   - `pages/session/SessionPage.tsx` (+test) → `pages/home/HomePage.tsx` (+test) (компонент `HomePage`); `pages/dialog/DialogPage.tsx` (+test) → `pages/dialogue/DialoguePage.tsx` (+test); оновити `app/App.tsx`, `App.test.tsx`.
   - `e2e/dialog.spec.ts` → `e2e/dialogue.spec.ts`; `e2e/support/dialog.ts` → `e2e/support/dialogue.ts`; `translateHint` з `report.spec.ts`/`voice.spec.ts` → `support/dialogue.ts`.
   - Перевірка: `pnpm test:e2e` (усі сценарії); Playwright MCP 390 px: головна й діалог.
+  - Відхилення: у `voice.spec.ts` не було локальної `translateHint`, а ті самі кроки були записані прямо в тесті (перевірено, що вони ідентичні кроками з `report.spec.ts`) – замінено викликом `translateHint(page)`; `pnpm test:e2e` 24/24 з першого прогону; Playwright MCP на 390 px робиться на фіналі PR (разом із сценарієм login → звіт).
   - Коміт: `refactor(web): align page names with routes and dedupe the e2e hint helper`
 
 - [ ] **46. `shared/api/page-query.ts` (W8, r.78)**

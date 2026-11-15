@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import { RecentSessions } from '@/features/session/components/RecentSessions/RecentSessions';
 
-export function SessionPage() {
+export function HomePage() {
   const { t } = useTranslation();
 
   return (
