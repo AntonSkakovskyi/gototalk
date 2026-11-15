@@ -1,7 +1,7 @@
 import type { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { createTestApp } from './support/test-app.js';
+import { createTestApp } from '../../support/test-app.js';
 
 const OPERATIONS = [
   'DELETE /api/goals/{id}',

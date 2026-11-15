@@ -271,9 +271,10 @@
 
 Усі файли переїжджають за таблицею «api/test» нижче; відносні імпорти `../src/…` → `../../../src/…`, `./support/…` → `../../support/…`. `global-setup.ts` і `support/` не рухаються. Перевірка кожної задачі: `pnpm --filter api exec vitest run --project integration test/integration/<module>` + typecheck + lint.
 
-- [ ] **25. `integration/core/` + `vitest.config.ts`**
+- [x] **25. `integration/core/` + `vitest.config.ts`**
   - `db-schema`, `error-format`, `health`, `mistake-categories`, `user-data-fixture`, `reset-user-data`, `openapi` → `test/integration/core/`.
   - `apps/api/vitest.config.ts`: integration `include: ['test/integration/**/*.test.ts']`; unit-проєкт лишається (`src/**`, `test/support/**`).
+  - Відхилення: проміжний `include` для integration – `['test/integration/**/*.test.ts', 'test/*.test.ts']`, щоб не зупинити ще не переміщені тести; запис `'test/*.test.ts'` прибирається в задачі 32.
   - Коміт: `refactor(api-test): move core integration tests`
 
 - [ ] **26. `integration/auth/`** – `auth`, `auth-guard`, `drizzle-refresh-tokens.repository`, `me`, `delete-account`.

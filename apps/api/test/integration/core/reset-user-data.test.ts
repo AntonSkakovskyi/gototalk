@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import pg from 'pg';
 import { afterAll, beforeAll, describe, expect, inject, it, vi } from 'vitest';
-import { resetUserData } from './support/test-db.js';
+import { resetUserData } from '../../support/test-db.js';
 
 async function count(pool: pg.Pool, table: string): Promise<number> {
   const { rows } = await pool.query<{ count: string }>(

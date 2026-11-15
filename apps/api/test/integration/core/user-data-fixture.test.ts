@@ -9,13 +9,13 @@ import {
   inject,
   it,
 } from 'vitest';
-import { resetUserData } from './support/test-db.js';
+import { resetUserData } from '../../support/test-db.js';
 import {
   REFERENCE_TABLES,
   USER_DATA_TABLES,
   countUserData,
   insertUserData,
-} from './support/user-data.js';
+} from '../../support/user-data.js';
 
 const SET_NULL_FOREIGN_KEYS = new Set([
   'mistakes.pattern_id',

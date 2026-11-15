@@ -5,7 +5,7 @@ import pg from 'pg';
 import { afterAll, beforeAll, describe, expect, inject, it } from 'vitest';
 
 const journalPath = fileURLToPath(
-  new URL('../../../db/migrations/meta/_journal.json', import.meta.url),
+  new URL('../../../../../db/migrations/meta/_journal.json', import.meta.url),
 );
 
 const EXPECTED_TABLES = [
