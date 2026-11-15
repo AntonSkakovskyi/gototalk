@@ -167,7 +167,7 @@
   - Перевірка: DI-smoke (задача 03) зелений; `pnpm dev`.
   - Коміт: `refactor(api): rename the providers module to adapters`
 
-- [ ] **12. `common/` підпапки (A6)**
+- [x] **12. `common/` підпапки (A6)**
   - `zod-body.pipe.ts`, `zod-query.pipe.ts` (+tests) → `common/pipes/`; `public.decorator.ts` → `common/decorators/`; `keyset-cursor.ts`, `keyset-page.ts` (+tests) → `common/pagination/`; `language-model-http-errors.ts` (+test) → `common/errors/`.
   - Імпорти в `core/`, `modules/`, `integrations/`, `apps/api/test/*` (відносні, глибина змінюється).
   - Коміт: `refactor(api): group common into pipes, decorators, pagination and errors`

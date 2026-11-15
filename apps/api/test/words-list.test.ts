@@ -9,7 +9,7 @@ import type { WordPage } from '@gototalk/shared';
 import type pg from 'pg';
 import request from 'supertest';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { encodeCursor } from '../src/common/keyset-cursor.js';
+import { encodeCursor } from '../src/common/pagination/keyset-cursor.js';
 import { PG_POOL } from '../src/core/db/db.tokens.js';
 import {
   expectError,

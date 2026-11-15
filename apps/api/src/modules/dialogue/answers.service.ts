@@ -12,7 +12,7 @@ import {
 } from '@gototalk/shared';
 import { TranscriptSchema } from '../../integrations/speech-recognition/transcript.js';
 import type { Utterance } from '@gototalk/shared';
-import { ZodBodyPipe } from '../../common/zod-body.pipe.js';
+import { ZodBodyPipe } from '../../common/pipes/zod-body.pipe.js';
 import { SpeechRecognitionUnavailableError } from '../../integrations/speech-recognition/speech-recognition.errors.js';
 import { SPEECH_RECOGNITION_PORT } from '../../integrations/speech-recognition/speech-recognition.port.js';
 import type { SpeechRecognitionPort } from '../../integrations/speech-recognition/speech-recognition.port.js';

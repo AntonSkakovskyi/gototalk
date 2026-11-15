@@ -10,7 +10,7 @@ import {
 } from '@nestjs/swagger';
 import { HINT_WORD_MAX, HintRequestSchema } from '@gototalk/shared';
 import type { HintRequest, HintResult } from '@gototalk/shared';
-import { ZodBodyPipe } from '../../common/zod-body.pipe.js';
+import { ZodBodyPipe } from '../../common/pipes/zod-body.pipe.js';
 import {
   CurrentUser,
   requireUserId,

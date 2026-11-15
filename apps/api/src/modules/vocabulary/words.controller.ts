@@ -30,8 +30,8 @@ import type {
   Word,
   WordPage,
 } from '@gototalk/shared';
-import { ZodBodyPipe } from '../../common/zod-body.pipe.js';
-import { ZodQueryPipe } from '../../common/zod-query.pipe.js';
+import { ZodBodyPipe } from '../../common/pipes/zod-body.pipe.js';
+import { ZodQueryPipe } from '../../common/pipes/zod-query.pipe.js';
 import {
   CurrentUser,
   requireUserId,

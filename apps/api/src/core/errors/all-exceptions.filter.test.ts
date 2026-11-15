@@ -13,7 +13,7 @@ import { ERROR_CODES, ErrorResponseSchema } from '@gototalk/shared';
 import { describe, expect, it, vi } from 'vitest';
 import { DrizzleQueryError } from 'drizzle-orm';
 import { z } from 'zod';
-import { RequestValidationError } from '../../common/zod-body.pipe.js';
+import { RequestValidationError } from '../../common/pipes/zod-body.pipe.js';
 import { AllExceptionsFilter } from './all-exceptions.filter.js';
 import { codeFromStatus } from './error-code.js';
 

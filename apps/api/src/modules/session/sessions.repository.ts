@@ -12,9 +12,12 @@ import type {
   StartSessionRequest,
   Utterance,
 } from '@gototalk/shared';
-import type { KeysetPosition } from '../../common/keyset-cursor.js';
-import { olderThan, toKeysetPage } from '../../common/keyset-page.js';
-import type { KeysetPage } from '../../common/keyset-page.js';
+import type { KeysetPosition } from '../../common/pagination/keyset-cursor.js';
+import {
+  olderThan,
+  toKeysetPage,
+} from '../../common/pagination/keyset-page.js';
+import type { KeysetPage } from '../../common/pagination/keyset-page.js';
 import { DRIZZLE } from '../../core/db/db.tokens.js';
 import type { Database, DbTransaction } from '../../core/db/db.tokens.js';
 import { mistakes, sessions, users, utterances } from '../../core/db/schema.js';

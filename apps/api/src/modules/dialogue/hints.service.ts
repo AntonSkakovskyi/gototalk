@@ -2,7 +2,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { HintSchema } from '../../integrations/language-model/model-output.js';
 import type { HintRequest, HintResult } from '@gototalk/shared';
 import type { Hint } from '../../integrations/language-model/model-output.js';
-import { toLanguageModelHttpError } from '../../common/language-model-http-errors.js';
+import { toLanguageModelHttpError } from '../../common/errors/language-model-http-errors.js';
 import { LANGUAGE_MODEL_PORT } from '../../integrations/language-model/language-model.port.js';
 import type {
   HintInput,

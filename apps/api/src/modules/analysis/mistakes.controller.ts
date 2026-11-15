@@ -10,7 +10,7 @@ import {
 } from '@nestjs/swagger';
 import { MarkMistakeRequestSchema } from '@gototalk/shared';
 import type { MarkMistakeRequest, MistakeView } from '@gototalk/shared';
-import { ZodBodyPipe } from '../../common/zod-body.pipe.js';
+import { ZodBodyPipe } from '../../common/pipes/zod-body.pipe.js';
 import {
   CurrentUser,
   requireUserId,

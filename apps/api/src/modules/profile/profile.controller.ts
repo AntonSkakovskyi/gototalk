@@ -22,7 +22,7 @@ import {
   requireUserId,
 } from '../auth/decorators/current-user.decorator.js';
 import type { AuthenticatedUser } from '../auth/decorators/current-user.decorator.js';
-import { ZodBodyPipe } from '../../common/zod-body.pipe.js';
+import { ZodBodyPipe } from '../../common/pipes/zod-body.pipe.js';
 import { LearnerModelService } from './learner-model.service.js';
 import { toLearnerModel } from './learner-model.mapper.js';
 import { ProfileService } from './profile.service.js';

@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import type { TurnResult } from '@gototalk/shared';
-import { toLanguageModelHttpError } from '../../common/language-model-http-errors.js';
+import { toLanguageModelHttpError } from '../../common/errors/language-model-http-errors.js';
 import {
   LanguageModelInvalidResponseError,
   LanguageModelUnavailableError,

@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { PlanSchema } from '@gototalk/shared';
 import type { Plan, PlanSessionRequest, SessionPlan } from '@gototalk/shared';
-import { toLanguageModelHttpError } from '../../common/language-model-http-errors.js';
+import { toLanguageModelHttpError } from '../../common/errors/language-model-http-errors.js';
 import { LanguageModelUnavailableError } from '../../integrations/language-model/language-model.errors.js';
 import { LANGUAGE_MODEL_PORT } from '../../integrations/language-model/language-model.port.js';
 import type {

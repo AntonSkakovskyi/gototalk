@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { RequestValidationError } from './zod-body.pipe.js';
+import { RequestValidationError } from '../pipes/zod-body.pipe.js';
 
 // Matches the text Postgres renders for timestamptz, microseconds included
 const PG_TIMESTAMPTZ =

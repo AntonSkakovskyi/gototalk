@@ -47,8 +47,8 @@ import {
 } from '../auth/decorators/current-user.decorator.js';
 import type { AuthenticatedUser } from '../auth/decorators/current-user.decorator.js';
 import { RequiresConsent } from '../auth/decorators/requires-consent.decorator.js';
-import { ZodBodyPipe } from '../../common/zod-body.pipe.js';
-import { ZodQueryPipe } from '../../common/zod-query.pipe.js';
+import { ZodBodyPipe } from '../../common/pipes/zod-body.pipe.js';
+import { ZodQueryPipe } from '../../common/pipes/zod-query.pipe.js';
 import { SessionPlannerService } from './session-planner.service.js';
 import { SessionsService } from './sessions.service.js';
 

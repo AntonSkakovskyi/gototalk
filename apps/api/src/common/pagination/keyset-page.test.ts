@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { RequestValidationError } from './zod-body.pipe.js';
+import { RequestValidationError } from '../pipes/zod-body.pipe.js';
 import { encodeCursor } from './keyset-cursor.js';
 import { afterOf, toCursorPage, toKeysetPage } from './keyset-page.js';
 

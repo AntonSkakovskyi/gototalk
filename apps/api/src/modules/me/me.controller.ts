@@ -24,7 +24,7 @@ import {
 import type { AuthenticatedUser } from '../auth/decorators/current-user.decorator.js';
 import { clearRefreshCookie } from '../auth/lib/refresh-cookie.js';
 import type { CookieResponse } from '../auth/lib/refresh-cookie.js';
-import { ZodBodyPipe } from '../../common/zod-body.pipe.js';
+import { ZodBodyPipe } from '../../common/pipes/zod-body.pipe.js';
 import { MeService } from './me.service.js';
 
 @ApiTags('me')

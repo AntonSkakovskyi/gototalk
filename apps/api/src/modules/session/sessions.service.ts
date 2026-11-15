@@ -12,7 +12,7 @@ import type {
   SessionPage,
   StartSessionRequest,
 } from '@gototalk/shared';
-import { afterOf, toCursorPage } from '../../common/keyset-page.js';
+import { afterOf, toCursorPage } from '../../common/pagination/keyset-page.js';
 import { ReportGeneratorService } from '../report/report-generator.service.js';
 import {
   SessionOwnerMissingError,

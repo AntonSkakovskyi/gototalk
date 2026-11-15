@@ -7,7 +7,7 @@ import { describe, expect, it } from 'vitest';
 import {
   LanguageModelInvalidResponseError,
   LanguageModelUnavailableError,
-} from '../integrations/language-model/language-model.errors.js';
+} from '../../integrations/language-model/language-model.errors.js';
 import { toLanguageModelHttpError } from './language-model-http-errors.js';
 
 describe('toLanguageModelHttpError', () => {

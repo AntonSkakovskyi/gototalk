@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { RequestValidationError } from './zod-body.pipe.js';
+import { RequestValidationError } from '../pipes/zod-body.pipe.js';
 import { decodeCursor, encodeCursor } from './keyset-cursor.js';
 
 const ID = '6f1c2a0e-4b8d-4f7e-9a53-0c7d2f1b9e11';
