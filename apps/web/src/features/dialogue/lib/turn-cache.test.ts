@@ -9,7 +9,7 @@ import {
   withSession,
   withTurnResult,
   withUtterance,
-} from './details-cache';
+} from './turn-cache';
 
 function deepFreeze<T>(value: T): T {
   if (typeof value === 'object' && value !== null) {
@@ -36,7 +36,7 @@ function detailsWith(...utterances: ReturnType<typeof testUtterance>[]) {
   );
 }
 
-describe('details-cache', () => {
+describe('turn-cache', () => {
   describe('withUtterance', () => {
     it('[TC-04-04] appends a new utterance without mutating the input', () => {
       const details = detailsWith();

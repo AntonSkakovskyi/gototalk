@@ -433,9 +433,10 @@
   - Відхилення: `mic-help.ts` імпортував з хука лише тип `RecorderStatus` – перенесено дослівно в нову `recording/lib/recorder-status.ts`, хук, `mic-help`, `MicPermissionHelp` і `RecordingIndicator` (з тестами) імпортують його звідти; `api/dialogue-api.ts` імпортує `audioFileName` з `recording/lib/recorder-mime` (кореневий `api/` залежить від підобласті; правилами дозволено); Vitest `src/features/dialogue` + `src/pages` до й після: 382 тести в 46 файлах.
   - Коміт: `refactor(web): extract the recording area of the dialogue feature`
 
-- [ ] **44. `features/dialogue/hint/` і `turn-cache` (W4)**
+- [x] **44. `features/dialogue/hint/` і `turn-cache` (W4)**
   - `components/HintPanel/*` (HintPanel, HintOutcome, WordHintForm, тест) → `hint/components/HintPanel/`; `hooks/use-hint.ts` (+test) → `hint/hooks/`; `lib/hint-form.ts` (+test) → `hint/lib/`.
   - `features/dialogue/lib/details-cache.ts` (+test) → `lib/turn-cache.ts` (+test) (колізія назв із `entities/session/lib/details-cache.ts`); експорти й імена функцій без змін.
+  - Відхилення: у `turn-cache.test.ts` `describe('details-cache')` → `describe('turn-cache')` (мітка називала файл); тести `HintPanel` і `use-hint` імпортують кореневий `dialogue-mocks` (лише тести, правилами дозволено); Vitest `src/features/dialogue` + `src/pages` до й після: 382 тести в 46 файлах.
   - Коміт: `refactor(web): extract the hint area and rename the dialogue turn cache`
 
 - [ ] **45. Сторінки `home`/`dialogue` і e2e (W5, r.79) `[e2e]`**

@@ -2,9 +2,9 @@ import { Button, Stack } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { HintOutcome } from '@/features/dialogue/components/HintPanel/HintOutcome';
-import { WordHintForm } from '@/features/dialogue/components/HintPanel/WordHintForm';
-import { useHint } from '@/features/dialogue/hooks/use-hint';
+import { HintOutcome } from '@/features/dialogue/hint/components/HintPanel/HintOutcome';
+import { WordHintForm } from '@/features/dialogue/hint/components/HintPanel/WordHintForm';
+import { useHint } from '@/features/dialogue/hint/hooks/use-hint';
 
 interface HintPanelProps {
   sessionId: string;

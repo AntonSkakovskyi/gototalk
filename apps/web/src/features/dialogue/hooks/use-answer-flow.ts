@@ -11,7 +11,7 @@ import {
   findUnansweredUtteranceId,
   withTurnResult,
   withUtterance,
-} from '@/features/dialogue/lib/details-cache';
+} from '@/features/dialogue/lib/turn-cache';
 import { ApiError } from '@/shared/api/http';
 import { useUpdateDetails } from '@/entities/session/hooks/use-update-details';
 import {

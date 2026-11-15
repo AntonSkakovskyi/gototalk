@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Stack, TextInput } from '@mantine/core';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { hintWordErrorMessage } from '@/features/dialogue/lib/hint-form';
+import { hintWordErrorMessage } from '@/features/dialogue/hint/lib/hint-form';
 import { ANNOUNCED_ERROR_PROPS } from '@/shared/forms/field-error-props';
 import { UKRAINIAN_LANG } from '@/shared/i18n/languages';
 
