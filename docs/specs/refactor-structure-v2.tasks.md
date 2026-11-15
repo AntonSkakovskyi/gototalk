@@ -219,11 +219,12 @@
   - Перевірка: інтеграційні `me`, `delete-account`, `auth*`; DI-smoke; `pnpm dev`.
   - Коміт: `refactor(api): fold the me module into auth`
 
-- [ ] **19. `report`: `SessionFinishService` + контролер `[risk]` (A2)**
+- [x] **19. `report`: `SessionFinishService` + контролер `[risk]` (A2)**
   - TDD: `report/session-finish.service.test.ts` (кейси `finish`/`ensureReport` перенесені з `sessions.service.test.ts` без зміни очікувань: finish повертає `Session`, збій звіту лише лог `Report generation failed on finish: <name>`).
   - `SessionsService.finish`, `ensureReport` → `report/session-finish.service.ts` (`SessionFinishService`; залежить від `SessionsService.finishSession`/репозиторного методу через публічний API `session/` та `ReportGeneratorService`); у `SessionsService` лишається доменне `finish` без звіту (метод перейменувати лише якщо потрібно для уникнення колізії; зафіксувати в коміті).
   - `sessions.controller.ts`: `POST :id/finish` (з `@RequiresConsent()` і Swagger-декораторами, `@ApiTags('sessions')`) → `report/session-finish.controller.ts` (`@Controller('sessions')`); `SessionModule` більше не імпортує `ReportModule`; `ReportModule` імпортує `SessionModule`.
   - Перевірка: інтеграційні `sessions-finish*`, `report-finish`; `e2e` `report.spec`/`session.spec`; `pnpm dev` + `curl POST /api/sessions/<id>/finish`; `/api/docs-json` містить `POST /api/sessions/{id}/finish` у тегу `sessions`; цикл `session ↔ report` зник (`no-cycle` без `warn`).
+  - Відхилення: `SessionsService.finish` не перейменовано (лише без звіту); контекст логера тепер `SessionFinishService` (текст повідомлення той самий); 3 кейси `[TC-04-04]` лишились у `sessions.service.test.ts`, переїхали 3 кейси `[TC-05-02]`; `SessionModule` експортує `SessionsService`.
   - Коміт: `refactor(api): move session finishing orchestration into the report module`
 
 - [ ] **20. `TurnService` → `SessionsService.findDetails` (r.62)**
