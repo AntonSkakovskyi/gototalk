@@ -8,9 +8,9 @@ import type {
 } from '../../../core/db/db.tokens.js';
 import { hints, sessions, utterances } from '../../../core/db/schema.js';
 import { VocabularyWriter } from '../../vocabulary/vocabulary-writer.service.js';
-import { AnswerNotExpectedError } from '../dialogue.errors.js';
 import { lockActiveSession } from '../../session/session-lock.js';
 import {
+  AnswerNotExpectedError,
   SessionFinishedError,
   SessionNotFoundError,
 } from '../../session/session.errors.js';

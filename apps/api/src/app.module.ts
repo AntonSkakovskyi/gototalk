@@ -10,6 +10,7 @@ import { AuthModule } from './modules/auth/auth.module.js';
 import { DbModule } from './core/db/db.module.js';
 import { DialogueModule } from './modules/dialogue/dialogue.module.js';
 import { HealthModule } from './core/health/health.module.js';
+import { HintModule } from './modules/hint/hint.module.js';
 import { MeModule } from './modules/me/me.module.js';
 import { buildPinoHttpOptions } from './core/logger/pino-options.js';
 import { ProfileModule } from './modules/profile/profile.module.js';
@@ -34,6 +35,7 @@ export class AppModule {
         SessionModule,
         AnalysisModule,
         DialogueModule,
+        HintModule,
         VocabularyModule,
         ReportModule,
         LoggerModule.forRootAsync({

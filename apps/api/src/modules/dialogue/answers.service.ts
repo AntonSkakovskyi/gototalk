@@ -16,10 +16,13 @@ import { ZodBodyPipe } from '../../common/pipes/zod-body.pipe.js';
 import { SpeechRecognitionUnavailableError } from '../../integrations/speech-recognition/speech-recognition.errors.js';
 import { SPEECH_RECOGNITION_PORT } from '../../integrations/speech-recognition/speech-recognition.port.js';
 import type { SpeechRecognitionPort } from '../../integrations/speech-recognition/speech-recognition.port.js';
-import { isSessionId, sessionNotFound } from '../session/session.errors.js';
+import {
+  isSessionId,
+  sessionNotFound,
+  toSessionHttpError,
+} from '../session/session.errors.js';
 import { AudioRetention } from './audio-retention.js';
 import type { UploadedAudio } from './audio-upload.js';
-import { toDialogueHttpError } from './dialogue.errors.js';
 import { detectAudioFormat } from './lib/audio-format.js';
 import { DialogueRepository } from './persistence/dialogue.repository.js';
 import type { AnswerTexts } from './persistence/dialogue.repository.js';
@@ -49,7 +52,7 @@ function toHttpError(error: unknown): unknown {
       message: error.message,
     });
   }
-  return toDialogueHttpError(error);
+  return toSessionHttpError(error);
 }
 
 @Injectable()

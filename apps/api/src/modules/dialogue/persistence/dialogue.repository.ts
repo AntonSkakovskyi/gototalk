@@ -9,9 +9,9 @@ import type {
 } from '../../../core/db/db.tokens.js';
 import { sessions, utterances } from '../../../core/db/schema.js';
 import { WordUsageService } from '../../vocabulary/word-usage.service.js';
-import { AnswerNotExpectedError } from '../dialogue.errors.js';
 import { lockActiveSession } from '../../session/session-lock.js';
 import {
+  AnswerNotExpectedError,
   SessionFinishedError,
   SessionNotFoundError,
 } from '../../session/session.errors.js';

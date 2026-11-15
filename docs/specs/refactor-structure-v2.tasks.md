@@ -200,10 +200,11 @@
   - Перевірка: інтеграційні `dialogue-analysis*`, `pending-analysis`, `dialogue-answer*`; DI-smoke.
   - Коміт: `refactor(api): make AnalysisWriter an exported service of the analysis module`
 
-- [ ] **16. Новий модуль `hint` `[risk]` (A3)**
+- [x] **16. Новий модуль `hint` `[risk]` (A3)**
   - `dialogue/hints.controller.ts`, `hints.service.ts` (+test) → `modules/hint/`; `dialogue/persistence/hints.repository.ts` → `modules/hint/persistence/`; новий `modules/hint/hint.module.ts` (imports: `SessionModule`, `VocabularyModule`; без `DialogueModule`); `DialogueModule` більше не декларує hints; `AppModule` імпортує `HintModule`.
   - URL `POST /sessions/:id/hint` і Swagger-теги без змін.
   - Перевірка: інтеграційні `hints*`; `pnpm dev` + `curl` підказки; DI-smoke; `grep` – `hint/` не імпортує `dialogue/`.
+  - Відхилення: фактичний маршрут `sessions/:id/hints` (множина), `@ApiTags('dialogue')` без змін; `AnswerNotExpectedError` переїхав у `session/session.errors.ts`, `toSessionHttpError` мапить його (409 `ANSWER_NOT_EXPECTED`), псевдонім `toDialogueHttpError` прибрано; `HintModule` імпортує лише `VocabularyModule` (session-залежності – файлові імпорти кореня, `LanguageModelPort` і `DRIZZLE` глобальні).
   - Коміт: `refactor(api): extract hints from dialogue into the hint module`
 
 - [ ] **17. Новий модуль `learner-model` `[risk]` (A3)**

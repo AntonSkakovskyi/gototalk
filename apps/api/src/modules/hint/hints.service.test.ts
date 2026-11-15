@@ -10,8 +10,8 @@ import type { HintRequest } from '@gototalk/shared';
 import { describe, expect, it, vi } from 'vitest';
 import { LanguageModelUnavailableError } from '../../integrations/language-model/language-model.errors.js';
 import type { LanguageModelPort } from '../../integrations/language-model/language-model.port.js';
-import { AnswerNotExpectedError } from './dialogue.errors.js';
 import {
+  AnswerNotExpectedError,
   SessionFinishedError,
   SessionNotFoundError,
 } from '../session/session.errors.js';

@@ -9,8 +9,11 @@ import type {
   LanguageModelPort,
 } from '../../integrations/language-model/language-model.port.js';
 import { requestValidated } from '../../integrations/language-model/validated-call.js';
-import { isSessionId, sessionNotFound } from '../session/session.errors.js';
-import { toDialogueHttpError } from './dialogue.errors.js';
+import {
+  isSessionId,
+  sessionNotFound,
+  toSessionHttpError,
+} from '../session/session.errors.js';
 import { HintsRepository } from './persistence/hints.repository.js';
 import type {
   CurrentQuestion,
@@ -77,7 +80,7 @@ export class HintsService {
         await this.hints.save({ userId, sessionId, question, record });
       return result;
     } catch (error) {
-      throw toLanguageModelHttpError(toDialogueHttpError(error));
+      throw toLanguageModelHttpError(toSessionHttpError(error));
     }
   }
 }
