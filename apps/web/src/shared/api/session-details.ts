@@ -10,6 +10,7 @@ import { retryUnlessClientError } from './retry-policy';
 export const sessionKeys = {
   all: ['session'] as const,
   list: () => [...sessionKeys.all, 'list'] as const,
+  history: () => [...sessionKeys.all, 'history'] as const,
   allDetails: () => [...sessionKeys.all, 'details'] as const,
   details: (id: string) => [...sessionKeys.allDetails(), id] as const,
   allReports: () => [...sessionKeys.all, 'report'] as const,

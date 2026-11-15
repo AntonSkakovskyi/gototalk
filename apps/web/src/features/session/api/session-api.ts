@@ -1,9 +1,11 @@
 import {
   SessionDetailsSchema,
   SessionListSchema,
+  SessionPageSchema,
   SessionPlanSchema,
   type PlanSessionRequest,
   type Session,
+  type SessionPage,
   type SessionDetails,
   type SessionPlan,
   type StartSessionRequest,
@@ -30,4 +32,26 @@ export function startSession(
 
 export function listSessions(): Promise<Session[]> {
   return apiFetch('/api/sessions', { schema: SessionListSchema });
+}
+
+interface HistoryQuery {
+  cursor?: string | undefined;
+  limit?: number | undefined;
+}
+
+export function listHistory({
+  cursor,
+  limit,
+}: HistoryQuery = {}): Promise<SessionPage> {
+  const params = new URLSearchParams();
+  if (cursor !== undefined) {
+    params.set('cursor', cursor);
+  }
+  if (limit !== undefined) {
+    params.set('limit', String(limit));
+  }
+  const query = params.toString();
+  return apiFetch(`/api/sessions/history${query === '' ? '' : `?${query}`}`, {
+    schema: SessionPageSchema,
+  });
 }

@@ -11,9 +11,12 @@ import { createQueryWrapper } from '@/shared/testing/query-wrapper';
 import {
   errorResponse,
   jsonResponse,
+  testSession,
   testSessionPlan,
 } from '@/shared/testing/test-fixtures';
+import { sessionKeys } from '@/shared/api/session-details';
 import {
+  sessionHistoryQueryOptions,
   sessionListQueryOptions,
   sessionPlanQueryOptions,
 } from './session-queries';
@@ -109,6 +112,79 @@ describe('session queries', () => {
     await expect(
       new QueryClient().query({ ...sessionListQueryOptions(), retryDelay: 0 }),
     ).resolves.toEqual([]);
+
+    expect(requests).toHaveLength(2);
+  });
+
+  it('[TC-05-03] history query uses the shared key and the first page has no cursor', async () => {
+    const page = { items: [testSession()], nextCursor: null };
+    const { requests } = mockApi({
+      'GET /api/sessions/history': jsonResponse(page),
+    });
+    const queryClient = new QueryClient();
+    const options = sessionHistoryQueryOptions();
+
+    const data = await queryClient.fetchInfiniteQuery(options);
+
+    expect(options.queryKey).toEqual(sessionKeys.history());
+    expect(data.pages).toEqual([page]);
+    expect(requests).toHaveLength(1);
+  });
+
+  it('[TC-05-03] history query pages by the previous nextCursor and stops on null', async () => {
+    const { requests } = mockApi({
+      'GET /api/sessions/history': jsonResponse({
+        items: [],
+        nextCursor: 'c1',
+      }),
+      'GET /api/sessions/history?cursor=c1': jsonResponse({
+        items: [],
+        nextCursor: null,
+      }),
+    });
+    const queryClient = new QueryClient();
+    const options = sessionHistoryQueryOptions();
+
+    await queryClient.fetchInfiniteQuery({ ...options, pages: 3 });
+
+    expect(requests.map((request) => request.path)).toEqual([
+      '/api/sessions/history',
+      '/api/sessions/history?cursor=c1',
+    ]);
+  });
+
+  it('[TC-05-03] history query does not retry a 4xx', async () => {
+    const { requests } = mockApi({
+      'GET /api/sessions/history': errorResponse(
+        403,
+        ERROR_CODES.CONSENT_REQUIRED,
+      ),
+    });
+
+    await expect(
+      new QueryClient().fetchInfiniteQuery({
+        ...sessionHistoryQueryOptions(),
+        retryDelay: 0,
+      }),
+    ).rejects.toMatchObject({ status: 403 });
+
+    expect(requests).toHaveLength(1);
+  });
+
+  it('[TC-05-03] history query retries a server error once', async () => {
+    const queue = [
+      errorResponse(500, 'BOOM'),
+      jsonResponse({ items: [], nextCursor: null }),
+    ];
+    const { requests } = mockApi({
+      'GET /api/sessions/history': () =>
+        queue.shift() ?? errorResponse(500, 'RESPONSES_EXHAUSTED'),
+    });
+
+    await new QueryClient().fetchInfiniteQuery({
+      ...sessionHistoryQueryOptions(),
+      retryDelay: 0,
+    });
 
     expect(requests).toHaveLength(2);
   });

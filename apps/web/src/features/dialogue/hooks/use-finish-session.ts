@@ -11,7 +11,10 @@ export function useFinishSession(sessionId: string) {
     mutationFn: () => finishSession(sessionId),
     onSuccess: async (session) => {
       await updateDetails((details) => withSession(details, session));
-      void queryClient.invalidateQueries({ queryKey: sessionKeys.list() });
+      void Promise.all([
+        queryClient.invalidateQueries({ queryKey: sessionKeys.list() }),
+        queryClient.invalidateQueries({ queryKey: sessionKeys.history() }),
+      ]);
     },
   });
 

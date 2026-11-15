@@ -12,6 +12,7 @@ export function useStartSession() {
     onSettled: async (details) => {
       await Promise.all([
         queryClient.resetQueries({ queryKey: sessionKeys.list() }),
+        queryClient.invalidateQueries({ queryKey: sessionKeys.history() }),
         queryClient.invalidateQueries({
           queryKey: sessionKeys.allDetails(),
           predicate: (query) => query.queryKey[2] !== details?.id,
