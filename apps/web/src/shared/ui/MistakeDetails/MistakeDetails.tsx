@@ -2,7 +2,7 @@ import type { MistakeView } from '@gototalk/shared';
 import { Badge, Button, Paper, Stack, Text } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
 import { markMistakeErrorKey } from '@/entities/session/lib/mistake-errors';
-import { useMarkMistake } from '@/shared/hooks/use-mark-mistake';
+import { useMarkMistake } from '@/entities/session/hooks/use-mark-mistake';
 import { ENGLISH_LANG } from '@/shared/i18n/languages';
 import { Correction } from './Correction';
 

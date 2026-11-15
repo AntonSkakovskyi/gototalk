@@ -13,7 +13,7 @@ import {
   withUtterance,
 } from '@/features/dialogue/lib/details-cache';
 import { ApiError } from '@/shared/api/http';
-import { useUpdateDetails } from '@/shared/hooks/use-update-details';
+import { useUpdateDetails } from '@/entities/session/hooks/use-update-details';
 import {
   sessionDetailsQueryOptions,
   sessionKeys,

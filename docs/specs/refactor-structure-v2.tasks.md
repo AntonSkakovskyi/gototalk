@@ -400,7 +400,7 @@
   - Перевірка: усі споживачі (4 фічі, 2 сторінки, ~30 імпортів) компілюються; `pnpm --filter web test`.
   - Коміт: `refactor(web): move session details api and cache helpers into entities/session`
 
-- [ ] **38. `entities/session/hooks`**
+- [x] **38. `entities/session/hooks`**
   - `shared/hooks/use-mark-mistake.ts` (+test), `use-update-details.ts` → `entities/session/hooks/`; `shared/hooks/use-focus-when.ts` лишається в `shared/`.
   - Коміт: `refactor(web): move session entity hooks into entities/session`
 
