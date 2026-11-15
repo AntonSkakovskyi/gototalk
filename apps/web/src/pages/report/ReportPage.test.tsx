@@ -23,11 +23,11 @@ import {
   REPORT_ROUTE,
   ROUTE,
   TURN,
-  mockReportApi,
+  mockReportPage,
 } from './report-page-setup';
 
-function renderReport(...args: Parameters<typeof mockReportApi>) {
-  const api = mockReportApi(...args);
+function renderReport(...args: Parameters<typeof mockReportPage>) {
+  const api = mockReportPage(...args);
   renderAppWithProbe({ route: ROUTE, session: AUTH });
   return api;
 }

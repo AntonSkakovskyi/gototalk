@@ -3,10 +3,10 @@ import userEvent from '@testing-library/user-event';
 import { renderAppWithProbe } from '@/app/router/guards/guard-test-helpers';
 import uk from '@/shared/i18n/uk.json';
 import { jsonResponse, testWord } from '@/shared/testing/test-fixtures';
-import { AUTH, FINISHED, ROUTE, mockReportApi } from './report-page-setup';
+import { AUTH, FINISHED, ROUTE, mockReportPage } from './report-page-setup';
 
-function renderReport(...args: Parameters<typeof mockReportApi>) {
-  const api = mockReportApi(...args);
+function renderReport(...args: Parameters<typeof mockReportPage>) {
+  const api = mockReportPage(...args);
   renderAppWithProbe({ route: ROUTE, session: AUTH });
   return api;
 }

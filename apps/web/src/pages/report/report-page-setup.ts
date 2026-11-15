@@ -30,7 +30,7 @@ export const REPORT_ROUTE = `${DETAILS_ROUTE}/report`;
 
 type Reply = Response | (() => Response | Promise<Response>);
 
-export function mockReportApi(reply: Reply, report: Reply = reportOk) {
+export function mockReportPage(reply: Reply, report: Reply = reportOk) {
   const { requests } = mockApi({
     'GET /api/profile': jsonResponse(TEST_PROFILE),
     [DETAILS_ROUTE]: reply,

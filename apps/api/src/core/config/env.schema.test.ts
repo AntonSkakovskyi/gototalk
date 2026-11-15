@@ -166,32 +166,32 @@ describe('parseEnv', () => {
       }
     });
 
-    it('[TC-05-24] the test runs inside a repository', () => {
+    it('[TC-04-13] the test runs inside a repository', () => {
       expect(repoRoot).toBeDefined();
     });
 
-    it('[TC-05-24] a directory inside the repository root is rejected', () => {
+    it('[TC-04-13] a directory inside the repository root is rejected', () => {
       const message = errorOf(audioEnv(path.join(repoRoot!, 'tmp-audio')));
       expect(message).toContain('DEV_AUDIO_DIR');
       expect(message).toContain('outside the repository');
     });
 
-    it('[TC-05-24] the repository root itself is rejected', () => {
+    it('[TC-04-13] the repository root itself is rejected', () => {
       expect(errorOf(audioEnv(repoRoot!))).toContain('outside the repository');
     });
 
-    it('[TC-05-24] a sibling directory sharing the root name prefix is accepted', () => {
+    it('[TC-04-13] a sibling directory sharing the root name prefix is accepted', () => {
       const sibling = `${repoRoot}-audio`;
       expect(parseEnv(audioEnv(sibling)).DEV_AUDIO_DIR).toBe(sibling);
     });
 
-    it('[TC-05-24] a temporary directory outside the repository is accepted', () => {
+    it('[TC-04-13] a temporary directory outside the repository is accepted', () => {
       const dir = mkdtempSync(path.join(tmpdir(), 'gototalk-audio-'));
       temporaryDirs.push(dir);
       expect(parseEnv(audioEnv(dir)).DEV_AUDIO_DIR).toBe(dir);
     });
 
-    it('[TC-05-24] the location is not checked when DEV_KEEP_AUDIO is false', () => {
+    it('[TC-04-13] the location is not checked when DEV_KEEP_AUDIO is false', () => {
       const env = parseEnv({
         ...validEnv,
         DEV_AUDIO_DIR: path.join(repoRoot!, 'tmp-audio'),
@@ -199,12 +199,12 @@ describe('parseEnv', () => {
       expect(env.DEV_KEEP_AUDIO).toBe(false);
     });
 
-    it('[TC-05-24] a path of the other platform flavour is never inside the repository', () => {
+    it('[TC-04-13] a path of the other platform flavour is never inside the repository', () => {
       const foreign = path.sep === '/' ? 'C:/tmp/audio' : '/var/tmp/audio';
       expect(validateAudioDir(true, foreign, repoRoot)).toBeUndefined();
     });
 
-    it('[TC-05-24] no extra check when the repository root is unknown', () => {
+    it('[TC-04-13] no extra check when the repository root is unknown', () => {
       const inside = path.join(repoRoot!, 'tmp-audio');
       expect(validateAudioDir(true, inside, undefined)).toBeUndefined();
       expect(validateAudioDir(true, inside, repoRoot)).toContain(
