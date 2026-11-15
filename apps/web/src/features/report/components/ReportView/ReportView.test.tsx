@@ -8,7 +8,7 @@ import {
   REPORT_SESSION_ID,
   mockReportApi,
   reportOk,
-} from '@/shared/testing/report-mocks';
+} from '@/features/report/testing/report-mocks';
 import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
 import { testReport } from '@/shared/testing/fixtures/report';
 import {

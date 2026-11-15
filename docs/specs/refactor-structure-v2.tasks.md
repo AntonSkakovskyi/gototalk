@@ -411,9 +411,10 @@
   - Відхилення (W3): `TranscriptText` імпортує лише `AnswerTranscript`, `Correction` – лише `MistakeDetails` (перевірено grep), тому за правилом «власна папка, лише якщо імпортують поза папкою батька» вони лишились у папках батьків (`AnswerTranscript/TranscriptText.tsx`, `MistakeDetails/Correction.tsx` + scss); у `shared/ui` лишились `LoadError`, `LoadMoreFooter`, `SectionSkeleton`; 26 `it` до й після.
   - Коміт: `refactor(web): move session transcript components into entities/session`
 
-- [ ] **40. Доменні моки з `shared/testing` у `testing/` зрізів (W1, r.65)**
+- [x] **40. Доменні моки з `shared/testing` у `testing/` зрізів (W1, r.65)**
   - `shared/testing/dialogue-mocks.ts`, `answer-flow-setup.tsx` → `features/dialogue/testing/`; `session-mocks.ts` → `features/session/testing/session-mocks.ts`; `report-mocks.ts` → `features/report/testing/`; `words-mocks.ts` → `features/vocabulary/testing/`; частину `dialogue-mocks`, потрібну сутності (`markMistakeOk` тощо) → `entities/session/testing/session-entity-mocks.ts`.
   - `shared/testing/**` після цього не імпортує `features`/`entities`; зона `shared ↛ features|entities` на тестах → працює.
+  - Відхилення: нова `entities/session/testing/session-entity-mocks.ts` (`DIALOGUE_SESSION_ID`, `SESSION_PATH`, `markMistakeOk`, `sessionEntityRoutes`, `markMistakeBodies`, `mockSessionEntityApi`); три entity-тести (`mistakes.test.ts`, `AnswerTranscript.mark.test.tsx`, `use-mark-mistake.test.ts`) перейшли з `mockDialogueApi` на `mockSessionEntityApi` (механічне перейменування викликів, бо сутність не імпортує фічу); `mockDialogueApi` розгортає `sessionEntityRoutes`; сторінки імпортують `testing/` фіч напряму (дозволено). Залишок warn (12): `shared/testing/test-utils.tsx` → `@/app/theme/theme`, `shared/api/refresh.test.ts` і `shared/auth-session/query-cache.test.ts` → `features/auth`, 9 page-тестів і `AccountSection.test` → `@/app/...`; вирішується в задачі 41/49.
   - Коміт: `refactor(web): move domain test mocks next to their slices`
 
 - [ ] **41. Тестові хелпери поруч із компонентами (W2)**

@@ -1,14 +1,14 @@
 import {
   DIALOGUE_SESSION_ID,
-  mockDialogueApi,
-} from '@/shared/testing/dialogue-mocks';
+  mockSessionEntityApi,
+} from '@/entities/session/testing/session-entity-mocks';
 import { jsonResponse } from '@/shared/testing/http-responses';
 import { testMistake } from '@/shared/testing/fixtures/session';
 import { markMistakeFalse } from './mistakes';
 
 describe('mistakes api', () => {
   it('[TC-04-04] markMistakeFalse patches the mistake and returns the updated view', async () => {
-    const { requests } = mockDialogueApi();
+    const { requests } = mockSessionEntityApi();
     const mistake = testMistake();
 
     await expect(
@@ -25,7 +25,7 @@ describe('mistakes api', () => {
   });
 
   it('[TC-04-04] markMistakeFalse rejects a response that breaks the contract', async () => {
-    mockDialogueApi({
+    mockSessionEntityApi({
       markMistake: () => jsonResponse({ ...testMistake(), end: 0 }),
     });
 
@@ -35,7 +35,7 @@ describe('mistakes api', () => {
   });
 
   it('[TC-04-04] markMistakeFalse URL-encodes the ids', async () => {
-    const { requests } = mockDialogueApi();
+    const { requests } = mockSessionEntityApi();
 
     await markMistakeFalse('a/b', 'c d').catch(() => undefined);
 

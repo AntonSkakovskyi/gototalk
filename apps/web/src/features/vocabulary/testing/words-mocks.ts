@@ -3,9 +3,9 @@ import {
   type MarkWordRequest,
   type Word,
 } from '@gototalk/shared';
-import { mockApi } from './mock-api';
-import { jsonResponse } from './http-responses';
-import { testReport } from './fixtures/report';
+import { mockApi } from '@/shared/testing/mock-api';
+import { jsonResponse } from '@/shared/testing/http-responses';
+import { testReport } from '@/shared/testing/fixtures/report';
 
 type Reply = Response | Promise<Response>;
 type Routes = Parameters<typeof mockApi>[0];

@@ -6,7 +6,7 @@ import { mockApi } from '@/shared/testing/mock-api';
 import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
 import { testWord } from '@/shared/testing/fixtures/words';
 import { renderWithProviders } from '@/shared/testing/test-utils';
-import { mockWordsApi } from '@/shared/testing/words-mocks';
+import { mockWordsApi } from '@/features/vocabulary/testing/words-mocks';
 import { WordList } from './WordList';
 
 const text = uk.vocabulary.list;

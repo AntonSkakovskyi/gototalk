@@ -7,7 +7,7 @@ import {
 } from '@/app/router/guards/guard-test-helpers';
 import uk from '@/shared/i18n/uk.json';
 import { mockApi } from '@/shared/testing/mock-api';
-import { STARTED_SESSION } from '@/shared/testing/session-mocks';
+import { STARTED_SESSION } from '@/features/session/testing/session-mocks';
 import { TEST_PROFILE } from '@/shared/testing/fixtures/profile';
 import { TEST_USER } from '@/shared/testing/fixtures/auth';
 import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';

@@ -4,7 +4,7 @@ import { sessionKeys } from '@/entities/session/api/session-details';
 import {
   STARTED_SESSION,
   mockSessionApi,
-} from '@/shared/testing/session-mocks';
+} from '@/features/session/testing/session-mocks';
 import {
   createQueryWrapper,
   createTestQueryClient,

@@ -2,7 +2,10 @@ import { ERROR_CODES } from '@gototalk/shared';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import uk from '@/shared/i18n/uk.json';
-import { analysisOk, mockDialogueApi } from '@/shared/testing/dialogue-mocks';
+import {
+  analysisOk,
+  mockDialogueApi,
+} from '@/features/dialogue/testing/dialogue-mocks';
 import { errorResponse } from '@/shared/testing/http-responses';
 import { testSessionDetails } from '@/shared/testing/fixtures/session';
 import {

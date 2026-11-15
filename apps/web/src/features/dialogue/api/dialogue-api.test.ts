@@ -1,10 +1,10 @@
 import { ERROR_CODES } from '@gototalk/shared';
 import {
-  DIALOGUE_SESSION_ID,
   HINT_PHRASE,
   HINT_TRANSLATION,
   mockDialogueApi,
-} from '@/shared/testing/dialogue-mocks';
+} from '@/features/dialogue/testing/dialogue-mocks';
+import { DIALOGUE_SESSION_ID } from '@/entities/session/testing/session-entity-mocks';
 import { mockApi } from '@/shared/testing/mock-api';
 import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
 import { testSession, testTurnResult } from '@/shared/testing/fixtures/session';

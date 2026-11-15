@@ -1,10 +1,10 @@
 import { act, waitFor } from '@testing-library/react';
 import { sessionKeys } from '@/entities/session/api/session-details';
 import {
-  DIALOGUE_SESSION_ID,
   analysisOk,
   mockDialogueApi,
-} from '@/shared/testing/dialogue-mocks';
+} from '@/features/dialogue/testing/dialogue-mocks';
+import { DIALOGUE_SESSION_ID } from '@/entities/session/testing/session-entity-mocks';
 import {
   ANSWER_TEXT,
   PENDING,
@@ -12,7 +12,7 @@ import {
   analysisRequests,
   setup,
   withAnswered,
-} from '@/shared/testing/answer-flow-setup';
+} from '@/features/dialogue/testing/answer-flow-setup';
 import { deferred } from '@/shared/testing/deferred';
 import { jsonResponse } from '@/shared/testing/http-responses';
 import {

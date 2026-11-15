@@ -4,7 +4,10 @@ import userEvent from '@testing-library/user-event';
 import { installFakeMedia } from '@/features/dialogue/testing/fake-media';
 import uk from '@/shared/i18n/uk.json';
 import { deferred } from '@/shared/testing/deferred';
-import { analysisOk, mockDialogueApi } from '@/shared/testing/dialogue-mocks';
+import {
+  analysisOk,
+  mockDialogueApi,
+} from '@/features/dialogue/testing/dialogue-mocks';
 import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
 import {
   PENDING_ANSWER,

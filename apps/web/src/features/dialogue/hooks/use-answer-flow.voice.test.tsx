@@ -6,9 +6,12 @@ import {
   analysisRequests,
   setup,
   withAnswered,
-} from '@/shared/testing/answer-flow-setup';
+} from '@/features/dialogue/testing/answer-flow-setup';
 import { deferred } from '@/shared/testing/deferred';
-import { analysisOk, mockDialogueApi } from '@/shared/testing/dialogue-mocks';
+import {
+  analysisOk,
+  mockDialogueApi,
+} from '@/features/dialogue/testing/dialogue-mocks';
 import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
 import { testUtterance } from '@/shared/testing/fixtures/session';
 

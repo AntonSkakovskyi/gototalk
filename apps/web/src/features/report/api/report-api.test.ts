@@ -2,7 +2,7 @@ import { ERROR_CODES } from '@gototalk/shared';
 import {
   mockReportApi,
   REPORT_SESSION_ID,
-} from '@/shared/testing/report-mocks';
+} from '@/features/report/testing/report-mocks';
 import { mockApi } from '@/shared/testing/mock-api';
 import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
 import { testReport } from '@/shared/testing/fixtures/report';

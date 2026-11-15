@@ -3,11 +3,11 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import uk from '@/shared/i18n/uk.json';
 import {
-  DIALOGUE_SESSION_ID,
   HINT_PHRASE,
   HINT_TRANSLATION,
   mockDialogueApi,
-} from '@/shared/testing/dialogue-mocks';
+} from '@/features/dialogue/testing/dialogue-mocks';
+import { DIALOGUE_SESSION_ID } from '@/entities/session/testing/session-entity-mocks';
 import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 import { HintPanel } from './HintPanel';

@@ -9,8 +9,8 @@ import {
 import uk from '@/shared/i18n/uk.json';
 import {
   DIALOGUE_SESSION_ID,
-  mockDialogueApi,
-} from '@/shared/testing/dialogue-mocks';
+  mockSessionEntityApi,
+} from '@/entities/session/testing/session-entity-mocks';
 import { createTestQueryClient } from '@/shared/testing/query-wrapper';
 import { errorResponse } from '@/shared/testing/http-responses';
 import {
@@ -37,7 +37,7 @@ function CachedTranscript() {
 }
 
 async function setup(markMistake?: () => Response | Promise<Response>) {
-  const api = mockDialogueApi(markMistake ? { markMistake } : {});
+  const api = mockSessionEntityApi(markMistake ? { markMistake } : {});
   const queryClient = createTestQueryClient();
   queryClient.setQueryData(sessionKeys.details(DIALOGUE_SESSION_ID), DETAILS);
   renderWithProviders(<CachedTranscript />, { queryClient });

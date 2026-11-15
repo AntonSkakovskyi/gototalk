@@ -6,8 +6,8 @@ import {
 } from '@/entities/session/api/session-details';
 import {
   DIALOGUE_SESSION_ID,
-  mockDialogueApi,
-} from '@/shared/testing/dialogue-mocks';
+  mockSessionEntityApi,
+} from '@/entities/session/testing/session-entity-mocks';
 import {
   createQueryWrapper,
   createTestQueryClient,
@@ -42,7 +42,7 @@ function setup() {
 describe('useMarkMistake', () => {
   it('[TC-04-04] marks the mistake as false and updates it in the cache', async () => {
     const { result, cachedMistake } = setup();
-    const api = mockDialogueApi();
+    const api = mockSessionEntityApi();
 
     act(() => result.current.mark(testMistake().id));
 
@@ -54,7 +54,7 @@ describe('useMarkMistake', () => {
   it('[TC-04-04] reports pending only for the mistake being marked', async () => {
     const { result } = setup();
     let release: (response: Response) => void = () => undefined;
-    mockDialogueApi({
+    mockSessionEntityApi({
       markMistake: () =>
         new Promise<Response>((done) => {
           release = done;
@@ -76,7 +76,7 @@ describe('useMarkMistake', () => {
 
   it('[TC-04-08] keeps the cache and exposes the error when marking fails', async () => {
     const { result, cachedMistake } = setup();
-    mockDialogueApi({
+    mockSessionEntityApi({
       markMistake: () => errorResponse(404, ERROR_CODES.MISTAKE_NOT_FOUND),
     });
 
@@ -94,7 +94,7 @@ describe('useMarkMistake', () => {
   it('[TC-04-04] a late details refetch does not overwrite the marked mistake', async () => {
     const { queryClient, result, cachedMistake } = setup();
     let release: (response: Response) => void = () => undefined;
-    mockDialogueApi({
+    mockSessionEntityApi({
       details: () =>
         new Promise<Response>((done) => {
           release = done;
@@ -120,7 +120,7 @@ describe('useMarkMistake', () => {
     const { queryClient, result } = setup();
     const reportKey = sessionKeys.report(DIALOGUE_SESSION_ID);
     queryClient.setQueryData(reportKey, { id: 'report' });
-    mockDialogueApi();
+    mockSessionEntityApi();
 
     act(() => result.current.mark(testMistake().id));
 
@@ -133,7 +133,7 @@ describe('useMarkMistake', () => {
     const { queryClient, result } = setup();
     const reportKey = sessionKeys.report(DIALOGUE_SESSION_ID);
     queryClient.setQueryData(reportKey, { id: 'report' });
-    mockDialogueApi({
+    mockSessionEntityApi({
       markMistake: () => errorResponse(404, ERROR_CODES.MISTAKE_NOT_FOUND),
     });
 

@@ -12,7 +12,7 @@ import { jsonResponse } from '@/shared/testing/http-responses';
 import { testReport } from '@/shared/testing/fixtures/report';
 import { testSession } from '@/shared/testing/fixtures/session';
 import { renderWithProviders } from '@/shared/testing/test-utils';
-import { mockWordsApi } from '@/shared/testing/words-mocks';
+import { mockWordsApi } from './words-mocks';
 
 const SESSION_ID = testSession().id;
 const REPORT_PATH = `/api/sessions/${SESSION_ID}/report`;

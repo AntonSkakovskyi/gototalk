@@ -4,7 +4,7 @@ import { sessionKeys } from '@/entities/session/api/session-details';
 import {
   mockReportApi,
   REPORT_SESSION_ID,
-} from '@/shared/testing/report-mocks';
+} from '@/features/report/testing/report-mocks';
 import { errorResponse } from '@/shared/testing/http-responses';
 import { testReport } from '@/shared/testing/fixtures/report';
 import { reportQueryOptions } from './report-queries';

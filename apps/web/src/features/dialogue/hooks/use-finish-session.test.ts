@@ -4,10 +4,8 @@ import {
   sessionDetailsQueryOptions,
   sessionKeys,
 } from '@/entities/session/api/session-details';
-import {
-  DIALOGUE_SESSION_ID,
-  mockDialogueApi,
-} from '@/shared/testing/dialogue-mocks';
+import { mockDialogueApi } from '@/features/dialogue/testing/dialogue-mocks';
+import { DIALOGUE_SESSION_ID } from '@/entities/session/testing/session-entity-mocks';
 import {
   createQueryWrapper,
   createTestQueryClient,

@@ -10,7 +10,7 @@ import uk from '@/shared/i18n/uk.json';
 import { deferred } from '@/shared/testing/deferred';
 import { createTestQueryClient } from '@/shared/testing/query-wrapper';
 import { mockApi } from '@/shared/testing/mock-api';
-import { reportOk } from '@/shared/testing/report-mocks';
+import { reportOk } from '@/features/report/testing/report-mocks';
 import { TEST_PROFILE } from '@/shared/testing/fixtures/profile';
 import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
 import {

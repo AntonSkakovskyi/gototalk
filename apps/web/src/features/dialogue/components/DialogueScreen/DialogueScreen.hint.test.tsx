@@ -7,7 +7,7 @@ import {
   HINT_PHRASE,
   HINT_TRANSLATION,
   mockDialogueApi,
-} from '@/shared/testing/dialogue-mocks';
+} from '@/features/dialogue/testing/dialogue-mocks';
 import { testSessionDetails } from '@/shared/testing/fixtures/session';
 import {
   FIRST_QUESTION,

@@ -3,13 +3,13 @@ import {
   type PlanSessionRequest,
   type SessionPlan,
 } from '@gototalk/shared';
-import { mockApi, type MockRequest } from './mock-api';
-import { jsonResponse } from './http-responses';
+import { mockApi, type MockRequest } from '@/shared/testing/mock-api';
+import { jsonResponse } from '@/shared/testing/http-responses';
 import {
   testSessionDetails,
   testSessionPlan,
   testUtterance,
-} from './fixtures/session';
+} from '@/shared/testing/fixtures/session';
 
 export const STARTED_SESSION = testSessionDetails({
   id: '7c2e8b64-5f0a-4d1b-8e3a-2a9b4c6d0099',

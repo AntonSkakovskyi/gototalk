@@ -3,13 +3,16 @@ import { renderHook } from '@testing-library/react';
 import { StrictMode, type ReactNode } from 'react';
 import { useAnswerFlow } from '@/features/dialogue/hooks/use-answer-flow';
 import { sessionKeys } from '@/entities/session/api/session-details';
-import { DIALOGUE_SESSION_ID } from './dialogue-mocks';
-import { createQueryWrapper, createTestQueryClient } from './query-wrapper';
+import { DIALOGUE_SESSION_ID } from '@/entities/session/testing/session-entity-mocks';
+import {
+  createQueryWrapper,
+  createTestQueryClient,
+} from '@/shared/testing/query-wrapper';
 import {
   testSessionDetails,
   testTurnResult,
   testUtterance,
-} from './fixtures/session';
+} from '@/shared/testing/fixtures/session';
 
 export const TURN = testTurnResult();
 export const ANSWER_TEXT = TURN.utterance.text;

@@ -1,6 +1,9 @@
 import { ERROR_CODES } from '@gototalk/shared';
 import { act, waitFor } from '@testing-library/react';
-import { analysisOk, mockDialogueApi } from '@/shared/testing/dialogue-mocks';
+import {
+  analysisOk,
+  mockDialogueApi,
+} from '@/features/dialogue/testing/dialogue-mocks';
 import {
   ANSWER_TEXT,
   PENDING,
@@ -8,7 +11,7 @@ import {
   analysisRequests,
   setup,
   withAnswered,
-} from '@/shared/testing/answer-flow-setup';
+} from '@/features/dialogue/testing/answer-flow-setup';
 import { deferred } from '@/shared/testing/deferred';
 import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
 import {

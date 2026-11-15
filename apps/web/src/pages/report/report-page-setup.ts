@@ -1,5 +1,5 @@
 import { mockApi } from '@/shared/testing/mock-api';
-import { reportOk } from '@/shared/testing/report-mocks';
+import { reportOk } from '@/features/report/testing/report-mocks';
 import { TEST_PROFILE } from '@/shared/testing/fixtures/profile';
 import { TEST_USER } from '@/shared/testing/fixtures/auth';
 import { jsonResponse } from '@/shared/testing/http-responses';

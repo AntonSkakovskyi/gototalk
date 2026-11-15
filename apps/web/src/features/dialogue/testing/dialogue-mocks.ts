@@ -1,23 +1,24 @@
 import {
   AnswerTextRequestSchema,
   HintRequestSchema,
-  MarkMistakeRequestSchema,
   type AnswerTextRequest,
   type HintRequest,
 } from '@gototalk/shared';
-import { mockApi, type MockRequest } from './mock-api';
-import { jsonResponse } from './http-responses';
-import { testMistake, testSession, testTurnResult } from './fixtures/session';
+import {
+  SESSION_PATH,
+  markMistakeBodies,
+  markMistakeOk,
+  sessionEntityRoutes,
+} from '@/entities/session/testing/session-entity-mocks';
+import { mockApi, type MockRequest } from '@/shared/testing/mock-api';
+import { jsonResponse } from '@/shared/testing/http-responses';
+import { testSession, testTurnResult } from '@/shared/testing/fixtures/session';
 
 type Reply = Response | Promise<Response>;
-
-export const DIALOGUE_SESSION_ID = testSession().id;
-const SESSION_PATH = `/api/sessions/${DIALOGUE_SESSION_ID}`;
 
 export const answerCreated = () =>
   jsonResponse(testTurnResult().utterance, 201);
 export const analysisOk = () => jsonResponse(testTurnResult(), 201);
-export const markMistakeOk = () => jsonResponse(testMistake({ isFalse: true }));
 export const HINT_PHRASE = 'In my opinion, the best way is to';
 export const HINT_TRANSLATION = 'meeting';
 export const hintOk = (request: HintRequest) =>
@@ -69,16 +70,12 @@ export function mockDialogueApi({
 }: DialogueApiReplies = {}) {
   const turn = testTurnResult();
   const { requests } = mockApi({
-    ...(details === undefined ? {} : { [`GET ${SESSION_PATH}`]: details }),
+    ...sessionEntityRoutes({ details, markMistake }),
     [`POST ${SESSION_PATH}/utterances`]: (request) =>
       request.body instanceof FormData
         ? voiceAnswer(audioOf(request.body))
         : answer(AnswerTextRequestSchema.parse(request.body)),
     [`POST ${SESSION_PATH}/utterances/${turn.utterance.id}/analysis`]: analyze,
-    [`PATCH ${SESSION_PATH}/mistakes/${testMistake().id}`]: (request) => {
-      MarkMistakeRequestSchema.parse(request.body);
-      return markMistake();
-    },
     [`POST ${SESSION_PATH}/hints`]: (request) =>
       hint(HintRequestSchema.parse(request.body)),
     [`POST ${SESSION_PATH}/finish`]: finish,
@@ -90,7 +87,7 @@ export function mockDialogueApi({
       bodiesOf(requests, 'POST', '/utterances').flatMap((body) =>
         body instanceof FormData ? [audioOf(body)] : [],
       ),
-    markMistakeRequests: () => bodiesOf(requests, 'PATCH', testMistake().id),
+    markMistakeRequests: () => markMistakeBodies(requests),
     hintRequests: () => bodiesOf(requests, 'POST', '/hints'),
     finishRequests: () => bodiesOf(requests, 'POST', '/finish'),
   };

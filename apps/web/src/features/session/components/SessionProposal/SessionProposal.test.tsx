@@ -13,7 +13,7 @@ import {
   mockSessionApi,
   planFor,
   startOk,
-} from '@/shared/testing/session-mocks';
+} from '@/features/session/testing/session-mocks';
 import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
 import { testSessionPlan } from '@/shared/testing/fixtures/session';
 import { renderWithProviders } from '@/shared/testing/test-utils';
