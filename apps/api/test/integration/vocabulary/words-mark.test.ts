@@ -4,15 +4,15 @@ import { WordSchema } from '@gototalk/shared';
 import type pg from 'pg';
 import request from 'supertest';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { PG_POOL } from '../src/core/db/db.tokens.js';
+import { PG_POOL } from '../../../src/core/db/db.tokens.js';
 import {
   expectError,
   registerUser,
   tokenOfMissingUser,
-} from './support/api-client.js';
-import { seedWords } from './support/dialogue-flow.js';
-import { createTestApp } from './support/test-app.js';
-import { resetUserData } from './support/test-db.js';
+} from '../../support/api-client.js';
+import { seedWords } from '../../support/dialogue-flow.js';
+import { createTestApp } from '../../support/test-app.js';
+import { resetUserData } from '../../support/test-db.js';
 
 interface WordRow {
   id: string;

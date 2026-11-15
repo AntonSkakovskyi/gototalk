@@ -296,7 +296,8 @@
 - [x] **31. `integration/report/`** – `report-aggregates`, `report-aggregates-session`, `report-finish`, `report-read`, `report-read-access`, `report-store`, `report-unavailable`, `sessions-finish`, `sessions-finish-locking`.
   - Коміт: `refactor(api-test): move report and finish integration tests`
 
-- [ ] **32. `integration/vocabulary/`** – `session-words`, `vocabulary-usage`, `words-list`, `words-mark`.
+- [x] **32. `integration/vocabulary/`** – `session-words`, `vocabulary-usage`, `words-list`, `words-mark`.
+  - Додатково: з `apps/api/vitest.config.ts` прибрано проміжний запис `'test/*.test.ts'` (задача 25); у `test/` лишились лише `global-setup.ts`, `support/`, `integration/`; 54 integration-файли, 481 тест.
   - Коміт: `refactor(api-test): move vocabulary integration tests`
 
 - [ ] **33. Розбиття довгих тестів (A7, r.54, r.60, r.67)**

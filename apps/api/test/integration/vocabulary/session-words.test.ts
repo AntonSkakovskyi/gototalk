@@ -4,12 +4,12 @@ import { AuthResponseSchema } from '@gototalk/shared';
 import type pg from 'pg';
 import request from 'supertest';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { DRIZZLE, PG_POOL } from '../src/core/db/db.tokens.js';
-import type { Database } from '../src/core/db/db.tokens.js';
-import { SessionWordsRepository } from '../src/modules/vocabulary/persistence/session-words.repository.js';
-import { WordsRepository } from '../src/modules/vocabulary/persistence/words.repository.js';
-import { createTestApp } from './support/test-app.js';
-import { resetUserData } from './support/test-db.js';
+import { DRIZZLE, PG_POOL } from '../../../src/core/db/db.tokens.js';
+import type { Database } from '../../../src/core/db/db.tokens.js';
+import { SessionWordsRepository } from '../../../src/modules/vocabulary/persistence/session-words.repository.js';
+import { WordsRepository } from '../../../src/modules/vocabulary/persistence/words.repository.js';
+import { createTestApp } from '../../support/test-app.js';
+import { resetUserData } from '../../support/test-db.js';
 
 const PASSWORD = 'correct-horse-battery';
 
