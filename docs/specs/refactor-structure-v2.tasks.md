@@ -490,7 +490,7 @@
   - `README.md` – дерево структури; `docs/WORKFLOW.md` – шляхи; `.claude/agents/reviewer.md` – перевірка меж модулів і шарів за новими правилами; `.claude/skills/db-migration/SKILL.md` – шляхи, якщо змінились; `KICKOFF.md` прочитати перед переносом (унікальне перенести в `docs/product.md`/`tech-decisions.md`), потім `git mv KICKOFF.md docs/archive/KICKOFF.md`; посилання в `CLAUDE.md` оновити.
   - Коміт: `docs: refresh README, workflow and reviewer rules, archive kickoff`
 
-- [ ] **53. `docs/backlog.md`: тріаж (R1)**
+- [x] **53. `docs/backlog.md`: тріаж (R1)**
   - Видалити закриті рядки (таблиця нижче), перелічити їх у цьому файлі; решту згрупувати за областями (безпека/деплой, тести, UX, мовна модель) без зміни змісту; оновити застарілі шляхи в рядках, що лишаються.
   - Коміт: `docs: triage backlog after structure v2`
 
