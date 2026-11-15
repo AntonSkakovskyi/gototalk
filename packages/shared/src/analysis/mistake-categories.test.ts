@@ -1,9 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import {
-  MISTAKE_CATEGORY_CODES,
-  MistakeCategoryCodeSchema,
-} from '../index.js';
+import { MISTAKE_CATEGORY_CODES, MistakeCategoryCodeSchema } from '../index.js';
 
 describe('shared schemas', () => {
   it('[TC-00-04] MistakeCategoryCodeSchema matches the INSERT in migration 0002', () => {

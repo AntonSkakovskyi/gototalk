@@ -82,3 +82,5 @@
 | Після задачі 18: `eslint.config.js` має кидати помилку, якщо для каталогу в `apps/api/src/modules` немає запису в `API_MODULE_DEPS` | рев'ю тулінгу 00–03 (рефакторинг структури v2) | будь-яка |
 | Перевірка `entities/a → entities/b` у задачі 49 потребує тимчасової другої сутності, бо наразі є лише `session` | рев'ю тулінгу 00–03 (рефакторинг структури v2) | 49 |
 | `app.module.test.ts`: три тести компілюють свіжий `AppModule` (повільніше); перший тест «AppModule compiles» повністю покритий рештою | рев'ю тулінгу 00–03 (рефакторинг структури v2) | будь-яка |
+| `BETTER_PHRASING_TEXT_MAX` (shared) і `MISTAKE_TEXT_MAX` (api `model-output.ts`) обидва 200 і можуть розійтись із промптом `error-analysis.v1.md`: експортувати одну константу з shared і посилатись на неї | рев'ю shared 04–07 (рефакторинг структури v2) | будь-яка |
+| `model-output.ts`: `MISTAKE_TEXT_MAX`, `MISTAKE_EXPLANATION_MAX`, `ANALYSIS_MAX_BETTER` експортовані без споживачів поза файлом; `shared/index.ts` згрупувати за каталогами; єдиний стиль імпортів (`../index.js`) і назв `describe` у тестах shared | рев'ю shared 04–07 (рефакторинг структури v2) | будь-яка |
