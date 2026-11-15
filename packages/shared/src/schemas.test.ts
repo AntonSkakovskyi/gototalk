@@ -1,38 +1,11 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import {
-  ErrorResponseSchema,
-  HealthResponseSchema,
   MISTAKE_CATEGORY_CODES,
   MistakeCategoryCodeSchema,
 } from './index.js';
 
 describe('shared schemas', () => {
-  it('[TC-00-04] ErrorResponseSchema accepts { error: { code, message } }', () => {
-    const value = { error: { code: 'NOT_FOUND', message: 'Cannot GET /x' } };
-    expect(ErrorResponseSchema.parse(value)).toEqual(value);
-  });
-
-  it('[TC-00-04] ErrorResponseSchema rejects a response without error.code', () => {
-    expect(
-      ErrorResponseSchema.safeParse({ error: { message: 'x' } }).success,
-    ).toBe(false);
-    expect(ErrorResponseSchema.safeParse({ message: 'x' }).success).toBe(false);
-  });
-
-  it('[TC-00-04] HealthResponseSchema accepts ok/ok and rejects other values', () => {
-    expect(HealthResponseSchema.parse({ status: 'ok', db: 'ok' })).toEqual({
-      status: 'ok',
-      db: 'ok',
-    });
-    expect(
-      HealthResponseSchema.safeParse({ status: 'ok', db: 'down' }).success,
-    ).toBe(false);
-    expect(HealthResponseSchema.safeParse({ status: 'ok' }).success).toBe(
-      false,
-    );
-  });
-
   it('[TC-00-04] MistakeCategoryCodeSchema matches the INSERT in migration 0002', () => {
     const sql = readFileSync(
       new URL(

@@ -113,7 +113,7 @@
 
 ## packages/shared
 
-- [ ] **04. `common/`: errors, health, pagination, providers (A6/P1/r.26)**
+- [x] **04. `common/`: errors, health, pagination, providers (A6/P1/r.26)**
   - `errors.ts` → `common/errors.ts`; `ERROR_CODES`/`ErrorCode` з `auth.ts` → `common/errors.ts`; `health.ts` → `common/health.ts`; `pagination.ts` (+test) → `common/pagination.ts`.
   - Нове: `common/providers.ts` (`STT_PROVIDERS = ['fake','deepgram']`, `LLM_PROVIDERS = ['fake','gemini']`); `auth.ts:31-32` і `apps/api/src/core/config/env.schema.ts:74,80` використовують його (закриває backlog r.26).
   - Тести для `errors`/`health` – із `schemas.test.ts` у `common/errors.test.ts`, `common/health.test.ts` (кількість `it` збережена).

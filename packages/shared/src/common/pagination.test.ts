@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { PAGE_SIZE_DEFAULT, PAGE_SIZE_MAX, PageQuerySchema } from './index.js';
+import { PAGE_SIZE_DEFAULT, PAGE_SIZE_MAX, PageQuerySchema } from '../index.js';
 
 describe('pagination', () => {
   it('[TC-05-03] PageQuerySchema defaults the limit and keeps the cursor', () => {
