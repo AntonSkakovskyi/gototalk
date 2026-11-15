@@ -10,7 +10,6 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
-  ApiBody,
   ApiOperation,
   ApiResponse,
   ApiTags,
@@ -24,6 +23,7 @@ import {
 import type { AuthenticatedUser } from './decorators/current-user.decorator.js';
 import { clearRefreshCookie } from './lib/refresh-cookie.js';
 import type { CookieResponse } from './lib/refresh-cookie.js';
+import { ApiZodBody } from '../../common/swagger/api-zod.decorators.js';
 import { ZodBodyPipe } from '../../common/pipes/zod-body.pipe.js';
 import { MeService } from './me.service.js';
 
@@ -78,15 +78,7 @@ export class MeController {
     description:
       'Requires the current password. Deletes the user; the database cascade removes all of their data. Clears the refresh cookie.',
   })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      required: ['password'],
-      properties: {
-        password: { type: 'string', minLength: 1, maxLength: 128 },
-      },
-    },
-  })
+  @ApiZodBody(DeleteAccountRequestSchema)
   @ApiResponse({ status: 204, description: 'Account deleted' })
   @ApiResponse({ status: 400, description: 'VALIDATION_ERROR' })
   @ApiResponse({ status: 401, description: 'UNAUTHORIZED' })

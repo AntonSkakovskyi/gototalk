@@ -239,12 +239,13 @@
 
 ## apps/api/src: Swagger і правила
 
-- [ ] **22. `ApiZodBody` / `ApiZodQuery` `[risk]` (A5)**
+- [x] **22. `ApiZodBody` / `ApiZodQuery` `[risk]` (A5)**
   - Context7 (Zod 4): `z.toJSONSchema(schema, { target: 'openapi-3.0', io: 'input', unrepresentable: 'any' })`.
   - TDD: `common/swagger/api-zod.decorators.test.ts` – декоратор додає у метадані `@nestjs/swagger` схему body/query, згенеровану з Zod-схеми shared; `z.coerce`, `.default`, `.refine`, `.transform` не ламають генерацію.
   - Замінити 12 ручних `@ApiBody({ schema: {…} })` і відповідні `@ApiQuery` у 10 контролерах на `ApiZodBody(Schema)`/`ApiZodQuery(Schema)`; прибрати імпорти констант shared, потрібних лише для Swagger (`TOPIC_MAX` тощо; 6 контролерів).
   - Новий інтеграційний тест `test/openapi.test.ts` (у задачі 25 переїде в `test/integration/core/`): `GET /api/docs-json` – кожен маршрут із тілом/запитом має схему; перелік шляхів і методів дорівнює еталону, знятому до рефакторингу (знімок списку `paths` зберегти як константу в тесті).
   - Перевірка: HTTP-контракт не змінюється (e2e, інтеграційні тести валідації 400).
+  - Відхилення: замінено 11 з 12 `@ApiBody` у 8 контролерах (не 10) + 2 `@ApiQuery` (words, sessions/history); тіло відповіді в `dialogue.controller` (JSON `{text}` або multipart-аудіо) лишилось ручним, бо одна Zod-схема його не описує; `ApiZodQuery` бере властивості з `io: 'output'` (щоб `limit` лишився integer 1..50 з default), `required` з input; через `io: 'input'` у документації зникли `format: email` (register/login), `minProperties: 1` (PATCH goals), `uniqueItems` (profile `scenes`), з'явились `default` для `previousTopics` і `feedbackMode`; HTTP-поведінка не змінена; снапшот `paths` (29 операцій) знято з застосунку до змін схем; один задокументований каст на межі Zod JSON Schema → Nest `SchemaObject`.
   - Коміт: `refactor(api): generate swagger request schemas from zod`
 
 - [ ] **23. `ApiZodResponse`**

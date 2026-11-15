@@ -1,7 +1,6 @@
 import { Body, Controller, HttpCode, Param, Patch } from '@nestjs/common';
 import {
   ApiBearerAuth,
-  ApiBody,
   ApiOkResponse,
   ApiOperation,
   ApiParam,
@@ -10,6 +9,7 @@ import {
 } from '@nestjs/swagger';
 import { MarkMistakeRequestSchema } from '@gototalk/shared';
 import type { MarkMistakeRequest, MistakeView } from '@gototalk/shared';
+import { ApiZodBody } from '../../common/swagger/api-zod.decorators.js';
 import { ZodBodyPipe } from '../../common/pipes/zod-body.pipe.js';
 import {
   CurrentUser,
@@ -33,13 +33,7 @@ export class MistakesController {
   })
   @ApiParam({ name: 'id', format: 'uuid' })
   @ApiParam({ name: 'mistakeId', format: 'uuid' })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      required: ['isFalse'],
-      properties: { isFalse: { type: 'boolean', enum: [true] } },
-    },
-  })
+  @ApiZodBody(MarkMistakeRequestSchema)
   @ApiOkResponse({ description: 'MistakeView with isFalse: true' })
   @ApiResponse({ status: 400, description: 'VALIDATION_ERROR' })
   @ApiResponse({ status: 401, description: 'UNAUTHORIZED' })

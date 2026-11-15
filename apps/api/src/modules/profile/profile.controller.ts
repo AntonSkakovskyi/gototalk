@@ -1,23 +1,18 @@
 import { Body, Controller, Get, Put } from '@nestjs/common';
 import {
   ApiBearerAuth,
-  ApiBody,
   ApiOperation,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import {
-  LEVELS,
-  MAX_SCENE_LENGTH,
-  MAX_SCENES,
-  UpdateProfileRequestSchema,
-} from '@gototalk/shared';
+import { UpdateProfileRequestSchema } from '@gototalk/shared';
 import type { Profile, UpdateProfileRequest } from '@gototalk/shared';
 import {
   CurrentUser,
   requireUserId,
 } from '../auth/decorators/current-user.decorator.js';
 import type { AuthenticatedUser } from '../auth/decorators/current-user.decorator.js';
+import { ApiZodBody } from '../../common/swagger/api-zod.decorators.js';
 import { ZodBodyPipe } from '../../common/pipes/zod-body.pipe.js';
 import { ProfileService } from './profile.service.js';
 
@@ -48,22 +43,7 @@ export class ProfileController {
     description:
       'Upsert: creates the profile when missing, otherwise replaces level and scenes and moves updatedAt.',
   })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      required: ['level', 'scenes'],
-      properties: {
-        level: { type: 'string', enum: [...LEVELS] },
-        scenes: {
-          type: 'array',
-          minItems: 1,
-          maxItems: MAX_SCENES,
-          uniqueItems: true,
-          items: { type: 'string', minLength: 1, maxLength: MAX_SCENE_LENGTH },
-        },
-      },
-    },
-  })
+  @ApiZodBody(UpdateProfileRequestSchema)
   @ApiResponse({ status: 200, description: 'The saved Profile' })
   @ApiResponse({ status: 400, description: 'VALIDATION_ERROR' })
   @ApiResponse({ status: 401, description: 'UNAUTHORIZED' })

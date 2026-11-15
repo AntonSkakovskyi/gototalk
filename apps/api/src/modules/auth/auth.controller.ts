@@ -8,14 +8,14 @@ import {
   Res,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import type { ApiBodyOptions } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LoginRequestSchema, RegisterRequestSchema } from '@gototalk/shared';
 import type {
   AuthResponse,
   LoginRequest,
   RegisterRequest,
 } from '@gototalk/shared';
+import { ApiZodBody } from '../../common/swagger/api-zod.decorators.js';
 import { ZodBodyPipe } from '../../common/pipes/zod-body.pipe.js';
 import { AuthService } from './auth.service.js';
 import {
@@ -25,28 +25,6 @@ import {
 } from './lib/refresh-cookie.js';
 import type { CookieRequest, CookieResponse } from './lib/refresh-cookie.js';
 import { Public } from '../../common/decorators/public.decorator.js';
-
-const REGISTER_BODY: ApiBodyOptions = {
-  schema: {
-    type: 'object',
-    required: ['email', 'password'],
-    properties: {
-      email: { type: 'string', format: 'email' },
-      password: { type: 'string', minLength: 8, maxLength: 128 },
-    },
-  },
-};
-
-const LOGIN_BODY: ApiBodyOptions = {
-  schema: {
-    type: 'object',
-    required: ['email', 'password'],
-    properties: {
-      email: { type: 'string', format: 'email' },
-      password: { type: 'string', minLength: 1, maxLength: 128 },
-    },
-  },
-};
 
 @ApiTags('auth')
 @Public()
@@ -60,7 +38,7 @@ export class AuthController {
     description:
       'Creates the user, returns an access token and sets the refresh cookie.',
   })
-  @ApiBody(REGISTER_BODY)
+  @ApiZodBody(RegisterRequestSchema)
   @ApiResponse({ status: 201, description: 'User created' })
   @ApiResponse({ status: 400, description: 'VALIDATION_ERROR' })
   @ApiResponse({ status: 409, description: 'EMAIL_TAKEN' })
@@ -80,7 +58,7 @@ export class AuthController {
     description:
       'The same 401 INVALID_CREDENTIALS is returned for an unknown email and a wrong password.',
   })
-  @ApiBody(LOGIN_BODY)
+  @ApiZodBody(LoginRequestSchema)
   @ApiResponse({ status: 200, description: 'Logged in' })
   @ApiResponse({ status: 400, description: 'VALIDATION_ERROR' })
   @ApiResponse({ status: 401, description: 'INVALID_CREDENTIALS' })
