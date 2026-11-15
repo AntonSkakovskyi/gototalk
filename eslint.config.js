@@ -40,12 +40,15 @@ const listDirs = (dir, { required = true } = {}) => {
 
 const WEB_FEATURES = listDirs(`${WEB_SRC}/features`);
 const WEB_ENTITIES = listDirs(`${WEB_SRC}/entities`, { required: false });
-const API_MODULES = [
-  ...new Set([
-    ...listDirs(`${API_SRC}/modules`),
-    ...Object.keys(API_MODULE_DEPS),
-  ]),
-];
+const API_MODULES = Object.keys(API_MODULE_DEPS);
+
+for (const dir of listDirs(`${API_SRC}/modules`)) {
+  if (!API_MODULES.includes(dir)) {
+    throw new Error(
+      `eslint.config.js: module "${dir}" has no entry in API_MODULE_DEPS`,
+    );
+  }
+}
 
 const sliceZones = (root, names, message) =>
   names.length < 2
@@ -120,33 +123,31 @@ const webDebtZones = [
 const apiModuleZones = (module) => {
   const target = `${API_SRC}/modules/${module}`;
   const otherModules = API_MODULES.filter((other) => other !== module);
-  const zones = [
+  const allowed = API_MODULE_DEPS[module];
+  return [
     {
       target: otherModules.map((other) => `${API_SRC}/modules/${other}`),
       from: API_PRIVATE_DIRS.map((dir) => `${target}/${dir}`),
       message: `${module} keeps ${API_PRIVATE_DIRS.join(', ')} private.`,
     },
-  ];
-  const allowed = API_MODULE_DEPS[module];
-  if (allowed) {
-    zones.push({
+    {
       target,
       from: otherModules
         .filter((other) => !allowed.includes(other))
         .map((other) => `${API_SRC}/modules/${other}`),
       message: `${module} may import only: ${allowed.join(', ') || 'nothing'}.`,
-    });
-  }
-  return zones;
+    },
+  ];
 };
 
-const apiErrorZones = ['core', 'common', 'integrations'].map((layer) => ({
-  target: `${API_SRC}/${layer}`,
-  from: `${API_SRC}/modules`,
-  message: `${layer} may not import modules.`,
-}));
-
-const apiDebtZones = API_MODULES.flatMap(apiModuleZones);
+const apiZones = [
+  ...['core', 'common', 'integrations'].map((layer) => ({
+    target: `${API_SRC}/${layer}`,
+    from: `${API_SRC}/modules`,
+    message: `${layer} may not import modules.`,
+  })),
+  ...API_MODULES.flatMap(apiModuleZones),
+];
 
 const webTestFiles = [
   `${WEB_SRC}/**/*.test.{ts,tsx}`,
@@ -207,7 +208,7 @@ export default defineConfig(
     languageOptions: { globals: { ...globals.browser } },
   },
   {
-    // Debt zones are warnings, so they live under a second plugin name: severity is per rule, not per zone.
+    // Web debt zones stay warnings until web cleanup, so they use a second plugin name: severity is per rule, not per zone.
     plugins: { 'import-x-debt': importX },
   },
   {
@@ -250,13 +251,9 @@ export default defineConfig(
     rules: {
       'import-x/no-restricted-paths': [
         'error',
-        { basePath: import.meta.dirname, zones: apiErrorZones },
+        { basePath: import.meta.dirname, zones: apiZones },
       ],
-      'import-x-debt/no-restricted-paths': [
-        'warn',
-        { basePath: import.meta.dirname, zones: apiDebtZones },
-      ],
-      'import-x/no-cycle': 'warn',
+      'import-x/no-cycle': 'error',
     },
   },
   {

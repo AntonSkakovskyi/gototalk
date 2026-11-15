@@ -254,7 +254,7 @@
   - Відхилення: замінено 26 успішних відповідей (усі, що мають тіло й точну схему в shared); 204-відповіді без тіла лишились без змін; текстовий опис 2xx збережено як `description`; в `health` зник ручний `example`; `ApiOkResponse`/`ApiCreatedResponse` більше не використовуються.
   - Коміт: `refactor(api): document response schemas from zod`
 
-- [ ] **24. API-правила в `error`, PR1 завершено**
+- [x] **24. API-правила в `error`, PR1 завершено**
   - `eslint.config.js`: api-зони приватності модулів, DAG і `import-x/no-cycle` → `error`. Лишається `warn` для web (до задачі 49). `test/` поза зонами.
   - Перевірка тимчасовими порушеннями: імпорт `modules/session/persistence/…` з `report`, імпорт `modules/dialogue` з `session`, цикл між двома файлами: кожне дає помилку lint; відкотити.
   - Фінальна перевірка PR1 (див. «Політика перевірок»): `pnpm build`, `pnpm test:e2e`, `pnpm dev`, DI, `docs-json`, `pnpm db:pull` без diff, кількості тестів.
