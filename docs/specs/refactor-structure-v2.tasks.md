@@ -494,7 +494,7 @@
   - Видалити закриті рядки (таблиця нижче), перелічити їх у цьому файлі; решту згрупувати за областями (безпека/деплой, тести, UX, мовна модель) без зміни змісту; оновити застарілі шляхи в рядках, що лишаються.
   - Коміт: `docs: triage backlog after structure v2`
 
-- [ ] **54. Таблиця «старий шлях → новий» для всіх тестів (R5, лаба 9)**
+- [x] **54. Таблиця «старий шлях → новий» для всіх тестів (R5, лаба 9)**
   - Побудувати з git: `git diff -M --name-status main HEAD` по `apps/api/src`, `apps/api/test`, `apps/web/src`, `packages/shared/src`, `e2e` для файлів `*.test.*` і `*.spec.*`; додати таблиці нижче (api/src, shared, web, e2e); для файлів, що розбиті або об'єднані, вказати «старий → нові». Кількості тестів: до / після за пакетами.
   - Коміт: `docs: record test file move tables for structure v2`
 
@@ -521,14 +521,160 @@
 
 Формат як у `refactor-structure.tasks.md`: «Старий шлях | Новий шлях», шляхи від кореня відповідного пакета; розбиті файли «старий → нові». Таблиця api/test вже наведена в PR 2 і лише звіряється.
 
+### Базова точка та команда
+
+Базова точка «до» – коміт `0429c28` (`docs: plan structure refactor v2`, останній перед задачею 00): PR 1–3 уже злиті в `main`, тому `git diff main HEAD` майже порожній. Команда: `git diff -M30% --name-status 0429c28 HEAD -- apps/api/src apps/api/test apps/web/src packages/shared/src e2e`, відфільтрована за `*.test.*` і `*.spec.*`. Поріг -M30% потрібен, щоб git склеїв сильно змінені перейменування: при -M50% лише `api/test/auth.test.ts` (R044 → `integration/auth/auth-refresh.test.ts`) і `shared/src/schemas.test.ts` (R042 → `analysis/mistake-categories.test.ts`) показуються як пара «видалено + додано», решта збігається. Підсумок поза `apps/api/test`: 61 рядок «старий → новий» (з них `core-services.test.ts` → `app.module.test.ts` є злиттям, `fake-adapters`+`fake-fail-modes` – злиттям і розбиттям), 7 розбитих файлів (рядки з кількома новими шляхами), 99 тестових файлів змінено на місці (лише імпорти й дрібні правки, у таблицях не перелічені), 5 нових файлів. Таблиця для `apps/api/test` (53 перейменування) наведена вище в розділі «Таблиця переміщень: api/test» і тут не дублюється. Шляхи від кореня пакета (`apps/api`, `apps/web`, `packages/shared`); `e2e` – від кореня репозиторію. Розбиті й об'єднані файли: «старий → нові» (кілька шляхів через кому).
+
+### Кількості тестів до / після
+
+| Пакет | Тестів до | Тестів після | Тестових файлів до | Тестових файлів після |
+|---|---|---|---|---|
+| packages/shared | 115 | 91 | 10 | 13 |
+| apps/api (unit + integration) | 1124 | 1177 | 116 | 127 |
+| apps/web | 965 | 971 | 125 | 127 |
+| e2e | 24 | 24 | 7 | 7 |
+| shared + api | 1239 | 1268 | 126 | 140 |
+
+Різниця shared + api (+29) складається з нових тестів: DI smoke 1, prompt registry 3, VocabularyWriter 3, `findDetails` 1, ApiZod-декоратори 12, openapi 9; 24 тести `llm.test.ts` лише перейшли зі shared в api разом із `llm.ts` (у сумі 0). У web +6 тестів `pageQueryString`.
+
 ### api/src і packages/shared
+
+#### api/src (від `apps/api`)
 
 | Старий шлях | Новий шлях |
 |---|---|
-| _(заповнити з `git diff -M` у задачі 54)_ | |
+| `src/common/keyset-cursor.test.ts` | `src/common/pagination/keyset-cursor.test.ts` |
+| `src/common/keyset-page.test.ts` | `src/common/pagination/keyset-page.test.ts` |
+| `src/common/language-model-http-errors.test.ts` | `src/common/errors/language-model-http-errors.test.ts` |
+| `src/common/zod-body.pipe.test.ts` | `src/common/pipes/zod-body.pipe.test.ts` |
+| `src/common/zod-query.pipe.test.ts` | `src/common/pipes/zod-query.pipe.test.ts` |
+| `src/core-services.test.ts` | `src/app.module.test.ts` |
+| `src/core/errors/all-exceptions.filter.test.ts` | `src/core/errors/all-exceptions.filter.test.ts`, `src/core/errors/all-exceptions.filter.zod.test.ts` |
+| `src/integrations/fake-adapters.test.ts`, `src/integrations/fake-fail-modes.test.ts` | `src/integrations/language-model/fake/fake-language-model.adapter.test.ts`, `src/integrations/speech-recognition/fake/fake-speech-recognition.adapter.test.ts` |
+| `src/integrations/language-model/fake-analysis-rules.test.ts` | `src/integrations/language-model/fake/fake-analysis-rules.test.ts` |
+| `src/integrations/language-model/fake-analysis.test.ts` | `src/integrations/language-model/fake/fake-analysis.test.ts` |
+| `src/integrations/language-model/fake-language-model-analysis.test.ts` | `src/integrations/language-model/fake/fake-language-model-analysis.test.ts` |
+| `src/integrations/language-model/fake-language-model-hint.test.ts` | `src/integrations/language-model/fake/fake-language-model-hint.test.ts` |
+| `src/integrations/language-model/fake-language-model-next-turn.test.ts` | `src/integrations/language-model/fake/fake-language-model-next-turn.test.ts` |
+| `src/integrations/language-model/fake-language-model-plan.test.ts` | `src/integrations/language-model/fake/fake-language-model-plan.test.ts` |
+| `src/integrations/language-model/fake-language-model-summary.test.ts` | `src/integrations/language-model/fake/fake-language-model-summary.test.ts` |
+| `src/integrations/language-model/fake-summary.test.ts` | `src/integrations/language-model/fake/fake-summary.test.ts` |
+| `src/integrations/language-model/prompt-loader.test.ts` | `src/integrations/language-model/prompts/load-prompt.test.ts` |
+| `src/integrations/language-model/prompts.test.ts` | `src/integrations/language-model/prompts/prompt-registry.render.test.ts` |
+| `src/integrations/language-model/render-prompt.test.ts` | `src/integrations/language-model/prompts/render-prompt.test.ts` |
+| `src/integrations/language-model/session-plan-prompt.test.ts` | `src/integrations/language-model/prompts/prompt-registry.session-plan.test.ts` |
+| `src/integrations/providers.module.test.ts` | `src/integrations/adapters.module.test.ts` |
+| `src/integrations/speech-recognition/fake-speech-recognition.test.ts` | `src/integrations/speech-recognition/fake/fake-speech-recognition.test.ts` |
+| `src/modules/dialogue/audio-retention.test.ts` | `src/modules/dialogue/audio/audio-retention.test.ts` |
+| `src/modules/dialogue/audio-upload.test.ts` | `src/modules/dialogue/audio/audio-upload.test.ts` |
+| `src/modules/dialogue/hints.service.test.ts` | `src/modules/hint/hints.service.test.ts` |
+| `src/modules/dialogue/lib/audio-format.test.ts` | `src/modules/dialogue/audio/audio-format.test.ts` |
+| `src/modules/profile/learner-model.service.test.ts` | `src/modules/learner-model/learner-model.service.test.ts` |
+| `src/modules/session/lib/plan-questions.test.ts` | `src/modules/session/plan-questions.test.ts` |
+| `src/modules/session/plan-input.test.ts` | `src/modules/session/lib/plan-input.test.ts` |
+| `src/modules/session/sessions.service.test.ts` | `src/modules/session/sessions.service.test.ts`, `src/modules/report/session-finish.service.test.ts` |
+
+#### packages/shared (від `packages/shared`)
+
+| Старий шлях | Новий шлях |
+|---|---|
+| `src/audio.test.ts` | `src/dialogue/audio.test.ts` |
+| `src/auth.test.ts` | `src/auth/auth.test.ts` |
+| `src/dialogue.test.ts` | `src/dialogue/dialogue.test.ts` |
+| `src/llm.test.ts` | `apps/api/src/integrations/language-model/model-output.test.ts`, `src/analysis/better-phrasing.test.ts` |
+| `src/pagination.test.ts` | `src/common/pagination.test.ts` |
+| `src/profile.test.ts` | `src/profile/profile.test.ts` |
+| `src/report.test.ts` | `src/report/report.test.ts` |
+| `src/schemas.test.ts` | `src/analysis/mistake-categories.test.ts`, `src/common/errors.test.ts`, `src/common/health.test.ts` |
+| `src/session.test.ts` | `src/session/session.test.ts`, `src/session/session-plan.test.ts` |
+| `src/words.test.ts` | `src/vocabulary/words.test.ts` |
 
 ### web і e2e
 
+#### web (від `apps/web`)
+
 | Старий шлях | Новий шлях |
 |---|---|
-| _(заповнити з `git diff -M` у задачі 54)_ | |
+| `src/features/dialogue/components/HintPanel/HintPanel.test.tsx` | `src/features/dialogue/hint/components/HintPanel/HintPanel.test.tsx` |
+| `src/features/dialogue/components/MicPermissionHelp/MicPermissionHelp.test.tsx` | `src/features/dialogue/recording/components/MicPermissionHelp/MicPermissionHelp.test.tsx` |
+| `src/features/dialogue/components/RecordButton/RecordButton.test.tsx` | `src/features/dialogue/recording/components/RecordButton/RecordButton.test.tsx` |
+| `src/features/dialogue/components/RecordingIndicator/RecordingIndicator.test.tsx` | `src/features/dialogue/recording/components/RecordingIndicator/RecordingIndicator.test.tsx` |
+| `src/features/dialogue/hooks/use-audio-recorder.errors.test.ts` | `src/features/dialogue/recording/hooks/use-audio-recorder.errors.test.ts` |
+| `src/features/dialogue/hooks/use-audio-recorder.level.test.ts` | `src/features/dialogue/recording/hooks/use-audio-recorder.level.test.ts` |
+| `src/features/dialogue/hooks/use-audio-recorder.test.ts` | `src/features/dialogue/recording/hooks/use-audio-recorder.test.ts` |
+| `src/features/dialogue/hooks/use-hint.test.tsx` | `src/features/dialogue/hint/hooks/use-hint.test.tsx` |
+| `src/features/dialogue/lib/details-cache.test.ts` | `src/features/dialogue/lib/turn-cache.test.ts` |
+| `src/features/dialogue/lib/format-elapsed.test.ts` | `src/features/dialogue/recording/lib/format-elapsed.test.ts` |
+| `src/features/dialogue/lib/hint-form.test.ts` | `src/features/dialogue/hint/lib/hint-form.test.ts` |
+| `src/features/dialogue/lib/mic-help.test.ts` | `src/features/dialogue/recording/lib/mic-help.test.ts` |
+| `src/features/dialogue/lib/recorder-mime.test.ts` | `src/features/dialogue/recording/lib/recorder-mime.test.ts` |
+| `src/pages/dialog/DialogPage.test.tsx` | `src/pages/dialogue/DialoguePage.test.tsx` |
+| `src/pages/session/SessionPage.test.tsx` | `src/pages/home/HomePage.test.tsx` |
+| `src/shared/api/details-cache.test.ts` | `src/entities/session/lib/details-cache.test.ts` |
+| `src/shared/api/mistake-errors.test.ts` | `src/entities/session/lib/mistake-errors.test.ts` |
+| `src/shared/api/mistakes.test.ts` | `src/entities/session/api/mistakes.test.ts` |
+| `src/shared/api/session-details.test.ts` | `src/entities/session/api/session-details.test.ts` |
+| `src/shared/hooks/use-mark-mistake.test.ts` | `src/entities/session/hooks/use-mark-mistake.test.ts` |
+| `src/shared/router/session-paths.test.ts` | `src/entities/session/lib/session-paths.test.ts` |
+| `src/shared/session/query-cache.test.ts` | `src/shared/auth-session/query-cache.test.ts` |
+| `src/shared/session/session-store.test.ts` | `src/shared/auth-session/session-store.test.ts` |
+| `src/shared/testing/test-fixtures.test.ts` | `src/shared/testing/fixtures/report.test.ts`, `src/shared/testing/fixtures/words.test.ts` |
+| `src/shared/ui/AnswerTranscript/AnswerTranscript.mark.test.tsx` | `src/entities/session/components/AnswerTranscript/AnswerTranscript.mark.test.tsx` |
+| `src/shared/ui/AnswerTranscript/AnswerTranscript.test.tsx` | `src/entities/session/components/AnswerTranscript/AnswerTranscript.test.tsx` |
+| `src/shared/ui/AnswerTranscript/highlight-segments.test.ts` | `src/entities/session/components/AnswerTranscript/highlight-segments.test.ts` |
+
+#### e2e (від кореня репозиторію)
+
+| Старий шлях | Новий шлях |
+|---|---|
+| `e2e/dialog.spec.ts` | `e2e/dialogue.spec.ts` |
+
+### Тестова інфраструктура (моки, фікстури, хелпери)
+
+Лише файли, які перенесли задачі; змінені на місці (`words-harness.tsx`, `test-utils.tsx`) не перелічені.
+
+#### api (від `apps/api`)
+
+| Старий шлях | Новий шлях |
+|---|---|
+| новий | `src/core/errors/testing/filter-harness.ts` (спільний `setup()` для `all-exceptions.filter.test.ts` і `all-exceptions.filter.zod.test.ts`) |
+| `src/integrations/language-model/fake-analysis-rule-cases.ts` | `src/integrations/language-model/fake/testing/fake-analysis-rule-cases.ts` |
+| `src/integrations/testing/analysis-result-schema.ts` | `src/integrations/language-model/testing/analysis-result-schema.ts` |
+
+#### web (від `apps/web`)
+
+| Старий шлях | Новий шлях |
+|---|---|
+| `src/app/router/guards/guard-test-helpers.tsx` | `src/app/testing/guard-test-helpers.tsx` |
+| `src/features/dialogue/components/DialogueScreen/dialogue-screen-test-helpers.tsx` | `src/features/dialogue/testing/dialogue-screen-test-helpers.tsx` |
+| `src/features/dialogue/testing/fake-media.ts` | `src/features/dialogue/recording/testing/fake-media.ts` |
+| `src/features/dialogue/testing/recorder-harness.ts` | `src/features/dialogue/recording/testing/recorder-harness.ts` |
+| `src/features/profile/components/GoalsSection/goals-test-helpers.tsx` | `src/features/profile/testing/goals-test-helpers.tsx` |
+| `src/features/profile/components/OnboardingWizard/wizard-test-helpers.tsx` | `src/features/profile/testing/wizard-test-helpers.tsx` |
+| `src/features/report/components/DeepAnalysis/deep-analysis-fixtures.ts` | `src/features/report/testing/deep-analysis-fixtures.ts` |
+| `src/pages/report/report-page-setup.ts` | `src/pages/report/testing/report-page-setup.ts` |
+| `src/shared/testing/answer-flow-setup.tsx` | `src/features/dialogue/testing/answer-flow-setup.tsx` |
+| `src/shared/testing/dialogue-mocks.ts` | `src/features/dialogue/testing/dialogue-mocks.ts` |
+| `src/shared/testing/report-mocks.ts` | `src/features/report/testing/report-mocks.ts` |
+| `src/shared/testing/session-mocks.ts` | `src/features/session/testing/session-mocks.ts` |
+| `src/shared/testing/test-fixtures.ts` | `src/shared/testing/fixtures/auth.ts`, `src/shared/testing/fixtures/profile.ts`, `src/shared/testing/fixtures/report.ts`, `src/shared/testing/fixtures/session.ts`, `src/shared/testing/fixtures/words.ts`, `src/shared/testing/http-responses.ts` |
+| `src/shared/testing/words-mocks.ts` | `src/features/vocabulary/testing/words-mocks.ts` |
+| новий | `src/entities/session/testing/session-entity-mocks.ts`, `src/shared/testing/deferred.ts` |
+
+#### e2e
+
+| Старий шлях | Новий шлях |
+|---|---|
+| `e2e/support/dialog.ts` | `e2e/support/dialogue.ts` |
+
+### Нові тестові файли
+
+Файли без старих тестів (нові перевірки):
+
+- api: `src/common/swagger/api-zod.decorators.test.ts` (12 тестів)
+- api: `src/integrations/language-model/prompts/prompt-registry.test.ts` (3)
+- api: `src/modules/vocabulary/vocabulary-writer.service.test.ts` (3)
+- api: `test/integration/core/openapi.test.ts` (9)
+- web: `src/shared/api/page-query.test.ts` (6)
+
+Файли, виділені з наявних тестів (за змістом не нові, є в таблицях вище): `all-exceptions.filter.zod.test.ts`, `fake-speech-recognition.adapter.test.ts`, `session-finish.service.test.ts` (3 тести зі `sessions.service.test.ts`), `better-phrasing.test.ts`, `errors.test.ts`, `health.test.ts`, `session-plan.test.ts`, `fixtures/words.test.ts`, а в `apps/api/test` – `auth.test.ts` (поряд із `auth-refresh.test.ts`), `goals-limit.test.ts`, `db-schema-constraints.test.ts`, `dialogue-answer-validation.test.ts`, `dialogue-answer-access.test.ts`. `app.module.test.ts` поглинув `core-services.test.ts` і отримав DI smoke.
