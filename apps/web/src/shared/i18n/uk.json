@@ -362,6 +362,25 @@
     }
   },
   "report": {
+    "summary": {
+      "title": "Підсумок сесії",
+      "answersLabel": "Відповіді",
+      "answers_one": "{{count}} відповідь",
+      "answers_few": "{{count}} відповіді",
+      "answers_many": "{{count}} відповідей",
+      "answers_other": "{{count}} відповіді",
+      "durationLabel": "Тривалість",
+      "minutes_one": "{{count}} хвилина",
+      "minutes_few": "{{count}} хвилини",
+      "minutes_many": "{{count}} хвилин",
+      "minutes_other": "{{count}} хвилини",
+      "underMinute": "менше хвилини",
+      "noAnswers": "У цій сесії не було відповідей",
+      "unavailable": "Короткий підсумок від ШІ тимчасово недоступний. Статистика й категорії помилок нижче актуальні",
+      "categoriesTitle": "Найчастіші помилки",
+      "categoryLine": "{{category}} – {{count}}",
+      "noMistakes": "Помилок не знайдено"
+    },
     "errors": {
       "notFinished": "Звіт з’явиться після завершення сесії"
     }

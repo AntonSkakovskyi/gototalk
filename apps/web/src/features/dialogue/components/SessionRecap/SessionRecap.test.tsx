@@ -157,4 +157,18 @@ describe('SessionRecap', () => {
       screen.queryByRole('list', { name: uk.dialogue.recap.listLabel }),
     ).not.toBeInTheDocument();
   });
+
+  it('[TC-05-07] hides the heading and the stats but keeps the answers when withStats is off', () => {
+    renderWithProviders(
+      <SessionRecap details={finished()} withStats={false} />,
+    );
+
+    expect(screen.queryByRole('heading', { level: 2 })).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(uk.dialogue.recap.answersLabel),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('list', { name: uk.dialogue.recap.listLabel }),
+    ).toBeInTheDocument();
+  });
 });

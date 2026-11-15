@@ -6,7 +6,7 @@ import classes from './SessionListItem.module.scss';
 import { SessionStatusBadge } from '@/features/session/components/SessionStatusBadge/SessionStatusBadge';
 import { formatSessionDate } from '@/features/session/lib/format-session-date';
 import { topicLanguage } from '@/features/session/lib/topic-language';
-import { sessionPath } from '@/shared/router/session-paths';
+import { reportPath, sessionPath } from '@/shared/router/session-paths';
 
 interface SessionListItemProps {
   session: Session;
@@ -19,7 +19,7 @@ export function SessionListItem({ session }: SessionListItemProps) {
   return (
     <Paper
       component={Link}
-      to={sessionPath(session.id)}
+      to={isActive ? sessionPath(session.id) : reportPath(session.id)}
       withBorder
       p="md"
       className={classes.item}

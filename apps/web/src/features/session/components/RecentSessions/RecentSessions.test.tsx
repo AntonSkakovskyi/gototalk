@@ -74,7 +74,7 @@ describe('RecentSessions', () => {
     expect(screen.queryByRole('list')).not.toBeInTheDocument();
   });
 
-  it('[TC-03-03] lists sessions under a labelled section with links to their pages', async () => {
+  it('[TC-03-03] lists sessions under a labelled section linking an active one to the dialogue and a finished one to the report', async () => {
     stubSessions([ACTIVE, FINISHED]);
     renderWithProviders(<RecentSessions />);
 
@@ -87,7 +87,7 @@ describe('RecentSessions', () => {
     ).toHaveAttribute('href', `/sessions/${ACTIVE.id}`);
     expect(
       within(items[1]!).getByRole('link', { name: /My hometown/ }),
-    ).toHaveAttribute('href', `/sessions/${FINISHED.id}`);
+    ).toHaveAttribute('href', `/sessions/${FINISHED.id}/report`);
   });
 
   it('[TC-03-03] shows the status, the date and the continue action for an active session only', async () => {

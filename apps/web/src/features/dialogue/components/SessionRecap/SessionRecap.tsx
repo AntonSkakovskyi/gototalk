@@ -26,32 +26,37 @@ function Stat({ label, value }: StatProps) {
 
 interface SessionRecapProps {
   details: SessionDetails;
+  withStats?: boolean;
 }
 
-export function SessionRecap({ details }: SessionRecapProps) {
+export function SessionRecap({ details, withStats = true }: SessionRecapProps) {
   const { t } = useTranslation();
   const pairs = answersWithQuestions(details.utterances);
   const minutes = wholeMinutes(details.startedAt, details.endedAt);
 
   return (
     <Stack gap="lg">
-      <Title order={2}>{t('dialogue.recap.title')}</Title>
-      <Group gap="xl">
-        <Stat
-          label={t('dialogue.recap.answersLabel')}
-          value={t('dialogue.recap.answers', { count: pairs.length })}
-        />
-        {minutes !== null && (
-          <Stat
-            label={t('dialogue.recap.durationLabel')}
-            value={
-              minutes === 0
-                ? t('dialogue.recap.underMinute')
-                : t('dialogue.recap.minutes', { count: minutes })
-            }
-          />
-        )}
-      </Group>
+      {withStats && (
+        <>
+          <Title order={2}>{t('dialogue.recap.title')}</Title>
+          <Group gap="xl">
+            <Stat
+              label={t('dialogue.recap.answersLabel')}
+              value={t('dialogue.recap.answers', { count: pairs.length })}
+            />
+            {minutes !== null && (
+              <Stat
+                label={t('dialogue.recap.durationLabel')}
+                value={
+                  minutes === 0
+                    ? t('dialogue.recap.underMinute')
+                    : t('dialogue.recap.minutes', { count: minutes })
+                }
+              />
+            )}
+          </Group>
+        </>
+      )}
       {pairs.length > 0 && (
         <List
           listStyleType={NO_MARKERS}
