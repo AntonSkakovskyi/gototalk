@@ -478,7 +478,7 @@
 
 # PR 4: документи (гілка `refactor/structure-v2-docs`)
 
-- [ ] **50. `CLAUDE.md`: «Структура коду»**
+- [x] **50. `CLAUDE.md`: «Структура коду»**
   - Переписати розділ за правилами spec v2: шари web з `entities`, правила підобластей, `testing/`, компонент-папка («імпортується поза папкою → власна папка»), api: корінь = публічний API, `persistence/` для всіх repositories, `auth/decorators/` публічний, відмова від «≥2 файлів», `apps/api/test/integration/<module>/`; перелік модулів API (auth, profile, learner-model, session, dialogue, hint, analysis, vocabulary, report); `ProvidersModule` → `AdaptersModule`; прибрати «`apps/api/test/` не реорганізуємо»; «Модуль NestJS = доменна область… cards» узгодити з кодом.
   - Коміт: `docs: update code structure rules in CLAUDE.md for v2`
 
