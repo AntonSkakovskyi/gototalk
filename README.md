@@ -186,9 +186,9 @@ docs/            product, technical decisions, specifications
 Web (`apps/web/src`) is split into layers that import only downward: `app → pages → features → entities → shared`. A feature never imports another feature, an entity never imports another entity, and the sub-areas of a feature (for example `dialogue/recording` and `dialogue/hint`) are independent of each other. Cross-folder imports use the `@/` alias (→ `apps/web/src`); ESLint (`eslint-plugin-import-x`) enforces the boundaries.
 
 ```
-app/       App, layout (AppLayout, BottomNav), providers (AuthBootstrap), router and guards, Mantine theme
+app/       App, layout (AppLayout, BottomNav), providers (AuthBootstrap), router and guards, Mantine theme, testing (guard-test-helpers.tsx)
 pages/     one thin folder per route: login, register, consent, onboarding, home, new-session, dialogue, report, words, history, profile
-features/  one folder per domain (auth, profile, session, dialogue, report, vocabulary), each with api, components, hooks, lib, testing; dialogue also has the sub-areas recording and hint
+features/  one folder per domain (auth, profile, session, dialogue, report, vocabulary), each with segments from api, components, hooks, lib, testing as needed; dialogue also has the sub-areas recording and hint
 entities/  session (session, utterance and mistake aggregate shared by several features)
 shared/    api (HTTP client, refresh), auth-session (client state), i18n (resources in uk/*.json), forms, hooks, router, styles, ui, testing
 ```
