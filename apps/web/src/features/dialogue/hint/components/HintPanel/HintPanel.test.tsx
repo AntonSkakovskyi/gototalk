@@ -1,7 +1,7 @@
 import { ERROR_CODES, HINT_WORD_MAX } from '@gototalk/shared';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import uk from '@/shared/i18n/uk.json';
+import { uk } from '@/shared/i18n/resources';
 import {
   HINT_PHRASE,
   HINT_TRANSLATION,

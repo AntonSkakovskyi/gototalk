@@ -1,7 +1,7 @@
 import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BottomNav } from './BottomNav';
-import uk from '@/shared/i18n/uk.json';
+import { uk } from '@/shared/i18n/resources';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 
 function renderNav(route = '/') {

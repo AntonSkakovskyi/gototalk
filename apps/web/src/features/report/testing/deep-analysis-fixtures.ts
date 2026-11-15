@@ -1,6 +1,6 @@
 import type { SessionDetails } from '@gototalk/shared';
 import { screen } from '@testing-library/react';
-import uk from '@/shared/i18n/uk.json';
+import { uk } from '@/shared/i18n/resources';
 import {
   testMistake,
   testSessionDetails,

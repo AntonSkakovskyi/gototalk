@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import uk from '@/shared/i18n/uk.json';
+import { uk } from '@/shared/i18n/resources';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 import { LoadError } from '@/shared/ui/LoadError/LoadError';
 

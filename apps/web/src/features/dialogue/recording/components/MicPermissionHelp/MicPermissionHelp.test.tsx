@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react';
 import type { RecorderStatus } from '@/features/dialogue/recording/lib/recorder-status';
-import uk from '@/shared/i18n/uk.json';
+import { uk } from '@/shared/i18n/resources';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 import { MicPermissionHelp } from './MicPermissionHelp';
 

@@ -6,7 +6,7 @@ import {
   sessionDetailsQueryOptions,
   sessionKeys,
 } from '@/entities/session/api/session-details';
-import uk from '@/shared/i18n/uk.json';
+import { uk } from '@/shared/i18n/resources';
 import { DIALOGUE_SESSION_ID } from '@/entities/session/testing/session-entity-mocks';
 import { createTestQueryClient } from '@/shared/testing/query-wrapper';
 import { jsonResponse } from '@/shared/testing/http-responses';

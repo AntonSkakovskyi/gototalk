@@ -6,7 +6,7 @@ import {
   stubNewUserApi,
   text,
 } from '@/features/profile/testing/wizard-test-helpers';
-import uk from '@/shared/i18n/uk.json';
+import { uk } from '@/shared/i18n/resources';
 import { TEST_USER } from '@/shared/testing/fixtures/auth';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 

@@ -1,7 +1,7 @@
 import { GOAL_TITLE_MAX, UpdateGoalRequestSchema } from '@gototalk/shared';
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import uk from '@/shared/i18n/uk.json';
+import { uk } from '@/shared/i18n/resources';
 import { mockApi } from '@/shared/testing/mock-api';
 import { jsonResponse } from '@/shared/testing/http-responses';
 import {

@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import userEvent from '@testing-library/user-event';
 import type { AnswerPhase } from '@/features/dialogue/hooks/use-answer-flow';
 import { installFakeMedia } from '@/features/dialogue/recording/testing/fake-media';
-import uk from '@/shared/i18n/uk.json';
+import { uk } from '@/shared/i18n/resources';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 import { useComposerState } from '@/features/dialogue/hooks/use-composer-state';
 import { AnswerComposer } from './AnswerComposer';

@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react';
 import { App } from '@/app/App';
-import uk from '@/shared/i18n/uk.json';
+import { uk } from '@/shared/i18n/resources';
 import { mockApi } from '@/shared/testing/mock-api';
 import {
   EMPTY_SESSIONS_ROUTE,

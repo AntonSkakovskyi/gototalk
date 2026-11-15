@@ -451,9 +451,10 @@
   - Нове `shared/api/page-query.ts` (`pageQueryString({ cursor, limit })`) + тест; `features/session/api/session-api.ts` (`listHistory`) і `features/vocabulary/api/words-api.ts` (`listWords`) використовують його; вихідний рядок запиту ідентичний (перевірити наявними тестами API-клієнтів).
   - Коміт: `refactor(web): share the cursor page query builder`
 
-- [ ] **47. `uk.json` → `uk/*.json` (W6)**
+- [x] **47. `uk.json` → `uk/*.json` (W6)**
   - `shared/i18n/uk.json` → `shared/i18n/uk/{app,common,errors,auth,profile,session,dialogue,transcript,report,vocabulary,mistakeCategories,nav,pages}.json` (13 верхніх ключів; значення без змін); нове `shared/i18n/resources.ts` (збирає об'єкт `{ uk: { translation: {...} } }`, структура ідентична попередньому JSON); `shared/i18n/index.ts` імпортує `resources.ts`.
   - Перевірка: `i18n.test.ts` + порівняння: скрипт у scratchpad порівнює результат злиття з вмістом старого `uk.json` з `main` (deep equal, ключі в тому ж порядку) – має бути ідентичний; `pnpm --filter web build`.
+  - Відхилення: `resources.ts` експортує `resources` і тонкий акцесор `uk = resources.uk.translation` (імпортери змінили лише рядок імпорту: `import { uk } from '@/shared/i18n/resources'`; 68 файлів); `uk.json` перейменовано `git mv` у `uk/profile.json` (історія йде за найбільшою секцією); файл `mistakeCategories.json` лишився camelCase, як названо в задачі (за ключем верхнього рівня); перевірка: злиття нових файлів дорівнює `main:uk.json` (deep equal, однаковий порядок ключів, 13 ключів, 297 рядків), `pnpm --filter web build` успішний.
   - Коміт: `refactor(web): split the uk translation into per-area json files`
 
 - [ ] **48. Типізація ключів i18n `[risk]` (W6)**

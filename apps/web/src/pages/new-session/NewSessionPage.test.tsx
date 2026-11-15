@@ -3,7 +3,7 @@ import {
   currentLocation,
   renderAppWithProbe,
 } from '@/app/testing/guard-test-helpers';
-import uk from '@/shared/i18n/uk.json';
+import { uk } from '@/shared/i18n/resources';
 import { mockApi } from '@/shared/testing/mock-api';
 import { TEST_PROFILE } from '@/shared/testing/fixtures/profile';
 import { TEST_USER } from '@/shared/testing/fixtures/auth';

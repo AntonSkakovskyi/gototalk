@@ -6,7 +6,7 @@ import {
   renderAppWithProbe,
 } from '@/app/testing/guard-test-helpers';
 import { sessionKeys } from '@/entities/session/api/session-details';
-import uk from '@/shared/i18n/uk.json';
+import { uk } from '@/shared/i18n/resources';
 import { deferred } from '@/shared/testing/deferred';
 import { createTestQueryClient } from '@/shared/testing/query-wrapper';
 import { mockApi } from '@/shared/testing/mock-api';

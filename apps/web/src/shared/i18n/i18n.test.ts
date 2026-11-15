@@ -1,6 +1,6 @@
 import { MISTAKE_CATEGORY_CODES } from '@gototalk/shared';
 import i18n from './index';
-import uk from './uk.json';
+import { uk } from './resources';
 
 describe('i18n', () => {
   it('[TC-00-04] default language is Ukrainian', () => {

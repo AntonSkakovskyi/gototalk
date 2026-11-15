@@ -1,5 +1,5 @@
 import { screen } from '@testing-library/react';
-import uk from '@/shared/i18n/uk.json';
+import { uk } from '@/shared/i18n/resources';
 import { mockApi } from '@/shared/testing/mock-api';
 import { jsonResponse } from '@/shared/testing/http-responses';
 import { testWord } from '@/shared/testing/fixtures/words';

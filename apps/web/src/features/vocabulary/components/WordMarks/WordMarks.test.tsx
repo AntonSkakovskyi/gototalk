@@ -1,7 +1,7 @@
 import { ERROR_CODES, type Word } from '@gototalk/shared';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import uk from '@/shared/i18n/uk.json';
+import { uk } from '@/shared/i18n/resources';
 import { errorResponse } from '@/shared/testing/http-responses';
 import { testWord } from '@/shared/testing/fixtures/words';
 import { renderWithWords } from '@/features/vocabulary/testing/words-harness';

@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { reportQueryOptions } from '@/features/report/api/report-queries';
-import uk from '@/shared/i18n/uk.json';
+import { uk } from '@/shared/i18n/resources';
 import {
   REPORT_SESSION_ID,
   mockReportApi,

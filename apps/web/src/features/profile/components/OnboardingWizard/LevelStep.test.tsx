@@ -1,7 +1,7 @@
 import { SCENE_PRESETS } from '@gototalk/shared';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import uk from '@/shared/i18n/uk.json';
+import { uk } from '@/shared/i18n/resources';
 import {
   button,
   chip,

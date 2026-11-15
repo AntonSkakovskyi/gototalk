@@ -1,6 +1,6 @@
 import { screen, within } from '@testing-library/react';
 import type { CategoryGroupData } from '@/features/report/lib/group-by-category';
-import uk from '@/shared/i18n/uk.json';
+import { uk } from '@/shared/i18n/resources';
 import {
   testMistake,
   testSession,

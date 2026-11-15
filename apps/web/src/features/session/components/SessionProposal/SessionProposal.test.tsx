@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { StrictMode } from 'react';
 import { Route, Routes } from 'react-router';
 import { sessionKeys } from '@/entities/session/api/session-details';
-import uk from '@/shared/i18n/uk.json';
+import { uk } from '@/shared/i18n/resources';
 import { LocationProbe } from '@/shared/testing/LocationProbe';
 import { createTestQueryClient } from '@/shared/testing/query-wrapper';
 import i18n from '@/shared/i18n/index';

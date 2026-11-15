@@ -6,7 +6,7 @@ import {
   stubNewUserApi,
   text,
 } from '@/features/profile/testing/wizard-test-helpers';
-import uk from '@/shared/i18n/uk.json';
+import { uk } from '@/shared/i18n/resources';
 import { createTestQueryClient } from '@/shared/testing/query-wrapper';
 import type { RenderOptions } from '@/shared/testing/test-utils';
 import { mockApi } from '@/shared/testing/mock-api';

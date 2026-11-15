@@ -2,7 +2,7 @@ import { ERROR_CODES } from '@gototalk/shared';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { App } from '@/app/App';
-import uk from '@/shared/i18n/uk.json';
+import { uk } from '@/shared/i18n/resources';
 import { authResponse } from '@/shared/testing/fixtures/auth';
 import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
 import { renderWithProviders } from '@/shared/testing/test-utils';
