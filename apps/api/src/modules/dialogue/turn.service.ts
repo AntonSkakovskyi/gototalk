@@ -1,13 +1,18 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import type { TurnResult } from '@gototalk/shared';
-import { toLanguageModelHttpError } from '../../common/language-model-http-errors.js';
-import { LanguageModelUnavailableError } from '../../integrations/language-model/language-model.errors.js';
-import { LanguageModelInvalidResponseError } from '../../integrations/language-model/validated-call.js';
+import { toLanguageModelHttpError } from '../../common/errors/language-model-http-errors.js';
+import {
+  LanguageModelInvalidResponseError,
+  LanguageModelUnavailableError,
+} from '../../integrations/language-model/language-model.errors.js';
 import { MistakeAnalyzerService } from '../analysis/mistake-analyzer.service.js';
-import { isSessionId, sessionNotFound } from '../session/session.errors.js';
-import { SessionsRepository } from '../session/sessions.repository.js';
 import {
   SessionNotFoundError,
+  isSessionId,
+  sessionNotFound,
+} from '../session/session.errors.js';
+import { SessionsService } from '../session/sessions.service.js';
+import {
   UtteranceNotFoundError,
   isUtteranceId,
   utteranceNotFound,
@@ -42,8 +47,8 @@ export class TurnService {
   constructor(
     @Inject(TurnRepository)
     private readonly turns: Pick<TurnRepository, 'loadState' | 'persist'>,
-    @Inject(SessionsRepository)
-    private readonly sessions: Pick<SessionsRepository, 'findDetails'>,
+    @Inject(SessionsService)
+    private readonly sessions: Pick<SessionsService, 'findDetails'>,
     @Inject(MistakeAnalyzerService)
     private readonly analyzer: Pick<MistakeAnalyzerService, 'analyze'>,
     @Inject(NextTurnService)

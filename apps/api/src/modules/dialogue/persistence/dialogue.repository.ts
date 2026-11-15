@@ -9,12 +9,12 @@ import type {
 } from '../../../core/db/db.tokens.js';
 import { sessions, utterances } from '../../../core/db/schema.js';
 import { WordUsageService } from '../../vocabulary/word-usage.service.js';
+import { lockActiveSession } from '../../session/session-lock.js';
 import {
   AnswerNotExpectedError,
   SessionFinishedError,
   SessionNotFoundError,
-} from '../dialogue.errors.js';
-import { lockActiveSession } from './lock-active-session.js';
+} from '../../session/session.errors.js';
 
 export interface AnswerTexts {
   verbatim: string;

@@ -1,9 +1,4 @@
-import {
-  Inject,
-  Injectable,
-  Logger,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { RECENT_SESSIONS_LIMIT } from '@gototalk/shared';
 import type {
   PageQuery,
@@ -12,24 +7,17 @@ import type {
   SessionPage,
   StartSessionRequest,
 } from '@gototalk/shared';
-import { afterOf, toCursorPage } from '../../common/keyset-page.js';
-import { ReportGeneratorService } from '../report/report-generator.service.js';
+import { afterOf, toCursorPage } from '../../common/pagination/keyset-page.js';
 import {
   SessionOwnerMissingError,
   isSessionId,
   sessionNotFound,
 } from './session.errors.js';
-import { SessionsRepository } from './sessions.repository.js';
+import { SessionsRepository } from './persistence/sessions.repository.js';
 
 @Injectable()
 export class SessionsService {
-  private readonly logger = new Logger(SessionsService.name);
-
-  constructor(
-    private readonly sessions: SessionsRepository,
-    @Inject(ReportGeneratorService)
-    private readonly reports: Pick<ReportGeneratorService, 'ensure'>,
-  ) {}
+  constructor(private readonly sessions: SessionsRepository) {}
 
   async start(
     userId: string,
@@ -61,18 +49,11 @@ export class SessionsService {
     if (!isSessionId(id)) throw sessionNotFound();
     const session = await this.sessions.finish(userId, id);
     if (!session) throw sessionNotFound();
-    await this.ensureReport(userId, id);
     return session;
   }
 
-  // The finish succeeds without a report: a later report read generates it
-  private async ensureReport(userId: string, id: string): Promise<void> {
-    try {
-      await this.reports.ensure(userId, id);
-    } catch (error) {
-      const name = error instanceof Error ? error.name : 'UnknownError';
-      this.logger.warn(`Report generation failed on finish: ${name}`);
-    }
+  findDetails(userId: string, id: string): Promise<SessionDetails | null> {
+    return this.sessions.findDetails(userId, id);
   }
 
   async details(userId: string, id: string): Promise<SessionDetails> {

@@ -3,9 +3,9 @@ import { and, asc, eq } from 'drizzle-orm';
 import { DRIZZLE } from '../../../core/db/db.tokens.js';
 import type { Database } from '../../../core/db/db.tokens.js';
 import { sessions, utterances } from '../../../core/db/schema.js';
-import { lockSession } from '../../session/persistence/lock-session.js';
+import { lockSession } from '../../session/session-lock.js';
 import type { AnalysisOutcome } from '../mistake-analyzer.types.js';
-import { AnalysisWriter } from './analysis-writer.js';
+import { AnalysisWriter } from '../analysis-writer.service.js';
 
 export interface PendingUtterance {
   id: string;

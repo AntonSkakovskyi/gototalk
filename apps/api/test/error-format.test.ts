@@ -10,8 +10,8 @@ import { ErrorResponseSchema } from '@gototalk/shared';
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { z } from 'zod';
-import { Public } from '../src/common/public.decorator.js';
-import { ZodBodyPipe } from '../src/common/zod-body.pipe.js';
+import { Public } from '../src/common/decorators/public.decorator.js';
+import { ZodBodyPipe } from '../src/common/pipes/zod-body.pipe.js';
 import { createTestApp } from './support/test-app.js';
 
 // Test-only controller: production code has no routes that throw these errors.

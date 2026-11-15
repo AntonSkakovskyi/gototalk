@@ -11,7 +11,6 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
-  ApiBody,
   ApiOperation,
   ApiParam,
   ApiResponse,
@@ -19,8 +18,8 @@ import {
 } from '@nestjs/swagger';
 import {
   CreateGoalRequestSchema,
-  GOAL_STATUSES,
-  GOAL_TITLE_MAX,
+  GoalListSchema,
+  GoalSchema,
   MAX_ACTIVE_GOALS,
   UpdateGoalRequestSchema,
 } from '@gototalk/shared';
@@ -34,14 +33,13 @@ import {
   requireUserId,
 } from '../auth/decorators/current-user.decorator.js';
 import type { AuthenticatedUser } from '../auth/decorators/current-user.decorator.js';
-import { ZodBodyPipe } from '../../common/zod-body.pipe.js';
+import {
+  ApiZodBody,
+  ApiZodResponse,
+} from '../../common/swagger/api-zod.decorators.js';
+import { ZodBodyPipe } from '../../common/pipes/zod-body.pipe.js';
 import { GoalsService } from './goals.service.js';
 
-const TITLE_SCHEMA = {
-  type: 'string',
-  minLength: 1,
-  maxLength: GOAL_TITLE_MAX,
-} as const;
 const ID_PARAM = { name: 'id', description: 'Goal id (uuid)' } as const;
 const LIMIT_DESCRIPTION = `ACTIVE_GOALS_LIMIT: more than ${MAX_ACTIVE_GOALS} active goals`;
 
@@ -53,8 +51,7 @@ export class GoalsController {
 
   @Get()
   @ApiOperation({ summary: 'List the goals of the user, oldest first' })
-  @ApiResponse({
-    status: 200,
+  @ApiZodResponse(GoalListSchema, {
     description: 'Goal[] { id, title, status, createdAt }',
   })
   @ApiResponse({ status: 401, description: 'UNAUTHORIZED' })
@@ -64,14 +61,11 @@ export class GoalsController {
 
   @Post()
   @ApiOperation({ summary: 'Create an active goal' })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      required: ['title'],
-      properties: { title: TITLE_SCHEMA },
-    },
+  @ApiZodBody(CreateGoalRequestSchema)
+  @ApiZodResponse(GoalSchema, {
+    status: 201,
+    description: 'The created Goal',
   })
-  @ApiResponse({ status: 201, description: 'The created Goal' })
   @ApiResponse({ status: 400, description: 'VALIDATION_ERROR' })
   @ApiResponse({ status: 401, description: 'UNAUTHORIZED' })
   @ApiResponse({ status: 409, description: LIMIT_DESCRIPTION })
@@ -89,17 +83,8 @@ export class GoalsController {
       'Moving a done goal back to active checks the active-goals limit.',
   })
   @ApiParam(ID_PARAM)
-  @ApiBody({
-    schema: {
-      type: 'object',
-      minProperties: 1,
-      properties: {
-        title: TITLE_SCHEMA,
-        status: { type: 'string', enum: [...GOAL_STATUSES] },
-      },
-    },
-  })
-  @ApiResponse({ status: 200, description: 'The updated Goal' })
+  @ApiZodBody(UpdateGoalRequestSchema)
+  @ApiZodResponse(GoalSchema, { description: 'The updated Goal' })
   @ApiResponse({ status: 400, description: 'VALIDATION_ERROR' })
   @ApiResponse({ status: 401, description: 'UNAUTHORIZED' })
   @ApiResponse({ status: 404, description: 'GOAL_NOT_FOUND' })

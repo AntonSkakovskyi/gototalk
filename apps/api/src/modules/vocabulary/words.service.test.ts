@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import { ERROR_CODES } from '@gototalk/shared';
 import type { Word } from '@gototalk/shared';
 import { describe, expect, it, vi } from 'vitest';
-import { afterOf } from '../../common/keyset-page.js';
+import { afterOf } from '../../common/pagination/keyset-page.js';
 import type { WordMarkingRepository } from './persistence/word-marking.repository.js';
 import type { WordsPageRepository } from './persistence/words-page.repository.js';
 import { WordAlreadyActiveError, WordNotFoundError } from './words.errors.js';

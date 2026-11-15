@@ -10,10 +10,11 @@ import { AuthModule } from './modules/auth/auth.module.js';
 import { DbModule } from './core/db/db.module.js';
 import { DialogueModule } from './modules/dialogue/dialogue.module.js';
 import { HealthModule } from './core/health/health.module.js';
-import { MeModule } from './modules/me/me.module.js';
+import { HintModule } from './modules/hint/hint.module.js';
+import { LearnerModelModule } from './modules/learner-model/learner-model.module.js';
 import { buildPinoHttpOptions } from './core/logger/pino-options.js';
 import { ProfileModule } from './modules/profile/profile.module.js';
-import { ProvidersModule } from './integrations/providers.module.js';
+import { AdaptersModule } from './integrations/adapters.module.js';
 import { ReportModule } from './modules/report/report.module.js';
 import { SessionModule } from './modules/session/session.module.js';
 import { VocabularyModule } from './modules/vocabulary/vocabulary.module.js';
@@ -27,13 +28,14 @@ export class AppModule {
         AppConfigModule.forRoot(options),
         DbModule,
         AuthModule,
-        MeModule,
         HealthModule,
-        ProvidersModule,
+        AdaptersModule,
         ProfileModule,
+        LearnerModelModule,
         SessionModule,
         AnalysisModule,
         DialogueModule,
+        HintModule,
         VocabularyModule,
         ReportModule,
         LoggerModule.forRootAsync({

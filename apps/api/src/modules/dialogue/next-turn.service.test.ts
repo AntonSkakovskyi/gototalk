@@ -1,9 +1,11 @@
 import 'reflect-metadata';
 import { Logger } from '@nestjs/common';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { FakeLanguageModel } from '../../integrations/language-model/fake-language-model.js';
-import { LanguageModelUnavailableError } from '../../integrations/language-model/language-model.errors.js';
-import { LanguageModelInvalidResponseError } from '../../integrations/language-model/validated-call.js';
+import { FakeLanguageModel } from '../../integrations/language-model/fake/fake-language-model.js';
+import {
+  LanguageModelInvalidResponseError,
+  LanguageModelUnavailableError,
+} from '../../integrations/language-model/language-model.errors.js';
 import type {
   LanguageModelPort,
   NextTurnInput,

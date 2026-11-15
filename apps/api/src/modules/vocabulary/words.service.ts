@@ -6,7 +6,7 @@ import type {
   Word,
   WordPage,
 } from '@gototalk/shared';
-import { afterOf, toCursorPage } from '../../common/keyset-page.js';
+import { afterOf, toCursorPage } from '../../common/pagination/keyset-page.js';
 import { WordMarkingRepository } from './persistence/word-marking.repository.js';
 import { WordsPageRepository } from './persistence/words-page.repository.js';
 import { WordAlreadyActiveError, WordNotFoundError } from './words.errors.js';

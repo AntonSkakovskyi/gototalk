@@ -4,3 +4,10 @@ export class LanguageModelUnavailableError extends Error {
     this.name = 'LanguageModelUnavailableError';
   }
 }
+
+export class LanguageModelInvalidResponseError extends Error {
+  constructor() {
+    super('The language model returned an invalid response');
+    this.name = 'LanguageModelInvalidResponseError';
+  }
+}

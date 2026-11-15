@@ -1,4 +1,4 @@
-import type { Transcript } from '@gototalk/shared';
+import type { Transcript } from './transcript.js';
 
 export const SPEECH_RECOGNITION_PORT = Symbol('SPEECH_RECOGNITION_PORT');
 

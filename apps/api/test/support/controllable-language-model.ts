@@ -1,4 +1,4 @@
-import { FakeLanguageModel } from '../../src/integrations/language-model/fake-language-model.js';
+import { FakeLanguageModel } from '../../src/integrations/language-model/fake/fake-language-model.js';
 import { LanguageModelUnavailableError } from '../../src/integrations/language-model/language-model.errors.js';
 import type {
   AnalyzeUtteranceInput,

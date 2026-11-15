@@ -23,11 +23,8 @@ import {
   utterances,
   words,
 } from '../../../core/db/schema.js';
-import { lockSession } from '../../session/persistence/lock-session.js';
-import {
-  WORD_COLUMNS,
-  toWord,
-} from '../../vocabulary/persistence/word-view.js';
+import { lockSession } from '../../session/session-lock.js';
+import { WORD_COLUMNS, toWord } from '../../vocabulary/word-view.js';
 
 export interface OwnedSession {
   id: string;

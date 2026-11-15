@@ -4,6 +4,8 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import type { Env } from '../../core/config/env.schema.js';
 import { AuthController } from './auth.controller.js';
+import { MeController } from './me.controller.js';
+import { MeService } from './me.service.js';
 import { AuthGuard } from './guards/auth.guard.js';
 import { AuthService } from './auth.service.js';
 import { CLOCK } from './lib/clock.js';
@@ -30,7 +32,7 @@ export const ACCESS_TOKEN_TTL_SECONDS = 15 * 60;
       }),
     }),
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, MeController],
   providers: [
     PasswordHasher,
     { provide: CLOCK, useValue: () => new Date() },
@@ -41,6 +43,7 @@ export const ACCESS_TOKEN_TTL_SECONDS = 15 * 60;
     RefreshTokenService,
     UsersRepository,
     AuthService,
+    MeService,
     { provide: APP_GUARD, useClass: AuthGuard },
   ],
   exports: [

@@ -1,3 +1,5 @@
+import { existsSync, readdirSync } from 'node:fs';
+import path from 'node:path';
 import js from '@eslint/js';
 import globals from 'globals';
 import prettier from 'eslint-config-prettier';
@@ -8,18 +10,69 @@ import { defineConfig } from 'eslint/config';
 import tseslint from 'typescript-eslint';
 
 const WEB_SRC = 'apps/web/src';
-const WEB_FEATURES = [
-  'auth',
-  'session',
-  'dialogue',
-  'vocabulary',
-  'history',
-  'report',
-  'cards',
-  'profile',
-];
+const API_SRC = 'apps/api/src';
+const WEB_SEGMENTS = ['api', 'components', 'hooks', 'lib', 'testing'];
+const API_PRIVATE_DIRS = ['persistence', 'lib', 'guards', 'testing', 'audio'];
+const API_MODULE_DEPS = {
+  auth: [],
+  profile: ['auth'],
+  'learner-model': ['auth'],
+  vocabulary: ['auth'],
+  session: ['auth', 'profile', 'learner-model'],
+  analysis: ['auth', 'session', 'vocabulary'],
+  hint: ['auth', 'session', 'vocabulary'],
+  dialogue: ['auth', 'session', 'analysis', 'vocabulary'],
+  report: ['auth', 'session', 'analysis', 'vocabulary'],
+};
 
-const webLayerZones = [
+const listDirs = (dir, { required = true } = {}) => {
+  const absolute = path.join(import.meta.dirname, dir);
+  if (!existsSync(absolute)) {
+    if (required) {
+      throw new Error(`eslint.config.js: directory not found: ${absolute}`);
+    }
+    return [];
+  }
+  return readdirSync(absolute, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name);
+};
+
+const WEB_FEATURES = listDirs(`${WEB_SRC}/features`);
+const WEB_ENTITIES = listDirs(`${WEB_SRC}/entities`, { required: false });
+const API_MODULES = Object.keys(API_MODULE_DEPS);
+
+for (const dir of listDirs(`${API_SRC}/modules`)) {
+  if (!API_MODULES.includes(dir)) {
+    throw new Error(
+      `eslint.config.js: module "${dir}" has no entry in API_MODULE_DEPS`,
+    );
+  }
+}
+
+const sliceZones = (root, names, message) =>
+  names.length < 2
+    ? []
+    : names.map((name) => ({
+        target: `${root}/${name}`,
+        from: names
+          .filter((other) => other !== name)
+          .map((other) => `${root}/${other}`),
+        message,
+      }));
+
+const featureSubareaZones = WEB_FEATURES.flatMap((feature) => {
+  const subareas = listDirs(`${WEB_SRC}/features/${feature}`).filter(
+    (dir) => !WEB_SEGMENTS.includes(dir),
+  );
+  return sliceZones(
+    `${WEB_SRC}/features/${feature}`,
+    subareas,
+    'Feature subareas may not import each other.',
+  );
+});
+
+const webErrorZones = [
   {
     target: `${WEB_SRC}/shared`,
     from: [`${WEB_SRC}/features`, `${WEB_SRC}/pages`, `${WEB_SRC}/app`],
@@ -35,13 +88,11 @@ const webLayerZones = [
     from: `${WEB_SRC}/app`,
     message: 'pages may not import app.',
   },
-  ...WEB_FEATURES.map((feature) => ({
-    target: `${WEB_SRC}/features/${feature}`,
-    from: WEB_FEATURES.filter((other) => other !== feature).map(
-      (other) => `${WEB_SRC}/features/${other}`,
-    ),
-    message: 'A feature may not import another feature.',
-  })),
+  ...sliceZones(
+    `${WEB_SRC}/features`,
+    WEB_FEATURES,
+    'A feature may not import another feature.',
+  ),
   {
     target: `${WEB_SRC}/shared/session`,
     from: `${WEB_SRC}/shared/api`,
@@ -50,11 +101,58 @@ const webLayerZones = [
   },
 ];
 
-const apiLayerZones = ['core', 'common', 'integrations'].map((layer) => ({
-  target: `apps/api/src/${layer}`,
-  from: 'apps/api/src/modules',
-  message: `${layer} may not import modules.`,
-}));
+const webDebtZones = [
+  {
+    target: `${WEB_SRC}/shared`,
+    from: `${WEB_SRC}/entities`,
+    message: 'shared may not import entities.',
+  },
+  {
+    target: `${WEB_SRC}/entities`,
+    from: [`${WEB_SRC}/features`, `${WEB_SRC}/pages`, `${WEB_SRC}/app`],
+    message: 'entities may not import features, pages or app.',
+  },
+  ...sliceZones(
+    `${WEB_SRC}/entities`,
+    WEB_ENTITIES,
+    'An entity may not import another entity.',
+  ),
+  ...featureSubareaZones,
+];
+
+const apiModuleZones = (module) => {
+  const target = `${API_SRC}/modules/${module}`;
+  const otherModules = API_MODULES.filter((other) => other !== module);
+  const allowed = API_MODULE_DEPS[module];
+  return [
+    {
+      target: otherModules.map((other) => `${API_SRC}/modules/${other}`),
+      from: API_PRIVATE_DIRS.map((dir) => `${target}/${dir}`),
+      message: `${module} keeps ${API_PRIVATE_DIRS.join(', ')} private.`,
+    },
+    {
+      target,
+      from: otherModules
+        .filter((other) => !allowed.includes(other))
+        .map((other) => `${API_SRC}/modules/${other}`),
+      message: `${module} may import only: ${allowed.join(', ') || 'nothing'}.`,
+    },
+  ];
+};
+
+const apiZones = [
+  ...['core', 'common', 'integrations'].map((layer) => ({
+    target: `${API_SRC}/${layer}`,
+    from: `${API_SRC}/modules`,
+    message: `${layer} may not import modules.`,
+  })),
+  ...API_MODULES.flatMap(apiModuleZones),
+];
+
+const webTestFiles = [
+  `${WEB_SRC}/**/*.test.{ts,tsx}`,
+  `${WEB_SRC}/shared/testing/**`,
+];
 
 export default defineConfig(
   {
@@ -110,12 +208,20 @@ export default defineConfig(
     languageOptions: { globals: { ...globals.browser } },
   },
   {
+    // Web debt zones are warnings, so they use a second plugin name: severity is per rule, not per zone.
+    plugins: { 'import-x-debt': importX },
+  },
+  {
     files: [`${WEB_SRC}/**/*.{ts,tsx}`],
-    ignores: ['**/*.test.{ts,tsx}', `${WEB_SRC}/shared/testing/**`],
+    ignores: webTestFiles,
     rules: {
       'import-x/no-restricted-paths': [
         'error',
-        { basePath: import.meta.dirname, zones: webLayerZones },
+        { basePath: import.meta.dirname, zones: webErrorZones },
+      ],
+      'import-x-debt/no-restricted-paths': [
+        'warn',
+        { basePath: import.meta.dirname, zones: webDebtZones },
       ],
       'import-x/no-cycle': 'error',
       'no-restricted-syntax': [
@@ -129,12 +235,25 @@ export default defineConfig(
     },
   },
   {
-    files: ['apps/api/src/**/*.ts'],
+    files: webTestFiles,
+    rules: {
+      'import-x-debt/no-restricted-paths': [
+        'warn',
+        {
+          basePath: import.meta.dirname,
+          zones: [...webErrorZones, ...webDebtZones],
+        },
+      ],
+    },
+  },
+  {
+    files: [`${API_SRC}/**/*.ts`],
     rules: {
       'import-x/no-restricted-paths': [
         'error',
-        { basePath: import.meta.dirname, zones: apiLayerZones },
+        { basePath: import.meta.dirname, zones: apiZones },
       ],
+      'import-x/no-cycle': 'error',
     },
   },
   {

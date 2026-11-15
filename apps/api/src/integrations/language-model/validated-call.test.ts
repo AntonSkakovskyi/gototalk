@@ -1,10 +1,10 @@
 import { describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
-import { LanguageModelUnavailableError } from './language-model.errors.js';
 import {
   LanguageModelInvalidResponseError,
-  requestValidated,
-} from './validated-call.js';
+  LanguageModelUnavailableError,
+} from './language-model.errors.js';
+import { requestValidated } from './validated-call.js';
 
 const SENTINEL = 'SENTINEL-user-text-do-not-log';
 const Schema = z.object({ topic: z.string().min(1), count: z.number() });

@@ -1,13 +1,12 @@
+import { HintResultSchema, type MistakeCategoryCode } from '@gototalk/shared';
 import {
   AnalysisEnvelopeSchema,
-  HintResultSchema,
   HintSchema,
   MistakeSchema,
-  type MistakeCategoryCode,
-} from '@gototalk/shared';
+} from './language-model/model-output.js';
 import { describe, expect, it } from 'vitest';
-import { FakeLanguageModel } from './language-model/fake-language-model.js';
-import { FakeSpeechRecognition } from './speech-recognition/fake-speech-recognition.js';
+import { FakeLanguageModel } from './language-model/fake/fake-language-model.js';
+import { FakeSpeechRecognition } from './speech-recognition/fake/fake-speech-recognition.js';
 
 const EXPECTED_CATEGORIES: MistakeCategoryCode[][] = [
   ['verb_tense', 'word_order'],

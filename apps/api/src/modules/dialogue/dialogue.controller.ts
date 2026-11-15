@@ -11,15 +11,18 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiConsumes,
-  ApiCreatedResponse,
-  ApiOkResponse,
   ApiOperation,
   ApiParam,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { ANSWER_TEXT_MAX } from '@gototalk/shared';
+import {
+  ANSWER_TEXT_MAX,
+  TurnResultSchema,
+  UtteranceSchema,
+} from '@gototalk/shared';
 import type { TurnResult, Utterance } from '@gototalk/shared';
+import { ApiZodResponse } from '../../common/swagger/api-zod.decorators.js';
 import {
   CurrentUser,
   requireUserId,
@@ -27,8 +30,8 @@ import {
 import type { AuthenticatedUser } from '../auth/decorators/current-user.decorator.js';
 import { RequiresConsent } from '../auth/decorators/requires-consent.decorator.js';
 import { AnswersService } from './answers.service.js';
-import { AudioUpload, AudioUploadErrors } from './audio-upload.js';
-import type { UploadedAudio } from './audio-upload.js';
+import { AudioUpload, AudioUploadErrors } from './audio/audio-upload.js';
+import type { UploadedAudio } from './audio/audio-upload.js';
 import { TurnService } from './turn.service.js';
 
 @ApiTags('dialogue')
@@ -74,7 +77,8 @@ export class DialogueController {
       ],
     },
   })
-  @ApiCreatedResponse({
+  @ApiZodResponse(UtteranceSchema, {
+    status: 201,
     description:
       'Utterance { id, seq, role: user, text, analysisStatus: pending, mistakes: [], better: [] }',
   })
@@ -124,7 +128,7 @@ export class DialogueController {
   })
   @ApiParam({ name: 'id', format: 'uuid' })
   @ApiParam({ name: 'utteranceId', format: 'uuid' })
-  @ApiOkResponse({
+  @ApiZodResponse(TurnResultSchema, {
     description:
       'TurnResult { utterance (analysisStatus done or failed, with mistakes and better), reply (the next assistant utterance or null), planRemaining }',
   })

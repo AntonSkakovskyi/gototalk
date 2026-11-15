@@ -1,5 +1,6 @@
 import path from 'node:path';
 import { z } from 'zod';
+import { LLM_PROVIDERS, STT_PROVIDERS } from '@gototalk/shared';
 import { findRepoRoot, isInside } from './repo-root.js';
 
 // An empty value (`NAME=` in .env.example) means "not set".
@@ -71,13 +72,13 @@ export const EnvSchema = z
     LOG_LEVEL: optional(z.enum(LOG_LEVELS).default('info')),
     STT_PROVIDER: optional(
       z
-        .enum(['fake', 'deepgram'])
+        .enum(STT_PROVIDERS)
         .default('fake')
         .refine((value) => value === 'fake', notImplemented('deepgram')),
     ),
     LLM_PROVIDER: optional(
       z
-        .enum(['fake', 'gemini'])
+        .enum(LLM_PROVIDERS)
         .default('fake')
         .refine((value) => value === 'fake', notImplemented('gemini')),
     ),

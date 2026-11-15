@@ -1,7 +1,7 @@
 import { MISTAKE_CATEGORY_CODES } from '@gototalk/shared';
 import pg from 'pg';
 import { afterAll, beforeAll, describe, expect, inject, it } from 'vitest';
-import { FAKE_ANALYSIS_RULES } from '../src/integrations/language-model/fake-analysis-rules.js';
+import { FAKE_ANALYSIS_RULES } from '../src/integrations/language-model/fake/fake-analysis-rules.js';
 
 describe('mistake_categories', () => {
   let pool: pg.Pool;

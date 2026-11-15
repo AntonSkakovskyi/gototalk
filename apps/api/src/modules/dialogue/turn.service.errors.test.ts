@@ -6,13 +6,13 @@ import {
 } from '@nestjs/common';
 import { ERROR_CODES } from '@gototalk/shared';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { LanguageModelUnavailableError } from '../../integrations/language-model/language-model.errors.js';
-import { LanguageModelInvalidResponseError } from '../../integrations/language-model/validated-call.js';
-import type { AnalysisOutcome } from '../analysis/mistake-analyzer.types.js';
 import {
-  SessionNotFoundError,
-  UtteranceNotFoundError,
-} from './dialogue.errors.js';
+  LanguageModelInvalidResponseError,
+  LanguageModelUnavailableError,
+} from '../../integrations/language-model/language-model.errors.js';
+import type { AnalysisOutcome } from '../analysis/mistake-analyzer.types.js';
+import { UtteranceNotFoundError } from './dialogue.errors.js';
+import { SessionNotFoundError } from '../session/session.errors.js';
 import {
   DONE,
   SESSION_ID,

@@ -11,7 +11,7 @@ import { ERROR_CODES } from '@gototalk/shared';
 import { DrizzleQueryError } from 'drizzle-orm';
 import { ZodError } from 'zod';
 import type { z } from 'zod';
-import { RequestValidationError } from '../../common/zod-body.pipe.js';
+import { RequestValidationError } from '../../common/pipes/zod-body.pipe.js';
 import { codeFromStatus } from './error-code.js';
 
 const GENERIC_SERVER_MESSAGE = 'Internal server error';

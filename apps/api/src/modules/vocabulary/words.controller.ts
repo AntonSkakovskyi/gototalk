@@ -9,20 +9,16 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
-  ApiBody,
-  ApiOkResponse,
   ApiOperation,
   ApiParam,
-  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import {
   MarkWordRequestSchema,
-  MARKABLE_WORD_STATES,
-  PAGE_SIZE_DEFAULT,
-  PAGE_SIZE_MAX,
   PageQuerySchema,
+  WordPageSchema,
+  WordSchema,
 } from '@gototalk/shared';
 import type {
   MarkWordRequest,
@@ -30,8 +26,13 @@ import type {
   Word,
   WordPage,
 } from '@gototalk/shared';
-import { ZodBodyPipe } from '../../common/zod-body.pipe.js';
-import { ZodQueryPipe } from '../../common/zod-query.pipe.js';
+import {
+  ApiZodBody,
+  ApiZodQuery,
+  ApiZodResponse,
+} from '../../common/swagger/api-zod.decorators.js';
+import { ZodBodyPipe } from '../../common/pipes/zod-body.pipe.js';
+import { ZodQueryPipe } from '../../common/pipes/zod-query.pipe.js';
 import {
   CurrentUser,
   requireUserId,
@@ -51,16 +52,8 @@ export class WordsController {
     description:
       'Newest first (created_at, id) with keyset pagination: pass the returned nextCursor as cursor to get the next page. The cursor is opaque. nextCursor is null on the last page. All states and sources are included. Needs no consent: nothing is sent to providers.',
   })
-  @ApiQuery({ name: 'cursor', required: false, type: String })
-  @ApiQuery({
-    name: 'limit',
-    required: false,
-    type: Number,
-    minimum: 1,
-    maximum: PAGE_SIZE_MAX,
-    example: PAGE_SIZE_DEFAULT,
-  })
-  @ApiOkResponse({
+  @ApiZodQuery(PageQuerySchema)
+  @ApiZodResponse(WordPageSchema, {
     description:
       'WordPage { items: Word[], nextCursor: string | null }, Word { id, lemma, translationUk, state, source }',
   })
@@ -81,16 +74,8 @@ export class WordsController {
       'Moves a word between new, partial and passive. Setting the current state again is a no-op. Active is earned through use and cannot be set or changed by hand. Needs no consent. 404 WORD_NOT_FOUND for a foreign, unknown or malformed id.',
   })
   @ApiParam({ name: 'id', format: 'uuid' })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      required: ['state'],
-      properties: {
-        state: { type: 'string', enum: [...MARKABLE_WORD_STATES] },
-      },
-    },
-  })
-  @ApiOkResponse({
+  @ApiZodBody(MarkWordRequestSchema)
+  @ApiZodResponse(WordSchema, {
     description:
       'Word { id, lemma, translationUk, state, source } with its new state',
   })

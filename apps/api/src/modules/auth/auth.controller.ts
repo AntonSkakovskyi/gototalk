@@ -8,15 +8,22 @@ import {
   Res,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import type { ApiBodyOptions } from '@nestjs/swagger';
-import { LoginRequestSchema, RegisterRequestSchema } from '@gototalk/shared';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  AuthResponseSchema,
+  LoginRequestSchema,
+  RegisterRequestSchema,
+} from '@gototalk/shared';
 import type {
   AuthResponse,
   LoginRequest,
   RegisterRequest,
 } from '@gototalk/shared';
-import { ZodBodyPipe } from '../../common/zod-body.pipe.js';
+import {
+  ApiZodBody,
+  ApiZodResponse,
+} from '../../common/swagger/api-zod.decorators.js';
+import { ZodBodyPipe } from '../../common/pipes/zod-body.pipe.js';
 import { AuthService } from './auth.service.js';
 import {
   clearRefreshCookie,
@@ -24,29 +31,7 @@ import {
   setRefreshCookie,
 } from './lib/refresh-cookie.js';
 import type { CookieRequest, CookieResponse } from './lib/refresh-cookie.js';
-import { Public } from '../../common/public.decorator.js';
-
-const REGISTER_BODY: ApiBodyOptions = {
-  schema: {
-    type: 'object',
-    required: ['email', 'password'],
-    properties: {
-      email: { type: 'string', format: 'email' },
-      password: { type: 'string', minLength: 8, maxLength: 128 },
-    },
-  },
-};
-
-const LOGIN_BODY: ApiBodyOptions = {
-  schema: {
-    type: 'object',
-    required: ['email', 'password'],
-    properties: {
-      email: { type: 'string', format: 'email' },
-      password: { type: 'string', minLength: 1, maxLength: 128 },
-    },
-  },
-};
+import { Public } from '../../common/decorators/public.decorator.js';
 
 @ApiTags('auth')
 @Public()
@@ -60,8 +45,11 @@ export class AuthController {
     description:
       'Creates the user, returns an access token and sets the refresh cookie.',
   })
-  @ApiBody(REGISTER_BODY)
-  @ApiResponse({ status: 201, description: 'User created' })
+  @ApiZodBody(RegisterRequestSchema)
+  @ApiZodResponse(AuthResponseSchema, {
+    status: 201,
+    description: 'User created',
+  })
   @ApiResponse({ status: 400, description: 'VALIDATION_ERROR' })
   @ApiResponse({ status: 409, description: 'EMAIL_TAKEN' })
   async register(
@@ -80,8 +68,8 @@ export class AuthController {
     description:
       'The same 401 INVALID_CREDENTIALS is returned for an unknown email and a wrong password.',
   })
-  @ApiBody(LOGIN_BODY)
-  @ApiResponse({ status: 200, description: 'Logged in' })
+  @ApiZodBody(LoginRequestSchema)
+  @ApiZodResponse(AuthResponseSchema, { description: 'Logged in' })
   @ApiResponse({ status: 400, description: 'VALIDATION_ERROR' })
   @ApiResponse({ status: 401, description: 'INVALID_CREDENTIALS' })
   async login(
@@ -100,7 +88,7 @@ export class AuthController {
     description:
       'Reads the gtt_refresh cookie. A missing, expired or unknown token gives 401 and clears the cookie. Replaying a rotated token within 60 s issues another token; a later replay deletes all refresh tokens of the user and returns 401.',
   })
-  @ApiResponse({ status: 200, description: 'Session renewed' })
+  @ApiZodResponse(AuthResponseSchema, { description: 'Session renewed' })
   @ApiResponse({ status: 401, description: 'Refresh token rejected' })
   async refresh(
     @Req() req: CookieRequest,

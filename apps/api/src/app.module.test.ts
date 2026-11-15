@@ -1,9 +1,14 @@
 import 'reflect-metadata';
 import { ConfigService } from '@nestjs/config';
+import { DiscoveryModule, DiscoveryService } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
 import { describe, expect, it } from 'vitest';
 import type { Env } from './core/config/env.schema.js';
 import { AppModule } from './app.module.js';
+import { MistakeAnalyzerService } from './modules/analysis/mistake-analyzer.service.js';
+import { NextTurnService } from './modules/dialogue/next-turn.service.js';
+import { LearnerModelService } from './modules/learner-model/learner-model.service.js';
+import { SessionPlannerService } from './modules/session/session-planner.service.js';
 
 const env = {
   NODE_ENV: 'production',
@@ -20,6 +25,55 @@ describe('AppModule', () => {
     }).compile();
 
     expect(moduleRef.get(AppModule)).toBeInstanceOf(AppModule);
+
+    await moduleRef.close();
+  });
+
+  it('[TC-00-04] AppModule resolves all 4 services with the fake providers', async () => {
+    const moduleRef = await Test.createTestingModule({
+      imports: [AppModule.register({ env })],
+    }).compile();
+
+    expect(moduleRef.get(LearnerModelService)).toBeInstanceOf(
+      LearnerModelService,
+    );
+    expect(
+      moduleRef.get(SessionPlannerService, { strict: false }),
+    ).toBeInstanceOf(SessionPlannerService);
+    expect(moduleRef.get(MistakeAnalyzerService)).toBeInstanceOf(
+      MistakeAnalyzerService,
+    );
+    expect(moduleRef.get(NextTurnService, { strict: false })).toBeInstanceOf(
+      NextTurnService,
+    );
+
+    await moduleRef.close();
+  });
+
+  it('[TC-00-04] every controller and provider in the app resolves', async () => {
+    const moduleRef = await Test.createTestingModule({
+      imports: [AppModule.register({ env }), DiscoveryModule],
+    }).compile();
+    const discovery = moduleRef.get(DiscoveryService);
+    const all = [...discovery.getControllers(), ...discovery.getProviders()];
+    const wrappers = all.filter(
+      (wrapper) => wrapper.isDependencyTreeStatic() && !wrapper.isTransient,
+    );
+
+    expect(discovery.getControllers().length).toBeGreaterThan(0);
+    expect(discovery.getProviders().length).toBeGreaterThan(0);
+    expect(
+      all
+        .filter((wrapper) => !wrappers.includes(wrapper))
+        .map((wrapper) => String(wrapper.name))
+        .sort(),
+    ).toEqual(['INQUIRER', 'PinoLogger', 'REQUEST']);
+    for (const wrapper of wrappers) {
+      expect(
+        () => moduleRef.get(wrapper.token, { strict: false }),
+        String(wrapper.name),
+      ).not.toThrow();
+    }
 
     await moduleRef.close();
   });

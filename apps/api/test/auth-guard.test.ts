@@ -7,8 +7,8 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { z } from 'zod';
 import { CurrentUser } from '../src/modules/auth/decorators/current-user.decorator.js';
 import type { AuthenticatedUser } from '../src/modules/auth/decorators/current-user.decorator.js';
-import { Public } from '../src/common/public.decorator.js';
-import { ZodBodyPipe } from '../src/common/zod-body.pipe.js';
+import { Public } from '../src/common/decorators/public.decorator.js';
+import { ZodBodyPipe } from '../src/common/pipes/zod-body.pipe.js';
 import { buildEnv, createTestApp } from './support/test-app.js';
 
 const BodySchema = z.object({ password: z.string().min(20) });

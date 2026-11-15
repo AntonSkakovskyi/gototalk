@@ -10,27 +10,20 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
-  ApiBody,
-  ApiCreatedResponse,
   ApiOperation,
   ApiParam,
-  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import {
-  FEEDBACK_MODES,
-  MAX_TOPIC_REROLLS,
-  PAGE_SIZE_DEFAULT,
-  PAGE_SIZE_MAX,
   PageQuerySchema,
-  PLAN_QUESTIONS,
   RECENT_SESSIONS_LIMIT,
   PlanSessionRequestSchema,
-  QUESTION_MAX,
+  SessionDetailsSchema,
+  SessionListSchema,
+  SessionPageSchema,
+  SessionPlanSchema,
   StartSessionRequestSchema,
-  TOPIC_MAX,
-  TOPIC_SOURCES,
 } from '@gototalk/shared';
 import type {
   PageQuery,
@@ -47,16 +40,15 @@ import {
 } from '../auth/decorators/current-user.decorator.js';
 import type { AuthenticatedUser } from '../auth/decorators/current-user.decorator.js';
 import { RequiresConsent } from '../auth/decorators/requires-consent.decorator.js';
-import { ZodBodyPipe } from '../../common/zod-body.pipe.js';
-import { ZodQueryPipe } from '../../common/zod-query.pipe.js';
+import {
+  ApiZodBody,
+  ApiZodQuery,
+  ApiZodResponse,
+} from '../../common/swagger/api-zod.decorators.js';
+import { ZodBodyPipe } from '../../common/pipes/zod-body.pipe.js';
+import { ZodQueryPipe } from '../../common/pipes/zod-query.pipe.js';
 import { SessionPlannerService } from './session-planner.service.js';
 import { SessionsService } from './sessions.service.js';
-
-const TOPIC_SCHEMA = {
-  type: 'string',
-  minLength: 1,
-  maxLength: TOPIC_MAX,
-} as const;
 
 @ApiTags('sessions')
 @ApiBearerAuth()
@@ -75,21 +67,8 @@ export class SessionsController {
     description:
       'Nothing is stored. Level, scenes, active goals and the custom topic are sent to the language model, so consent is required. previousTopics are the topics already shown; the server returns a different one. customTopic wins over previousTopics.',
   })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        previousTopics: {
-          type: 'array',
-          maxItems: MAX_TOPIC_REROLLS,
-          items: TOPIC_SCHEMA,
-        },
-        customTopic: TOPIC_SCHEMA,
-      },
-    },
-  })
-  @ApiResponse({
-    status: 200,
+  @ApiZodBody(PlanSessionRequestSchema)
+  @ApiZodResponse(SessionPlanSchema, {
     description: 'SessionPlan { topic, topicSource, questions }',
   })
   @ApiResponse({ status: 400, description: 'VALIDATION_ERROR' })
@@ -114,28 +93,9 @@ export class SessionsController {
     description:
       'Finishes the active session of the user, if any, and stores the new one with all planned questions. The first question becomes the first assistant utterance. No language model call is made.',
   })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      required: ['topic', 'topicSource', 'questions'],
-      properties: {
-        topic: TOPIC_SCHEMA,
-        topicSource: { type: 'string', enum: [...TOPIC_SOURCES] },
-        questions: {
-          type: 'array',
-          minItems: PLAN_QUESTIONS,
-          maxItems: PLAN_QUESTIONS,
-          items: { type: 'string', minLength: 1, maxLength: QUESTION_MAX },
-        },
-        feedbackMode: {
-          type: 'string',
-          enum: [...FEEDBACK_MODES],
-          default: 'immediate',
-        },
-      },
-    },
-  })
-  @ApiCreatedResponse({
+  @ApiZodBody(StartSessionRequestSchema)
+  @ApiZodResponse(SessionDetailsSchema, {
+    status: 201,
     description:
       'SessionDetails { id, topic, topicSource, feedbackMode, status, startedAt, endedAt, utterances }',
   })
@@ -149,37 +109,12 @@ export class SessionsController {
     return this.sessions.start(requireUserId(user), body);
   }
 
-  @Post(':id/finish')
-  @HttpCode(HttpStatus.OK)
-  @RequiresConsent()
-  @ApiOperation({
-    summary: 'Finish the session',
-    description:
-      'Idempotent: finishing a finished session returns it unchanged and keeps its original endedAt. Generates the session report best-effort (the summary goes to the language model, so consent is required); a model failure does not fail the call. 404 SESSION_NOT_FOUND for a foreign, unknown or malformed id.',
-  })
-  @ApiParam({ name: 'id', format: 'uuid' })
-  @ApiResponse({
-    status: 200,
-    description:
-      'Session { id, topic, topicSource, feedbackMode, status, startedAt, endedAt }',
-  })
-  @ApiResponse({ status: 401, description: 'UNAUTHORIZED' })
-  @ApiResponse({ status: 403, description: 'CONSENT_REQUIRED' })
-  @ApiResponse({ status: 404, description: 'SESSION_NOT_FOUND' })
-  finish(
-    @CurrentUser() user: AuthenticatedUser | undefined,
-    @Param('id') id: string,
-  ): Promise<Session> {
-    return this.sessions.finish(requireUserId(user), id);
-  }
-
   @Get()
   @ApiOperation({
     summary: 'List the most recent sessions of the user',
     description: `Newest first, at most ${RECENT_SESSIONS_LIMIT}. No pagination. Needs no consent: nothing is sent to providers.`,
   })
-  @ApiResponse({
-    status: 200,
+  @ApiZodResponse(SessionListSchema, {
     description:
       'Session[] { id, topic, topicSource, feedbackMode, status, startedAt, endedAt }',
   })
@@ -194,17 +129,8 @@ export class SessionsController {
     description:
       'Newest first (started_at, id) with keyset pagination: pass the returned nextCursor as cursor to get the next page. The cursor is opaque. nextCursor is null on the last page. Active and finished sessions are included. Needs no consent: nothing is sent to providers.',
   })
-  @ApiQuery({ name: 'cursor', required: false, type: String })
-  @ApiQuery({
-    name: 'limit',
-    required: false,
-    type: Number,
-    minimum: 1,
-    maximum: PAGE_SIZE_MAX,
-    example: PAGE_SIZE_DEFAULT,
-  })
-  @ApiResponse({
-    status: 200,
+  @ApiZodQuery(PageQuerySchema)
+  @ApiZodResponse(SessionPageSchema, {
     description: 'SessionPage { items: Session[], nextCursor: string | null }',
   })
   @ApiResponse({ status: 400, description: 'VALIDATION_ERROR' })
@@ -223,8 +149,7 @@ export class SessionsController {
       'Utterances are ordered by seq. The stored plan is never returned. A foreign, unknown or malformed id gives the same 404 (a malformed id is not a 400).',
   })
   @ApiParam({ name: 'id', format: 'uuid' })
-  @ApiResponse({
-    status: 200,
+  @ApiZodResponse(SessionDetailsSchema, {
     description:
       'SessionDetails { id, topic, topicSource, feedbackMode, status, startedAt, endedAt, utterances }',
   })

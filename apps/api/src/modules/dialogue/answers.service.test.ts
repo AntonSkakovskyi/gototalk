@@ -11,12 +11,12 @@ import type { Utterance } from '@gototalk/shared';
 import { describe, expect, it, vi } from 'vitest';
 import { SpeechRecognitionUnavailableError } from '../../integrations/speech-recognition/speech-recognition.errors.js';
 import { AnswersService } from './answers.service.js';
-import type { AudioRetention } from './audio-retention.js';
+import type { AudioRetention } from './audio/audio-retention.js';
 import {
   AnswerNotExpectedError,
   SessionFinishedError,
   SessionNotFoundError,
-} from './dialogue.errors.js';
+} from '../session/session.errors.js';
 import type { DialogueRepository } from './persistence/dialogue.repository.js';
 import type { SpeechRecognitionPort } from '../../integrations/speech-recognition/speech-recognition.port.js';
 
