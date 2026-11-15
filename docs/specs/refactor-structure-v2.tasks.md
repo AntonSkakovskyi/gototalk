@@ -446,7 +446,7 @@
   - Відхилення: у `voice.spec.ts` не було локальної `translateHint`, а ті самі кроки були записані прямо в тесті (перевірено, що вони ідентичні кроками з `report.spec.ts`) – замінено викликом `translateHint(page)`; `pnpm test:e2e` 24/24 з першого прогону; Playwright MCP на 390 px робиться на фіналі PR (разом із сценарієм login → звіт).
   - Коміт: `refactor(web): align page names with routes and dedupe the e2e hint helper`
 
-- [ ] **46. `shared/api/page-query.ts` (W8, r.78)**
+- [x] **46. `shared/api/page-query.ts` (W8, r.78)**
   - Нове `shared/api/page-query.ts` (`pageQueryString({ cursor, limit })`) + тест; `features/session/api/session-api.ts` (`listHistory`) і `features/vocabulary/api/words-api.ts` (`listWords`) використовують його; вихідний рядок запиту ідентичний (перевірити наявними тестами API-клієнтів).
   - Коміт: `refactor(web): share the cursor page query builder`
 

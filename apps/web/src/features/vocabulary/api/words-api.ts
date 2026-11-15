@@ -6,6 +6,7 @@ import {
   type WordPage,
 } from '@gototalk/shared';
 import { apiFetch } from '@/shared/api/http';
+import { pageQueryString } from '@/shared/api/page-query';
 
 interface WordsQuery {
   cursor?: string | undefined;
@@ -16,15 +17,7 @@ export function listWords({
   cursor,
   limit,
 }: WordsQuery = {}): Promise<WordPage> {
-  const params = new URLSearchParams();
-  if (cursor !== undefined) {
-    params.set('cursor', cursor);
-  }
-  if (limit !== undefined) {
-    params.set('limit', String(limit));
-  }
-  const query = params.toString();
-  return apiFetch(`/api/words${query === '' ? '' : `?${query}`}`, {
+  return apiFetch(`/api/words${pageQueryString({ cursor, limit })}`, {
     schema: WordPageSchema,
   });
 }
