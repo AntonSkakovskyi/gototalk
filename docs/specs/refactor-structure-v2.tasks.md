@@ -73,6 +73,7 @@
 | 4 | документи | 50–54 (лише `pnpm lint` і перевірка посилань; тести не запускати) |
 
 Пачки статуси перевірки:
+- Пачка finish, turn, audio: перевірено (shared 91, web 965, api 1156; `pnpm dev` без помилок DI, curl: finish 200/ідемпотентний/404/401, звіт 200, `/api/docs-json` має `POST /api/sessions/{id}/finish` у тегу `sessions`; e2e 24/24 з другого прогону (перший прогін мав одне нестабільне падіння `toHaveURL`, як і на базовій лінії); ESLint debt 13 warn (лише web-тести); рев'ю задачі 19 і пачки PASS, низькі знахідки в backlog)
 - Пачка нові модулі hint, learner-model, me→auth: перевірено (shared 91, web 965, api 1155; `pnpm dev` без помилок DI, curl: me, consent, learner-model, підказки (200/404/409), finish, login, видалення акаунта; ESLint debt 17 warn; рев'ю PASS; примітка до задачі 17: `LearnerModelModule` без `imports`, бо `AuthModule` глобальний)
 - Пачка модулі session, vocabulary, analysis: перевірено (shared 91, web 965, api 1155; `pnpm dev` без помилок DI, curl: план, старт, підказки, відповідь, завершення, слова; ESLint debt 22 warn; рев'ю задачі 13 і пачки PASS, низькі знахідки в backlog)
 - Пачка integrations і common: перевірено (shared 91, web 965, api 1152; `pnpm dev` без помилок DI, health ok, `POST /api/sessions/plan` з Fake рендерить план; рев'ю PASS, лише низькі знахідки в backlog)
