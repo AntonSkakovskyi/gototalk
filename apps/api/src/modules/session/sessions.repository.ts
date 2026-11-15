@@ -4,9 +4,6 @@ import { z } from 'zod';
 import {
   AnalysisStatusSchema,
   BetterPhrasingSchema,
-  FeedbackModeSchema,
-  SessionStatusSchema,
-  TopicSourceSchema,
   UtteranceRoleSchema,
 } from '@gototalk/shared';
 import type {
@@ -15,10 +12,13 @@ import type {
   StartSessionRequest,
   Utterance,
 } from '@gototalk/shared';
+import type { KeysetPosition } from '../../common/keyset-cursor.js';
+import { olderThan, toKeysetPage } from '../../common/keyset-page.js';
+import type { KeysetPage } from '../../common/keyset-page.js';
 import { DRIZZLE } from '../../core/db/db.tokens.js';
 import type { Database, DbTransaction } from '../../core/db/db.tokens.js';
-import { pgTimestampToDate } from '../../core/db/pg-timestamp.js';
 import { mistakes, sessions, users, utterances } from '../../core/db/schema.js';
+import { toSession } from './lib/session-view.js';
 import { lockSession } from './persistence/lock-session.js';
 import { toMistakeView } from './lib/mistake-view.js';
 import type { MistakeRow } from './lib/mistake-view.js';
@@ -30,22 +30,6 @@ import { SessionOwnerMissingError } from './session.errors.js';
 
 type SessionRow = typeof sessions.$inferSelect;
 type UtteranceRow = typeof utterances.$inferSelect;
-
-function toIso(value: string): string {
-  return pgTimestampToDate(value).toISOString();
-}
-
-function toSession(row: SessionRow): Session {
-  return {
-    id: row.id,
-    topic: row.topic,
-    topicSource: TopicSourceSchema.parse(row.topicSource),
-    feedbackMode: FeedbackModeSchema.parse(row.feedbackMode),
-    status: SessionStatusSchema.parse(row.status),
-    startedAt: toIso(row.startedAt),
-    endedAt: row.endedAt === null ? null : toIso(row.endedAt),
-  };
-}
 
 const BetterPhrasingsSchema = z.array(BetterPhrasingSchema);
 
@@ -143,6 +127,30 @@ export class SessionsRepository {
       .orderBy(desc(sessions.startedAt), desc(sessions.id))
       .limit(limit)
       .then((rows) => rows.map(toSession));
+  }
+
+  async listPage(
+    userId: string,
+    { after, limit }: { after?: KeysetPosition; limit: number },
+  ): Promise<KeysetPage<Session>> {
+    const rows = await this.db
+      .select()
+      .from(sessions)
+      .where(
+        and(
+          eq(sessions.userId, userId),
+          after ? olderThan(sessions.startedAt, sessions.id, after) : undefined,
+        ),
+      )
+      .orderBy(desc(sessions.startedAt), desc(sessions.id))
+      .limit(limit + 1);
+    // started_at stays raw text: a JS Date would truncate microseconds and break the keyset
+    return toKeysetPage(
+      rows,
+      limit,
+      (row) => ({ t: row.startedAt, id: row.id }),
+      toSession,
+    );
   }
 
   async findDetails(

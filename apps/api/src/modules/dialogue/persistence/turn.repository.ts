@@ -16,7 +16,7 @@ import {
   UtteranceNotFoundError,
 } from '../dialogue.errors.js';
 import type { StoredUtterance, TurnState } from '../lib/turn-state.js';
-import { AnalysisWriter } from './analysis-writer.js';
+import { AnalysisWriter } from '../../analysis/persistence/analysis-writer.js';
 
 export interface TurnWrites {
   analysis: AnalysisOutcome | null;

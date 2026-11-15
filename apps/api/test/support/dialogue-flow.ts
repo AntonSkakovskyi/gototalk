@@ -174,6 +174,8 @@ export async function countMistakes(
   return Number(rows[0]?.count);
 }
 
+export const SEEDED_WORD_SOURCE = 'session';
+
 export async function seedWords(
   pool: pg.Pool,
   userId: string,
@@ -181,8 +183,8 @@ export async function seedWords(
 ): Promise<void> {
   for (const [lemma, state] of words) {
     await pool.query(
-      `INSERT INTO words (user_id, lemma, state, times_used) VALUES ($1, $2, $3, 1)`,
-      [userId, lemma, state],
+      `INSERT INTO words (user_id, lemma, state, source, times_used) VALUES ($1, $2, $3, $4, 1)`,
+      [userId, lemma, state, SEEDED_WORD_SOURCE],
     );
   }
 }
@@ -192,8 +194,27 @@ export async function wordRows(
   userId: string,
 ): Promise<{ lemma: string; state: string; times_used: number }[]> {
   const { rows } = await pool.query(
-    'SELECT lemma, state, times_used FROM words WHERE user_id = $1 ORDER BY lemma',
+    'SELECT lemma, state, times_used FROM words WHERE user_id = $1 ORDER BY lower(lemma), id',
     [userId],
+  );
+  return rows;
+}
+
+export interface SessionWordRow {
+  lemma: string;
+  state: string;
+  source: string;
+}
+
+export async function sessionWordRows(
+  pool: pg.Pool,
+  sessionId: string,
+): Promise<SessionWordRow[]> {
+  const { rows } = await pool.query<SessionWordRow>(
+    `SELECT w.lemma, w.state, w.source
+       FROM session_words sw JOIN words w ON w.id = sw.word_id
+      WHERE sw.session_id = $1 ORDER BY lower(w.lemma), w.id`,
+    [sessionId],
   );
   return rows;
 }

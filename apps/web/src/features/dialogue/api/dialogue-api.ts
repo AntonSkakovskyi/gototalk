@@ -1,31 +1,25 @@
 import {
   HintResultSchema,
-  MistakeViewSchema,
   SessionSchema,
   TurnResultSchema,
   UtteranceSchema,
   type AnswerTextRequest,
   type HintRequest,
   type HintResult,
-  type MarkMistakeRequest,
-  type MistakeView,
   type Session,
   type TurnResult,
   type Utterance,
 } from '@gototalk/shared';
 import { audioFileName } from '@/features/dialogue/lib/recorder-mime';
 import { apiFetch } from '@/shared/api/http';
-
-function sessionPath(sessionId: string): string {
-  return `/api/sessions/${encodeURIComponent(sessionId)}`;
-}
+import { sessionApiPath } from '@/shared/api/session-details';
 
 export function submitTextAnswer(
   sessionId: string,
   text: string,
 ): Promise<Utterance> {
   const body: AnswerTextRequest = { text };
-  return apiFetch(`${sessionPath(sessionId)}/utterances`, {
+  return apiFetch(`${sessionApiPath(sessionId)}/utterances`, {
     method: 'POST',
     body,
     schema: UtteranceSchema,
@@ -38,7 +32,7 @@ export function submitAudioAnswer(
 ): Promise<Utterance> {
   const body = new FormData();
   body.append('audio', audio, audioFileName(audio.type));
-  return apiFetch(`${sessionPath(sessionId)}/utterances`, {
+  return apiFetch(`${sessionApiPath(sessionId)}/utterances`, {
     method: 'POST',
     body,
     schema: UtteranceSchema,
@@ -50,19 +44,8 @@ export function analyzeAnswer(
   utteranceId: string,
 ): Promise<TurnResult> {
   return apiFetch(
-    `${sessionPath(sessionId)}/utterances/${encodeURIComponent(utteranceId)}/analysis`,
+    `${sessionApiPath(sessionId)}/utterances/${encodeURIComponent(utteranceId)}/analysis`,
     { method: 'POST', schema: TurnResultSchema },
-  );
-}
-
-export function markMistakeFalse(
-  sessionId: string,
-  mistakeId: string,
-): Promise<MistakeView> {
-  const body: MarkMistakeRequest = { isFalse: true };
-  return apiFetch(
-    `${sessionPath(sessionId)}/mistakes/${encodeURIComponent(mistakeId)}`,
-    { method: 'PATCH', body, schema: MistakeViewSchema },
   );
 }
 
@@ -70,7 +53,7 @@ export function requestHint(
   sessionId: string,
   request: HintRequest,
 ): Promise<HintResult> {
-  return apiFetch(`${sessionPath(sessionId)}/hints`, {
+  return apiFetch(`${sessionApiPath(sessionId)}/hints`, {
     method: 'POST',
     body: request,
     schema: HintResultSchema,
@@ -78,7 +61,7 @@ export function requestHint(
 }
 
 export function finishSession(sessionId: string): Promise<Session> {
-  return apiFetch(`${sessionPath(sessionId)}/finish`, {
+  return apiFetch(`${sessionApiPath(sessionId)}/finish`, {
     method: 'POST',
     schema: SessionSchema,
   });

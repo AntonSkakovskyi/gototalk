@@ -139,4 +139,40 @@ describe('useStartSession', () => {
     });
     expect(queryClient.getQueryData(sessionKeys.list())).toBeUndefined();
   });
+
+  it('[TC-05-03] invalidates the history so the new session appears there', async () => {
+    const { queryClient, wrapper } = setup();
+    queryClient.setQueryData(sessionKeys.history(), {
+      pages: [{ items: [PREVIOUS], nextCursor: null }],
+      pageParams: [undefined],
+    });
+    mockApi({ 'POST /api/sessions': jsonResponse(STARTED, 201) });
+    const { result } = renderHook(() => useStartSession(), { wrapper });
+
+    result.current.mutate(REQUEST);
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(
+      queryClient.getQueryState(sessionKeys.history())?.isInvalidated,
+    ).toBe(true);
+  });
+
+  it('[TC-05-03] a failed start still invalidates the history', async () => {
+    const { queryClient, wrapper } = setup();
+    queryClient.setQueryData(sessionKeys.history(), {
+      pages: [{ items: [PREVIOUS], nextCursor: null }],
+      pageParams: [undefined],
+    });
+    mockApi({
+      'POST /api/sessions': errorResponse(403, ERROR_CODES.CONSENT_REQUIRED),
+    });
+    const { result } = renderHook(() => useStartSession(), { wrapper });
+
+    result.current.mutate(REQUEST);
+    await waitFor(() => expect(result.current.isError).toBe(true));
+
+    expect(
+      queryClient.getQueryState(sessionKeys.history())?.isInvalidated,
+    ).toBe(true);
+  });
 });

@@ -9,6 +9,7 @@ import {
 import {
   getSession,
   sessionDetailsQueryOptions,
+  sessionApiPath,
   sessionKeys,
 } from './session-details';
 
@@ -16,6 +17,11 @@ describe('session details', () => {
   it('[TC-03-03] keys are nested under the session root', () => {
     expect(sessionKeys.list()).toEqual(['session', 'list']);
     expect(sessionKeys.details('abc')).toEqual(['session', 'details', 'abc']);
+    expect(sessionKeys.report('abc')).toEqual(['session', 'report', 'abc']);
+  });
+
+  it('[TC-03-03] sessionApiPath encodes the id', () => {
+    expect(sessionApiPath('a/b')).toBe('/api/sessions/a%2Fb');
   });
 
   it('[TC-03-03] plan keys differ per request', () => {

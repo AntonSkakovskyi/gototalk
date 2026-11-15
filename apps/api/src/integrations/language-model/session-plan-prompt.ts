@@ -7,8 +7,5 @@ export function renderSessionPlanPrompt(input: PlanSessionInput): {
   id: typeof SESSION_PLAN_PROMPT_ID;
   text: string;
 } {
-  return {
-    id: SESSION_PLAN_PROMPT_ID,
-    text: renderPrompt(SESSION_PLAN_PROMPT_ID, input).text,
-  };
+  return renderPrompt(SESSION_PLAN_PROMPT_ID, input);
 }

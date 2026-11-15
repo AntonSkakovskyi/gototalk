@@ -10,17 +10,24 @@ import { retryUnlessClientError } from './retry-policy';
 export const sessionKeys = {
   all: ['session'] as const,
   list: () => [...sessionKeys.all, 'list'] as const,
+  history: () => [...sessionKeys.all, 'history'] as const,
   allDetails: () => [...sessionKeys.all, 'details'] as const,
   details: (id: string) => [...sessionKeys.allDetails(), id] as const,
+  allReports: () => [...sessionKeys.all, 'report'] as const,
+  report: (id: string) => [...sessionKeys.allReports(), id] as const,
   plan: (request: PlanSessionRequest) =>
     [...sessionKeys.all, 'plan', request] as const,
 };
+
+export function sessionApiPath(id: string): string {
+  return `/api/sessions/${encodeURIComponent(id)}`;
+}
 
 const MAX_DETAILS_RETRIES = 1;
 const DETAILS_STALE_TIME_MS = 30_000;
 
 export function getSession(id: string): Promise<SessionDetails> {
-  return apiFetch(`/api/sessions/${encodeURIComponent(id)}`, {
+  return apiFetch(sessionApiPath(id), {
     schema: SessionDetailsSchema,
   });
 }

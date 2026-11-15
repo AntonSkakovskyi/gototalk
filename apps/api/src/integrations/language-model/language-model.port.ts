@@ -29,15 +29,25 @@ export type HintInput =
 export interface SummarizeSessionInput {
   answers: number;
   minutes: number;
-  mistakes: { category: MistakeCategoryCode }[];
+  categories: {
+    code: MistakeCategoryCode;
+    title: string;
+    count: number;
+    examples: { original: string; suggestion: string }[];
+  }[];
 }
 
-export interface AnalyzeUtteranceResponse {
-  /** Raw model response, validated by the caller; positions are offsets in text_verbatim. */
+export interface ModelResponse {
+  /** Raw model response, validated by the caller. */
   output: unknown;
   promptVersion: string;
   model: string;
 }
+
+/** Mistake positions in output are offsets in text_verbatim. */
+export type AnalyzeUtteranceResponse = ModelResponse;
+
+export type SummarizeSessionResponse = ModelResponse;
 
 /** Every method returns the raw model output: callers validate it with a schema. */
 export interface LanguageModelPort {
@@ -47,5 +57,7 @@ export interface LanguageModelPort {
   planSession(input: PlanSessionInput): Promise<unknown>;
   nextTurn(input: NextTurnInput): Promise<unknown>;
   hint(input: HintInput): Promise<unknown>;
-  summarizeSession(input: SummarizeSessionInput): Promise<unknown>;
+  summarizeSession(
+    input: SummarizeSessionInput,
+  ): Promise<SummarizeSessionResponse>;
 }

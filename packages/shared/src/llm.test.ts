@@ -7,6 +7,7 @@ import {
   HintSchema,
   MistakeSchema,
   PlanSchema,
+  REPORT_SUMMARY_MAX,
   SummarySchema,
   TranscriptSchema,
   TurnSchema,
@@ -67,13 +68,39 @@ describe('LLM/STT result schemas', () => {
     expect(
       HintSchema.parse({ kind: 'phrase_start', text: 'I think…' }),
     ).toEqual({ kind: 'phrase_start', text: 'I think…' });
-    expect(
-      HintSchema.parse({ kind: 'translation', word: null, message: 'x' }),
-    ).toEqual({ kind: 'translation', word: null, message: 'x' });
-    expect(SummarySchema.parse({ summary: 'Ok', top_categories: [] })).toEqual({
-      summary: 'Ok',
-      top_categories: [],
+    expect(HintSchema.parse({ kind: 'translation', word: null })).toEqual({
+      kind: 'translation',
+      word: null,
     });
+    expect(SummarySchema.parse({ summary: 'Ok' })).toEqual({ summary: 'Ok' });
+  });
+
+  it('[TC-05-01] SummarySchema trims the text and bounds it to 1..REPORT_SUMMARY_MAX', () => {
+    expect(SummarySchema.parse({ summary: '  Ok  ' })).toEqual({
+      summary: 'Ok',
+    });
+    expect(
+      SummarySchema.safeParse({ summary: 'a'.repeat(REPORT_SUMMARY_MAX) })
+        .success,
+    ).toBe(true);
+    expect(
+      SummarySchema.safeParse({ summary: 'a'.repeat(REPORT_SUMMARY_MAX + 1) })
+        .success,
+    ).toBe(false);
+    expect(SummarySchema.safeParse({ summary: '   ' }).success).toBe(false);
+    expect(SummarySchema.safeParse({}).success).toBe(false);
+  });
+
+  it('[TC-05-01] SummarySchema drops top_categories: the top is computed by SQL', () => {
+    expect(
+      SummarySchema.parse({ summary: 'Ok', top_categories: ['articles'] }),
+    ).toEqual({ summary: 'Ok' });
+  });
+
+  it('[TC-05-01] HintSchema drops a message from the model', () => {
+    expect(
+      HintSchema.parse({ kind: 'translation', word: 'meeting', message: 'x' }),
+    ).toEqual({ kind: 'translation', word: 'meeting' });
   });
 
   it.each(['meeting', 'be able to', "o'clock", 'mother-in-law', 'Monday'])(

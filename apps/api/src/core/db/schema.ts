@@ -11,6 +11,7 @@ import {
   jsonb,
   integer,
   boolean,
+  primaryKey,
 } from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm';
 
@@ -165,6 +166,27 @@ export const theoryLinks = pgTable(
   ],
 );
 
+export const sessionReports = pgTable(
+  'session_reports',
+  {
+    sessionId: uuid('session_id').primaryKey().notNull(),
+    summary: text().notNull(),
+    deepAnalysis: jsonb('deep_analysis'),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .defaultNow()
+      .notNull(),
+    promptVersion: text('prompt_version'),
+    model: text(),
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.sessionId],
+      foreignColumns: [sessions.id],
+      name: 'session_reports_session_id_fkey',
+    }).onDelete('cascade'),
+  ],
+);
+
 export const hints = pgTable(
   'hints',
   {
@@ -199,25 +221,6 @@ export const hints = pgTable(
       'hints_kind_check',
       sql`kind = ANY (ARRAY['phrase_start'::text, 'translation'::text])`,
     ),
-  ],
-);
-
-export const sessionReports = pgTable(
-  'session_reports',
-  {
-    sessionId: uuid('session_id').primaryKey().notNull(),
-    summary: text().notNull(),
-    deepAnalysis: jsonb('deep_analysis'),
-    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
-      .defaultNow()
-      .notNull(),
-  },
-  (table) => [
-    foreignKey({
-      columns: [table.sessionId],
-      foreignColumns: [sessions.id],
-      name: 'session_reports_session_id_fkey',
-    }).onDelete('cascade'),
   ],
 );
 
@@ -444,6 +447,12 @@ export const words = pgTable(
       .notNull(),
   },
   (table) => [
+    index('idx_words_user_created').using(
+      'btree',
+      table.userId.asc().nullsLast().op('timestamptz_ops'),
+      table.createdAt.desc().nullsFirst().op('uuid_ops'),
+      table.id.desc().nullsFirst().op('timestamptz_ops'),
+    ),
     index('idx_words_user_state').using(
       'btree',
       table.userId.asc().nullsLast().op('text_ops'),
@@ -468,5 +477,33 @@ export const words = pgTable(
       'words_state_check',
       sql`state = ANY (ARRAY['new'::text, 'partial'::text, 'passive'::text, 'active'::text])`,
     ),
+  ],
+);
+
+export const sessionWords = pgTable(
+  'session_words',
+  {
+    sessionId: uuid('session_id').notNull(),
+    wordId: uuid('word_id').notNull(),
+  },
+  (table) => [
+    index('idx_session_words_word').using(
+      'btree',
+      table.wordId.asc().nullsLast().op('uuid_ops'),
+    ),
+    foreignKey({
+      columns: [table.sessionId],
+      foreignColumns: [sessions.id],
+      name: 'session_words_session_id_fkey',
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.wordId],
+      foreignColumns: [words.id],
+      name: 'session_words_word_id_fkey',
+    }).onDelete('cascade'),
+    primaryKey({
+      columns: [table.sessionId, table.wordId],
+      name: 'session_words_pkey',
+    }),
   ],
 );

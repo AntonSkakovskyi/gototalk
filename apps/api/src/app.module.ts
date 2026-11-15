@@ -14,6 +14,7 @@ import { MeModule } from './modules/me/me.module.js';
 import { buildPinoHttpOptions } from './core/logger/pino-options.js';
 import { ProfileModule } from './modules/profile/profile.module.js';
 import { ProvidersModule } from './integrations/providers.module.js';
+import { ReportModule } from './modules/report/report.module.js';
 import { SessionModule } from './modules/session/session.module.js';
 import { VocabularyModule } from './modules/vocabulary/vocabulary.module.js';
 
@@ -34,6 +35,7 @@ export class AppModule {
         AnalysisModule,
         DialogueModule,
         VocabularyModule,
+        ReportModule,
         LoggerModule.forRootAsync({
           inject: [ConfigService],
           useFactory: (config: ConfigService<Env, true>) => ({

@@ -7,6 +7,7 @@ import {
   currentQuestion,
   finishFromDialogue,
   fragment,
+  openDeepAnalysis,
   openTextAnswer,
   sendAnswer,
   startDialogue,
@@ -78,7 +79,7 @@ test.describe('[TC-04-04] text answer', () => {
 });
 
 test.describe('[TC-04-11] deferred feedback', () => {
-  test('[TC-04-11] in the end-of-session mode the dialogue shows no highlights and the report does', async ({
+  test('[TC-04-11] in the end-of-session mode the dialogue shows no highlights and the report deep analysis does', async ({
     signedInPage: { page },
   }) => {
     await startDialogue(page, { deferred: true });
@@ -94,6 +95,8 @@ test.describe('[TC-04-11] deferred feedback', () => {
     await expectNoHorizontalScroll(page);
 
     await finishFromDialogue(page);
+    await expect(fragment(page, TENSE_FRAGMENT)).toHaveCount(0);
+    await openDeepAnalysis(page);
     await expect(fragment(page, TENSE_FRAGMENT)).toBeVisible();
     await expect(fragment(page, WORD_ORDER_FRAGMENT)).toBeVisible();
     await expectNoHorizontalScroll(page);

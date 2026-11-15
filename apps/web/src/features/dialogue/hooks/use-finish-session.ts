@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { finishSession } from '@/features/dialogue/api/dialogue-api';
 import { withSession } from '@/features/dialogue/lib/details-cache';
 import { sessionKeys } from '@/shared/api/session-details';
-import { useUpdateDetails } from './use-update-details';
+import { useUpdateDetails } from '@/shared/hooks/use-update-details';
 
 export function useFinishSession(sessionId: string) {
   const queryClient = useQueryClient();
@@ -11,7 +11,10 @@ export function useFinishSession(sessionId: string) {
     mutationFn: () => finishSession(sessionId),
     onSuccess: async (session) => {
       await updateDetails((details) => withSession(details, session));
-      void queryClient.invalidateQueries({ queryKey: sessionKeys.list() });
+      void Promise.all([
+        queryClient.invalidateQueries({ queryKey: sessionKeys.list() }),
+        queryClient.invalidateQueries({ queryKey: sessionKeys.history() }),
+      ]);
     },
   });
 

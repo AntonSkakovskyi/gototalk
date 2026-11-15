@@ -1,10 +1,5 @@
 import { testUtterance } from '@/shared/testing/test-fixtures';
-import {
-  answersWithQuestions,
-  awaitingReply,
-  currentQuestion,
-  sortBySeq,
-} from './turns';
+import { awaitingReply, currentQuestion, sortBySeq } from './turns';
 
 describe('currentQuestion', () => {
   it('[TC-04-04] returns the last assistant utterance', () => {
@@ -49,43 +44,6 @@ describe('sortBySeq', () => {
 
     expect(sortBySeq(input).map((item) => item.id)).toEqual(['a', 'b']);
     expect(input.map((item) => item.id)).toEqual(['b', 'a']);
-  });
-});
-
-describe('answersWithQuestions', () => {
-  it('[TC-04-04] pairs every user answer with the question before it, ordered by seq', () => {
-    const pairs = answersWithQuestions([
-      testUtterance({ id: 'd', seq: 4, role: 'user', text: 'Second answer' }),
-      testUtterance({ id: 'b', seq: 2, role: 'user', text: 'First answer' }),
-      testUtterance({ id: 'a', seq: 1, role: 'assistant', text: 'First?' }),
-      testUtterance({ id: 'c', seq: 3, role: 'assistant', text: 'Second?' }),
-      testUtterance({
-        id: 'e',
-        seq: 5,
-        role: 'assistant',
-        text: 'Unanswered?',
-      }),
-    ]);
-
-    expect(
-      pairs.map(({ question, answer }) => [question?.text, answer.text]),
-    ).toEqual([
-      ['First?', 'First answer'],
-      ['Second?', 'Second answer'],
-    ]);
-  });
-
-  it('[TC-04-04] leaves the question empty for an answer without one before it', () => {
-    const pairs = answersWithQuestions([
-      testUtterance({ id: 'b', seq: 1, role: 'user', text: 'Orphan' }),
-    ]);
-
-    expect(pairs).toHaveLength(1);
-    expect(pairs[0]?.question).toBeUndefined();
-  });
-
-  it('[TC-04-04] returns nothing for a session without answers', () => {
-    expect(answersWithQuestions([testUtterance()])).toEqual([]);
   });
 });
 

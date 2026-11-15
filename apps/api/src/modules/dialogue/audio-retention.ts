@@ -11,13 +11,14 @@ const EXTENSIONS: Record<AudioMimeType, string> = {
   'audio/mp4': 'm4a',
 };
 
+function hasStringCode(error: Error): error is Error & { code: string } {
+  return 'code' in error && typeof error.code === 'string';
+}
+
 // Only the error code or name is logged: messages carry the file path
-function failureReason(error: unknown): string {
-  if (error instanceof Error) {
-    const code = (error as NodeJS.ErrnoException).code;
-    return code ?? error.name;
-  }
-  return 'unknown';
+export function failureReason(error: unknown): string {
+  if (!(error instanceof Error)) return 'unknown';
+  return hasStringCode(error) ? error.code : error.name;
 }
 
 /** Development-only copy of received audio; does nothing unless DEV_KEEP_AUDIO=true. */

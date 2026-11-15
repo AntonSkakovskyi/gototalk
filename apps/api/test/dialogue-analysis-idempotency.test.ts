@@ -50,7 +50,12 @@ describe('step 2 idempotency', () => {
     const second = await analyse(app, learner, utteranceId);
 
     expect(second).toEqual(first);
-    expect(model.calls).toEqual({ analyze: 1, nextTurn: 1, hint: 0 });
+    expect(model.calls).toEqual({
+      analyze: 1,
+      nextTurn: 1,
+      hint: 0,
+      summarize: 0,
+    });
     expect(await utteranceRows(pool, learner.session.id)).toHaveLength(3);
     expect(await countMistakes(pool, learner.session.id)).toBe(2);
     expect(await patternRows(pool, learner.id)).toEqual([
@@ -103,7 +108,12 @@ describe('step 2 idempotency', () => {
     const again = await analyse(app, learner, first);
 
     expect(again.reply?.seq).toBe(3);
-    expect(model.calls).toEqual({ analyze: 0, nextTurn: 0, hint: 0 });
+    expect(model.calls).toEqual({
+      analyze: 0,
+      nextTurn: 0,
+      hint: 0,
+      summarize: 0,
+    });
     expect(await utteranceRows(pool, learner.session.id)).toHaveLength(5);
   });
 });

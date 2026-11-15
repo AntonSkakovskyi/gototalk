@@ -69,3 +69,13 @@ export async function finishFromDialogue(page: Page): Promise<void> {
     .click();
   await expect(page).toHaveURL((url) => REPORT_URL.test(url.pathname));
 }
+
+export async function openDeepAnalysis(page: Page): Promise<void> {
+  await page.getByRole('button', { name: 'Детально', exact: true }).click();
+  await expect(
+    page.getByRole('button', { name: 'Згорнути', exact: true }),
+  ).toHaveAttribute('aria-expanded', 'true');
+  await expect(
+    page.getByRole('heading', { level: 2, name: 'Детальний розбір' }),
+  ).toBeVisible();
+}

@@ -7,6 +7,7 @@ import type {
   DbTransaction,
 } from '../../../core/db/db.tokens.js';
 import { hints, sessions, utterances } from '../../../core/db/schema.js';
+import { SessionWordsRepository } from '../../vocabulary/persistence/session-words.repository.js';
 import { WordsRepository } from '../../vocabulary/persistence/words.repository.js';
 import {
   AnswerNotExpectedError,
@@ -38,6 +39,7 @@ export class HintsRepository {
   constructor(
     @Inject(DRIZZLE) private readonly db: Database,
     private readonly words: WordsRepository,
+    private readonly sessionWords: SessionWordsRepository,
   ) {}
 
   /** Unlocked pre-check: the session must be active and have a question to hint on. */
@@ -79,6 +81,9 @@ export class HintsRepository {
         text,
         wordId,
       });
+      if (wordId) {
+        await this.sessionWords.link(tx, userId, sessionId, [wordId]);
+      }
     });
   }
 

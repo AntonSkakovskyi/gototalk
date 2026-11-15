@@ -7,6 +7,8 @@ import type {
   LanguageModelPort,
   NextTurnInput,
   PlanSessionInput,
+  SummarizeSessionInput,
+  SummarizeSessionResponse,
 } from './language-model.port.js';
 import { analyzeText } from './fake-analysis.js';
 import {
@@ -14,7 +16,10 @@ import {
   renderErrorAnalysisPrompt,
   renderHintPrompt,
   renderNextTurnPrompt,
+  renderSessionSummaryPrompt,
+  SESSION_SUMMARY_PROMPT_ID,
 } from './prompts.js';
+import { buildSummary } from './fake-summary.js';
 import { buildFakeHint } from './fake-hints.js';
 import { buildFakeTurn } from './fake-next-turn.js';
 import { buildFakePlan } from './fake-session-plans.js';
@@ -73,12 +78,18 @@ export class FakeLanguageModel implements LanguageModelPort {
     });
   }
 
-  summarizeSession(): Promise<unknown> {
-    if (this.failMode === 'unavailable') return unavailable();
-    return Promise.resolve({
-      summary: 'Ви відповіли 1 раз за 1 хв. Помилок не знайдено, так тримати.',
-      top_categories: [],
-    });
+  async summarizeSession(
+    input: SummarizeSessionInput,
+  ): Promise<SummarizeSessionResponse> {
+    if (this.failMode === 'unavailable') {
+      throw new LanguageModelUnavailableError();
+    }
+    renderSessionSummaryPrompt(input);
+    return {
+      output: buildSummary(input),
+      promptVersion: SESSION_SUMMARY_PROMPT_ID,
+      model: 'fake',
+    };
   }
 }
 

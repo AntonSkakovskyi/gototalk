@@ -170,7 +170,12 @@ describe('POST /api/sessions/:id/utterances/:utteranceId/analysis', () => {
 
     expect(result.utterance.mistakes).toEqual([]);
     expect(result.utterance.better).toEqual([]);
-    expect(model.calls).toEqual({ analyze: 1, nextTurn: 1, hint: 0 });
+    expect(model.calls).toEqual({
+      analyze: 1,
+      nextTurn: 1,
+      hint: 0,
+      summarize: 0,
+    });
     expect(await mistakeRows(pool, utteranceId)).toEqual([]);
     expect(await patternRows(pool, learner.id)).toEqual([]);
   });

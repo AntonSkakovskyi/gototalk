@@ -18,4 +18,11 @@ describe('LoadError', () => {
 
     expect(onRetry).toHaveBeenCalledTimes(1);
   });
+
+  it('[TC-05-07] shows a given message instead of the generic one', () => {
+    renderWithProviders(<LoadError onRetry={vi.fn()} message="Custom text" />);
+
+    expect(screen.getByRole('alert')).toHaveTextContent('Custom text');
+    expect(screen.getByRole('alert')).not.toHaveTextContent(uk.errors.generic);
+  });
 });

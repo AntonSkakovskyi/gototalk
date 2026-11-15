@@ -26,6 +26,10 @@ function setup() {
   const queryClient = createTestQueryClient();
   queryClient.setQueryData(sessionKeys.details(DIALOGUE_SESSION_ID), DETAILS);
   queryClient.setQueryData(sessionKeys.list(), []);
+  queryClient.setQueryData(sessionKeys.history(), {
+    pages: [{ items: [], nextCursor: null }],
+    pageParams: [undefined],
+  });
   queryClient.setQueryData(sessionKeys.plan({ previousTopics: [] }), {
     ...testSessionPlan(),
   });
@@ -62,6 +66,19 @@ describe('useFinishSession', () => {
       queryClient.getQueryState(sessionKeys.plan({ previousTopics: [] }))
         ?.isInvalidated,
     ).toBe(false);
+  });
+
+  it('[TC-05-03] invalidates the history so the finished status shows there', async () => {
+    const { queryClient, result } = setup();
+    mockDialogueApi();
+    const onFinished = vi.fn();
+
+    act(() => result.current.finish(onFinished));
+
+    await waitFor(() => expect(onFinished).toHaveBeenCalledTimes(1));
+    expect(
+      queryClient.getQueryState(sessionKeys.history())?.isInvalidated,
+    ).toBe(true);
   });
 
   it('[TC-04-04] reports finishing while the request is in flight', async () => {

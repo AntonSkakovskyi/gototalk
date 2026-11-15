@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   CreateGoalRequestSchema,
+  GoalSchema,
   GoalTitleSchema,
   isScenePreset,
   LearnerModelSchema,
@@ -9,6 +10,7 @@ import {
   MAX_ACTIVE_GOALS,
   MAX_SCENE_LENGTH,
   MAX_SCENES,
+  ProfileSchema,
   SCENE_PRESETS,
   SceneSchema,
   ScenesSchema,
@@ -130,6 +132,44 @@ describe('goal schemas', () => {
   });
 });
 
+describe('profile and goal response schemas', () => {
+  const goal = {
+    id: '0b1d3f0e-6f55-4a53-9c43-3a6a6a1c2d10',
+    title: 'Pass the interview',
+    status: 'active',
+    createdAt: '2026-11-01T10:00:00.000Z',
+  };
+
+  it('[TC-02-01] GoalSchema accepts a valid goal and rejects a bad id, status or date', () => {
+    expect(GoalSchema.parse(goal)).toEqual(goal);
+    expect(GoalSchema.safeParse({ ...goal, id: 'x' }).success).toBe(false);
+    expect(GoalSchema.safeParse({ ...goal, status: 'archived' }).success).toBe(
+      false,
+    );
+    expect(GoalSchema.safeParse({ ...goal, createdAt: 'today' }).success).toBe(
+      false,
+    );
+  });
+
+  it('[TC-02-01] ProfileSchema accepts a valid profile and rejects an invalid level, scenes or date', () => {
+    const profile = {
+      level: 'B1',
+      scenes: ['travel'],
+      updatedAt: '2026-11-01T10:00:00.000Z',
+    };
+    expect(ProfileSchema.parse(profile)).toEqual(profile);
+    expect(ProfileSchema.safeParse({ ...profile, level: 'A1' }).success).toBe(
+      false,
+    );
+    expect(ProfileSchema.safeParse({ ...profile, scenes: [] }).success).toBe(
+      false,
+    );
+    expect(
+      ProfileSchema.safeParse({ ...profile, updatedAt: 'now' }).success,
+    ).toBe(false);
+  });
+});
+
 describe('learner model schema', () => {
   it('[TC-02-01] LearnerModelSchema accepts a valid payload', () => {
     const payload = {
@@ -144,6 +184,15 @@ describe('learner model schema', () => {
       vocabulary: { new: 3, partial: 2, passive: 1, active: 0 },
     };
     expect(LearnerModelSchema.safeParse(payload).success).toBe(true);
+  });
+
+  it('[TC-02-01] LearnerModelSchema.vocabulary rejects an unknown state key', () => {
+    expect(
+      LearnerModelSchema.safeParse({
+        weakAreas: [],
+        vocabulary: { new: 0, partial: 0, passive: 0, active: 0, known: 1 },
+      }).success,
+    ).toBe(false);
   });
 
   it('[TC-02-01] LearnerModelSchema rejects a negative count and an unknown category', () => {

@@ -51,6 +51,11 @@ export const SessionSchema = z.object({
 
 export const SessionListSchema = z.array(SessionSchema);
 
+export const SessionPageSchema = z.object({
+  items: z.array(SessionSchema),
+  nextCursor: z.string().nullable(),
+});
+
 export const UtteranceSchema = z.object({
   id: z.uuid(),
   seq: z.int().positive(),
@@ -75,5 +80,6 @@ export type PlanSessionRequest = z.infer<typeof PlanSessionRequestSchema>;
 export type SessionPlan = z.infer<typeof SessionPlanSchema>;
 export type StartSessionRequest = z.infer<typeof StartSessionRequestSchema>;
 export type Session = z.infer<typeof SessionSchema>;
+export type SessionPage = z.infer<typeof SessionPageSchema>;
 export type Utterance = z.infer<typeof UtteranceSchema>;
 export type SessionDetails = z.infer<typeof SessionDetailsSchema>;

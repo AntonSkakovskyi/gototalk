@@ -10,6 +10,7 @@ import {
   SESSION_STATUSES,
   SessionDetailsSchema,
   SessionListSchema,
+  SessionPageSchema,
   SessionPlanSchema,
   SessionSchema,
   StartSessionRequestSchema,
@@ -325,5 +326,20 @@ describe('session response schemas', () => {
     const details = { ...session, utterances: [utterance], planRemaining: 4 };
     expect(SessionDetailsSchema.parse(details)).toEqual(details);
     expect(SessionDetailsSchema.safeParse(session).success).toBe(false);
+  });
+
+  it('[TC-05-03] SessionPageSchema wraps sessions with a nullable cursor', () => {
+    expect(
+      SessionPageSchema.parse({ items: [session], nextCursor: null }),
+    ).toEqual({
+      items: [session],
+      nextCursor: null,
+    });
+    expect(
+      SessionPageSchema.parse({ items: [], nextCursor: 'c' }).nextCursor,
+    ).toBe('c');
+    expect(SessionPageSchema.safeParse({ items: [session] }).success).toBe(
+      false,
+    );
   });
 });

@@ -114,11 +114,18 @@ describe('FakeLanguageModel', () => {
     const sessionInput = {
       answers: 3,
       minutes: 5,
-      mistakes: [{ category: 'verb_tense' as const }],
+      categories: [
+        {
+          code: 'verb_tense' as const,
+          title: 'Часи дієслів',
+          count: 1,
+          examples: [{ original: 'I go', suggestion: 'I went' }],
+        },
+      ],
     };
     const summary = await llm.summarizeSession(sessionInput);
     expect(await llm.summarizeSession(sessionInput)).toEqual(summary);
-    expect(SummarySchema.parse(summary)).toEqual(summary);
+    expect(SummarySchema.parse(summary.output)).toEqual(summary.output);
   });
 
   it('[TC-00-05] a call does not affect later answers (mutating a result does not leak)', async () => {

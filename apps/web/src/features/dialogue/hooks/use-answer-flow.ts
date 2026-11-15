@@ -13,11 +13,11 @@ import {
   withUtterance,
 } from '@/features/dialogue/lib/details-cache';
 import { ApiError } from '@/shared/api/http';
+import { useUpdateDetails } from '@/shared/hooks/use-update-details';
 import {
   sessionDetailsQueryOptions,
   sessionKeys,
 } from '@/shared/api/session-details';
-import { useUpdateDetails } from './use-update-details';
 
 export type AnswerPhase = 'idle' | 'sending' | 'recognizing' | 'analyzing';
 

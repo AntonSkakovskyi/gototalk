@@ -5,7 +5,7 @@ import type { ConfigService } from '@nestjs/config';
 import { Logger } from '@nestjs/common';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Env } from '../../core/config/env.schema.js';
-import { AudioRetention } from './audio-retention.js';
+import { AudioRetention, failureReason } from './audio-retention.js';
 
 const UTTERANCE_ID = '44444444-4444-4444-8444-444444444444';
 const AUDIO = Buffer.from([0x1a, 0x45, 0xdf, 0xa3, 1, 2, 3]);
@@ -110,5 +110,30 @@ describe('AudioRetention', () => {
     expect(logged).not.toContain('secret-blocker');
     expect(logged).not.toContain(UTTERANCE_ID);
     warn.mockRestore();
+  });
+});
+
+describe('failureReason', () => {
+  it('[TC-04-13] returns the code of an error that has one', () => {
+    const error = Object.assign(new Error('open /secret/path'), {
+      code: 'ENOENT',
+    });
+
+    expect(failureReason(error)).toBe('ENOENT');
+  });
+
+  it('[TC-04-13] falls back to the error name when there is no code', () => {
+    expect(failureReason(new TypeError('/secret/path'))).toBe('TypeError');
+  });
+
+  it('[TC-04-13] ignores a code that is not a string', () => {
+    const error = Object.assign(new RangeError('x'), { code: 42 });
+
+    expect(failureReason(error)).toBe('RangeError');
+  });
+
+  it('[TC-04-13] returns unknown for a value that is not an Error', () => {
+    expect(failureReason('/secret/path')).toBe('unknown');
+    expect(failureReason(undefined)).toBe('unknown');
   });
 });
