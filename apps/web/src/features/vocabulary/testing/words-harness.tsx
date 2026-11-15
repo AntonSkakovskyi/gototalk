@@ -6,7 +6,7 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import { apiFetch } from '@/shared/api/http';
-import { sessionKeys } from '@/shared/api/session-details';
+import { sessionKeys } from '@/entities/session/api/session-details';
 import { createTestQueryClient } from '@/shared/testing/query-wrapper';
 import { jsonResponse } from '@/shared/testing/http-responses';
 import { testReport } from '@/shared/testing/fixtures/report';

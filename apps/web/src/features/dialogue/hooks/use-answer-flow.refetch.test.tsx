@@ -1,5 +1,5 @@
 import { act, waitFor } from '@testing-library/react';
-import { sessionKeys } from '@/shared/api/session-details';
+import { sessionKeys } from '@/entities/session/api/session-details';
 import {
   DIALOGUE_SESSION_ID,
   analysisOk,

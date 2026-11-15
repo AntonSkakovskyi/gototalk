@@ -3,7 +3,7 @@ import {
   type MarkMistakeRequest,
   type MistakeView,
 } from '@gototalk/shared';
-import { apiFetch } from './http';
+import { apiFetch } from '@/shared/api/http';
 import { sessionApiPath } from './session-details';
 
 export function markMistakeFalse(

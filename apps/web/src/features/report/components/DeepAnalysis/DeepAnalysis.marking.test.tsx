@@ -6,7 +6,7 @@ import { reportQueryOptions } from '@/features/report/api/report-queries';
 import {
   sessionDetailsQueryOptions,
   sessionKeys,
-} from '@/shared/api/session-details';
+} from '@/entities/session/api/session-details';
 import uk from '@/shared/i18n/uk.json';
 import { createTestQueryClient } from '@/shared/testing/query-wrapper';
 import { mockApi } from '@/shared/testing/mock-api';

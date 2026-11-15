@@ -1,7 +1,7 @@
 import type { SessionDetails } from '@gototalk/shared';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
-import { sessionKeys } from '@/shared/api/session-details';
+import { sessionKeys } from '@/entities/session/api/session-details';
 
 /** Applies an update to the cached details after cancelling in-flight fetches, so a stale response cannot overwrite it; nothing is created when they are not cached. */
 export function useUpdateDetails(sessionId: string) {

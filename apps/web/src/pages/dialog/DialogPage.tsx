@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router';
 import { DialogueScreen } from '@/features/dialogue/components/DialogueScreen/DialogueScreen';
 import { SessionOverview } from '@/features/session/components/SessionOverview/SessionOverview';
-import { sessionDetailsQueryOptions } from '@/shared/api/session-details';
+import { sessionDetailsQueryOptions } from '@/entities/session/api/session-details';
 
 export function DialogPage() {
   const { t } = useTranslation();

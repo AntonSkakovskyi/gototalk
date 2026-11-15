@@ -6,7 +6,7 @@ import classes from './SessionListItem.module.scss';
 import { SessionStatusBadge } from '@/features/session/components/SessionStatusBadge/SessionStatusBadge';
 import { formatSessionDate } from '@/features/session/lib/format-session-date';
 import { topicLanguage } from '@/features/session/lib/topic-language';
-import { reportPath, sessionPath } from '@/shared/router/session-paths';
+import { reportPath, sessionPath } from '@/entities/session/lib/session-paths';
 
 interface SessionListItemProps {
   session: Session;

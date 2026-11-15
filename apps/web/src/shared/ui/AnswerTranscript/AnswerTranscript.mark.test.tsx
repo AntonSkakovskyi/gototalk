@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event';
 import {
   sessionDetailsQueryOptions,
   sessionKeys,
-} from '@/shared/api/session-details';
+} from '@/entities/session/api/session-details';
 import uk from '@/shared/i18n/uk.json';
 import {
   DIALOGUE_SESSION_ID,

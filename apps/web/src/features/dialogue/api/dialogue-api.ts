@@ -12,7 +12,7 @@ import {
 } from '@gototalk/shared';
 import { audioFileName } from '@/features/dialogue/lib/recorder-mime';
 import { apiFetch } from '@/shared/api/http';
-import { sessionApiPath } from '@/shared/api/session-details';
+import { sessionApiPath } from '@/entities/session/api/session-details';
 
 export function submitTextAnswer(
   sessionId: string,

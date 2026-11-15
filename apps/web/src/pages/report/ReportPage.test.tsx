@@ -5,7 +5,7 @@ import {
   currentLocation,
   renderAppWithProbe,
 } from '@/app/router/guards/guard-test-helpers';
-import { sessionKeys } from '@/shared/api/session-details';
+import { sessionKeys } from '@/entities/session/api/session-details';
 import uk from '@/shared/i18n/uk.json';
 import { deferred } from '@/shared/testing/deferred';
 import { createTestQueryClient } from '@/shared/testing/query-wrapper';

@@ -3,7 +3,7 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 import {
   sessionDetailsQueryOptions,
   sessionKeys,
-} from '@/shared/api/session-details';
+} from '@/entities/session/api/session-details';
 import {
   DIALOGUE_SESSION_ID,
   mockDialogueApi,

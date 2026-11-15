@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { finishSession } from '@/features/dialogue/api/dialogue-api';
 import { withSession } from '@/features/dialogue/lib/details-cache';
-import { sessionKeys } from '@/shared/api/session-details';
+import { sessionKeys } from '@/entities/session/api/session-details';
 import { useUpdateDetails } from '@/shared/hooks/use-update-details';
 
 export function useFinishSession(sessionId: string) {

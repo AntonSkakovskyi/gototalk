@@ -11,7 +11,7 @@ import { TurnList } from '@/features/dialogue/components/TurnList/TurnList';
 import { useAnswerFlow } from '@/features/dialogue/hooks/use-answer-flow';
 import { useComposerState } from '@/features/dialogue/hooks/use-composer-state';
 import { awaitingReply } from '@/features/dialogue/lib/turns';
-import { reportPath } from '@/shared/router/session-paths';
+import { reportPath } from '@/entities/session/lib/session-paths';
 
 interface DialogueScreenProps {
   details: SessionDetails;

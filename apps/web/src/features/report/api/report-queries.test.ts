@@ -1,6 +1,6 @@
 import { ERROR_CODES } from '@gototalk/shared';
 import { QueryClient } from '@tanstack/react-query';
-import { sessionKeys } from '@/shared/api/session-details';
+import { sessionKeys } from '@/entities/session/api/session-details';
 import {
   mockReportApi,
   REPORT_SESSION_ID,

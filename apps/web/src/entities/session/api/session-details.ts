@@ -4,8 +4,8 @@ import {
   type SessionDetails,
 } from '@gototalk/shared';
 import { queryOptions } from '@tanstack/react-query';
-import { apiFetch } from './http';
-import { retryUnlessClientError } from './retry-policy';
+import { apiFetch } from '@/shared/api/http';
+import { retryUnlessClientError } from '@/shared/api/retry-policy';
 
 export const sessionKeys = {
   all: ['session'] as const,

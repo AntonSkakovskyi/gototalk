@@ -1,7 +1,7 @@
 import type { PlanSessionRequest } from '@gototalk/shared';
 import { infiniteQueryOptions, queryOptions } from '@tanstack/react-query';
 import { retryUnlessClientError } from '@/shared/api/retry-policy';
-import { sessionKeys } from '@/shared/api/session-details';
+import { sessionKeys } from '@/entities/session/api/session-details';
 import { listHistory, listSessions, planSession } from './session-api';
 
 const MAX_LIST_RETRIES = 1;

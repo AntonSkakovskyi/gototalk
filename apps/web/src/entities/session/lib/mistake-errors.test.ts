@@ -1,5 +1,5 @@
 import { ERROR_CODES } from '@gototalk/shared';
-import { ApiError } from './http';
+import { ApiError } from '@/shared/api/http';
 import { markMistakeErrorKey } from './mistake-errors';
 
 describe('markMistakeErrorKey', () => {

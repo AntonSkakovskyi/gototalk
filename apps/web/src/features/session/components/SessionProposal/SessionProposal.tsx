@@ -1,7 +1,7 @@
 import { Stack } from '@mantine/core';
 import { useNavigate } from 'react-router';
 import { useSessionProposal } from '@/features/session/hooks/use-session-proposal';
-import { sessionPath } from '@/shared/router/session-paths';
+import { sessionPath } from '@/entities/session/lib/session-paths';
 import { CustomTopicAction } from './CustomTopicAction';
 import { FeedbackModeControl } from './FeedbackModeControl';
 import { ProposalPlan } from './ProposalPlan';

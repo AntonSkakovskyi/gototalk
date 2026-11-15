@@ -1,7 +1,7 @@
 import type { Session, SessionPage } from '@gototalk/shared';
 import { act, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { sessionKeys } from '@/shared/api/session-details';
+import { sessionKeys } from '@/entities/session/api/session-details';
 import uk from '@/shared/i18n/uk.json';
 import { deferred } from '@/shared/testing/deferred';
 import { mockApi } from '@/shared/testing/mock-api';

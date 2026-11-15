@@ -17,7 +17,7 @@ import { useUpdateDetails } from '@/shared/hooks/use-update-details';
 import {
   sessionDetailsQueryOptions,
   sessionKeys,
-} from '@/shared/api/session-details';
+} from '@/entities/session/api/session-details';
 
 export type AnswerPhase = 'idle' | 'sending' | 'recognizing' | 'analyzing';
 

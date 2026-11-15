@@ -6,8 +6,8 @@ import { ReportView } from '@/features/report/components/ReportView/ReportView';
 import { SessionOverview } from '@/features/session/components/SessionOverview/SessionOverview';
 import { SessionWords } from '@/features/vocabulary/components/SessionWords/SessionWords';
 import { reportQueryOptions } from '@/features/report/api/report-queries';
-import { sessionDetailsQueryOptions } from '@/shared/api/session-details';
-import { sessionPath } from '@/shared/router/session-paths';
+import { sessionDetailsQueryOptions } from '@/entities/session/api/session-details';
+import { sessionPath } from '@/entities/session/lib/session-paths';
 
 export function ReportPage() {
   const { t } = useTranslation();

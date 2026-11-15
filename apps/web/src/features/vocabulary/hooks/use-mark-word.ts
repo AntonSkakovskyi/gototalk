@@ -9,7 +9,7 @@ import {
   useQueryClient,
   type InfiniteData,
 } from '@tanstack/react-query';
-import { sessionKeys } from '@/shared/api/session-details';
+import { sessionKeys } from '@/entities/session/api/session-details';
 import { markWord } from '@/features/vocabulary/api/words-api';
 import { wordKeys } from '@/features/vocabulary/api/words-queries';
 import {

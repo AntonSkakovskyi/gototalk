@@ -5,7 +5,7 @@ import {
 } from '@gototalk/shared';
 import type { InfiniteData } from '@tanstack/react-query';
 import { act, renderHook, waitFor } from '@testing-library/react';
-import { sessionKeys } from '@/shared/api/session-details';
+import { sessionKeys } from '@/entities/session/api/session-details';
 import {
   createQueryWrapper,
   createTestQueryClient,

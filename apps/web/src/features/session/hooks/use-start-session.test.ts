@@ -13,7 +13,7 @@ import {
   testSessionPlan,
 } from '@/shared/testing/fixtures/session';
 import { sessionListQueryOptions } from '@/features/session/api/session-queries';
-import { sessionKeys } from '@/shared/api/session-details';
+import { sessionKeys } from '@/entities/session/api/session-details';
 import { useStartSession } from './use-start-session';
 
 const REQUEST = { ...testSessionPlan(), feedbackMode: 'immediate' as const };

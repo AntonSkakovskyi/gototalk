@@ -13,7 +13,7 @@ import {
   testSession,
   testSessionPlan,
 } from '@/shared/testing/fixtures/session';
-import { sessionKeys } from '@/shared/api/session-details';
+import { sessionKeys } from '@/entities/session/api/session-details';
 import {
   sessionHistoryQueryOptions,
   sessionListQueryOptions,

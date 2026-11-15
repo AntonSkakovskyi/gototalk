@@ -1,5 +1,5 @@
 import { ERROR_CODES } from '@gototalk/shared';
-import { ApiError } from './http';
+import { ApiError } from '@/shared/api/http';
 
 const KEY_BY_CODE: Record<string, string> = {
   [ERROR_CODES.MISTAKE_NOT_FOUND]: 'transcript.errors.mistakeNotFound',

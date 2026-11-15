@@ -394,7 +394,7 @@
   - Відхилення: `deferred()` жила в `shared/testing/answer-flow-setup.tsx` (не в dialogue-mocks); константи `EMPTY_SESSIONS_ROUTE`/`EMPTY_WORDS_ROUTE` і `emptyResponse` – у `http-responses.ts` (будуються на `jsonResponse`); `fixtures/report.ts` імпортує `./session` і `./words` (єдиний перехресний імпорт фікстур); константи learner-model – у `fixtures/profile.ts`; тести фікстур: `fixtures/report.test.ts` (2) і `fixtures/words.test.ts` (1), 3 `it` до й після.
   - Коміт: `refactor(web): split test fixtures into http responses and per-domain factories`
 
-- [ ] **37. `entities/session`: api і lib `[risk]` (W1)**
+- [x] **37. `entities/session`: api і lib `[risk]` (W1)**
   - `shared/api/session-details.ts` (+test), `mistakes.ts` (+test), `mistake-errors.ts` (+test), `details-cache.ts` (+test) → `entities/session/api/` (перші два) і `entities/session/lib/` (останні два); `shared/router/session-paths.ts` (+test) → `entities/session/lib/session-paths.ts`.
   - ESLint: зони `entities` стають активними (`warn` з задачі 02): `entities ↛ features|pages|app`.
   - Перевірка: усі споживачі (4 фічі, 2 сторінки, ~30 імпортів) компілюються; `pnpm --filter web test`.

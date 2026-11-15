@@ -1,7 +1,7 @@
 import { ERROR_CODES, type SessionDetails } from '@gototalk/shared';
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { sessionKeys } from '@/shared/api/session-details';
+import { sessionKeys } from '@/entities/session/api/session-details';
 import uk from '@/shared/i18n/uk.json';
 import { deferred } from '@/shared/testing/deferred';
 import {

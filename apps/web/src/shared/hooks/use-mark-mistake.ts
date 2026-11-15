@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { withMistake } from '@/shared/api/details-cache';
-import { markMistakeFalse } from '@/shared/api/mistakes';
-import { sessionKeys } from '@/shared/api/session-details';
+import { withMistake } from '@/entities/session/lib/details-cache';
+import { markMistakeFalse } from '@/entities/session/api/mistakes';
+import { sessionKeys } from '@/entities/session/api/session-details';
 import { useUpdateDetails } from './use-update-details';
 
 export function useMarkMistake(sessionId: string) {

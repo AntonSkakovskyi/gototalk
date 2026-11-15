@@ -1,6 +1,6 @@
 import { ERROR_CODES, MAX_TOPIC_REROLLS } from '@gototalk/shared';
 import { act, renderHook, waitFor } from '@testing-library/react';
-import { sessionKeys } from '@/shared/api/session-details';
+import { sessionKeys } from '@/entities/session/api/session-details';
 import {
   STARTED_SESSION,
   mockSessionApi,

@@ -2,7 +2,7 @@ import type { SessionDetails } from '@gototalk/shared';
 import { renderHook } from '@testing-library/react';
 import { StrictMode, type ReactNode } from 'react';
 import { useAnswerFlow } from '@/features/dialogue/hooks/use-answer-flow';
-import { sessionKeys } from '@/shared/api/session-details';
+import { sessionKeys } from '@/entities/session/api/session-details';
 import { DIALOGUE_SESSION_ID } from './dialogue-mocks';
 import { createQueryWrapper, createTestQueryClient } from './query-wrapper';
 import {

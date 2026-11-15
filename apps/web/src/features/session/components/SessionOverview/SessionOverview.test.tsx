@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import {
   sessionDetailsQueryOptions,
   sessionKeys,
-} from '@/shared/api/session-details';
+} from '@/entities/session/api/session-details';
 import uk from '@/shared/i18n/uk.json';
 import { mockApi } from '@/shared/testing/mock-api';
 import { createTestQueryClient } from '@/shared/testing/query-wrapper';
