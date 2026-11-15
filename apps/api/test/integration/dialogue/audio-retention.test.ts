@@ -4,12 +4,12 @@ import path from 'node:path';
 import type { INestApplication } from '@nestjs/common';
 import type pg from 'pg';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { PG_POOL } from '../src/core/db/db.tokens.js';
-import { postAudio, webmAudio } from './support/audio.js';
-import { startLearner } from './support/dialogue-flow.js';
-import { isolateEnv } from './support/env.js';
-import { createTestApp } from './support/test-app.js';
-import { resetUserData } from './support/test-db.js';
+import { PG_POOL } from '../../../src/core/db/db.tokens.js';
+import { postAudio, webmAudio } from '../../support/audio.js';
+import { startLearner } from '../../support/dialogue-flow.js';
+import { isolateEnv } from '../../support/env.js';
+import { createTestApp } from '../../support/test-app.js';
+import { resetUserData } from '../../support/test-db.js';
 
 describe('audio retention', () => {
   let audioDir: string;

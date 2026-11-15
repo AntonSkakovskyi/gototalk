@@ -18,18 +18,18 @@ import {
   it,
   vi,
 } from 'vitest';
-import { PG_POOL } from '../src/core/db/db.tokens.js';
-import { SPEECH_RECOGNITION_PORT } from '../src/integrations/speech-recognition/speech-recognition.port.js';
-import { AnswersService } from '../src/modules/dialogue/answers.service.js';
+import { PG_POOL } from '../../../src/core/db/db.tokens.js';
+import { SPEECH_RECOGNITION_PORT } from '../../../src/integrations/speech-recognition/speech-recognition.port.js';
+import { AnswersService } from '../../../src/modules/dialogue/answers.service.js';
 import {
   MISSING_USER_ID,
   expectError,
   grantConsent,
   registerUser,
   tokenOfMissingUser,
-} from './support/api-client.js';
-import { createTestApp } from './support/test-app.js';
-import { resetUserData } from './support/test-db.js';
+} from '../../support/api-client.js';
+import { createTestApp } from '../../support/test-app.js';
+import { resetUserData } from '../../support/test-db.js';
 
 const PLAN = {
   topic: 'Weekend plans',

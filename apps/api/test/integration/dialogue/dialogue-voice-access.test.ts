@@ -5,12 +5,12 @@ import {
   expectError,
   grantConsent,
   registerUser,
-} from './support/api-client.js';
-import { postAudio, webmAudio } from './support/audio.js';
-import { startLearner, utteranceRows } from './support/dialogue-flow.js';
-import { createVoiceApp } from './support/voice-app.js';
-import type { VoiceApp } from './support/voice-app.js';
-import { resetUserData } from './support/test-db.js';
+} from '../../support/api-client.js';
+import { postAudio, webmAudio } from '../../support/audio.js';
+import { startLearner, utteranceRows } from '../../support/dialogue-flow.js';
+import { createVoiceApp } from '../../support/voice-app.js';
+import type { VoiceApp } from '../../support/voice-app.js';
+import { resetUserData } from '../../support/test-db.js';
 
 describe('voice answer access and session state', () => {
   let ctx: VoiceApp;

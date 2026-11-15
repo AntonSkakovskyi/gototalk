@@ -1,11 +1,11 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { FAKE_TRANSCRIPTS } from '../src/integrations/speech-recognition/fake/fake-transcripts.js';
-import { postAudio } from './support/audio.js';
-import { captureLogs } from './support/capture-logs.js';
-import { startLearner } from './support/dialogue-flow.js';
-import { createVoiceApp } from './support/voice-app.js';
-import type { VoiceApp } from './support/voice-app.js';
-import { resetUserData } from './support/test-db.js';
+import { FAKE_TRANSCRIPTS } from '../../../src/integrations/speech-recognition/fake/fake-transcripts.js';
+import { postAudio } from '../../support/audio.js';
+import { captureLogs } from '../../support/capture-logs.js';
+import { startLearner } from '../../support/dialogue-flow.js';
+import { createVoiceApp } from '../../support/voice-app.js';
+import type { VoiceApp } from '../../support/voice-app.js';
+import { resetUserData } from '../../support/test-db.js';
 
 const AUDIO_MARKER = 'AUDIO-PAYLOAD-MARKER-7f3a9c';
 const AUDIO_BYTES = Buffer.concat([

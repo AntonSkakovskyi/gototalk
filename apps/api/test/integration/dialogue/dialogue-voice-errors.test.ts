@@ -1,7 +1,7 @@
 import { ANSWER_TEXT_MAX, MAX_AUDIO_BYTES } from '@gototalk/shared';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { expectError } from './support/api-client.js';
-import { postAudio, webmAudio } from './support/audio.js';
+import { expectError } from '../../support/api-client.js';
+import { postAudio, webmAudio } from '../../support/audio.js';
 import {
   analyse,
   fetchDetails,
@@ -11,10 +11,10 @@ import {
   startLearner,
   utteranceRows,
   wordRows,
-} from './support/dialogue-flow.js';
-import { createVoiceApp, multipartRequest } from './support/voice-app.js';
-import type { VoiceApp } from './support/voice-app.js';
-import { resetUserData } from './support/test-db.js';
+} from '../../support/dialogue-flow.js';
+import { createVoiceApp, multipartRequest } from '../../support/voice-app.js';
+import type { VoiceApp } from '../../support/voice-app.js';
+import { resetUserData } from '../../support/test-db.js';
 
 const TEXT_ANSWER = 'I very like weekends';
 

@@ -10,20 +10,20 @@ import {
   it,
   vi,
 } from 'vitest';
-import { PG_POOL } from '../src/core/db/db.tokens.js';
-import { WordUsageService } from '../src/modules/vocabulary/word-usage.service.js';
-import { expectError } from './support/api-client.js';
+import { PG_POOL } from '../../../src/core/db/db.tokens.js';
+import { WordUsageService } from '../../../src/modules/vocabulary/word-usage.service.js';
+import { expectError } from '../../support/api-client.js';
 import {
   postAnswer,
   startLearner,
   utteranceRows,
-} from './support/dialogue-flow.js';
+} from '../../support/dialogue-flow.js';
 import {
   SessionLockHolder,
   waitForLockWaiter,
-} from './support/session-lock.js';
-import { createTestApp } from './support/test-app.js';
-import { resetUserData } from './support/test-db.js';
+} from '../../support/session-lock.js';
+import { createTestApp } from '../../support/test-app.js';
+import { resetUserData } from '../../support/test-db.js';
 
 describe('step 1 transaction', () => {
   let app: INestApplication;

@@ -287,7 +287,7 @@
 - [x] **28. `integration/session/`** – `sessions`, `sessions-plan`, `sessions-plan-unavailable`, `sessions-read`, `sessions-history`, `sessions-analysis-read`.
   - Коміт: `refactor(api-test): move session integration tests`
 
-- [ ] **29. `integration/dialogue/` (відповіді й голос)** – `dialogue-answer`, `dialogue-answer-locking`, `dialogue-voice`, `dialogue-voice-access`, `dialogue-voice-errors`, `dialogue-voice-logging`, `audio-retention`.
+- [x] **29. `integration/dialogue/` (відповіді й голос)** – `dialogue-answer`, `dialogue-answer-locking`, `dialogue-voice`, `dialogue-voice-access`, `dialogue-voice-errors`, `dialogue-voice-logging`, `audio-retention`.
   - Коміт: `refactor(api-test): move dialogue answer and voice integration tests`
 
 - [ ] **30. `integration/dialogue/` (аналіз) і `analysis/`** – `dialogue-analysis`, `-access`, `-failures`, `-idempotency`, `-locking`, `-words` → `dialogue/`; `mistakes`, `mistakes-access`, `patterns-repository`, `pending-analysis` → `analysis/`.
