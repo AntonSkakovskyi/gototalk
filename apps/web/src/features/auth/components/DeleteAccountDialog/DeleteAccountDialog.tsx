@@ -16,6 +16,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { ApiError } from '@/shared/api/api-error';
+import type { TranslationKey } from '@/shared/i18n/translation-key';
 import { deleteAccount } from '@/features/auth/api/auth-api';
 import {
   deleteAccountErrorKey,
@@ -33,7 +34,7 @@ function DeleteAccountForm({
   onPendingChange,
 }: DeleteAccountFormProps) {
   const { t } = useTranslation();
-  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<TranslationKey | null>(null);
   const {
     register,
     handleSubmit,

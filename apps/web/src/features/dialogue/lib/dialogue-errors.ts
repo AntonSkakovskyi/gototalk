@@ -1,7 +1,8 @@
 import { ERROR_CODES } from '@gototalk/shared';
 import { ApiError } from '@/shared/api/http';
+import type { TranslationKey } from '@/shared/i18n/translation-key';
 
-const KEY_BY_CODE: Record<string, string> = {
+const KEY_BY_CODE: Record<string, TranslationKey> = {
   [ERROR_CODES.SESSION_FINISHED]: 'dialogue.errors.sessionFinished',
   [ERROR_CODES.ANSWER_NOT_EXPECTED]: 'dialogue.errors.answerNotExpected',
   [ERROR_CODES.UTTERANCE_NOT_FOUND]: 'dialogue.errors.utteranceNotFound',
@@ -18,7 +19,7 @@ const KEY_BY_CODE: Record<string, string> = {
 };
 
 // A hint failure never touches a saved answer, so the answer-flow texts about it would mislead.
-const HINT_KEY_BY_CODE: Record<string, string> = {
+const HINT_KEY_BY_CODE: Record<string, TranslationKey> = {
   [ERROR_CODES.LANGUAGE_MODEL_UNAVAILABLE]:
     'dialogue.hint.errors.modelUnavailable',
   [ERROR_CODES.LANGUAGE_MODEL_INVALID_RESPONSE]:
@@ -27,12 +28,12 @@ const HINT_KEY_BY_CODE: Record<string, string> = {
 
 const HTTP_SERVER_ERROR = 500;
 
-export function dialogueErrorKey(error: unknown): { key: string } {
+export function dialogueErrorKey(error: unknown): { key: TranslationKey } {
   const key = error instanceof ApiError ? KEY_BY_CODE[error.code] : undefined;
   return { key: key ?? 'errors.generic' };
 }
 
-export function hintErrorKey(error: unknown): { key: string } {
+export function hintErrorKey(error: unknown): { key: TranslationKey } {
   const key =
     error instanceof ApiError ? HINT_KEY_BY_CODE[error.code] : undefined;
   return key === undefined ? dialogueErrorKey(error) : { key };

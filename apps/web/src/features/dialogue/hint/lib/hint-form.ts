@@ -1,11 +1,12 @@
 import { HINT_WORD_MAX } from '@gototalk/shared';
+import type { TranslationKey } from '@/shared/i18n/translation-key';
 
 interface FieldIssue {
   type?: string;
 }
 
 interface HintWordErrorMessage {
-  key: string;
+  key: TranslationKey;
   values?: { max: number };
 }
 

@@ -457,10 +457,11 @@
   - Відхилення: `resources.ts` експортує `resources` і тонкий акцесор `uk = resources.uk.translation` (імпортери змінили лише рядок імпорту: `import { uk } from '@/shared/i18n/resources'`; 68 файлів); `uk.json` перейменовано `git mv` у `uk/profile.json` (історія йде за найбільшою секцією); файл `mistakeCategories.json` лишився camelCase, як названо в задачі (за ключем верхнього рівня); перевірка: злиття нових файлів дорівнює `main:uk.json` (deep equal, однаковий порядок ключів, 13 ключів, 297 рядків), `pnpm --filter web build` успішний.
   - Коміт: `refactor(web): split the uk translation into per-area json files`
 
-- [ ] **48. Типізація ключів i18n `[risk]` (W6)**
+- [x] **48. Типізація ключів i18n `[risk]` (W6)**
   - Context7 (react-i18next 18): `CustomTypeOptions { defaultNS, resources }`; `shared/i18n/i18next.d.ts`.
   - ~20 місць зі `string`-ключами (`dialogue-errors.ts`, `session-errors.ts`, `profile-errors.ts`, `report-errors.ts`, `word-errors.ts`, `mistake-errors.ts`, `use-error-text.ts` та ін.) типізувати ключем (`TranslationKey` або `Record<…, TranslationKey>`); без зміни поведінки.
   - Перевірка: `pnpm typecheck`; негативна перевірка: тимчасовий неіснуючий ключ дає помилку typecheck (відкотити).
+  - Відхилення: `TranslationKey` (`ParseKeys` з i18next 27) лежить у `shared/i18n/translation-key.ts`, а не в `resources.ts` (там рантайм-JSON); типізовано 13 файлів (таблиці помилок, форми, `submitError` у сторінках/діалозі), кастів немає; негативна перевірка: неіснуючий ключ у `session-errors.ts` і `t('nonexistent.key')` дали помилки typecheck (TS2418, TS2345), відкочено.
   - Коміт: `refactor(web): type translation keys from the uk resources`
 
 - [ ] **49. Web-правила в `error`, PR3 завершено**
