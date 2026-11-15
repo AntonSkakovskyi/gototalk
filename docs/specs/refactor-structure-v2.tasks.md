@@ -421,7 +421,7 @@
   - `pages/report/report-page-setup.ts` → `pages/report/testing/`; `features/dialogue/components/DialogueScreen/dialogue-screen-test-helpers.tsx` → `features/dialogue/testing/`; `features/profile/components/GoalsSection/goals-test-helpers.tsx`, `OnboardingWizard/wizard-test-helpers.tsx` → `features/profile/testing/`; `features/report/components/DeepAnalysis/deep-analysis-fixtures.ts` → `features/report/testing/`; `app/router/guards/guard-test-helpers.tsx` → `app/testing/`.
   - Коміт: `refactor(web): collect component test helpers in testing folders`
 
-- [ ] **42. `SessionListItem` у власну папку (W3)**
+- [x] **42. `SessionListItem` у власну папку (W3)**
   - `features/session/components/RecentSessions/SessionListItem.tsx` + `.module.scss` → `components/SessionListItem/` (імпортують `RecentSessions` і `SessionHistory`).
   - Коміт: `refactor(web): give shared session list item its own folder`
 

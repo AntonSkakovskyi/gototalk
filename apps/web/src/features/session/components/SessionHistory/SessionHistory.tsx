@@ -3,7 +3,7 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import { sessionHistoryQueryOptions } from '@/features/session/api/session-queries';
-import { SessionListItem } from '@/features/session/components/RecentSessions/SessionListItem';
+import { SessionListItem } from '@/features/session/components/SessionListItem/SessionListItem';
 import { LoadError } from '@/shared/ui/LoadError/LoadError';
 import { LoadMoreFooter } from '@/shared/ui/LoadMoreFooter/LoadMoreFooter';
 import { SectionSkeleton } from '@/shared/ui/SectionSkeleton/SectionSkeleton';
