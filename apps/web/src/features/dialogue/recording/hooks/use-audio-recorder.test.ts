@@ -5,13 +5,13 @@ import {
   FakeMediaRecorder,
   FakeStream,
   installFakeMedia,
-} from '@/features/dialogue/testing/fake-media';
+} from '@/features/dialogue/recording/testing/fake-media';
 import {
   allTracksStopped,
   renderRecorder,
   startRecording,
   tickSeconds,
-} from '@/features/dialogue/testing/recorder-harness';
+} from '@/features/dialogue/recording/testing/recorder-harness';
 
 let media: ReturnType<typeof installFakeMedia>;
 

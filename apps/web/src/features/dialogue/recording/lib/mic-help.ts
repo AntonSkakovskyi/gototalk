@@ -1,4 +1,4 @@
-import type { RecorderStatus } from '@/features/dialogue/hooks/use-audio-recorder';
+import type { RecorderStatus } from '@/features/dialogue/recording/lib/recorder-status';
 
 export type MicHelpKind =
   'denied' | 'insecure' | 'unsupported' | 'notFound' | 'error';

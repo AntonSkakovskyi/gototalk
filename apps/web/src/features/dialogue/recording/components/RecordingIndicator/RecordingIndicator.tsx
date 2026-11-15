@@ -1,8 +1,8 @@
 import { MAX_RECORDING_SECONDS } from '@gototalk/shared';
 import { Group, Progress, Text, VisuallyHidden } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
-import type { RecorderStatus } from '@/features/dialogue/hooks/use-audio-recorder';
-import { formatElapsed } from '@/features/dialogue/lib/format-elapsed';
+import type { RecorderStatus } from '@/features/dialogue/recording/lib/recorder-status';
+import { formatElapsed } from '@/features/dialogue/recording/lib/format-elapsed';
 
 // Speech sits well below full scale, so the raw RMS is amplified for display.
 const LEVEL_GAIN = 300;

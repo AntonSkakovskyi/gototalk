@@ -10,7 +10,7 @@ import {
   type TurnResult,
   type Utterance,
 } from '@gototalk/shared';
-import { audioFileName } from '@/features/dialogue/lib/recorder-mime';
+import { audioFileName } from '@/features/dialogue/recording/lib/recorder-mime';
 import { apiFetch } from '@/shared/api/http';
 import { sessionApiPath } from '@/entities/session/api/session-details';
 

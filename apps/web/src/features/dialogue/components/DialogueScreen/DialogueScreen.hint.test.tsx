@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { installFakeMedia } from '@/features/dialogue/testing/fake-media';
+import { installFakeMedia } from '@/features/dialogue/recording/testing/fake-media';
 import uk from '@/shared/i18n/uk.json';
 import { deferred } from '@/shared/testing/deferred';
 import {

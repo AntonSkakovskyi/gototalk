@@ -4,13 +4,13 @@ import {
   FakeMediaRecorder,
   installFakeMedia,
   removeMediaDevices,
-} from '@/features/dialogue/testing/fake-media';
+} from '@/features/dialogue/recording/testing/fake-media';
 import {
   allTracksStopped,
   rejectMicrophone,
   renderRecorder,
   startRecording,
-} from '@/features/dialogue/testing/recorder-harness';
+} from '@/features/dialogue/recording/testing/recorder-harness';
 
 let media: ReturnType<typeof installFakeMedia>;
 

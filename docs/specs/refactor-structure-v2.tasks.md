@@ -426,10 +426,11 @@
   - `features/session/components/RecentSessions/SessionListItem.tsx` + `.module.scss` → `components/SessionListItem/` (імпортують `RecentSessions` і `SessionHistory`).
   - Коміт: `refactor(web): give shared session list item its own folder`
 
-- [ ] **43. `features/dialogue/recording/` (W4)**
+- [x] **43. `features/dialogue/recording/` (W4)**
   - `components/{RecordButton,RecordingIndicator,MicPermissionHelp}` (+tests) → `recording/components/`; `hooks/use-audio-recorder*.ts` (+3 тести) → `recording/hooks/`; `lib/{audio-level,recorder-mime,recording-session,mic-help,format-elapsed}` (+tests) → `recording/lib/`; `testing/{fake-media,recorder-harness}.ts` → `recording/testing/`.
   - `mic-help.ts` імпортує хук `use-audio-recorder` (lib → hooks): розв'язати переносом спільного типу/константи в `recording/lib/` без зміни поведінки.
   - Підобласті не імпортують одна одну (зона з задачі 02).
+  - Відхилення: `mic-help.ts` імпортував з хука лише тип `RecorderStatus` – перенесено дослівно в нову `recording/lib/recorder-status.ts`, хук, `mic-help`, `MicPermissionHelp` і `RecordingIndicator` (з тестами) імпортують його звідти; `api/dialogue-api.ts` імпортує `audioFileName` з `recording/lib/recorder-mime` (кореневий `api/` залежить від підобласті; правилами дозволено); Vitest `src/features/dialogue` + `src/pages` до й після: 382 тести в 46 файлах.
   - Коміт: `refactor(web): extract the recording area of the dialogue feature`
 
 - [ ] **44. `features/dialogue/hint/` і `turn-cache` (W4)**

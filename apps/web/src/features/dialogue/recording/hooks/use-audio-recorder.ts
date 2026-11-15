@@ -9,11 +9,9 @@ import {
   beginRecording,
   stopTracks,
   type RecordingSession,
-} from '@/features/dialogue/lib/recording-session';
-import { pickRecorderMime } from '@/features/dialogue/lib/recorder-mime';
-
-export type RecorderStatus =
-  'idle' | 'requesting' | 'recording' | 'denied' | 'unsupported' | 'error';
+} from '@/features/dialogue/recording/lib/recording-session';
+import { pickRecorderMime } from '@/features/dialogue/recording/lib/recorder-mime';
+import type { RecorderStatus } from '@/features/dialogue/recording/lib/recorder-status';
 
 interface Options {
   /** Called once per finished recording, also after the automatic stop; never after unmount. */

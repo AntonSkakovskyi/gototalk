@@ -1,7 +1,7 @@
 import { vi } from 'vitest';
 import { act, renderHook } from '@testing-library/react';
-import type { installFakeMedia } from '@/features/dialogue/testing/fake-media';
-import { useAudioRecorder } from '@/features/dialogue/hooks/use-audio-recorder';
+import type { installFakeMedia } from '@/features/dialogue/recording/testing/fake-media';
+import { useAudioRecorder } from '@/features/dialogue/recording/hooks/use-audio-recorder';
 
 export function renderRecorder() {
   const onRecorded = vi.fn<(audio: Blob) => void>();

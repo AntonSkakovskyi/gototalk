@@ -1,10 +1,10 @@
 import { Alert } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
-import type { RecorderStatus } from '@/features/dialogue/hooks/use-audio-recorder';
+import type { RecorderStatus } from '@/features/dialogue/recording/lib/recorder-status';
 import {
   micHelpKind,
   type MicHelpKind,
-} from '@/features/dialogue/lib/mic-help';
+} from '@/features/dialogue/recording/lib/mic-help';
 
 // A missing capability is a standing notice; a refusal or failure follows the user's tap and is announced at once.
 const STANDING_NOTICES = new Set<MicHelpKind>(['insecure', 'unsupported']);

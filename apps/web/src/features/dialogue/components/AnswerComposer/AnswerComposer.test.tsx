@@ -2,7 +2,7 @@ import { configure, screen, waitFor } from '@testing-library/react';
 import { useEffect, useState } from 'react';
 import userEvent from '@testing-library/user-event';
 import type { AnswerPhase } from '@/features/dialogue/hooks/use-answer-flow';
-import { installFakeMedia } from '@/features/dialogue/testing/fake-media';
+import { installFakeMedia } from '@/features/dialogue/recording/testing/fake-media';
 import uk from '@/shared/i18n/uk.json';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 import { useComposerState } from '@/features/dialogue/hooks/use-composer-state';

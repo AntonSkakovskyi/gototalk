@@ -3,11 +3,11 @@ import {
   FakeAnalyser,
   FakeAudioContext,
   installFakeMedia,
-} from '@/features/dialogue/testing/fake-media';
+} from '@/features/dialogue/recording/testing/fake-media';
 import {
   renderRecorder,
   startRecording,
-} from '@/features/dialogue/testing/recorder-harness';
+} from '@/features/dialogue/recording/testing/recorder-harness';
 
 beforeEach(() => {
   vi.useFakeTimers();
