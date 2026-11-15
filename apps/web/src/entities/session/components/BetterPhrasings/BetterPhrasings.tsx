@@ -1,7 +1,7 @@
 import type { BetterPhrasing } from '@gototalk/shared';
 import { List, Stack, Text, Title } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
-import { ReplaceArrow } from '@/shared/ui/ReplaceArrow/ReplaceArrow';
+import { ReplaceArrow } from '@/entities/session/components/ReplaceArrow/ReplaceArrow';
 import { ENGLISH_LANG } from '@/shared/i18n/languages';
 
 interface BetterPhrasingsProps {

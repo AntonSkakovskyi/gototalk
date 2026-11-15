@@ -1,7 +1,7 @@
 import type { Utterance } from '@gototalk/shared';
 import { Paper, Stack, Text } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
-import { AnswerTranscript } from '@/shared/ui/AnswerTranscript/AnswerTranscript';
+import { AnswerTranscript } from '@/entities/session/components/AnswerTranscript/AnswerTranscript';
 
 const ANSWER_BACKGROUND = 'var(--mantine-color-default-hover)';
 

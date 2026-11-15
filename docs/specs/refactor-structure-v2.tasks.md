@@ -404,10 +404,11 @@
   - `shared/hooks/use-mark-mistake.ts` (+test), `use-update-details.ts` → `entities/session/hooks/`; `shared/hooks/use-focus-when.ts` лишається в `shared/`.
   - Коміт: `refactor(web): move session entity hooks into entities/session`
 
-- [ ] **39. `entities/session/components` `[risk]` (W1/W3)**
+- [x] **39. `entities/session/components` `[risk]` (W1/W3)**
   - Папки цілком: `shared/ui/AnswerCard`, `PastQuestion`, `BetterPhrasings`, `ReplaceArrow`, `AnswerTranscript` (+scss, +tests, `highlight-segments`), `MistakeDetails` → `entities/session/components/<Name>/`.
   - W3: `TranscriptText.tsx` → `components/TranscriptText/TranscriptText.tsx`, `Correction.tsx` + `.module.scss` → `components/Correction/` (власні папки, бо імпортуються поза папкою батька).
   - `shared/ui/` лишається з `LoadError`, `LoadMoreFooter`, `SectionSkeleton`.
+  - Відхилення (W3): `TranscriptText` імпортує лише `AnswerTranscript`, `Correction` – лише `MistakeDetails` (перевірено grep), тому за правилом «власна папка, лише якщо імпортують поза папкою батька» вони лишились у папках батьків (`AnswerTranscript/TranscriptText.tsx`, `MistakeDetails/Correction.tsx` + scss); у `shared/ui` лишились `LoadError`, `LoadMoreFooter`, `SectionSkeleton`; 26 `it` до й після.
   - Коміт: `refactor(web): move session transcript components into entities/session`
 
 - [ ] **40. Доменні моки з `shared/testing` у `testing/` зрізів (W1, r.65)**

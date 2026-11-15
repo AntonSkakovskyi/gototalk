@@ -1,6 +1,6 @@
 import { Stack, Text } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
-import { ReplaceArrow } from '@/shared/ui/ReplaceArrow/ReplaceArrow';
+import { ReplaceArrow } from '@/entities/session/components/ReplaceArrow/ReplaceArrow';
 import { ENGLISH_LANG } from '@/shared/i18n/languages';
 import classes from './Correction.module.scss';
 
