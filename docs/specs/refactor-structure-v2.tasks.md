@@ -308,7 +308,7 @@
   - Відхилення: файли `auth`, `goals`, `dialogue-answer` мають один зовнішній `describe`, тож розрізано за групами тестів (зовнішня назва однакова в обох половинах); спільні хелпери >10 рядків винесено в `test/support/{auth-api,goals-api,answer-api}.ts` (фабрики `createAuthClient` тощо) і `src/core/errors/testing/filter-harness.ts`; `-validation`/`-access` для відповідей використовують звичайний `createTestApp()` без мока `transcribe`. Кількість тестів Vitest по файлах до/після: auth 22/11+11, goals 27/21+6, db-schema 21/14+7, dialogue-answer 16/6+5+5, all-exceptions.filter 24/20+4.
   - Коміт: `test(api): split the longest integration and unit tests by concern`
 
-- [ ] **34. Таблиця «старий шлях → новий» і перевірка PR2**
+- [x] **34. Таблиця «старий шлях → новий» і перевірка PR2**
   - Звірити таблицю нижче з `git diff -M --name-status main HEAD -- apps/api/test`; виправити розбіжності. Фінальна перевірка PR (повний набір), кількість тестів = база задачі 00.
   - Коміт: `docs: record api test move table`
 
@@ -324,7 +324,7 @@
 | `mistake-categories.test.ts` | `integration/core/mistake-categories.test.ts` |
 | `user-data-fixture.test.ts` | `integration/core/user-data-fixture.test.ts` |
 | `reset-user-data.test.ts` | `integration/core/reset-user-data.test.ts` |
-| (нове, задача 22) `openapi.test.ts` | `integration/core/openapi.test.ts` |
+| `openapi.test.ts` (додано в задачі 22, PR 1) | `integration/core/openapi.test.ts` |
 | `auth.test.ts` | `integration/auth/auth.test.ts` (+ `auth-refresh.test.ts`) |
 | `auth-guard.test.ts` | `integration/auth/auth-guard.test.ts` |
 | `drizzle-refresh-tokens.repository.test.ts` | `integration/auth/drizzle-refresh-tokens.repository.test.ts` |
@@ -372,7 +372,9 @@
 | `vocabulary-usage.test.ts` | `integration/vocabulary/vocabulary-usage.test.ts` |
 | `words-list.test.ts` | `integration/vocabulary/words-list.test.ts` |
 | `words-mark.test.ts` | `integration/vocabulary/words-mark.test.ts` |
-| `global-setup.ts`, `support/*` | без змін |
+| `global-setup.ts`, `support/*` | без змін (нові хелпери задачі 33: `support/answer-api.ts`, `auth-api.ts`, `goals-api.ts`) |
+
+Звірено в задачі 34 (`git diff -M --name-status main HEAD -- apps/api/test`): 53 перейменування збігаються з таблицею. Розбиті файли (задача 33): `auth.test.ts` → `auth.test.ts` + `auth-refresh.test.ts` (git за порогом 50% показує `auth.test.ts` як видалений, а новий `integration/auth/auth.test.ts` як доданий; `-M30%` бачить `auth.test.ts` → `auth-refresh.test.ts` R044), `goals.test.ts` + `goals-limit.test.ts`, `db-schema.test.ts` + `db-schema-constraints.test.ts`, `dialogue-answer.test.ts` + `-validation` + `-access`.
 
 ---
 
