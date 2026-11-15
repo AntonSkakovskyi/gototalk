@@ -17,11 +17,15 @@ export const sessionKeys = {
     [...sessionKeys.all, 'plan', request] as const,
 };
 
+export function sessionApiPath(id: string): string {
+  return `/api/sessions/${encodeURIComponent(id)}`;
+}
+
 const MAX_DETAILS_RETRIES = 1;
 const DETAILS_STALE_TIME_MS = 30_000;
 
 export function getSession(id: string): Promise<SessionDetails> {
-  return apiFetch(`/api/sessions/${encodeURIComponent(id)}`, {
+  return apiFetch(sessionApiPath(id), {
     schema: SessionDetailsSchema,
   });
 }

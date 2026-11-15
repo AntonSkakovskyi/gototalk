@@ -4,6 +4,7 @@ import {
   type MistakeView,
 } from '@gototalk/shared';
 import { apiFetch } from './http';
+import { sessionApiPath } from './session-details';
 
 export function markMistakeFalse(
   sessionId: string,
@@ -11,7 +12,7 @@ export function markMistakeFalse(
 ): Promise<MistakeView> {
   const body: MarkMistakeRequest = { isFalse: true };
   return apiFetch(
-    `/api/sessions/${encodeURIComponent(sessionId)}/mistakes/${encodeURIComponent(mistakeId)}`,
+    `${sessionApiPath(sessionId)}/mistakes/${encodeURIComponent(mistakeId)}`,
     { method: 'PATCH', body, schema: MistakeViewSchema },
   );
 }

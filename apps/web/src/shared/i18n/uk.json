@@ -361,6 +361,11 @@
       "mistakeNotFound": "Цю помилку не знайдено. Оновіть сторінку й спробуйте ще раз"
     }
   },
+  "report": {
+    "errors": {
+      "notFinished": "Звіт з’явиться після завершення сесії"
+    }
+  },
   "mistakeCategories": {
     "articles": "Артиклі",
     "verb_tense": "Часи дієслів",
