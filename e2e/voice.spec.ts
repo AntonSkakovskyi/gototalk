@@ -5,6 +5,7 @@ import {
   currentQuestion,
   finishFromDialogue,
   fragment,
+  openDeepAnalysis,
   startDialogue,
 } from './support/dialog.js';
 import { expectNoHorizontalScroll } from './support/layout.js';
@@ -72,6 +73,7 @@ test.describe('[TC-04-05] voice answer', () => {
     expect(answer?.analysisStatus).toBe('done');
 
     await finishFromDialogue(page);
+    await openDeepAnalysis(page);
     await expect(fragment(page, WORD_ORDER_FRAGMENT)).toBeVisible();
     await expectNoHorizontalScroll(page);
   });

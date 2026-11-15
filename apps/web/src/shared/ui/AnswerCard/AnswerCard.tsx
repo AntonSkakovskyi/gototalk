@@ -22,7 +22,7 @@ export function AnswerCard({
     <Paper p="md" radius="md" bg={ANSWER_BACKGROUND}>
       <Stack gap="xs">
         <Text size="sm" c="dimmed">
-          {t('dialogue.turns.you')}
+          {t('transcript.you')}
         </Text>
         <AnswerTranscript
           sessionId={sessionId}

@@ -1,4 +1,4 @@
-import { ERROR_CODES } from '@gototalk/shared';
+import { ERROR_CODES, type SessionDetails } from '@gototalk/shared';
 import { useQuery } from '@tanstack/react-query';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -13,15 +13,18 @@ import {
   errorResponse,
   jsonResponse,
   testReport,
+  testSessionDetails,
+  testTurnResult,
+  testUtterance,
 } from '@/shared/testing/test-fixtures';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 import { ReportView } from './ReportView';
 
 const text = uk.report.summary;
 
-function Harness() {
+function Harness({ details }: { details?: SessionDetails }) {
   const query = useQuery(reportQueryOptions(REPORT_SESSION_ID));
-  return <ReportView query={query} />;
+  return <ReportView query={query} details={details} />;
 }
 
 describe('ReportView', () => {
@@ -131,5 +134,29 @@ describe('ReportView', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(
       uk.report.errors.notFinished,
     );
+  });
+
+  it('[TC-05-06] shows the deep analysis toggle under the summary only when the details are known', async () => {
+    mockReportApi();
+    const { unmount } = renderWithProviders(<Harness />);
+    await screen.findByRole('heading', { level: 2, name: text.title });
+    expect(
+      screen.queryByRole('button', { name: uk.report.deep.open }),
+    ).not.toBeInTheDocument();
+    unmount();
+
+    mockReportApi();
+    renderWithProviders(
+      <Harness
+        details={testSessionDetails({
+          status: 'finished',
+          utterances: [testUtterance(), testTurnResult().utterance],
+        })}
+      />,
+    );
+
+    expect(
+      await screen.findByRole('button', { name: uk.report.deep.open }),
+    ).toBeInTheDocument();
   });
 });

@@ -1,5 +1,5 @@
 import { ERROR_CODES } from '@gototalk/shared';
-import { screen, waitFor, within } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
   currentLocation,
@@ -104,7 +104,7 @@ describe('ReportPage route', () => {
     expect(currentLocation()).toBe(ROUTE);
   });
 
-  it('[TC-04-04] [TC-05-07] shows the topic, the summary stats and every answer with its question', async () => {
+  it('[TC-04-04] [TC-05-07] shows the topic, the summary stats and the deep analysis toggle', async () => {
     renderReport(jsonResponse(FINISHED));
 
     expect(
@@ -120,27 +120,23 @@ describe('ReportPage route', () => {
     expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(1);
     expect(screen.getByText('5 відповідей')).toBeInTheDocument();
     expect(screen.getByText('6 хвилин')).toBeInTheDocument();
-    const item = within(
-      screen.getByRole('list', { name: uk.dialogue.recap.listLabel }),
-    ).getByRole('listitem');
-    expect(item).toHaveTextContent(FIRST_QUESTION.text);
-    expect(item).toHaveTextContent(TURN.utterance.text);
+    expect(
+      screen.getByRole('button', { name: uk.report.deep.open }),
+    ).toHaveAttribute('aria-expanded', 'false');
     expect(
       screen.getByRole('link', { name: uk.common.actions.home }),
     ).toHaveAttribute('href', '/');
     expect(currentLocation()).toBe(ROUTE);
   });
 
-  it('[TC-05-07] shows the summary above the answers', async () => {
+  it('[TC-05-07] shows the summary above the deep analysis', async () => {
     renderReport(jsonResponse(FINISHED));
 
     const heading = await screen.findByRole('heading', {
       level: 2,
       name: uk.report.summary.title,
     });
-    const answers = screen.getByRole('list', {
-      name: uk.dialogue.recap.listLabel,
-    });
+    const toggle = screen.getByRole('button', { name: uk.report.deep.open });
 
     expect(
       screen.getByText(
@@ -148,12 +144,12 @@ describe('ReportPage route', () => {
       ),
     ).toBeInTheDocument();
     expect(
-      heading.compareDocumentPosition(answers) &
+      heading.compareDocumentPosition(toggle) &
         Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy();
   });
 
-  it('[TC-05-07] keeps the answers when the report fails to load', async () => {
+  it('[TC-05-07] shows no deep analysis when the report fails to load', async () => {
     renderReport(jsonResponse(FINISHED), () =>
       errorResponse(500, 'INTERNAL_ERROR'),
     );
@@ -162,14 +158,17 @@ describe('ReportPage route', () => {
       uk.errors.generic,
     );
     expect(
-      screen.getByRole('list', { name: uk.dialogue.recap.listLabel }),
-    ).toBeInTheDocument();
+      screen.queryByRole('button', { name: uk.report.deep.open }),
+    ).not.toBeInTheDocument();
   });
 
-  it('[TC-04-11] highlights the mistakes in the report although feedback was deferred', async () => {
+  it('[TC-04-11] [TC-05-06] highlights the mistakes in the deep analysis although feedback was deferred', async () => {
     const user = userEvent.setup();
     renderReport(jsonResponse(FINISHED));
 
+    await user.click(
+      await screen.findByRole('button', { name: uk.report.deep.open }),
+    );
     await user.click(await screen.findByRole('button', { name: 'go' }));
 
     expect(

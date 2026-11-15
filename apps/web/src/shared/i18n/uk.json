@@ -236,8 +236,7 @@
   "dialogue": {
     "turns": {
       "label": "Історія розмови",
-      "currentQuestion": "Поточне питання",
-      "you": "Ви"
+      "currentQuestion": "Поточне питання"
     },
     "status": {
       "sending": "Надсилаю відповідь…",
@@ -315,21 +314,6 @@
       "text": "Після завершення відповідати в цій сесії буде не можна. Відкриється підсумок із вашими відповідями.",
       "toReport": "До звіту"
     },
-    "recap": {
-      "title": "Підсумок сесії",
-      "answersLabel": "Відповіді",
-      "answers_one": "{{count}} відповідь",
-      "answers_few": "{{count}} відповіді",
-      "answers_many": "{{count}} відповідей",
-      "answers_other": "{{count}} відповіді",
-      "durationLabel": "Тривалість",
-      "minutes_one": "{{count}} хвилина",
-      "minutes_few": "{{count}} хвилини",
-      "minutes_many": "{{count}} хвилин",
-      "minutes_other": "{{count}} хвилини",
-      "underMinute": "менше хвилини",
-      "listLabel": "Питання й відповіді"
-    },
     "planExhausted": "Питання плану закінчились. Можна завершити сесію або продовжити розмову.",
     "errors": {
       "sessionFinished": "Сесію вже завершено, нові відповіді не приймаються",
@@ -357,6 +341,7 @@
       "title": "Як можна сказати краще"
     },
     "replacedBy": "замінити на",
+    "you": "Ви",
     "errors": {
       "mistakeNotFound": "Цю помилку не знайдено. Оновіть сторінку й спробуйте ще раз"
     }
@@ -380,6 +365,16 @@
       "categoriesTitle": "Найчастіші помилки",
       "categoryLine": "{{category}} – {{count}}",
       "noMistakes": "Помилок не знайдено"
+    },
+    "deep": {
+      "open": "Детально",
+      "close": "Згорнути",
+      "title": "Детальний розбір",
+      "groupTitle": "{{category}} – {{count}}",
+      "theoryTitle": "Теорія",
+      "opensInNewTab": "відкриється в новій вкладці",
+      "cleanTitle": "Відповіді без помилок",
+      "analysisFailed": "Аналіз цієї відповіді недоступний"
     },
     "errors": {
       "notFinished": "Звіт з’явиться після завершення сесії"
