@@ -1,5 +1,5 @@
 import { QUESTION_MAX } from '@gototalk/shared';
-import type { Turn } from '@gototalk/shared';
+import type { Turn } from './model-output.js';
 import type { NextTurnInput } from './language-model.port.js';
 
 const MIN_WORD_LENGTH = 4;

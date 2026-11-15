@@ -8,7 +8,7 @@ export * from './auth/auth.js';
 export * from './dialogue/dialogue.js';
 export * from './dialogue/hint.js';
 export * from './analysis/mistake-categories.js';
-export * from './llm.js';
+export * from './analysis/better-phrasing.js';
 export * from './profile/profile.js';
 export * from './session/plan.js';
 export * from './report/report.js';

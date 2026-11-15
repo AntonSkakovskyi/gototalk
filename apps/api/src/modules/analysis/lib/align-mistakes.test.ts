@@ -1,4 +1,4 @@
-import type { Mistake } from '@gototalk/shared';
+import type { Mistake } from '../../../integrations/language-model/model-output.js';
 import { describe, expect, it } from 'vitest';
 import { alignMistakes } from './align-mistakes.js';
 

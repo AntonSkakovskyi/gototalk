@@ -1,5 +1,6 @@
-import { ANALYSIS_MAX_MISTAKES } from '@gototalk/shared';
-import type { BetterPhrasing, Mistake } from '@gototalk/shared';
+import { ANALYSIS_MAX_MISTAKES } from './model-output.js';
+import type { BetterPhrasing } from '@gototalk/shared';
+import type { Mistake } from './model-output.js';
 import { FAKE_ANALYSIS_RULES } from './fake-analysis-rules.js';
 
 export interface FakeAnalysis {

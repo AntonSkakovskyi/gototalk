@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { TurnSchema } from '@gototalk/shared';
-import type { Turn } from '@gototalk/shared';
+import { TurnSchema } from '../../integrations/language-model/model-output.js';
+import type { Turn } from '../../integrations/language-model/model-output.js';
 import { LANGUAGE_MODEL_PORT } from '../../integrations/language-model/language-model.port.js';
 import type {
   LanguageModelPort,

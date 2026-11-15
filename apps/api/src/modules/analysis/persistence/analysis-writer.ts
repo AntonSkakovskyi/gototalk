@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { and, eq, sql } from 'drizzle-orm';
-import type { BetterPhrasing, Mistake } from '@gototalk/shared';
+import type { BetterPhrasing } from '@gototalk/shared';
+import type { Mistake } from '../../../integrations/language-model/model-output.js';
 import type { DbTransaction } from '../../../core/db/db.tokens.js';
 import { mistakes, utterances } from '../../../core/db/schema.js';
 import { SessionWordsRepository } from '../../vocabulary/persistence/session-words.repository.js';

@@ -1,4 +1,4 @@
-import { SummarySchema } from '@gototalk/shared';
+import { SummarySchema } from './model-output.js';
 import { describe, expect, it, vi } from 'vitest';
 import { FakeLanguageModel } from './fake-language-model.js';
 import { LanguageModelUnavailableError } from './language-model.errors.js';

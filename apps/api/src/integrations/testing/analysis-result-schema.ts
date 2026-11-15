@@ -1,4 +1,5 @@
-import { BetterPhrasingSchema, MistakeSchema } from '@gototalk/shared';
+import { BetterPhrasingSchema } from '@gototalk/shared';
+import { MistakeSchema } from '../language-model/model-output.js';
 import { z } from 'zod';
 
 export const AnalysisResultSchema = z.object({

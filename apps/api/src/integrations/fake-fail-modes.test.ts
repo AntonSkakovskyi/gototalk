@@ -1,4 +1,5 @@
-import { PlanSchema, TurnSchema } from '@gototalk/shared';
+import { PlanSchema } from '@gototalk/shared';
+import { TurnSchema } from './language-model/model-output.js';
 import { AnalysisResultSchema } from './testing/analysis-result-schema.js';
 import { describe, expect, it } from 'vitest';
 import { FakeLanguageModel } from './language-model/fake-language-model.js';

@@ -1,4 +1,5 @@
-import type { Mistake, MistakeCategoryCode } from '@gototalk/shared';
+import type { MistakeCategoryCode } from '@gototalk/shared';
+import type { Mistake } from '../../../integrations/language-model/model-output.js';
 
 export function patternIncrements(
   mistakes: Pick<Mistake, 'category'>[],

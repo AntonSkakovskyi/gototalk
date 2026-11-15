@@ -1,4 +1,4 @@
-import type { Hint } from '@gototalk/shared';
+import type { Hint } from './model-output.js';
 import type { HintInput } from './language-model.port.js';
 
 const PHRASE_STARTS: readonly [string, ...string[]] = [

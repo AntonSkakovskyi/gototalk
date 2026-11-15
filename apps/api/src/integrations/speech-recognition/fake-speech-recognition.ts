@@ -1,4 +1,4 @@
-import type { Transcript } from '@gototalk/shared';
+import type { Transcript } from './transcript.js';
 import type { FakeSttFailMode } from '../../core/config/env.schema.js';
 import { cleanTranscript } from './clean-transcript.js';
 import { FAKE_TRANSCRIPTS } from './fake-transcripts.js';

@@ -1,4 +1,4 @@
-import type { Mistake } from '@gototalk/shared';
+import type { Mistake } from '../../../integrations/language-model/model-output.js';
 
 export function alignMistakes(
   text: string,

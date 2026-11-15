@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { AnalysisResultSchema } from './testing/analysis-result-schema.js';
+import { PlanSchema } from '@gototalk/shared';
+import { TranscriptSchema } from './speech-recognition/transcript.js';
 import {
   HintSchema,
-  PlanSchema,
   SummarySchema,
-  TranscriptSchema,
   TurnSchema,
-} from '@gototalk/shared';
+} from './language-model/model-output.js';
 import { ERROR_ANALYSIS_PROMPT_ID } from './language-model/prompts.js';
 import { FakeLanguageModel } from './language-model/fake-language-model.js';
 import type { LanguageModelPort } from './language-model/language-model.port.js';

@@ -1,4 +1,4 @@
-import { TranscriptSchema } from '@gototalk/shared';
+import { TranscriptSchema } from './transcript.js';
 import { describe, expect, it } from 'vitest';
 import { FakeSpeechRecognition } from './fake-speech-recognition.js';
 import { FAKE_TRANSCRIPTS } from './fake-transcripts.js';
@@ -93,15 +93,18 @@ describe('FakeSpeechRecognition', () => {
     [-1, 4],
     [-5, 0],
     [-6, 4],
-  ])('[TC-00-05] a negative index %i wraps to transcript %i', async (index, expected) => {
-    const result = await new FakeSpeechRecognition().transcribe(
-      audio,
-      'audio/webm',
-      index,
-    );
+  ])(
+    '[TC-00-05] a negative index %i wraps to transcript %i',
+    async (index, expected) => {
+      const result = await new FakeSpeechRecognition().transcribe(
+        audio,
+        'audio/webm',
+        index,
+      );
 
-    expect(result.verbatim).toBe(FAKE_TRANSCRIPTS[expected]);
-  });
+      expect(result.verbatim).toBe(FAKE_TRANSCRIPTS[expected]);
+    },
+  );
 
   it('[TC-00-05] reset() restarts the counter and gives the same sequence again', async () => {
     const stt = new FakeSpeechRecognition();
@@ -127,8 +130,6 @@ describe('FakeSpeechRecognition', () => {
     const failing = new FakeSpeechRecognition({ failMode: 'unavailable' });
 
     await expect(failing.transcribe(audio, 'audio/webm')).rejects.toThrow();
-    await expect(
-      failing.transcribe(audio, 'audio/webm', 1),
-    ).rejects.toThrow();
+    await expect(failing.transcribe(audio, 'audio/webm', 1)).rejects.toThrow();
   });
 });

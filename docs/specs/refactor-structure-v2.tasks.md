@@ -127,11 +127,12 @@
   - Перевірка: `pnpm build:shared`; typecheck web і api; `import.meta.url`-шляхи в `schemas.test.ts` (міграція 0002) перерахувати.
   - Коміт: `refactor(shared): group schemas by domain`
 
-- [ ] **06. `llm.ts` розділити: контракт у shared, API-схеми в api `[risk]`**
+- [x] **06. `llm.ts` розділити: контракт у shared, API-схеми в api `[risk]`**
   - У shared лишаються: `BetterPhrasingSchema` → `analysis/better-phrasing.ts`; `PlanSchema` → `session/plan.ts` (разом із `plan-bounds`).
   - В API: `TranscriptSchema` → `apps/api/src/integrations/speech-recognition/transcript.ts`; `MistakeSchema`, `AnalysisEnvelopeSchema`, `TurnSchema`, `HintSchema`, `SummarySchema`, `ANALYSIS_MAX_*`, `MISTAKE_TEXT_MAX`, `MISTAKE_EXPLANATION_MAX` → `apps/api/src/integrations/language-model/model-output.ts`; `llm.test.ts` → розділити на `model-output.test.ts` (api) і тести контракту (`better-phrasing`, `plan`) у shared.
   - Імпорти в api (`@gototalk/shared` → відносні `.js`) і у web (`BetterPhrasing` лишається з shared).
   - Перевірка: `pnpm build:shared`, typecheck обох; `grep -rn "SummarySchema\|TranscriptSchema" apps/web` порожньо; кількість тестів shared + api не менша (перенесені `it` лічити сумарно).
+  - Відхилення: ліміт 200 для `BetterPhrasingSchema` тепер константа `BETTER_PHRASING_TEXT_MAX` (не експортована) у shared, `MISTAKE_TEXT_MAX = 200` лишився в api; окремого `plan.test.ts` немає (у `llm.test.ts` не було самостійного тесту плану); змішані тести TC-00-05 лишились цілими в `model-output.test.ts`, бо розбиття змінило б їхні назви. Сума `it(` shared + api: 1028 до й після.
   - Коміт: `refactor(shared): move model output and transcript schemas to the api`
 
 - [ ] **07. Розбиття `session.test.ts`, чистка `schemas.test.ts` (r.50)**

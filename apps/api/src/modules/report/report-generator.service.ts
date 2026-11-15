@@ -1,5 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { SummarySchema, TOP_CATEGORIES_LIMIT } from '@gototalk/shared';
+import { TOP_CATEGORIES_LIMIT } from '@gototalk/shared';
+import { SummarySchema } from '../../integrations/language-model/model-output.js';
 import type { ReportSummary } from '@gototalk/shared';
 import { LanguageModelUnavailableError } from '../../integrations/language-model/language-model.errors.js';
 import { LANGUAGE_MODEL_PORT } from '../../integrations/language-model/language-model.port.js';

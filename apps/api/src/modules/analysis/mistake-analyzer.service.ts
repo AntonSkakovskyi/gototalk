@@ -1,10 +1,10 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { BetterPhrasingSchema } from '@gototalk/shared';
 import {
   AnalysisEnvelopeSchema,
-  BetterPhrasingSchema,
   MistakeSchema,
-} from '@gototalk/shared';
-import type { AnalysisEnvelope } from '@gototalk/shared';
+} from '../../integrations/language-model/model-output.js';
+import type { AnalysisEnvelope } from '../../integrations/language-model/model-output.js';
 import type { z } from 'zod';
 import { LANGUAGE_MODEL_PORT } from '../../integrations/language-model/language-model.port.js';
 import type { LanguageModelPort } from '../../integrations/language-model/language-model.port.js';

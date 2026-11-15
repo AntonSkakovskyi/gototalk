@@ -9,8 +9,8 @@ import {
   ANSWER_TEXT_MAX,
   AnswerTextRequestSchema,
   ERROR_CODES,
-  TranscriptSchema,
 } from '@gototalk/shared';
+import { TranscriptSchema } from '../../integrations/speech-recognition/transcript.js';
 import type { Utterance } from '@gototalk/shared';
 import { ZodBodyPipe } from '../../common/zod-body.pipe.js';
 import { SpeechRecognitionUnavailableError } from '../../integrations/speech-recognition/speech-recognition.errors.js';

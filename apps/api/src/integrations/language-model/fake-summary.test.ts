@@ -1,4 +1,5 @@
-import { REPORT_SUMMARY_MAX, SummarySchema } from '@gototalk/shared';
+import { REPORT_SUMMARY_MAX } from '@gototalk/shared';
+import { SummarySchema } from './model-output.js';
 import type { MistakeCategoryCode } from '@gototalk/shared';
 import { describe, expect, it } from 'vitest';
 import { buildSummary } from './fake-summary.js';

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { AnalysisStatusSchema, MistakeViewSchema } from '../analysis/analysis-view.js';
-import { BetterPhrasingSchema, PlanSchema } from '../llm.js';
-import { PLAN_QUESTIONS, QuestionSchema, TopicSchema } from './plan.js';
+import { BetterPhrasingSchema } from '../analysis/better-phrasing.js';
+import { PLAN_QUESTIONS, PlanSchema, QuestionSchema, TopicSchema } from './plan.js';
 
 export const FEEDBACK_MODES = ['immediate', 'deferred'] as const;
 

@@ -1,4 +1,5 @@
-import { MISTAKE_CATEGORY_CODES, MistakeSchema } from '@gototalk/shared';
+import { MISTAKE_CATEGORY_CODES } from '@gototalk/shared';
+import { MistakeSchema } from './model-output.js';
 import { describe, expect, it } from 'vitest';
 import { analyzeText } from './fake-analysis.js';
 import { RULE_CASES } from './fake-analysis-rule-cases.js';

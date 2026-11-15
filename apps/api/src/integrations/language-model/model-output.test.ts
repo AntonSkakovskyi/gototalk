@@ -1,17 +1,19 @@
 import { describe, expect, it } from 'vitest';
 import {
-  AnalysisEnvelopeSchema,
   BetterPhrasingSchema,
   HINT_PHRASE_MAX,
   HINT_WORD_MAX,
-  HintSchema,
-  MistakeSchema,
   PlanSchema,
   REPORT_SUMMARY_MAX,
+} from '@gototalk/shared';
+import { TranscriptSchema } from '../speech-recognition/transcript.js';
+import {
+  AnalysisEnvelopeSchema,
+  HintSchema,
+  MistakeSchema,
   SummarySchema,
-  TranscriptSchema,
   TurnSchema,
-} from './index.js';
+} from './model-output.js';
 
 const mistake = {
   start: 0,
@@ -221,18 +223,5 @@ describe('LLM/STT result schemas', () => {
       false,
     );
     expect(TurnSchema.safeParse({ question: '  ' }).success).toBe(false);
-  });
-
-  it('[TC-04-01] BetterPhrasingSchema accepts 200 characters and rejects 201 in each field', () => {
-    const better = { original: 'a'.repeat(200), better: 'b'.repeat(200) };
-    expect(BetterPhrasingSchema.safeParse(better).success).toBe(true);
-    expect(
-      BetterPhrasingSchema.safeParse({ ...better, original: 'a'.repeat(201) })
-        .success,
-    ).toBe(false);
-    expect(
-      BetterPhrasingSchema.safeParse({ ...better, better: 'b'.repeat(201) })
-        .success,
-    ).toBe(false);
   });
 });

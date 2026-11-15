@@ -1,4 +1,4 @@
-import { HintSchema } from '@gototalk/shared';
+import { HintSchema } from './model-output.js';
 import { describe, expect, it, vi } from 'vitest';
 import { FakeLanguageModel } from './fake-language-model.js';
 import { LanguageModelUnavailableError } from './language-model.errors.js';
