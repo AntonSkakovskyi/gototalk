@@ -73,6 +73,7 @@
 | 4 | документи | 50–54 (лише `pnpm lint` і перевірка посилань; тести не запускати) |
 
 Пачки статуси перевірки:
+- PR 1 фінал: перевірено (`pnpm -r build` ок (кореневого скрипта `build` немає); `pnpm test:e2e` 24/24 двічі; `pnpm dev` без помилок DI, `/api/health` 200, `/api/docs-json` 200, 29 операцій; `pnpm db:pull` без diff у `apps/api/src/core/db/`; тести: shared 91, web 965, api 1177 (shared + api 1268 проти бази 1239: 24 тести shared переїхали в api разом із `llm.ts`, 29 нових); ESLint 0 помилок, 13 warn (лише web-тести, до задачі 49); фінальне рев'ю всієї гілки PASS, середні знахідки (`VocabularyWriter` до ≤ 3 параметрів) виправлено)
 - Пачка Swagger і правила: перевірено (shared 91, web 965, api 1177; рев'ю задачі 22 і пачки PASS, середні знахідки задачі 22 виправлено окремим комітом, низькі в backlog)
 - Пачка finish, turn, audio: перевірено (shared 91, web 965, api 1156; `pnpm dev` без помилок DI, curl: finish 200/ідемпотентний/404/401, звіт 200, `/api/docs-json` має `POST /api/sessions/{id}/finish` у тегу `sessions`; e2e 24/24 з другого прогону (перший прогін мав одне нестабільне падіння `toHaveURL`, як і на базовій лінії); ESLint debt 13 warn (лише web-тести); рев'ю задачі 19 і пачки PASS, низькі знахідки в backlog)
 - Пачка нові модулі hint, learner-model, me→auth: перевірено (shared 91, web 965, api 1155; `pnpm dev` без помилок DI, curl: me, consent, learner-model, підказки (200/404/409), finish, login, видалення акаунта; ESLint debt 17 warn; рев'ю PASS; примітка до задачі 17: `LearnerModelModule` без `imports`, бо `AuthModule` глобальний)
@@ -125,6 +126,7 @@
   - Тести для `errors`/`health` – із `schemas.test.ts` у `common/errors.test.ts`, `common/health.test.ts` (кількість `it` збережена).
   - `index.ts` оновити.
   - Перевірка: `pnpm build:shared`, typecheck обох застосунків.
+  - Відхилення: `errors.ts` → `common/errors.ts` git показує як видалення + додавання, бо переміщення поєднано з перенесенням `ERROR_CODES` з `auth.ts` в одному коміті; `git log --follow` для цього файлу історію до переміщення втрачає.
   - Коміт: `refactor(shared): group common schemas and dedupe provider lists`
 
 - [x] **05. Домени: auth, profile, session, analysis, dialogue, report, vocabulary**
@@ -186,6 +188,7 @@
   - `session/sessions.repository.ts` → `session/persistence/sessions.repository.ts`; `session/plan-input.ts` (+test) → `session/lib/plan-input.ts`.
   - Споживачі: `dialogue`, `analysis`, `report` імпортують лише кореневі файли `session/`.
   - Перевірка: `pnpm dev`; інтеграційні `sessions*`, `dialogue-answer*`, `dialogue-analysis*`, `report-*` (`--project integration`); lint `warn` для приватних імпортів із `session/` зникли.
+  - Відхилення: `lock-session.ts` → `session-lock.ts` git показує як видалення + додавання, бо злиття з `lock-active-session.ts` зроблено в тому самому коміті (змістовна зміна файлу); `git log --follow` для нього втрачає історію до переміщення.
   - Коміт: `refactor(api): expose session lock, errors and views from the module root`
 
 - [x] **14. `vocabulary`: `VocabularyWriter`, `word-view` `[risk]` (A1)**

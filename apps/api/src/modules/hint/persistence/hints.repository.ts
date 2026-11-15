@@ -117,12 +117,11 @@ export class HintsRepository {
     if (record.kind === 'phrase_start') {
       return { text: record.text, wordId: null };
     }
-    const wordId = await this.vocabulary.addFromHint(
-      tx,
+    const wordId = await this.vocabulary.addFromHint(tx, {
       userId,
       sessionId,
-      record,
-    );
+      word: record,
+    });
     return { text: `${record.lemma} = ${record.translationUk}`, wordId };
   }
 }

@@ -41,12 +41,11 @@ export class AnalysisWriter {
     const [row] = claimed;
     if (!row || outcome.status !== 'done') return;
     await this.saveMistakes(tx, userId, utteranceId, outcome.mistakes);
-    await this.vocabulary.saveSessionWords(
-      tx,
+    await this.vocabulary.saveSessionWords(tx, {
       userId,
-      row.sessionId,
-      outcome.better,
-    );
+      sessionId: row.sessionId,
+      better: outcome.better,
+    });
   }
 
   private async saveMistakes(

@@ -14,9 +14,15 @@ export class VocabularyWriter {
 
   async addFromHint(
     tx: DbTransaction,
-    userId: string,
-    sessionId: string,
-    word: { lemma: string; translationUk: string },
+    {
+      userId,
+      sessionId,
+      word,
+    }: {
+      userId: string;
+      sessionId: string;
+      word: { lemma: string; translationUk: string };
+    },
   ): Promise<string> {
     const wordId = await this.words.addFromHint(tx, userId, word);
     await this.sessionWords.link(tx, userId, sessionId, [wordId]);
@@ -25,9 +31,11 @@ export class VocabularyWriter {
 
   async saveSessionWords(
     tx: DbTransaction,
-    userId: string,
-    sessionId: string,
-    better: BetterPhrasing[],
+    {
+      userId,
+      sessionId,
+      better,
+    }: { userId: string; sessionId: string; better: BetterPhrasing[] },
   ): Promise<void> {
     const candidates = sessionWordCandidates(better);
     const wordIds = await this.words.addFromSession(tx, userId, candidates);

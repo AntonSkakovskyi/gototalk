@@ -25,7 +25,11 @@ describe('VocabularyWriter.addFromHint', () => {
     const { writer, addFromHint, link } = setup();
     const word = { lemma: 'harvest', translationUk: 'урожай' };
 
-    const wordId = await writer.addFromHint(tx, USER_ID, SESSION_ID, word);
+    const wordId = await writer.addFromHint(tx, {
+      userId: USER_ID,
+      sessionId: SESSION_ID,
+      word,
+    });
 
     expect(wordId).toBe('word-1');
     expect(addFromHint).toHaveBeenCalledWith(tx, USER_ID, word);
@@ -37,9 +41,11 @@ describe('VocabularyWriter.saveSessionWords', () => {
   it('adds the new tokens of the better phrasings and links them to the session', async () => {
     const { writer, addFromSession, link } = setup();
 
-    await writer.saveSessionWords(tx, USER_ID, SESSION_ID, [
-      { original: 'yesterday I go', better: 'yesterday I went' },
-    ]);
+    await writer.saveSessionWords(tx, {
+      userId: USER_ID,
+      sessionId: SESSION_ID,
+      better: [{ original: 'yesterday I go', better: 'yesterday I went' }],
+    });
 
     expect(addFromSession).toHaveBeenCalledWith(tx, USER_ID, ['went']);
     expect(link).toHaveBeenCalledWith(tx, USER_ID, SESSION_ID, [
@@ -52,7 +58,11 @@ describe('VocabularyWriter.saveSessionWords', () => {
     const { writer, addFromSession, link } = setup();
     addFromSession.mockResolvedValue([]);
 
-    await writer.saveSessionWords(tx, USER_ID, SESSION_ID, []);
+    await writer.saveSessionWords(tx, {
+      userId: USER_ID,
+      sessionId: SESSION_ID,
+      better: [],
+    });
 
     expect(addFromSession).toHaveBeenCalledWith(tx, USER_ID, []);
     expect(link).toHaveBeenCalledWith(tx, USER_ID, SESSION_ID, []);
