@@ -1,14 +1,20 @@
 import {
+  GoalSchema,
   HintRequestSchema,
   PAGE_SIZE_DEFAULT,
   PAGE_SIZE_MAX,
   PageQuerySchema,
   PlanSessionRequestSchema,
+  SessionPageSchema,
   StartSessionRequestSchema,
 } from '@gototalk/shared';
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
-import { ApiZodBody, ApiZodQuery } from './api-zod.decorators.js';
+import {
+  ApiZodBody,
+  ApiZodQuery,
+  ApiZodResponse,
+} from './api-zod.decorators.js';
 
 const DocumentedParametersSchema = z.array(
   z.object({
@@ -19,9 +25,11 @@ const DocumentedParametersSchema = z.array(
   }),
 );
 
+type DocumentedResponses = z.infer<typeof DocumentedResponsesSchema>;
+
 type DocumentedParameter = z.infer<typeof DocumentedParametersSchema>[number];
 
-function parametersOf(decorator: MethodDecorator): DocumentedParameter[] {
+function applyToProbe(decorator: MethodDecorator): () => void {
   class Probe {
     handler(): void {}
   }
@@ -29,14 +37,32 @@ function parametersOf(decorator: MethodDecorator): DocumentedParameter[] {
     value: Probe.prototype.handler,
   };
   decorator(Probe.prototype, 'handler', descriptor);
+  return Probe.prototype.handler;
+}
+
+function parametersOf(decorator: MethodDecorator): DocumentedParameter[] {
   return DocumentedParametersSchema.parse(
-    Reflect.getMetadata('swagger/apiParameters', Probe.prototype.handler),
+    Reflect.getMetadata('swagger/apiParameters', applyToProbe(decorator)),
   );
 }
 
 function bodySchemaOf(schema: z.ZodType): Record<string, unknown> {
   const [body] = parametersOf(ApiZodBody(schema));
   return body?.schema ?? {};
+}
+
+const DocumentedResponsesSchema = z.record(
+  z.string(),
+  z.object({
+    description: z.string().optional(),
+    schema: z.record(z.string(), z.unknown()).optional(),
+  }),
+);
+
+function responsesOf(decorator: MethodDecorator): DocumentedResponses {
+  return DocumentedResponsesSchema.parse(
+    Reflect.getMetadata('swagger/apiResponse', applyToProbe(decorator)),
+  );
 }
 
 describe('ApiZodBody', () => {
@@ -149,5 +175,50 @@ describe('ApiZodQuery', () => {
       ['size', false],
       ['q', false],
     ]);
+  });
+});
+
+describe('ApiZodResponse', () => {
+  it('documents the response with the output schema generated from Zod', () => {
+    const responses = responsesOf(ApiZodResponse(GoalSchema));
+
+    expect(Object.keys(responses)).toEqual(['200']);
+    expect(responses['200']?.schema).toMatchObject({
+      type: 'object',
+      properties: { id: { type: 'string' }, title: { type: 'string' } },
+    });
+  });
+
+  it('uses the given status and keeps the description', () => {
+    const responses = responsesOf(
+      ApiZodResponse(GoalSchema, {
+        status: 201,
+        description: 'The created Goal',
+      }),
+    );
+
+    expect(Object.keys(responses)).toEqual(['201']);
+    expect(responses['201']?.description).toBe('The created Goal');
+  });
+
+  it('documents a defaulted field as required on the output side', () => {
+    const schema = z.object({
+      label: z.string().default('x'),
+      note: z.string().optional(),
+    });
+
+    expect(responsesOf(ApiZodResponse(schema))['200']?.schema).toMatchObject({
+      required: ['label'],
+      properties: { label: { default: 'x' } },
+    });
+  });
+
+  it('documents a nested page schema', () => {
+    expect(
+      responsesOf(ApiZodResponse(SessionPageSchema))['200']?.schema,
+    ).toMatchObject({
+      type: 'object',
+      properties: { items: { type: 'array' }, nextCursor: {} },
+    });
   });
 });

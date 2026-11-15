@@ -1,13 +1,14 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import {
   ApiBearerAuth,
-  ApiOkResponse,
   ApiOperation,
   ApiParam,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { SessionReportSchema } from '@gototalk/shared';
 import type { SessionReport } from '@gototalk/shared';
+import { ApiZodResponse } from '../../common/swagger/api-zod.decorators.js';
 import {
   CurrentUser,
   requireUserId,
@@ -30,7 +31,7 @@ export class ReportController {
       'Returns the answer count, duration, summary, mistake categories without the ones marked as not a mistake (most frequent first, with theory links) and the words of the session. The summary is generated on the first read if it is missing and then stored; when the model is unavailable the summary has status unavailable and the next read retries. A session without answers has summary status no_answers. Consent is required because the read can call the language model. 404 SESSION_NOT_FOUND for a foreign, unknown or malformed id.',
   })
   @ApiParam({ name: 'id', format: 'uuid' })
-  @ApiOkResponse({
+  @ApiZodResponse(SessionReportSchema, {
     description:
       'SessionReport { sessionId, answers, durationSeconds, summary, categories, words }',
   })

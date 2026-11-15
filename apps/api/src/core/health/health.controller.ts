@@ -1,11 +1,12 @@
 import { Controller, Get } from '@nestjs/common';
 import {
-  ApiOkResponse,
   ApiOperation,
   ApiServiceUnavailableResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { HealthResponseSchema } from '@gototalk/shared';
 import type { HealthResponse } from '@gototalk/shared';
+import { ApiZodResponse } from '../../common/swagger/api-zod.decorators.js';
 import { Public } from '../../common/decorators/public.decorator.js';
 import { HealthService } from './health.service.js';
 
@@ -19,17 +20,8 @@ export class HealthController {
   @ApiOperation({
     summary: 'Check application health and database connectivity',
   })
-  @ApiOkResponse({
+  @ApiZodResponse(HealthResponseSchema, {
     description: 'The application is running and the database answers select 1',
-    schema: {
-      type: 'object',
-      required: ['status', 'db'],
-      properties: {
-        status: { type: 'string', enum: ['ok'] },
-        db: { type: 'string', enum: ['ok'] },
-      },
-      example: { status: 'ok', db: 'ok' },
-    },
   })
   @ApiServiceUnavailableResponse({
     description: 'The database is unavailable or did not respond in time',

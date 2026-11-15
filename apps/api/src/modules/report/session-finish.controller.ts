@@ -6,7 +6,9 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { SessionSchema } from '@gototalk/shared';
 import type { Session } from '@gototalk/shared';
+import { ApiZodResponse } from '../../common/swagger/api-zod.decorators.js';
 import {
   CurrentUser,
   requireUserId,
@@ -30,8 +32,7 @@ export class SessionFinishController {
       'Idempotent: finishing a finished session returns it unchanged and keeps its original endedAt. Generates the session report best-effort (the summary goes to the language model, so consent is required); a model failure does not fail the call. 404 SESSION_NOT_FOUND for a foreign, unknown or malformed id.',
   })
   @ApiParam({ name: 'id', format: 'uuid' })
-  @ApiResponse({
-    status: 200,
+  @ApiZodResponse(SessionSchema, {
     description:
       'Session { id, topic, topicSource, feedbackMode, status, startedAt, endedAt }',
   })

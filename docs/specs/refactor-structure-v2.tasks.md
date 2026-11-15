@@ -248,9 +248,10 @@
   - Відхилення: замінено 11 з 12 `@ApiBody` у 8 контролерах (не 10) + 2 `@ApiQuery` (words, sessions/history); тіло відповіді в `dialogue.controller` (JSON `{text}` або multipart-аудіо) лишилось ручним, бо одна Zod-схема його не описує; `ApiZodQuery` бере властивості з `io: 'output'` (щоб `limit` лишився integer 1..50 з default), `required` з input; через `io: 'input'` у документації зникли `format: email` (register/login), `minProperties: 1` (PATCH goals), `uniqueItems` (profile `scenes`), з'явились `default` для `previousTopics` і `feedbackMode`; HTTP-поведінка не змінена; снапшот `paths` (29 операцій) знято з застосунку до змін схем; один задокументований каст на межі Zod JSON Schema → Nest `SchemaObject`.
   - Коміт: `refactor(api): generate swagger request schemas from zod`
 
-- [ ] **23. `ApiZodResponse`**
+- [x] **23. `ApiZodResponse`**
   - `ApiZodResponse(Schema, status?)` (`io: 'output'`); замінити текстові `description: 'SessionPlan { topic, … }'` схемами відповідей для ендпоінтів, чиї схеми є в shared; решта без змін. HTTP не змінюється.
   - Тест: `/api/docs-json` – у відповідях зазначених маршрутів є `schema` (додати до `openapi.test.ts`).
+  - Відхилення: замінено 26 успішних відповідей (усі, що мають тіло й точну схему в shared); 204-відповіді без тіла лишились без змін; текстовий опис 2xx збережено як `description`; в `health` зник ручний `example`; `ApiOkResponse`/`ApiCreatedResponse` більше не використовуються.
   - Коміт: `refactor(api): document response schemas from zod`
 
 - [ ] **24. API-правила в `error`, PR1 завершено**

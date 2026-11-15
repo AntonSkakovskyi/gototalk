@@ -1,15 +1,17 @@
 import { Body, Controller, HttpCode, Param, Post } from '@nestjs/common';
 import {
   ApiBearerAuth,
-  ApiOkResponse,
   ApiOperation,
   ApiParam,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { HintRequestSchema } from '@gototalk/shared';
+import { HintRequestSchema, HintResultSchema } from '@gototalk/shared';
 import type { HintRequest, HintResult } from '@gototalk/shared';
-import { ApiZodBody } from '../../common/swagger/api-zod.decorators.js';
+import {
+  ApiZodBody,
+  ApiZodResponse,
+} from '../../common/swagger/api-zod.decorators.js';
 import { ZodBodyPipe } from '../../common/pipes/zod-body.pipe.js';
 import {
   CurrentUser,
@@ -35,7 +37,7 @@ export class HintsController {
   })
   @ApiParam({ name: 'id', format: 'uuid' })
   @ApiZodBody(HintRequestSchema)
-  @ApiOkResponse({
+  @ApiZodResponse(HintResultSchema, {
     description:
       'HintResult: { kind: phrase_start, text } or { kind: translation, word } where word is null for an unknown word',
   })

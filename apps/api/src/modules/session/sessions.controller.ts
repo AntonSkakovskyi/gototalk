@@ -10,7 +10,6 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
-  ApiCreatedResponse,
   ApiOperation,
   ApiParam,
   ApiResponse,
@@ -20,6 +19,10 @@ import {
   PageQuerySchema,
   RECENT_SESSIONS_LIMIT,
   PlanSessionRequestSchema,
+  SessionDetailsSchema,
+  SessionListSchema,
+  SessionPageSchema,
+  SessionPlanSchema,
   StartSessionRequestSchema,
 } from '@gototalk/shared';
 import type {
@@ -40,6 +43,7 @@ import { RequiresConsent } from '../auth/decorators/requires-consent.decorator.j
 import {
   ApiZodBody,
   ApiZodQuery,
+  ApiZodResponse,
 } from '../../common/swagger/api-zod.decorators.js';
 import { ZodBodyPipe } from '../../common/pipes/zod-body.pipe.js';
 import { ZodQueryPipe } from '../../common/pipes/zod-query.pipe.js';
@@ -64,8 +68,7 @@ export class SessionsController {
       'Nothing is stored. Level, scenes, active goals and the custom topic are sent to the language model, so consent is required. previousTopics are the topics already shown; the server returns a different one. customTopic wins over previousTopics.',
   })
   @ApiZodBody(PlanSessionRequestSchema)
-  @ApiResponse({
-    status: 200,
+  @ApiZodResponse(SessionPlanSchema, {
     description: 'SessionPlan { topic, topicSource, questions }',
   })
   @ApiResponse({ status: 400, description: 'VALIDATION_ERROR' })
@@ -91,7 +94,8 @@ export class SessionsController {
       'Finishes the active session of the user, if any, and stores the new one with all planned questions. The first question becomes the first assistant utterance. No language model call is made.',
   })
   @ApiZodBody(StartSessionRequestSchema)
-  @ApiCreatedResponse({
+  @ApiZodResponse(SessionDetailsSchema, {
+    status: 201,
     description:
       'SessionDetails { id, topic, topicSource, feedbackMode, status, startedAt, endedAt, utterances }',
   })
@@ -110,8 +114,7 @@ export class SessionsController {
     summary: 'List the most recent sessions of the user',
     description: `Newest first, at most ${RECENT_SESSIONS_LIMIT}. No pagination. Needs no consent: nothing is sent to providers.`,
   })
-  @ApiResponse({
-    status: 200,
+  @ApiZodResponse(SessionListSchema, {
     description:
       'Session[] { id, topic, topicSource, feedbackMode, status, startedAt, endedAt }',
   })
@@ -127,8 +130,7 @@ export class SessionsController {
       'Newest first (started_at, id) with keyset pagination: pass the returned nextCursor as cursor to get the next page. The cursor is opaque. nextCursor is null on the last page. Active and finished sessions are included. Needs no consent: nothing is sent to providers.',
   })
   @ApiZodQuery(PageQuerySchema)
-  @ApiResponse({
-    status: 200,
+  @ApiZodResponse(SessionPageSchema, {
     description: 'SessionPage { items: Session[], nextCursor: string | null }',
   })
   @ApiResponse({ status: 400, description: 'VALIDATION_ERROR' })
@@ -147,8 +149,7 @@ export class SessionsController {
       'Utterances are ordered by seq. The stored plan is never returned. A foreign, unknown or malformed id gives the same 404 (a malformed id is not a 400).',
   })
   @ApiParam({ name: 'id', format: 'uuid' })
-  @ApiResponse({
-    status: 200,
+  @ApiZodResponse(SessionDetailsSchema, {
     description:
       'SessionDetails { id, topic, topicSource, feedbackMode, status, startedAt, endedAt, utterances }',
   })

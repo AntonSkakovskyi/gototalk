@@ -9,13 +9,20 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { LoginRequestSchema, RegisterRequestSchema } from '@gototalk/shared';
+import {
+  AuthResponseSchema,
+  LoginRequestSchema,
+  RegisterRequestSchema,
+} from '@gototalk/shared';
 import type {
   AuthResponse,
   LoginRequest,
   RegisterRequest,
 } from '@gototalk/shared';
-import { ApiZodBody } from '../../common/swagger/api-zod.decorators.js';
+import {
+  ApiZodBody,
+  ApiZodResponse,
+} from '../../common/swagger/api-zod.decorators.js';
 import { ZodBodyPipe } from '../../common/pipes/zod-body.pipe.js';
 import { AuthService } from './auth.service.js';
 import {
@@ -39,7 +46,10 @@ export class AuthController {
       'Creates the user, returns an access token and sets the refresh cookie.',
   })
   @ApiZodBody(RegisterRequestSchema)
-  @ApiResponse({ status: 201, description: 'User created' })
+  @ApiZodResponse(AuthResponseSchema, {
+    status: 201,
+    description: 'User created',
+  })
   @ApiResponse({ status: 400, description: 'VALIDATION_ERROR' })
   @ApiResponse({ status: 409, description: 'EMAIL_TAKEN' })
   async register(
@@ -59,7 +69,7 @@ export class AuthController {
       'The same 401 INVALID_CREDENTIALS is returned for an unknown email and a wrong password.',
   })
   @ApiZodBody(LoginRequestSchema)
-  @ApiResponse({ status: 200, description: 'Logged in' })
+  @ApiZodResponse(AuthResponseSchema, { description: 'Logged in' })
   @ApiResponse({ status: 400, description: 'VALIDATION_ERROR' })
   @ApiResponse({ status: 401, description: 'INVALID_CREDENTIALS' })
   async login(
@@ -78,7 +88,7 @@ export class AuthController {
     description:
       'Reads the gtt_refresh cookie. A missing, expired or unknown token gives 401 and clears the cookie. Replaying a rotated token within 60 s issues another token; a later replay deletes all refresh tokens of the user and returns 401.',
   })
-  @ApiResponse({ status: 200, description: 'Session renewed' })
+  @ApiZodResponse(AuthResponseSchema, { description: 'Session renewed' })
   @ApiResponse({ status: 401, description: 'Refresh token rejected' })
   async refresh(
     @Req() req: CookieRequest,

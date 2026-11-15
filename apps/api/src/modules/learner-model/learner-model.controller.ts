@@ -5,7 +5,9 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { LearnerModelSchema } from '@gototalk/shared';
 import type { LearnerModel } from '@gototalk/shared';
+import { ApiZodResponse } from '../../common/swagger/api-zod.decorators.js';
 import {
   CurrentUser,
   requireUserId,
@@ -27,8 +29,7 @@ export class LearnerModelController {
     summary: 'Get the learner model',
     description: `The top ${LEARNER_MODEL_WEAK_AREAS} mistake patterns by frequency and the word counts per state; empty and zero for a new user.`,
   })
-  @ApiResponse({
-    status: 200,
+  @ApiZodResponse(LearnerModelSchema, {
     description:
       'LearnerModel { weakAreas: [{ category, frequency, lastSeenAt }], vocabulary: { new, partial, passive, active } }',
   })

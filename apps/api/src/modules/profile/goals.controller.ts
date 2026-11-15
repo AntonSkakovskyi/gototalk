@@ -18,6 +18,8 @@ import {
 } from '@nestjs/swagger';
 import {
   CreateGoalRequestSchema,
+  GoalListSchema,
+  GoalSchema,
   MAX_ACTIVE_GOALS,
   UpdateGoalRequestSchema,
 } from '@gototalk/shared';
@@ -31,7 +33,10 @@ import {
   requireUserId,
 } from '../auth/decorators/current-user.decorator.js';
 import type { AuthenticatedUser } from '../auth/decorators/current-user.decorator.js';
-import { ApiZodBody } from '../../common/swagger/api-zod.decorators.js';
+import {
+  ApiZodBody,
+  ApiZodResponse,
+} from '../../common/swagger/api-zod.decorators.js';
 import { ZodBodyPipe } from '../../common/pipes/zod-body.pipe.js';
 import { GoalsService } from './goals.service.js';
 
@@ -46,8 +51,7 @@ export class GoalsController {
 
   @Get()
   @ApiOperation({ summary: 'List the goals of the user, oldest first' })
-  @ApiResponse({
-    status: 200,
+  @ApiZodResponse(GoalListSchema, {
     description: 'Goal[] { id, title, status, createdAt }',
   })
   @ApiResponse({ status: 401, description: 'UNAUTHORIZED' })
@@ -58,7 +62,10 @@ export class GoalsController {
   @Post()
   @ApiOperation({ summary: 'Create an active goal' })
   @ApiZodBody(CreateGoalRequestSchema)
-  @ApiResponse({ status: 201, description: 'The created Goal' })
+  @ApiZodResponse(GoalSchema, {
+    status: 201,
+    description: 'The created Goal',
+  })
   @ApiResponse({ status: 400, description: 'VALIDATION_ERROR' })
   @ApiResponse({ status: 401, description: 'UNAUTHORIZED' })
   @ApiResponse({ status: 409, description: LIMIT_DESCRIPTION })
@@ -77,7 +84,7 @@ export class GoalsController {
   })
   @ApiParam(ID_PARAM)
   @ApiZodBody(UpdateGoalRequestSchema)
-  @ApiResponse({ status: 200, description: 'The updated Goal' })
+  @ApiZodResponse(GoalSchema, { description: 'The updated Goal' })
   @ApiResponse({ status: 400, description: 'VALIDATION_ERROR' })
   @ApiResponse({ status: 401, description: 'UNAUTHORIZED' })
   @ApiResponse({ status: 404, description: 'GOAL_NOT_FOUND' })

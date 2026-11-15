@@ -1,5 +1,5 @@
 import { applyDecorators } from '@nestjs/common';
-import { ApiBody, ApiQuery } from '@nestjs/swagger';
+import { ApiBody, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import type { ApiBodyOptions } from '@nestjs/swagger';
 import { z } from 'zod';
 
@@ -49,4 +49,20 @@ export function ApiZodQuery(schema: z.ZodType): MethodDecorator {
         : [],
     ),
   );
+}
+
+interface ApiZodResponseOptions {
+  status?: number;
+  description?: string;
+}
+
+export function ApiZodResponse(
+  schema: z.ZodType,
+  { status = 200, description }: ApiZodResponseOptions = {},
+): MethodDecorator {
+  return ApiResponse({
+    status,
+    description,
+    schema: asOpenApi(toJsonSchema(schema, 'output')),
+  });
 }

@@ -5,14 +5,17 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { UpdateProfileRequestSchema } from '@gototalk/shared';
+import { ProfileSchema, UpdateProfileRequestSchema } from '@gototalk/shared';
 import type { Profile, UpdateProfileRequest } from '@gototalk/shared';
 import {
   CurrentUser,
   requireUserId,
 } from '../auth/decorators/current-user.decorator.js';
 import type { AuthenticatedUser } from '../auth/decorators/current-user.decorator.js';
-import { ApiZodBody } from '../../common/swagger/api-zod.decorators.js';
+import {
+  ApiZodBody,
+  ApiZodResponse,
+} from '../../common/swagger/api-zod.decorators.js';
 import { ZodBodyPipe } from '../../common/pipes/zod-body.pipe.js';
 import { ProfileService } from './profile.service.js';
 
@@ -24,8 +27,7 @@ export class ProfileController {
 
   @Get()
   @ApiOperation({ summary: 'Get the learner profile' })
-  @ApiResponse({
-    status: 200,
+  @ApiZodResponse(ProfileSchema, {
     description: 'Profile { level, scenes, updatedAt }',
   })
   @ApiResponse({ status: 401, description: 'UNAUTHORIZED' })
@@ -44,7 +46,7 @@ export class ProfileController {
       'Upsert: creates the profile when missing, otherwise replaces level and scenes and moves updatedAt.',
   })
   @ApiZodBody(UpdateProfileRequestSchema)
-  @ApiResponse({ status: 200, description: 'The saved Profile' })
+  @ApiZodResponse(ProfileSchema, { description: 'The saved Profile' })
   @ApiResponse({ status: 400, description: 'VALIDATION_ERROR' })
   @ApiResponse({ status: 401, description: 'UNAUTHORIZED' })
   update(

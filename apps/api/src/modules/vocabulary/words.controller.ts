@@ -9,13 +9,17 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
-  ApiOkResponse,
   ApiOperation,
   ApiParam,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { MarkWordRequestSchema, PageQuerySchema } from '@gototalk/shared';
+import {
+  MarkWordRequestSchema,
+  PageQuerySchema,
+  WordPageSchema,
+  WordSchema,
+} from '@gototalk/shared';
 import type {
   MarkWordRequest,
   PageQuery,
@@ -25,6 +29,7 @@ import type {
 import {
   ApiZodBody,
   ApiZodQuery,
+  ApiZodResponse,
 } from '../../common/swagger/api-zod.decorators.js';
 import { ZodBodyPipe } from '../../common/pipes/zod-body.pipe.js';
 import { ZodQueryPipe } from '../../common/pipes/zod-query.pipe.js';
@@ -48,7 +53,7 @@ export class WordsController {
       'Newest first (created_at, id) with keyset pagination: pass the returned nextCursor as cursor to get the next page. The cursor is opaque. nextCursor is null on the last page. All states and sources are included. Needs no consent: nothing is sent to providers.',
   })
   @ApiZodQuery(PageQuerySchema)
-  @ApiOkResponse({
+  @ApiZodResponse(WordPageSchema, {
     description:
       'WordPage { items: Word[], nextCursor: string | null }, Word { id, lemma, translationUk, state, source }',
   })
@@ -70,7 +75,7 @@ export class WordsController {
   })
   @ApiParam({ name: 'id', format: 'uuid' })
   @ApiZodBody(MarkWordRequestSchema)
-  @ApiOkResponse({
+  @ApiZodResponse(WordSchema, {
     description:
       'Word { id, lemma, translationUk, state, source } with its new state',
   })

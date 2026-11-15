@@ -14,7 +14,11 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { DeleteAccountRequestSchema } from '@gototalk/shared';
+import {
+  ConsentInfoSchema,
+  DeleteAccountRequestSchema,
+  MeSchema,
+} from '@gototalk/shared';
 import type { ConsentInfo, DeleteAccountRequest, Me } from '@gototalk/shared';
 import {
   CurrentUser,
@@ -23,7 +27,10 @@ import {
 import type { AuthenticatedUser } from './decorators/current-user.decorator.js';
 import { clearRefreshCookie } from './lib/refresh-cookie.js';
 import type { CookieResponse } from './lib/refresh-cookie.js';
-import { ApiZodBody } from '../../common/swagger/api-zod.decorators.js';
+import {
+  ApiZodBody,
+  ApiZodResponse,
+} from '../../common/swagger/api-zod.decorators.js';
 import { ZodBodyPipe } from '../../common/pipes/zod-body.pipe.js';
 import { MeService } from './me.service.js';
 
@@ -35,7 +42,7 @@ export class MeController {
 
   @Get()
   @ApiOperation({ summary: 'Get the current user' })
-  @ApiResponse({ status: 200, description: 'Me { id, email, consentAt }' })
+  @ApiZodResponse(MeSchema, { description: 'Me { id, email, consentAt }' })
   @ApiResponse({ status: 401, description: 'UNAUTHORIZED' })
   getMe(@CurrentUser() user: AuthenticatedUser | undefined): Promise<Me> {
     return this.me.getMe(requireUserId(user));
@@ -45,8 +52,7 @@ export class MeController {
   @ApiOperation({
     summary: 'Get the consent state and the providers that receive speech',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiZodResponse(ConsentInfoSchema, {
     description: 'ConsentInfo { consentAt, providers: { stt, llm } }',
   })
   @ApiResponse({ status: 401, description: 'UNAUTHORIZED' })
@@ -63,7 +69,7 @@ export class MeController {
     description:
       'Idempotent: consent_at is set only when it is empty, an existing value is never overwritten.',
   })
-  @ApiResponse({ status: 200, description: 'Me with consentAt set' })
+  @ApiZodResponse(MeSchema, { description: 'Me with consentAt set' })
   @ApiResponse({ status: 401, description: 'UNAUTHORIZED' })
   grantConsent(
     @CurrentUser() user: AuthenticatedUser | undefined,
