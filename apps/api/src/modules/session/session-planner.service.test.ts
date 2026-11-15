@@ -15,8 +15,8 @@ import type {
   PlanSessionInput,
 } from '../../integrations/language-model/language-model.port.js';
 import type { GoalsService } from '../profile/goals.service.js';
-import type { LearnerModelService } from '../profile/learner-model.service.js';
-import type { WeakArea } from '../profile/learner-model.types.js';
+import type { LearnerModelService } from '../learner-model/learner-model.service.js';
+import type { WeakArea } from '../learner-model/learner-model.types.js';
 import type { ProfileService } from '../profile/profile.service.js';
 import { SessionPlannerService } from './session-planner.service.js';
 

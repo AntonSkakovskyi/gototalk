@@ -207,7 +207,7 @@
   - Відхилення: фактичний маршрут `sessions/:id/hints` (множина), `@ApiTags('dialogue')` без змін; `AnswerNotExpectedError` переїхав у `session/session.errors.ts`, `toSessionHttpError` мапить його (409 `ANSWER_NOT_EXPECTED`), псевдонім `toDialogueHttpError` прибрано; `HintModule` імпортує лише `VocabularyModule` (session-залежності – файлові імпорти кореня, `LanguageModelPort` і `DRIZZLE` глобальні).
   - Коміт: `refactor(api): extract hints from dialogue into the hint module`
 
-- [ ] **17. Новий модуль `learner-model` `[risk]` (A3)**
+- [x] **17. Новий модуль `learner-model` `[risk]` (A3)**
   - `profile/learner-model.{service,types,mapper}.ts` (+`learner-model.service.test.ts`) → `modules/learner-model/`; `profile/persistence/learner-model.repository.ts` → `modules/learner-model/persistence/`; `GET profile/learner-model` з `profile.controller.ts` → `learner-model.controller.ts` (`@Controller('profile')`, URL і Swagger без змін); `learner-model.module.ts` (imports: `AuthModule` через `@Global`), `SessionModule` імпортує `LearnerModelModule`; `session-planner.service.ts` і `plan-input.ts` – імпорт з `learner-model/` кореня.
   - Перевірка: інтеграційні `learner-model`, `profile`, `sessions-plan*`; DI-smoke; `curl` `/api/profile/learner-model`.
   - Коміт: `refactor(api): extract the learner model from profile into its own module`

@@ -12,31 +12,20 @@ import {
   MAX_SCENES,
   UpdateProfileRequestSchema,
 } from '@gototalk/shared';
-import type {
-  LearnerModel,
-  Profile,
-  UpdateProfileRequest,
-} from '@gototalk/shared';
+import type { Profile, UpdateProfileRequest } from '@gototalk/shared';
 import {
   CurrentUser,
   requireUserId,
 } from '../auth/decorators/current-user.decorator.js';
 import type { AuthenticatedUser } from '../auth/decorators/current-user.decorator.js';
 import { ZodBodyPipe } from '../../common/pipes/zod-body.pipe.js';
-import { LearnerModelService } from './learner-model.service.js';
-import { toLearnerModel } from './learner-model.mapper.js';
 import { ProfileService } from './profile.service.js';
-
-const LEARNER_MODEL_WEAK_AREAS = 5;
 
 @ApiTags('profile')
 @ApiBearerAuth()
 @Controller('profile')
 export class ProfileController {
-  constructor(
-    private readonly profile: ProfileService,
-    private readonly learnerModel: LearnerModelService,
-  ) {}
+  constructor(private readonly profile: ProfileService) {}
 
   @Get()
   @ApiOperation({ summary: 'Get the learner profile' })
@@ -84,27 +73,5 @@ export class ProfileController {
     body: UpdateProfileRequest,
   ): Promise<Profile> {
     return this.profile.update(requireUserId(user), body);
-  }
-
-  @Get('learner-model')
-  @ApiOperation({
-    summary: 'Get the learner model',
-    description: `The top ${LEARNER_MODEL_WEAK_AREAS} mistake patterns by frequency and the word counts per state; empty and zero for a new user.`,
-  })
-  @ApiResponse({
-    status: 200,
-    description:
-      'LearnerModel { weakAreas: [{ category, frequency, lastSeenAt }], vocabulary: { new, partial, passive, active } }',
-  })
-  @ApiResponse({ status: 401, description: 'UNAUTHORIZED' })
-  async getLearnerModel(
-    @CurrentUser() user: AuthenticatedUser | undefined,
-  ): Promise<LearnerModel> {
-    return toLearnerModel(
-      await this.learnerModel.snapshot(
-        requireUserId(user),
-        LEARNER_MODEL_WEAK_AREAS,
-      ),
-    );
   }
 }

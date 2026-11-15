@@ -7,7 +7,7 @@ import type { Env } from './core/config/env.schema.js';
 import { AppModule } from './app.module.js';
 import { MistakeAnalyzerService } from './modules/analysis/mistake-analyzer.service.js';
 import { NextTurnService } from './modules/dialogue/next-turn.service.js';
-import { LearnerModelService } from './modules/profile/learner-model.service.js';
+import { LearnerModelService } from './modules/learner-model/learner-model.service.js';
 import { SessionPlannerService } from './modules/session/session-planner.service.js';
 
 const env = {

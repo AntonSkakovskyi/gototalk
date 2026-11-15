@@ -10,7 +10,7 @@ import type {
 } from '../../integrations/language-model/language-model.port.js';
 import { requestValidated } from '../../integrations/language-model/validated-call.js';
 import { GoalsService } from '../profile/goals.service.js';
-import { LearnerModelService } from '../profile/learner-model.service.js';
+import { LearnerModelService } from '../learner-model/learner-model.service.js';
 import { ProfileService } from '../profile/profile.service.js';
 import { buildPlanInput } from './lib/plan-input.js';
 
