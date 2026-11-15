@@ -19,7 +19,7 @@ const env = {
   LOG_LEVEL: 'silent',
 };
 
-describe('ProvidersModule', () => {
+describe('AdaptersModule', () => {
   it('[TC-00-05] STT_PROVIDER=fake and LLM_PROVIDER=fake give the fake adapters', async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [

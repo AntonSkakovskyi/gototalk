@@ -49,4 +49,4 @@ function unsupported(name: string, value: never): never {
   ],
   exports: [SPEECH_RECOGNITION_PORT, LANGUAGE_MODEL_PORT],
 })
-export class ProvidersModule {}
+export class AdaptersModule {}

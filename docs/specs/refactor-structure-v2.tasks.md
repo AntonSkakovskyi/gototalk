@@ -162,7 +162,7 @@
   - LLM-кейси `fake-adapters.test.ts` і `fake-fail-modes.test.ts` → `language-model/fake/fake-language-model.adapter.test.ts`; після цього обидва старі файли видалити (кількість `it` 8 + 7 збережена).
   - Коміт: `refactor(api): group language model fakes and test helpers`
 
-- [ ] **11. `providers.module` → `adapters.module`**
+- [x] **11. `providers.module` → `adapters.module`**
   - `integrations/providers.module.ts` (+test) → `integrations/adapters.module.ts` (+test); клас `ProvidersModule` → `AdaptersModule`; імпорт в `app.module.ts`. Токени `LANGUAGE_MODEL_PORT`, `SPEECH_RECOGNITION_PORT`, `@Global()` не змінюються. `fake-consistency.test.ts` лишається в `integrations/`.
   - Перевірка: DI-smoke (задача 03) зелений; `pnpm dev`.
   - Коміт: `refactor(api): rename the providers module to adapters`
