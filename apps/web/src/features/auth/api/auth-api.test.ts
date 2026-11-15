@@ -14,7 +14,7 @@ import {
   logout,
   register,
 } from './auth-api';
-import { getSession, setSession } from '@/shared/session/session-store';
+import { getSession, setSession } from '@/shared/auth-session/session-store';
 
 const fetchMock = vi.fn<typeof fetch>();
 

@@ -94,10 +94,10 @@ const webErrorZones = [
     'A feature may not import another feature.',
   ),
   {
-    target: `${WEB_SRC}/shared/session`,
+    target: `${WEB_SRC}/shared/auth-session`,
     from: `${WEB_SRC}/shared/api`,
     message:
-      'shared/session is client state only; dependencies go api -> session.',
+      'shared/auth-session is client state only; dependencies go api -> auth-session.',
   },
 ];
 

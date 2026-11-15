@@ -13,8 +13,8 @@ import {
   jsonResponse,
 } from '@/shared/testing/test-fixtures';
 import { renderWithProviders } from '@/shared/testing/test-utils';
-import { clearQueryCacheOnSessionEnd } from '@/shared/session/query-cache';
-import { getSession } from '@/shared/session/session-store';
+import { clearQueryCacheOnSessionEnd } from '@/shared/auth-session/query-cache';
+import { getSession } from '@/shared/auth-session/session-store';
 
 const fetchMock = vi.fn<typeof fetch>();
 

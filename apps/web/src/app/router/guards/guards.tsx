@@ -1,6 +1,6 @@
 import { Navigate, Outlet, useLocation } from 'react-router';
 import { redirectState, safeRedirectTarget } from '@/shared/router/safe-path';
-import { useSession } from '@/shared/session/session-store';
+import { useSession } from '@/shared/auth-session/session-store';
 
 // While the session is unknown AuthBootstrap shows the loader, so guards render nothing.
 export function RequireAuth() {

@@ -4,7 +4,7 @@ import {
   clearSession,
   getSessionGeneration,
   setSession,
-} from '@/shared/session/session-store';
+} from '@/shared/auth-session/session-store';
 
 const REFRESH_LOCK = 'gototalk-refresh';
 

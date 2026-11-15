@@ -384,7 +384,7 @@
 
 Шляхи нижче від `apps/web/src`, якщо не вказано інше.
 
-- [ ] **35. `shared/session` → `shared/auth-session` (W1)**
+- [x] **35. `shared/session` → `shared/auth-session` (W1)**
   - `shared/session/{session-store,query-cache}.ts` (+tests) → `shared/auth-session/`; імпорти (`@/shared/session/…` → `@/shared/auth-session/…`) у `shared/api/*`, `app/*`, `features/auth`, `main.tsx`, `vitest.setup.ts`, `test-utils.tsx`; ESLint-зона `shared/session ↛ shared/api` → `shared/auth-session ↛ shared/api`. Експорти й назви без змін.
   - Коміт: `refactor(web): rename shared session store to auth-session`
 

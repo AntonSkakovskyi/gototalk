@@ -8,7 +8,7 @@ import { I18nextProvider } from 'react-i18next';
 import { BrowserRouter } from 'react-router';
 import { App } from '@/app/App';
 import { AuthBootstrap } from '@/app/providers/AuthBootstrap/AuthBootstrap';
-import { clearQueryCacheOnSessionEnd } from '@/shared/session/query-cache';
+import { clearQueryCacheOnSessionEnd } from '@/shared/auth-session/query-cache';
 import i18n from '@/shared/i18n/index';
 import { theme } from '@/app/theme/theme';
 

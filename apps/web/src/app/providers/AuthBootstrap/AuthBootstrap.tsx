@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import classes from './AuthBootstrap.module.scss';
 import { GateError } from '@/app/router/guards/GateScreens/GateScreens';
 import { refreshSession } from '@/shared/api/refresh';
-import { getSession, useSession } from '@/shared/session/session-store';
+import { getSession, useSession } from '@/shared/auth-session/session-store';
 
 export function AuthBootstrap({ children }: { children: ReactNode }) {
   const { t } = useTranslation();

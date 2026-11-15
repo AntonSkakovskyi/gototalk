@@ -9,7 +9,7 @@ import {
   clearSession,
   getSession,
   setSession,
-} from '@/shared/session/session-store';
+} from '@/shared/auth-session/session-store';
 
 const fetchMock = vi.fn<typeof fetch>();
 

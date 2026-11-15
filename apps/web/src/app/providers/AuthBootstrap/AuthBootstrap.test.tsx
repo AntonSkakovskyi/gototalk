@@ -10,7 +10,7 @@ import {
 } from '@/shared/testing/test-fixtures';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 import { AuthBootstrap } from './AuthBootstrap';
-import { getSession } from '@/shared/session/session-store';
+import { getSession } from '@/shared/auth-session/session-store';
 
 const fetchMock = vi.fn<typeof fetch>();
 
