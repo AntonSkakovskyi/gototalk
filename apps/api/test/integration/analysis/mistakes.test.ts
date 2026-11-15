@@ -3,16 +3,16 @@ import { LearnerModelSchema, MistakeViewSchema } from '@gototalk/shared';
 import type pg from 'pg';
 import request from 'supertest';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { PG_POOL } from '../src/core/db/db.tokens.js';
-import { fetchDetails } from './support/dialogue-flow.js';
+import { PG_POOL } from '../../../src/core/db/db.tokens.js';
+import { fetchDetails } from '../../support/dialogue-flow.js';
 import {
   analysedLearner,
   frequencies,
   patchMistake,
   setFrequency,
-} from './support/mistakes-flow.js';
-import { createTestApp } from './support/test-app.js';
-import { resetUserData } from './support/test-db.js';
+} from '../../support/mistakes-flow.js';
+import { createTestApp } from '../../support/test-app.js';
+import { resetUserData } from '../../support/test-db.js';
 
 describe('PATCH /api/sessions/:id/mistakes/:mistakeId', () => {
   let app: INestApplication;

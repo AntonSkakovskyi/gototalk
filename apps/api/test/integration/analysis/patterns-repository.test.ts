@@ -1,13 +1,13 @@
 import type { INestApplication } from '@nestjs/common';
 import type pg from 'pg';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { DRIZZLE, PG_POOL } from '../src/core/db/db.tokens.js';
-import type { Database } from '../src/core/db/db.tokens.js';
-import { PatternsRepository } from '../src/modules/analysis/persistence/patterns.repository.js';
-import { registerUser } from './support/api-client.js';
-import { frequencies } from './support/mistakes-flow.js';
-import { createTestApp } from './support/test-app.js';
-import { resetUserData } from './support/test-db.js';
+import { DRIZZLE, PG_POOL } from '../../../src/core/db/db.tokens.js';
+import type { Database } from '../../../src/core/db/db.tokens.js';
+import { PatternsRepository } from '../../../src/modules/analysis/persistence/patterns.repository.js';
+import { registerUser } from '../../support/api-client.js';
+import { frequencies } from '../../support/mistakes-flow.js';
+import { createTestApp } from '../../support/test-app.js';
+import { resetUserData } from '../../support/test-db.js';
 
 describe('PatternsRepository', () => {
   let app: INestApplication;

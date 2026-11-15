@@ -3,22 +3,22 @@ import type { INestApplication } from '@nestjs/common';
 import type pg from 'pg';
 import request from 'supertest';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { PG_POOL } from '../src/core/db/db.tokens.js';
+import { PG_POOL } from '../../../src/core/db/db.tokens.js';
 import {
   expectError,
   grantConsent,
   registerUser,
   tokenOfMissingUser,
-} from './support/api-client.js';
+} from '../../support/api-client.js';
 import {
   MISTAKEN_ANSWER,
   postAnalysis,
   startLearner,
   submitAnswer,
   utteranceRows,
-} from './support/dialogue-flow.js';
-import { createTestApp } from './support/test-app.js';
-import { resetUserData } from './support/test-db.js';
+} from '../../support/dialogue-flow.js';
+import { createTestApp } from '../../support/test-app.js';
+import { resetUserData } from '../../support/test-db.js';
 
 describe('step 2 access and ids', () => {
   let app: INestApplication;

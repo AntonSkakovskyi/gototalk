@@ -1,10 +1,10 @@
 import type { INestApplication } from '@nestjs/common';
 import type pg from 'pg';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { PG_POOL } from '../src/core/db/db.tokens.js';
-import { LANGUAGE_MODEL_PORT } from '../src/integrations/language-model/language-model.port.js';
-import { PendingAnalysisService } from '../src/modules/analysis/pending-analysis.service.js';
-import { ControllableLanguageModel } from './support/controllable-language-model.js';
+import { PG_POOL } from '../../../src/core/db/db.tokens.js';
+import { LANGUAGE_MODEL_PORT } from '../../../src/integrations/language-model/language-model.port.js';
+import { PendingAnalysisService } from '../../../src/modules/analysis/pending-analysis.service.js';
+import { ControllableLanguageModel } from '../../support/controllable-language-model.js';
 import {
   MISTAKEN_ANSWER,
   SEEDED_WORD_SOURCE,
@@ -16,13 +16,13 @@ import {
   startLearner,
   submitAnswer,
   wordRows,
-} from './support/dialogue-flow.js';
+} from '../../support/dialogue-flow.js';
 import {
   SessionLockHolder,
   waitForLockWaiters,
-} from './support/session-lock.js';
-import { createTestApp } from './support/test-app.js';
-import { resetUserData } from './support/test-db.js';
+} from '../../support/session-lock.js';
+import { createTestApp } from '../../support/test-app.js';
+import { resetUserData } from '../../support/test-db.js';
 
 const REALLY = { lemma: 'really', state: 'new', source: 'session' };
 const WENT = { lemma: 'went', state: 'new', source: 'session' };

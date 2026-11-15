@@ -1,7 +1,7 @@
 import type { INestApplication } from '@nestjs/common';
 import type pg from 'pg';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { PG_POOL } from '../src/core/db/db.tokens.js';
+import { PG_POOL } from '../../../src/core/db/db.tokens.js';
 import {
   MISTAKEN_ANSWER,
   countMistakes,
@@ -10,13 +10,13 @@ import {
   startLearner,
   submitAnswer,
   utteranceRows,
-} from './support/dialogue-flow.js';
+} from '../../support/dialogue-flow.js';
 import {
   SessionLockHolder,
   waitForLockWaiter,
-} from './support/session-lock.js';
-import { createTestApp } from './support/test-app.js';
-import { resetUserData } from './support/test-db.js';
+} from '../../support/session-lock.js';
+import { createTestApp } from '../../support/test-app.js';
+import { resetUserData } from '../../support/test-db.js';
 
 describe('step 2 under the session lock', () => {
   let app: INestApplication;

@@ -2,17 +2,17 @@ import { randomUUID } from 'node:crypto';
 import type { INestApplication } from '@nestjs/common';
 import type pg from 'pg';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { PG_POOL } from '../src/core/db/db.tokens.js';
-import { expectError } from './support/api-client.js';
-import { startLearner } from './support/dialogue-flow.js';
+import { PG_POOL } from '../../../src/core/db/db.tokens.js';
+import { expectError } from '../../support/api-client.js';
+import { startLearner } from '../../support/dialogue-flow.js';
 import {
   analysedLearner,
   frequencies,
   patchMistake,
-} from './support/mistakes-flow.js';
-import { insertFinished } from './support/session-fixtures.js';
-import { createTestApp } from './support/test-app.js';
-import { resetUserData } from './support/test-db.js';
+} from '../../support/mistakes-flow.js';
+import { insertFinished } from '../../support/session-fixtures.js';
+import { createTestApp } from '../../support/test-app.js';
+import { resetUserData } from '../../support/test-db.js';
 
 describe('PATCH /api/sessions/:id/mistakes/:mistakeId access and validation', () => {
   let app: INestApplication;
