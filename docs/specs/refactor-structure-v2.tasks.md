@@ -231,7 +231,7 @@
   - `sessions.service.ts`: експортувати `findDetails(userId, id)` (обгортка над репозиторієм без зміни семантики: `SessionDetails | null`); `turn.service.ts` викликає його замість імпорту `sessions.repository` з `session/persistence/`.
   - Коміт: `refactor(api): read session details through SessionsService in the turn service`
 
-- [ ] **21. `dialogue/audio/`**
+- [x] **21. `dialogue/audio/`**
   - `dialogue/audio-retention.ts`, `audio-upload.ts` (+tests), `lib/audio-format.ts` (+test) → `dialogue/audio/`.
   - Імпорти в `dialogue.controller.ts`, `answers.service.ts` тощо.
   - Коміт: `refactor(api): group dialogue audio helpers`

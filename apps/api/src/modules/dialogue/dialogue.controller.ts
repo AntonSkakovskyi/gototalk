@@ -27,8 +27,8 @@ import {
 import type { AuthenticatedUser } from '../auth/decorators/current-user.decorator.js';
 import { RequiresConsent } from '../auth/decorators/requires-consent.decorator.js';
 import { AnswersService } from './answers.service.js';
-import { AudioUpload, AudioUploadErrors } from './audio-upload.js';
-import type { UploadedAudio } from './audio-upload.js';
+import { AudioUpload, AudioUploadErrors } from './audio/audio-upload.js';
+import type { UploadedAudio } from './audio/audio-upload.js';
 import { TurnService } from './turn.service.js';
 
 @ApiTags('dialogue')

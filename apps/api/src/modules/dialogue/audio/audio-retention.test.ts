@@ -4,7 +4,7 @@ import path from 'node:path';
 import type { ConfigService } from '@nestjs/config';
 import { Logger } from '@nestjs/common';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type { Env } from '../../core/config/env.schema.js';
+import type { Env } from '../../../core/config/env.schema.js';
 import { AudioRetention, failureReason } from './audio-retention.js';
 
 const UTTERANCE_ID = '44444444-4444-4444-8444-444444444444';

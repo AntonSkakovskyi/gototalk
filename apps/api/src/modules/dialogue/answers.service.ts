@@ -21,9 +21,9 @@ import {
   sessionNotFound,
   toSessionHttpError,
 } from '../session/session.errors.js';
-import { AudioRetention } from './audio-retention.js';
-import type { UploadedAudio } from './audio-upload.js';
-import { detectAudioFormat } from './lib/audio-format.js';
+import { AudioRetention } from './audio/audio-retention.js';
+import type { UploadedAudio } from './audio/audio-upload.js';
+import { detectAudioFormat } from './audio/audio-format.js';
 import { DialogueRepository } from './persistence/dialogue.repository.js';
 import type { AnswerTexts } from './persistence/dialogue.repository.js';
 

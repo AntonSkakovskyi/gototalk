@@ -3,7 +3,7 @@ import { AnalysisModule } from '../analysis/analysis.module.js';
 import { SessionModule } from '../session/session.module.js';
 import { VocabularyModule } from '../vocabulary/vocabulary.module.js';
 import { AnswersService } from './answers.service.js';
-import { AudioRetention } from './audio-retention.js';
+import { AudioRetention } from './audio/audio-retention.js';
 import { DialogueController } from './dialogue.controller.js';
 import { NextTurnService } from './next-turn.service.js';
 import { DialogueRepository } from './persistence/dialogue.repository.js';

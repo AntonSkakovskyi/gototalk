@@ -11,7 +11,7 @@ import type { Utterance } from '@gototalk/shared';
 import { describe, expect, it, vi } from 'vitest';
 import { SpeechRecognitionUnavailableError } from '../../integrations/speech-recognition/speech-recognition.errors.js';
 import { AnswersService } from './answers.service.js';
-import type { AudioRetention } from './audio-retention.js';
+import type { AudioRetention } from './audio/audio-retention.js';
 import {
   AnswerNotExpectedError,
   SessionFinishedError,

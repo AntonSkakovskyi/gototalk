@@ -3,7 +3,7 @@ import path from 'node:path';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { AudioMimeType } from '@gototalk/shared';
-import type { Env } from '../../core/config/env.schema.js';
+import type { Env } from '../../../core/config/env.schema.js';
 
 const EXTENSIONS: Record<AudioMimeType, string> = {
   'audio/webm': 'webm',
