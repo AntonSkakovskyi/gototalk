@@ -2,14 +2,20 @@ import { randomUUID } from 'node:crypto';
 import type { INestApplication } from '@nestjs/common';
 import type pg from 'pg';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { DRIZZLE, PG_POOL } from '../src/core/db/db.tokens.js';
-import type { Database } from '../src/core/db/db.tokens.js';
-import { ReportRepository } from '../src/modules/report/persistence/report.repository.js';
-import { registerUser } from './support/api-client.js';
-import { REPORT_STARTED_AT, insertMistake } from './support/report-fixtures.js';
-import { insertFinished, insertUtterance } from './support/session-fixtures.js';
-import { createTestApp } from './support/test-app.js';
-import { resetUserData } from './support/test-db.js';
+import { DRIZZLE, PG_POOL } from '../../../src/core/db/db.tokens.js';
+import type { Database } from '../../../src/core/db/db.tokens.js';
+import { ReportRepository } from '../../../src/modules/report/persistence/report.repository.js';
+import { registerUser } from '../../support/api-client.js';
+import {
+  REPORT_STARTED_AT,
+  insertMistake,
+} from '../../support/report-fixtures.js';
+import {
+  insertFinished,
+  insertUtterance,
+} from '../../support/session-fixtures.js';
+import { createTestApp } from '../../support/test-app.js';
+import { resetUserData } from '../../support/test-db.js';
 
 describe('report category aggregates in SQL', () => {
   let app: INestApplication;

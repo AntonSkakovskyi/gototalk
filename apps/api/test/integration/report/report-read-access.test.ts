@@ -1,20 +1,20 @@
 import type { INestApplication } from '@nestjs/common';
 import type pg from 'pg';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { PG_POOL } from '../src/core/db/db.tokens.js';
-import { LANGUAGE_MODEL_PORT } from '../src/integrations/language-model/language-model.port.js';
+import { PG_POOL } from '../../../src/core/db/db.tokens.js';
+import { LANGUAGE_MODEL_PORT } from '../../../src/integrations/language-model/language-model.port.js';
 import {
   MISSING_USER_ID,
   grantConsent,
   expectError,
   registerUser,
   tokenOfMissingUser,
-} from './support/api-client.js';
-import { ControllableLanguageModel } from './support/controllable-language-model.js';
-import { startLearner } from './support/dialogue-flow.js';
-import { finishedLearner, getReport } from './support/report-flow.js';
-import { createTestApp } from './support/test-app.js';
-import { resetUserData } from './support/test-db.js';
+} from '../../support/api-client.js';
+import { ControllableLanguageModel } from '../../support/controllable-language-model.js';
+import { startLearner } from '../../support/dialogue-flow.js';
+import { finishedLearner, getReport } from '../../support/report-flow.js';
+import { createTestApp } from '../../support/test-app.js';
+import { resetUserData } from '../../support/test-db.js';
 
 describe('GET /api/sessions/:id/report access', () => {
   let app: INestApplication;

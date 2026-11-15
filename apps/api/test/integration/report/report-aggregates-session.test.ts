@@ -1,18 +1,21 @@
 import type { INestApplication } from '@nestjs/common';
 import type pg from 'pg';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { DRIZZLE, PG_POOL } from '../src/core/db/db.tokens.js';
-import type { Database } from '../src/core/db/db.tokens.js';
-import { ReportRepository } from '../src/modules/report/persistence/report.repository.js';
-import { MISSING_USER_ID, registerUser } from './support/api-client.js';
+import { DRIZZLE, PG_POOL } from '../../../src/core/db/db.tokens.js';
+import type { Database } from '../../../src/core/db/db.tokens.js';
+import { ReportRepository } from '../../../src/modules/report/persistence/report.repository.js';
+import { MISSING_USER_ID, registerUser } from '../../support/api-client.js';
 import {
   REPORT_STARTED_AT,
   insertLinkedWord,
   setUtteranceCreatedAt,
-} from './support/report-fixtures.js';
-import { insertFinished, insertUtterance } from './support/session-fixtures.js';
-import { createTestApp } from './support/test-app.js';
-import { resetUserData } from './support/test-db.js';
+} from '../../support/report-fixtures.js';
+import {
+  insertFinished,
+  insertUtterance,
+} from '../../support/session-fixtures.js';
+import { createTestApp } from '../../support/test-app.js';
+import { resetUserData } from '../../support/test-db.js';
 
 describe('report session aggregates in SQL', () => {
   let app: INestApplication;

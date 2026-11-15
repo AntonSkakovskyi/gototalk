@@ -3,14 +3,14 @@ import { SessionSchema } from '@gototalk/shared';
 import pg from 'pg';
 import request from 'supertest';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { PG_POOL } from '../src/core/db/db.tokens.js';
+import { PG_POOL } from '../../../src/core/db/db.tokens.js';
 import {
   MISSING_USER_ID,
   expectError,
   grantConsent,
   registerUser,
   tokenOfMissingUser,
-} from './support/api-client.js';
+} from '../../support/api-client.js';
 import {
   PLAN,
   fetchDetails,
@@ -18,10 +18,10 @@ import {
   postAnswer,
   startLearner,
   submitAnswer,
-} from './support/dialogue-flow.js';
-import type { Learner } from './support/dialogue-flow.js';
-import { createTestApp } from './support/test-app.js';
-import { resetUserData } from './support/test-db.js';
+} from '../../support/dialogue-flow.js';
+import type { Learner } from '../../support/dialogue-flow.js';
+import { createTestApp } from '../../support/test-app.js';
+import { resetUserData } from '../../support/test-db.js';
 
 describe('POST /api/sessions/:id/finish', () => {
   let app: INestApplication;

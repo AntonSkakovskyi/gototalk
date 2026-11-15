@@ -293,7 +293,7 @@
 - [x] **30. `integration/dialogue/` (аналіз) і `analysis/`** – `dialogue-analysis`, `-access`, `-failures`, `-idempotency`, `-locking`, `-words` → `dialogue/`; `mistakes`, `mistakes-access`, `patterns-repository`, `pending-analysis` → `analysis/`.
   - Коміт: `refactor(api-test): move dialogue analysis and analysis integration tests`
 
-- [ ] **31. `integration/report/`** – `report-aggregates`, `report-aggregates-session`, `report-finish`, `report-read`, `report-read-access`, `report-store`, `report-unavailable`, `sessions-finish`, `sessions-finish-locking`.
+- [x] **31. `integration/report/`** – `report-aggregates`, `report-aggregates-session`, `report-finish`, `report-read`, `report-read-access`, `report-store`, `report-unavailable`, `sessions-finish`, `sessions-finish-locking`.
   - Коміт: `refactor(api-test): move report and finish integration tests`
 
 - [ ] **32. `integration/vocabulary/`** – `session-words`, `vocabulary-usage`, `words-list`, `words-mark`.

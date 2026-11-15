@@ -3,14 +3,14 @@ import { SessionSchema } from '@gototalk/shared';
 import type pg from 'pg';
 import request from 'supertest';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { PG_POOL } from '../src/core/db/db.tokens.js';
-import { startLearner } from './support/dialogue-flow.js';
+import { PG_POOL } from '../../../src/core/db/db.tokens.js';
+import { startLearner } from '../../support/dialogue-flow.js';
 import {
   SessionLockHolder,
   waitForLockWaiter,
-} from './support/session-lock.js';
-import { createTestApp } from './support/test-app.js';
-import { resetUserData } from './support/test-db.js';
+} from '../../support/session-lock.js';
+import { createTestApp } from '../../support/test-app.js';
+import { resetUserData } from '../../support/test-db.js';
 
 describe('finish session locking', () => {
   let app: INestApplication;
