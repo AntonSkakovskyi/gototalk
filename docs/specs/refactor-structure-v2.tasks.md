@@ -105,7 +105,7 @@
   - Відхилення: рівень задається на правило, тому нові зони живуть під другою реєстрацією плагіна `import-x-debt`; у задачах 24 і 49 злити назад у `import-x/no-restricted-paths` як `error`. `me` поза DAG: його імпорти дають warn до задачі 18.
   - Коміт: `build(lint): generate boundary lists and add module and entity zones as warnings`
 
-- [ ] **03. DI-smoke `[risk]`**
+- [x] **03. DI-smoke `[risk]`**
   - `src/core-services.test.ts` → злити в `src/app.module.test.ts` (`git mv` неможливий для злиття; зберегти `[TC-00-04]` і всі його перевірки), розширити: тест резолвить кожен controller і provider із `AppModule` (`moduleRef.get(token, { strict: false })` по списку з `DiscoveryService`/`Reflect.getMetadata('controllers'|'providers')` модулів). Перед написанням: context7 по `@nestjs/testing`/`DiscoveryService` NestJS 12.
   - Старий файл видалити в цьому коміті (його єдиний кейс переїхав; кількість `it` не зменшується).
   - Перевірка: тест падає, якщо тимчасово прибрати provider з модуля (перевірити й відкотити).
