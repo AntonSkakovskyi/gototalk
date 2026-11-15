@@ -227,7 +227,7 @@
   - Відхилення: `SessionsService.finish` не перейменовано (лише без звіту); контекст логера тепер `SessionFinishService` (текст повідомлення той самий); 3 кейси `[TC-04-04]` лишились у `sessions.service.test.ts`, переїхали 3 кейси `[TC-05-02]`; `SessionModule` експортує `SessionsService`.
   - Коміт: `refactor(api): move session finishing orchestration into the report module`
 
-- [ ] **20. `TurnService` → `SessionsService.findDetails` (r.62)**
+- [x] **20. `TurnService` → `SessionsService.findDetails` (r.62)**
   - `sessions.service.ts`: експортувати `findDetails(userId, id)` (обгортка над репозиторієм без зміни семантики: `SessionDetails | null`); `turn.service.ts` викликає його замість імпорту `sessions.repository` з `session/persistence/`.
   - Коміт: `refactor(api): read session details through SessionsService in the turn service`
 

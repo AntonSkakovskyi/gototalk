@@ -124,6 +124,17 @@ describe('SessionsService reads', () => {
   });
 });
 
+describe('SessionsService.findDetails', () => {
+  it('[TC-03-02] returns the repository result without validating the id', async () => {
+    const findDetails = vi.fn().mockResolvedValue(null);
+
+    await expect(
+      newService({ findDetails }).findDetails(USER_ID, 'not-a-uuid'),
+    ).resolves.toBeNull();
+    expect(findDetails).toHaveBeenCalledWith(USER_ID, 'not-a-uuid');
+  });
+});
+
 describe('SessionsService.finish', () => {
   const SESSION = {
     id: DETAILS.id,

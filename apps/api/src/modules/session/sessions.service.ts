@@ -52,6 +52,10 @@ export class SessionsService {
     return session;
   }
 
+  findDetails(userId: string, id: string): Promise<SessionDetails | null> {
+    return this.sessions.findDetails(userId, id);
+  }
+
   async details(userId: string, id: string): Promise<SessionDetails> {
     if (!isSessionId(id)) throw sessionNotFound();
     const details = await this.sessions.findDetails(userId, id);

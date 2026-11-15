@@ -11,7 +11,7 @@ import {
   isSessionId,
   sessionNotFound,
 } from '../session/session.errors.js';
-import { SessionsRepository } from '../session/persistence/sessions.repository.js';
+import { SessionsService } from '../session/sessions.service.js';
 import {
   UtteranceNotFoundError,
   isUtteranceId,
@@ -47,8 +47,8 @@ export class TurnService {
   constructor(
     @Inject(TurnRepository)
     private readonly turns: Pick<TurnRepository, 'loadState' | 'persist'>,
-    @Inject(SessionsRepository)
-    private readonly sessions: Pick<SessionsRepository, 'findDetails'>,
+    @Inject(SessionsService)
+    private readonly sessions: Pick<SessionsService, 'findDetails'>,
     @Inject(MistakeAnalyzerService)
     private readonly analyzer: Pick<MistakeAnalyzerService, 'analyze'>,
     @Inject(NextTurnService)
