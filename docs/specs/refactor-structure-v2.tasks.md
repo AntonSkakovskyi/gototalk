@@ -94,13 +94,15 @@
   - Перевірка: ручний запуск хука з PowerShell (без запущеного vitest → тести виконуються).
   - Коміт: `chore(hooks): skip the test hook while another vitest process runs`
 
-- [ ] **02. ESLint: генерація списків і нові правила (`warn`) `[risk]`**
+- [x] **02. ESLint: генерація списків і нові правила (`warn`) `[risk]`**
   - `eslint.config.js`:
     - Список фіч, сутностей і api-модулів генерується з `readdirSync` (прибрати захардкоджені `history`, `cards`; W7). Ім'я мапи: `API_MODULE_DEPS` (DAG зі spec: `auth` ← усі; `profile`, `learner-model`, `vocabulary` → `auth`; `session` → `profile`, `learner-model`; `analysis`, `hint` → `session`, `vocabulary`; `dialogue`, `report` → `session`, `analysis`, `vocabulary`).
     - Api (`apps/api/src/**`, лише вихідні файли, `test/` поза зонами): `import-x/no-restricted-paths` – приватність підпапок модуля для інших модулів (зона `from: modules/<m>/{persistence,lib,guards,testing,audio}`, `except` власний модуль) і DAG; `import-x/no-cycle` – усе `warn`.
     - Web: зони `entities` (`shared ↛ entities`, `entities ↛ features|pages|app`, `entities/<a> ↛ entities/<b>`; `features ↛ pages|app`), підобласті фіч (`features/<f>/<sub> ↛ features/<f>/<other-sub>`) – `warn`; `shared/testing/**` прибрати з винятків меж (`warn`).
     - Прибрати виняток `*.test.*` для web-меж; порушення в тестах мають показуватись.
   - Перевірка: тимчасові порушення (приватний імпорт чужого модуля, `shared → entities`, цикл) дають `warn`; відкотити. `pnpm lint` не падає (лише `warn`). Зафіксувати кількість `warn` як «борг», що має дійти до 0 у задачах 24 і 49.
+  - Борг `warn` після задачі: 35 (api приватні підпапки 19, api DAG 3, web тести 13); має дійти до 0 у задачах 24 і 49.
+  - Відхилення: рівень задається на правило, тому нові зони живуть під другою реєстрацією плагіна `import-x-debt`; у задачах 24 і 49 злити назад у `import-x/no-restricted-paths` як `error`. `me` поза DAG: його імпорти дають warn до задачі 18.
   - Коміт: `build(lint): generate boundary lists and add module and entity zones as warnings`
 
 - [ ] **03. DI-smoke `[risk]`**
