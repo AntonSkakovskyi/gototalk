@@ -16,6 +16,11 @@ export interface GroupedAnswers {
   clean: Utterance[];
 }
 
+// The API orders ties with COLLATE "C", so compare code units rather than locale rules.
+function compareCodeUnits(first: string, second: string) {
+  return first < second ? -1 : first > second ? 1 : 0;
+}
+
 export function groupByCategory(
   utterances: Utterance[],
   theory: ReadonlyMap<MistakeCategoryCode, TheoryLink[]>,
@@ -54,7 +59,7 @@ export function groupByCategory(
     .toSorted(
       (first, second) =>
         second.count - first.count ||
-        first.category.localeCompare(second.category),
+        compareCodeUnits(first.category, second.category),
     );
 
   const placed = new Set<string>();

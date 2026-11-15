@@ -11,6 +11,7 @@ import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AnswerList } from '@/features/report/components/AnswerList/AnswerList';
 import type { CategoryGroupData } from '@/features/report/lib/group-by-category';
+import { isWebUrl } from '@/features/report/lib/is-web-url';
 import classes from './CategoryGroup.module.scss';
 
 const NO_MARKERS = 'none';
@@ -33,6 +34,7 @@ export function CategoryGroup({
   const { t } = useTranslation();
   const titleId = useId();
   const theoryId = useId();
+  const theoryLinks = group.theoryLinks.filter(({ url }) => isWebUrl(url));
 
   return (
     <Stack gap="md" component="section" aria-labelledby={titleId}>
@@ -42,13 +44,13 @@ export function CategoryGroup({
           count: group.count,
         })}
       </Title>
-      {group.theoryLinks.length > 0 && (
+      {theoryLinks.length > 0 && (
         <Stack gap={0}>
           <Text size="sm" c="dimmed" id={theoryId}>
             {t('report.deep.theoryTitle')}
           </Text>
           <List listStyleType={NO_MARKERS} aria-labelledby={theoryId}>
-            {group.theoryLinks.map((link) => (
+            {theoryLinks.map((link) => (
               <List.Item key={link.id}>
                 <Anchor
                   href={link.url}

@@ -75,6 +75,18 @@ describe('groupByCategory', () => {
     ]);
   });
 
+  it('[TC-05-06] breaks ties by code units like the API, not by locale rules', () => {
+    const upper = 'Zeta' as unknown as MistakeCategoryCode;
+    const lower = 'alpha' as unknown as MistakeCategoryCode;
+
+    const { groups } = groupByCategory(
+      [answer('a1', 2, [lower, upper])],
+      new Map(),
+    );
+
+    expect(groups.map(({ category }) => category)).toEqual([upper, lower]);
+  });
+
   it('[TC-05-03] ignores mistakes marked as not a mistake and drops emptied groups', () => {
     const marked = testUtterance({
       id: 'a1',

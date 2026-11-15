@@ -80,4 +80,33 @@ describe('CategoryGroup', () => {
       screen.queryByText(uk.report.deep.theoryTitle),
     ).not.toBeInTheDocument();
   });
+
+  it('[TC-05-06] skips theory links whose url is not http or https', () => {
+    renderGroup(
+      group({
+        theoryLinks: [
+          { id: 'a', title: 'Past Simple', url: 'https://example.com/a' },
+          { id: 'b', title: 'Evil', url: 'javascript:alert(1)' },
+          { id: 'c', title: 'Broken', url: 'not a url' },
+        ],
+      }),
+    );
+
+    expect(screen.getAllByRole('link')).toHaveLength(1);
+    expect(screen.getByRole('link')).toHaveAttribute(
+      'href',
+      'https://example.com/a',
+    );
+    expect(screen.queryByText('Evil')).not.toBeInTheDocument();
+  });
+
+  it('[TC-05-06] omits the theory block when no link has a valid url', () => {
+    renderGroup(
+      group({ theoryLinks: [{ id: 'b', title: 'Evil', url: 'javascript:x' }] }),
+    );
+
+    expect(
+      screen.queryByText(uk.report.deep.theoryTitle),
+    ).not.toBeInTheDocument();
+  });
 });

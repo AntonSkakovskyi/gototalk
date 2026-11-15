@@ -10,16 +10,11 @@ import { questionsByAnswer } from '@/features/report/lib/questions-by-answer';
 const HIDE_MODE = 'display-none';
 
 interface DeepAnalysisProps {
-  sessionId: string;
   details: SessionDetails;
   report: SessionReport;
 }
 
-export function DeepAnalysis({
-  sessionId,
-  details,
-  report,
-}: DeepAnalysisProps) {
+export function DeepAnalysis({ details, report }: DeepAnalysisProps) {
   const { t } = useTranslation();
   const regionId = useId();
   const cleanTitleId = useId();
@@ -54,7 +49,7 @@ export function DeepAnalysis({
           {groups.map((group) => (
             <CategoryGroup
               key={group.category}
-              sessionId={sessionId}
+              sessionId={details.id}
               group={group}
               questions={questions}
             />
@@ -65,7 +60,7 @@ export function DeepAnalysis({
                 {t('report.deep.cleanTitle')}
               </Title>
               <AnswerList
-                sessionId={sessionId}
+                sessionId={details.id}
                 answers={clean}
                 questions={questions}
                 labelledBy={cleanTitleId}

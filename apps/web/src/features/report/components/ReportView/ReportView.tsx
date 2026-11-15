@@ -1,6 +1,7 @@
 import type { SessionDetails, SessionReport } from '@gototalk/shared';
 import { Stack } from '@mantine/core';
 import type { UseQueryResult } from '@tanstack/react-query';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeepAnalysis } from '@/features/report/components/DeepAnalysis/DeepAnalysis';
 import { ReportSummary } from '@/features/report/components/ReportSummary/ReportSummary';
@@ -11,9 +12,10 @@ import { SectionSkeleton } from '@/shared/ui/SectionSkeleton/SectionSkeleton';
 interface ReportViewProps {
   query: UseQueryResult<SessionReport>;
   details?: SessionDetails;
+  children?: ReactNode;
 }
 
-export function ReportView({ query, details }: ReportViewProps) {
+export function ReportView({ query, details, children }: ReportViewProps) {
   const { t } = useTranslation();
 
   if (query.data) {
@@ -24,13 +26,8 @@ export function ReportView({ query, details }: ReportViewProps) {
           retrying={query.isFetching}
           onRetry={() => void query.refetch()}
         />
-        {details && (
-          <DeepAnalysis
-            sessionId={details.id}
-            details={details}
-            report={query.data}
-          />
-        )}
+        {children}
+        {details && <DeepAnalysis details={details} report={query.data} />}
       </Stack>
     );
   }

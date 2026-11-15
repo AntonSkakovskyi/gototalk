@@ -13,42 +13,23 @@ import { mockApi } from '@/shared/testing/mock-api';
 import { reportOk } from '@/shared/testing/report-mocks';
 import {
   TEST_PROFILE,
-  TEST_USER,
   errorResponse,
   jsonResponse,
-  testSessionDetails,
-  testTurnResult,
-  testUtterance,
 } from '@/shared/testing/test-fixtures';
+import {
+  AUTH,
+  DETAILS_ROUTE,
+  FINISHED,
+  REPORT_ROUTE,
+  ROUTE,
+  TURN,
+  mockReportApi,
+} from './report-page-setup';
 
-const AUTH = {
-  accessToken: 'access-1',
-  user: { ...TEST_USER, consentAt: '2026-01-01T10:00:00.000Z' },
-};
-const TURN = testTurnResult();
-const FIRST_QUESTION = testUtterance();
-const SECOND_QUESTION = TURN.reply ?? testUtterance();
-const FINISHED = testSessionDetails({
-  status: 'finished',
-  feedbackMode: 'deferred',
-  endedAt: '2026-11-13T10:07:20.000Z',
-  planRemaining: 3,
-  utterances: [FIRST_QUESTION, TURN.utterance, SECOND_QUESTION],
-});
-const ROUTE = `/sessions/${FINISHED.id}/report`;
-const DETAILS_ROUTE = `GET /api/sessions/${FINISHED.id}`;
-const REPORT_ROUTE = `${DETAILS_ROUTE}/report`;
-
-type Reply = Response | (() => Response | Promise<Response>);
-
-function renderReport(reply: Reply, report: Reply = reportOk) {
-  const { requests } = mockApi({
-    'GET /api/profile': jsonResponse(TEST_PROFILE),
-    [DETAILS_ROUTE]: reply,
-    [REPORT_ROUTE]: report,
-  });
+function renderReport(...args: Parameters<typeof mockReportApi>) {
+  const api = mockReportApi(...args);
   renderAppWithProbe({ route: ROUTE, session: AUTH });
-  return { requests };
+  return api;
 }
 
 describe('ReportPage route', () => {
@@ -117,7 +98,7 @@ describe('ReportPage route', () => {
       }),
     ).toBeInTheDocument();
     expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
-    expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(1);
+    expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(2);
     expect(screen.getByText('5 відповідей')).toBeInTheDocument();
     expect(screen.getByText('6 хвилин')).toBeInTheDocument();
     expect(
@@ -159,6 +140,9 @@ describe('ReportPage route', () => {
     );
     expect(
       screen.queryByRole('button', { name: uk.report.deep.open }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('heading', { name: uk.vocabulary.session.title }),
     ).not.toBeInTheDocument();
   });
 
