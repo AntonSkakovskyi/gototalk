@@ -184,12 +184,13 @@
   - Перевірка: `pnpm dev`; інтеграційні `sessions*`, `dialogue-answer*`, `dialogue-analysis*`, `report-*` (`--project integration`); lint `warn` для приватних імпортів із `session/` зникли.
   - Коміт: `refactor(api): expose session lock, errors and views from the module root`
 
-- [ ] **14. `vocabulary`: `VocabularyWriter`, `word-view` `[risk]` (A1)**
+- [x] **14. `vocabulary`: `VocabularyWriter`, `word-view` `[risk]` (A1)**
   - `vocabulary/persistence/word-view.ts` → `vocabulary/word-view.ts` (публічний мапер; `toWord`, `WORD_COLUMNS` для `report.repository`).
   - Нове `vocabulary/vocabulary-writer.service.ts` (`VocabularyWriter`, експорт `VocabularyModule`): методи, які сьогодні викликаються з чужих модулів напряму з репозиторіїв/`lib` – `addFromHint(tx, …)` (для `hints.repository`) і `saveSessionWords(tx, …)` (для `analysis-writer`, делегує до `words.repository`, `session-words.repository` і `lib/session-word-candidates`). Тіло методів = перенесений наявний код 1:1.
   - `hints.repository` і `analysis-writer` викликають `VocabularyWriter` замість імпорту `vocabulary/persistence/*` і `vocabulary/lib/*`.
   - TDD: unit-тест `vocabulary-writer.service.test.ts` для делегування (спершу падає).
   - Перевірка: інтеграційні `hints*`, `dialogue-analysis-words`, `session-words`, `vocabulary-usage`, `words-*`; DI-smoke.
+  - Відхилення: `addFromHint(tx, userId, sessionId, word)` сам робить `sessionWords.link`; зв'язок тепер створюється до вставки підказки (в тій самій транзакції; кінцевий стан той самий). `HintsRepository.resolve` приймає `(tx, { userId, sessionId, record })`. `VocabularyWriter` без `@Inject` (як сусідні сервіси vocabulary).
   - Коміт: `refactor(api): route cross-module word writes through VocabularyWriter`
 
 - [ ] **15. `analysis`: `AnalysisWriter` як сервіс (A1)**

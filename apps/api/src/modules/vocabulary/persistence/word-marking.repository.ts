@@ -4,7 +4,7 @@ import type { Word, WordState } from '@gototalk/shared';
 import { DRIZZLE } from '../../../core/db/db.tokens.js';
 import type { Database } from '../../../core/db/db.tokens.js';
 import { words } from '../../../core/db/schema.js';
-import { WORD_COLUMNS, toWord } from './word-view.js';
+import { WORD_COLUMNS, toWord } from '../word-view.js';
 
 const ACTIVE: WordState = 'active';
 

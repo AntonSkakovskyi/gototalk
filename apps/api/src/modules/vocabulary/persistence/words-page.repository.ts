@@ -10,7 +10,7 @@ import type { KeysetPage } from '../../../common/pagination/keyset-page.js';
 import { DRIZZLE } from '../../../core/db/db.tokens.js';
 import type { Database } from '../../../core/db/db.tokens.js';
 import { words } from '../../../core/db/schema.js';
-import { WORD_COLUMNS, toWord } from './word-view.js';
+import { WORD_COLUMNS, toWord } from '../word-view.js';
 
 @Injectable()
 export class WordsPageRepository {

@@ -4,7 +4,7 @@ import {
   WordStateSchema,
 } from '@gototalk/shared';
 import type { Word } from '@gototalk/shared';
-import { words } from '../../../core/db/schema.js';
+import { words } from '../../core/db/schema.js';
 
 export const WORD_COLUMNS = {
   id: words.id,

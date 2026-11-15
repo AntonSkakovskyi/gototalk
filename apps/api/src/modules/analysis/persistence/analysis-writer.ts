@@ -1,12 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { and, eq, sql } from 'drizzle-orm';
-import type { BetterPhrasing } from '@gototalk/shared';
 import type { Mistake } from '../../../integrations/language-model/model-output.js';
 import type { DbTransaction } from '../../../core/db/db.tokens.js';
 import { mistakes, utterances } from '../../../core/db/schema.js';
-import { SessionWordsRepository } from '../../vocabulary/persistence/session-words.repository.js';
-import { WordsRepository } from '../../vocabulary/persistence/words.repository.js';
-import { sessionWordCandidates } from '../../vocabulary/lib/session-word-candidates.js';
+import { VocabularyWriter } from '../../vocabulary/vocabulary-writer.service.js';
 import { patternIncrements } from '../lib/pattern-increments.js';
 import type { AnalysisOutcome } from '../mistake-analyzer.types.js';
 import { PatternsRepository } from './patterns.repository.js';
@@ -15,8 +12,7 @@ import { PatternsRepository } from './patterns.repository.js';
 export class AnalysisWriter {
   constructor(
     private readonly patterns: PatternsRepository,
-    private readonly words: WordsRepository,
-    private readonly sessionWords: SessionWordsRepository,
+    private readonly vocabulary: VocabularyWriter,
   ) {}
 
   /** Only the call that claims the pending utterance writes mistakes, patterns and session words. */
@@ -45,18 +41,12 @@ export class AnalysisWriter {
     const [row] = claimed;
     if (!row || outcome.status !== 'done') return;
     await this.saveMistakes(tx, userId, utteranceId, outcome.mistakes);
-    await this.saveSessionWords(tx, userId, row.sessionId, outcome.better);
-  }
-
-  private async saveSessionWords(
-    tx: DbTransaction,
-    userId: string,
-    sessionId: string,
-    better: BetterPhrasing[],
-  ): Promise<void> {
-    const candidates = sessionWordCandidates(better);
-    const wordIds = await this.words.addFromSession(tx, userId, candidates);
-    await this.sessionWords.link(tx, userId, sessionId, wordIds);
+    await this.vocabulary.saveSessionWords(
+      tx,
+      userId,
+      row.sessionId,
+      outcome.better,
+    );
   }
 
   private async saveMistakes(

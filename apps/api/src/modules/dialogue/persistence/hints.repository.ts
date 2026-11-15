@@ -7,8 +7,7 @@ import type {
   DbTransaction,
 } from '../../../core/db/db.tokens.js';
 import { hints, sessions, utterances } from '../../../core/db/schema.js';
-import { SessionWordsRepository } from '../../vocabulary/persistence/session-words.repository.js';
-import { WordsRepository } from '../../vocabulary/persistence/words.repository.js';
+import { VocabularyWriter } from '../../vocabulary/vocabulary-writer.service.js';
 import { AnswerNotExpectedError } from '../dialogue.errors.js';
 import { lockActiveSession } from '../../session/session-lock.js';
 import {
@@ -38,8 +37,7 @@ export type HintRecord =
 export class HintsRepository {
   constructor(
     @Inject(DRIZZLE) private readonly db: Database,
-    private readonly words: WordsRepository,
-    private readonly sessionWords: SessionWordsRepository,
+    private readonly vocabulary: VocabularyWriter,
   ) {}
 
   /** Unlocked pre-check: the session must be active and have a question to hint on. */
@@ -73,7 +71,11 @@ export class HintsRepository {
       await lockActiveSession(tx, userId, sessionId);
       const current = await this.lastQuestion(tx, sessionId);
       if (current?.id !== question.id) throw new AnswerNotExpectedError();
-      const { text, wordId } = await this.resolve(tx, userId, record);
+      const { text, wordId } = await this.resolve(tx, {
+        userId,
+        sessionId,
+        record,
+      });
       await tx.insert(hints).values({
         sessionId,
         utteranceId: question.id,
@@ -81,9 +83,6 @@ export class HintsRepository {
         text,
         wordId,
       });
-      if (wordId) {
-        await this.sessionWords.link(tx, userId, sessionId, [wordId]);
-      }
     });
   }
 
@@ -109,13 +108,21 @@ export class HintsRepository {
 
   private async resolve(
     tx: DbTransaction,
-    userId: string,
-    record: HintRecord,
+    {
+      userId,
+      sessionId,
+      record,
+    }: Pick<HintToSave, 'userId' | 'sessionId' | 'record'>,
   ): Promise<{ text: string; wordId: string | null }> {
     if (record.kind === 'phrase_start') {
       return { text: record.text, wordId: null };
     }
-    const wordId = await this.words.addFromHint(tx, userId, record);
+    const wordId = await this.vocabulary.addFromHint(
+      tx,
+      userId,
+      sessionId,
+      record,
+    );
     return { text: `${record.lemma} = ${record.translationUk}`, wordId };
   }
 }
