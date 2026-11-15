@@ -20,10 +20,10 @@ import type { ConsentInfo, DeleteAccountRequest, Me } from '@gototalk/shared';
 import {
   CurrentUser,
   requireUserId,
-} from '../auth/decorators/current-user.decorator.js';
-import type { AuthenticatedUser } from '../auth/decorators/current-user.decorator.js';
-import { clearRefreshCookie } from '../auth/lib/refresh-cookie.js';
-import type { CookieResponse } from '../auth/lib/refresh-cookie.js';
+} from './decorators/current-user.decorator.js';
+import type { AuthenticatedUser } from './decorators/current-user.decorator.js';
+import { clearRefreshCookie } from './lib/refresh-cookie.js';
+import type { CookieResponse } from './lib/refresh-cookie.js';
 import { ZodBodyPipe } from '../../common/pipes/zod-body.pipe.js';
 import { MeService } from './me.service.js';
 

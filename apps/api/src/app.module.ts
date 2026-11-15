@@ -12,7 +12,6 @@ import { DialogueModule } from './modules/dialogue/dialogue.module.js';
 import { HealthModule } from './core/health/health.module.js';
 import { HintModule } from './modules/hint/hint.module.js';
 import { LearnerModelModule } from './modules/learner-model/learner-model.module.js';
-import { MeModule } from './modules/me/me.module.js';
 import { buildPinoHttpOptions } from './core/logger/pino-options.js';
 import { ProfileModule } from './modules/profile/profile.module.js';
 import { AdaptersModule } from './integrations/adapters.module.js';
@@ -29,7 +28,6 @@ export class AppModule {
         AppConfigModule.forRoot(options),
         DbModule,
         AuthModule,
-        MeModule,
         HealthModule,
         AdaptersModule,
         ProfileModule,

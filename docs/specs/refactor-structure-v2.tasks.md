@@ -212,7 +212,7 @@
   - Перевірка: інтеграційні `learner-model`, `profile`, `sessions-plan*`; DI-smoke; `curl` `/api/profile/learner-model`.
   - Коміт: `refactor(api): extract the learner model from profile into its own module`
 
-- [ ] **18. `me` → `auth` `[risk]` (A3)**
+- [x] **18. `me` → `auth` `[risk]` (A3)**
   - `modules/me/me.controller.ts`, `me.service.ts` → `modules/auth/`; `me.module.ts` видалити, контролер і сервіс реєструються в `AuthModule`; імпорти `auth/persistence/users.repository`, `auth/lib/password-hasher`, `auth/lib/refresh-cookie` стають відносними всередині модуля; `AppModule` без `MeModule`.
   - Маршрути `/api/me*` без змін; зберегти порядок `@Public()`/guard-ів.
   - Перевірка: інтеграційні `me`, `delete-account`, `auth*`; DI-smoke; `pnpm dev`.
