@@ -4,7 +4,7 @@ import type { MistakeView } from '@gototalk/shared';
 import { DRIZZLE } from '../../../core/db/db.tokens.js';
 import type { Database, DbTransaction } from '../../../core/db/db.tokens.js';
 import { mistakes, sessions, utterances } from '../../../core/db/schema.js';
-import { toMistakeView } from '../../session/lib/mistake-view.js';
+import { toMistakeView } from '../../session/mistake-view.js';
 import {
   MistakeNotFoundError,
   MistakeSessionNotFoundError,

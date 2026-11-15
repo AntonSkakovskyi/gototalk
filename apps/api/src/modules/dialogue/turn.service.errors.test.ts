@@ -11,10 +11,8 @@ import {
   LanguageModelUnavailableError,
 } from '../../integrations/language-model/language-model.errors.js';
 import type { AnalysisOutcome } from '../analysis/mistake-analyzer.types.js';
-import {
-  SessionNotFoundError,
-  UtteranceNotFoundError,
-} from './dialogue.errors.js';
+import { UtteranceNotFoundError } from './dialogue.errors.js';
+import { SessionNotFoundError } from '../session/session.errors.js';
 import {
   DONE,
   SESSION_ID,

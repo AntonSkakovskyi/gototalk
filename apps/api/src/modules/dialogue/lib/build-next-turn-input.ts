@@ -1,5 +1,5 @@
 import type { NextTurnInput } from '../../../integrations/language-model/language-model.port.js';
-import { remainingQuestions } from '../../session/lib/plan-questions.js';
+import { remainingQuestions } from '../../session/plan-questions.js';
 
 // Bounds the prompt size; plan progress is tracked separately from the history window
 export const NEXT_TURN_HISTORY_LIMIT = 12;

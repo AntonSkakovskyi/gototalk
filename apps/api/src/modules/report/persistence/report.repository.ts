@@ -23,7 +23,7 @@ import {
   utterances,
   words,
 } from '../../../core/db/schema.js';
-import { lockSession } from '../../session/persistence/lock-session.js';
+import { lockSession } from '../../session/session-lock.js';
 import {
   WORD_COLUMNS,
   toWord,

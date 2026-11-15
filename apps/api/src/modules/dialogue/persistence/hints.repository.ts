@@ -9,12 +9,12 @@ import type {
 import { hints, sessions, utterances } from '../../../core/db/schema.js';
 import { SessionWordsRepository } from '../../vocabulary/persistence/session-words.repository.js';
 import { WordsRepository } from '../../vocabulary/persistence/words.repository.js';
+import { AnswerNotExpectedError } from '../dialogue.errors.js';
+import { lockActiveSession } from '../../session/session-lock.js';
 import {
-  AnswerNotExpectedError,
   SessionFinishedError,
   SessionNotFoundError,
-} from '../dialogue.errors.js';
-import { lockActiveSession } from './lock-active-session.js';
+} from '../../session/session.errors.js';
 
 export interface CurrentQuestion {
   id: string;

@@ -1,20 +1,6 @@
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { ERROR_CODES, UtteranceSchema } from '@gototalk/shared';
-import { sessionNotFound } from '../session/session.errors.js';
-
-export class SessionNotFoundError extends Error {
-  constructor() {
-    super('The session was not found');
-    this.name = 'SessionNotFoundError';
-  }
-}
-
-export class SessionFinishedError extends Error {
-  constructor() {
-    super('The session is already finished');
-    this.name = 'SessionFinishedError';
-  }
-}
+import { toSessionHttpError } from '../session/session.errors.js';
 
 export class AnswerNotExpectedError extends Error {
   constructor() {
@@ -43,18 +29,11 @@ export function isUtteranceId(id: string): boolean {
 
 /** Maps the domain errors of a session-bound dialogue request to HTTP exceptions; other errors pass through. */
 export function toDialogueHttpError(error: unknown): unknown {
-  if (error instanceof SessionNotFoundError) return sessionNotFound();
-  if (error instanceof SessionFinishedError) {
-    return new ConflictException({
-      code: ERROR_CODES.SESSION_FINISHED,
-      message: 'The session is already finished',
-    });
-  }
   if (error instanceof AnswerNotExpectedError) {
     return new ConflictException({
       code: ERROR_CODES.ANSWER_NOT_EXPECTED,
       message: 'There is no open question to answer',
     });
   }
-  return error;
+  return toSessionHttpError(error);
 }

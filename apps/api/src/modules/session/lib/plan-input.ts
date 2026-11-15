@@ -1,6 +1,6 @@
 import type { Goal, PlanSessionRequest, Profile } from '@gototalk/shared';
-import type { PlanSessionInput } from '../../integrations/language-model/language-model.port.js';
-import type { WeakArea } from '../profile/learner-model.types.js';
+import type { PlanSessionInput } from '../../../integrations/language-model/language-model.port.js';
+import type { WeakArea } from '../../profile/learner-model.types.js';
 
 const MAX_PATTERNS = 3;
 

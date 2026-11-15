@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Goal, Profile } from '@gototalk/shared';
-import type { WeakArea } from '../profile/learner-model.types.js';
+import type { WeakArea } from '../../profile/learner-model.types.js';
 import { buildPlanInput } from './plan-input.js';
 
 const PROFILE: Profile = {

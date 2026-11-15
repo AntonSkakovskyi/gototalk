@@ -9,7 +9,7 @@ import type { SessionDetails, StartSessionRequest } from '@gototalk/shared';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { ReportGeneratorService } from '../report/report-generator.service.js';
 import { SessionOwnerMissingError } from './session.errors.js';
-import type { SessionsRepository } from './sessions.repository.js';
+import type { SessionsRepository } from './persistence/sessions.repository.js';
 import { SessionsService } from './sessions.service.js';
 
 const USER_ID = '11111111-1111-4111-8111-111111111111';

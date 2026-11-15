@@ -12,24 +12,26 @@ import type {
   StartSessionRequest,
   Utterance,
 } from '@gototalk/shared';
-import type { KeysetPosition } from '../../common/pagination/keyset-cursor.js';
+import type { KeysetPosition } from '../../../common/pagination/keyset-cursor.js';
 import {
   olderThan,
   toKeysetPage,
-} from '../../common/pagination/keyset-page.js';
-import type { KeysetPage } from '../../common/pagination/keyset-page.js';
-import { DRIZZLE } from '../../core/db/db.tokens.js';
-import type { Database, DbTransaction } from '../../core/db/db.tokens.js';
-import { mistakes, sessions, users, utterances } from '../../core/db/schema.js';
-import { toSession } from './lib/session-view.js';
-import { lockSession } from './persistence/lock-session.js';
-import { toMistakeView } from './lib/mistake-view.js';
-import type { MistakeRow } from './lib/mistake-view.js';
+} from '../../../common/pagination/keyset-page.js';
+import type { KeysetPage } from '../../../common/pagination/keyset-page.js';
+import { DRIZZLE } from '../../../core/db/db.tokens.js';
+import type { Database, DbTransaction } from '../../../core/db/db.tokens.js';
 import {
-  parsePlanQuestions,
-  remainingQuestions,
-} from './lib/plan-questions.js';
-import { SessionOwnerMissingError } from './session.errors.js';
+  mistakes,
+  sessions,
+  users,
+  utterances,
+} from '../../../core/db/schema.js';
+import { toSession } from '../lib/session-view.js';
+import { lockSession } from '../session-lock.js';
+import { toMistakeView } from '../mistake-view.js';
+import type { MistakeRow } from '../mistake-view.js';
+import { parsePlanQuestions, remainingQuestions } from '../plan-questions.js';
+import { SessionOwnerMissingError } from '../session.errors.js';
 
 type SessionRow = typeof sessions.$inferSelect;
 type UtteranceRow = typeof utterances.$inferSelect;

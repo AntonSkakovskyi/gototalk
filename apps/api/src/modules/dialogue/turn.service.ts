@@ -6,10 +6,13 @@ import {
   LanguageModelUnavailableError,
 } from '../../integrations/language-model/language-model.errors.js';
 import { MistakeAnalyzerService } from '../analysis/mistake-analyzer.service.js';
-import { isSessionId, sessionNotFound } from '../session/session.errors.js';
-import { SessionsRepository } from '../session/sessions.repository.js';
 import {
   SessionNotFoundError,
+  isSessionId,
+  sessionNotFound,
+} from '../session/session.errors.js';
+import { SessionsRepository } from '../session/persistence/sessions.repository.js';
+import {
   UtteranceNotFoundError,
   isUtteranceId,
   utteranceNotFound,

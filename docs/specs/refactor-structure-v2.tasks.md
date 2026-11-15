@@ -175,7 +175,7 @@
 
 ## apps/api/src: модулі
 
-- [ ] **13. `session`: lock, errors, views `[risk]` (A1, r.62)**
+- [x] **13. `session`: lock, errors, views `[risk]` (A1, r.62)**
   - `session/persistence/lock-session.ts` → `session/session-lock.ts`; логіка `dialogue/persistence/lock-active-session.ts` (обгортка, що кидає `SessionNotFoundError`/`SessionFinishedError`) об'єднується з `lockSession` у `session-lock.ts` як друга експортована функція (`lockActiveSession`); файл у dialogue видалити. Сигнатури й повідомлення винятків без змін.
   - `SessionNotFoundError`, `SessionFinishedError`, `toSessionHttpError` з `dialogue/dialogue.errors.ts` → `session/session.errors.ts`; у `dialogue.errors.ts` лишається `AnswerNotExpected…` + композиція (`toDialogueHttpError` викликає `toSessionHttpError`); `hints.service.ts` використовує той самий маппер.
   - `session/lib/mistake-view.ts` → `session/mistake-view.ts`; `session/lib/plan-questions.ts` (+test) → `session/plan-questions.ts`.

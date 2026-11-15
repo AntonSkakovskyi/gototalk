@@ -1,6 +1,6 @@
 import { MistakeCategoryCodeSchema } from '@gototalk/shared';
 import type { MistakeView } from '@gototalk/shared';
-import type { mistakes } from '../../../core/db/schema.js';
+import type { mistakes } from '../../core/db/schema.js';
 
 export type MistakeRow = typeof mistakes.$inferSelect;
 

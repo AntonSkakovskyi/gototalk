@@ -12,7 +12,7 @@ import { requestValidated } from '../../integrations/language-model/validated-ca
 import { GoalsService } from '../profile/goals.service.js';
 import { LearnerModelService } from '../profile/learner-model.service.js';
 import { ProfileService } from '../profile/profile.service.js';
-import { buildPlanInput } from './plan-input.js';
+import { buildPlanInput } from './lib/plan-input.js';
 
 const WEAK_AREAS_LIMIT = 3;
 

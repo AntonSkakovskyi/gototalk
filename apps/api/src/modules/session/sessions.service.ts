@@ -19,7 +19,7 @@ import {
   isSessionId,
   sessionNotFound,
 } from './session.errors.js';
-import { SessionsRepository } from './sessions.repository.js';
+import { SessionsRepository } from './persistence/sessions.repository.js';
 
 @Injectable()
 export class SessionsService {
