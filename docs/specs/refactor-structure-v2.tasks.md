@@ -301,10 +301,11 @@
   - Додатково: з `apps/api/vitest.config.ts` прибрано проміжний запис `'test/*.test.ts'` (задача 25); у `test/` лишились лише `global-setup.ts`, `support/`, `integration/`; 54 integration-файли, 481 тест.
   - Коміт: `refactor(api-test): move vocabulary integration tests`
 
-- [ ] **33. Розбиття довгих тестів (A7, r.54, r.60, r.67)**
+- [x] **33. Розбиття довгих тестів (A7, r.54, r.60, r.67)**
   - `integration/auth/auth.test.ts` (449) → `auth.test.ts` + `auth-refresh.test.ts` (за `describe`: реєстрація/логін vs refresh/logout); `integration/profile/goals.test.ts` (432) → `goals.test.ts` + `goals-limit.test.ts`; `integration/core/db-schema.test.ts` (402) → `db-schema.test.ts` + `db-schema-constraints.test.ts`; `src/core/errors/all-exceptions.filter.test.ts` (413) → `all-exceptions.filter.test.ts` + `all-exceptions.filter.zod.test.ts` (кейси `RequestValidationError`/сирого `ZodError`); `integration/dialogue/dialogue-answer.test.ts` (327) → `-validation` і `-access`.
   - Точні межі за `describe`; допоміжні константи – у `test/support/` лише якщо використовуються обома половинами. `grep -c "it(" ` до й після однаковий.
   - Лише розбиття: теми з r.60/62/67 про недетермінованість і додаткові тести – окремо, поза цим рефакторингом.
+  - Відхилення: файли `auth`, `goals`, `dialogue-answer` мають один зовнішній `describe`, тож розрізано за групами тестів (зовнішня назва однакова в обох половинах); спільні хелпери >10 рядків винесено в `test/support/{auth-api,goals-api,answer-api}.ts` (фабрики `createAuthClient` тощо) і `src/core/errors/testing/filter-harness.ts`; `-validation`/`-access` для відповідей використовують звичайний `createTestApp()` без мока `transcribe`. Кількість тестів Vitest по файлах до/після: auth 22/11+11, goals 27/21+6, db-schema 21/14+7, dialogue-answer 16/6+5+5, all-exceptions.filter 24/20+4.
   - Коміт: `test(api): split the longest integration and unit tests by concern`
 
 - [ ] **34. Таблиця «старий шлях → новий» і перевірка PR2**
