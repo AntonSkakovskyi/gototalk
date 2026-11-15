@@ -4,20 +4,24 @@ import { HINT_WORD_MAX } from '@gototalk/shared';
 import type pg from 'pg';
 import request from 'supertest';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { PG_POOL } from '../src/core/db/db.tokens.js';
-import { LANGUAGE_MODEL_PORT } from '../src/integrations/language-model/language-model.port.js';
+import { PG_POOL } from '../../../src/core/db/db.tokens.js';
+import { LANGUAGE_MODEL_PORT } from '../../../src/integrations/language-model/language-model.port.js';
 import {
   expectError,
   grantConsent,
   registerUser,
   tokenOfMissingUser,
-} from './support/api-client.js';
-import { ControllableLanguageModel } from './support/controllable-language-model.js';
-import { startLearner } from './support/dialogue-flow.js';
-import { insertUtterance } from './support/session-fixtures.js';
-import { hintRows, hintedWordRows, postHint } from './support/hints-flow.js';
-import { createTestApp } from './support/test-app.js';
-import { resetUserData } from './support/test-db.js';
+} from '../../support/api-client.js';
+import { ControllableLanguageModel } from '../../support/controllable-language-model.js';
+import { startLearner } from '../../support/dialogue-flow.js';
+import { insertUtterance } from '../../support/session-fixtures.js';
+import {
+  hintRows,
+  hintedWordRows,
+  postHint,
+} from '../../support/hints-flow.js';
+import { createTestApp } from '../../support/test-app.js';
+import { resetUserData } from '../../support/test-db.js';
 
 describe('hints access and validation', () => {
   let app: INestApplication;

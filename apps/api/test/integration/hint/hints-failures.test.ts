@@ -11,19 +11,23 @@ import {
   it,
   vi,
 } from 'vitest';
-import { PG_POOL } from '../src/core/db/db.tokens.js';
-import { LANGUAGE_MODEL_PORT } from '../src/integrations/language-model/language-model.port.js';
-import { expectError } from './support/api-client.js';
-import { ControllableLanguageModel } from './support/controllable-language-model.js';
-import { startLearner } from './support/dialogue-flow.js';
-import { hintRows, hintedWordRows, postHint } from './support/hints-flow.js';
-import { insertUtterance } from './support/session-fixtures.js';
+import { PG_POOL } from '../../../src/core/db/db.tokens.js';
+import { LANGUAGE_MODEL_PORT } from '../../../src/integrations/language-model/language-model.port.js';
+import { expectError } from '../../support/api-client.js';
+import { ControllableLanguageModel } from '../../support/controllable-language-model.js';
+import { startLearner } from '../../support/dialogue-flow.js';
+import {
+  hintRows,
+  hintedWordRows,
+  postHint,
+} from '../../support/hints-flow.js';
+import { insertUtterance } from '../../support/session-fixtures.js';
 import {
   SessionLockHolder,
   waitForLockWaiter,
-} from './support/session-lock.js';
-import { createTestApp } from './support/test-app.js';
-import { resetUserData } from './support/test-db.js';
+} from '../../support/session-lock.js';
+import { createTestApp } from '../../support/test-app.js';
+import { resetUserData } from '../../support/test-db.js';
 
 const TRANSLATION = { kind: 'translation', word: 'зустріч' };
 

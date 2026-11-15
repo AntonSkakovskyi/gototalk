@@ -280,7 +280,7 @@
 - [x] **26. `integration/auth/`** – `auth`, `auth-guard`, `drizzle-refresh-tokens.repository`, `me`, `delete-account`.
   - Коміт: `refactor(api-test): move auth integration tests`
 
-- [ ] **27. `integration/profile/`, `learner-model/`, `hint/`** – `profile`, `goals` → `profile/`; `learner-model` → `learner-model/`; `hints`, `hints-access`, `hints-failures` → `hint/`.
+- [x] **27. `integration/profile/`, `learner-model/`, `hint/`** – `profile`, `goals` → `profile/`; `learner-model` → `learner-model/`; `hints`, `hints-access`, `hints-failures` → `hint/`.
   - Коміт: `refactor(api-test): move profile, learner-model and hint integration tests`
 
 - [ ] **28. `integration/session/`** – `sessions`, `sessions-plan`, `sessions-plan-unavailable`, `sessions-read`, `sessions-history`, `sessions-analysis-read`.
