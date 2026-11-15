@@ -1,6 +1,6 @@
 import { QUESTION_MAX } from '@gototalk/shared';
-import type { Turn } from './model-output.js';
-import type { NextTurnInput } from './language-model.port.js';
+import type { Turn } from '../model-output.js';
+import type { NextTurnInput } from '../language-model.port.js';
 
 const MIN_WORD_LENGTH = 4;
 const WORD = /[\p{L}\p{N}]+(?:['’-][\p{L}\p{N}]+)*/gu;

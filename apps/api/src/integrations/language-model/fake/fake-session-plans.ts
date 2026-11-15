@@ -1,6 +1,6 @@
 import { isScenePreset } from '@gototalk/shared';
 import type { MistakeCategoryCode, Plan, ScenePreset } from '@gototalk/shared';
-import type { PlanSessionInput } from './language-model.port.js';
+import type { PlanSessionInput } from '../language-model.port.js';
 
 const FALLBACK_SCENE: ScenePreset = 'small_talk';
 

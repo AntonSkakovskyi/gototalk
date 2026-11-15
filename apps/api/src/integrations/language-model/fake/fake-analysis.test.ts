@@ -1,7 +1,7 @@
 import {
   AnalysisEnvelopeSchema,
   ANALYSIS_MAX_MISTAKES,
-} from './model-output.js';
+} from '../model-output.js';
 import { AnalysisResultSchema } from '../testing/analysis-result-schema.js';
 import { describe, expect, it } from 'vitest';
 import { analyzeText } from './fake-analysis.js';

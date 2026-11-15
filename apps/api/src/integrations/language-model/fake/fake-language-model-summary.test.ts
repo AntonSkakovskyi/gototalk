@@ -1,16 +1,16 @@
-import { SummarySchema } from './model-output.js';
+import { SummarySchema } from '../model-output.js';
 import { describe, expect, it, vi } from 'vitest';
 import { FakeLanguageModel } from './fake-language-model.js';
-import { LanguageModelUnavailableError } from './language-model.errors.js';
-import type { SummarizeSessionInput } from './language-model.port.js';
+import { LanguageModelUnavailableError } from '../language-model.errors.js';
+import type { SummarizeSessionInput } from '../language-model.port.js';
 import {
   renderSessionSummaryPrompt,
   SESSION_SUMMARY_PROMPT_ID,
-} from './prompts/prompt-registry.js';
+} from '../prompts/prompt-registry.js';
 
-vi.mock('./prompts/prompt-registry.js', async (importOriginal) => {
+vi.mock('../prompts/prompt-registry.js', async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import('./prompts/prompt-registry.js')>();
+    await importOriginal<typeof import('../prompts/prompt-registry.js')>();
   return {
     ...actual,
     renderSessionSummaryPrompt: vi.fn(actual.renderSessionSummaryPrompt),

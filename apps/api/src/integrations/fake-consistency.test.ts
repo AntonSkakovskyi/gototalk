@@ -5,7 +5,7 @@ import {
   MistakeSchema,
 } from './language-model/model-output.js';
 import { describe, expect, it } from 'vitest';
-import { FakeLanguageModel } from './language-model/fake-language-model.js';
+import { FakeLanguageModel } from './language-model/fake/fake-language-model.js';
 import { FakeSpeechRecognition } from './speech-recognition/fake/fake-speech-recognition.js';
 
 const EXPECTED_CATEGORIES: MistakeCategoryCode[][] = [

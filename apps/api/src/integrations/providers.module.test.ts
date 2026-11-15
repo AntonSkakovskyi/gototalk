@@ -1,9 +1,9 @@
 import 'reflect-metadata';
-import { AnalysisResultSchema } from './testing/analysis-result-schema.js';
+import { AnalysisResultSchema } from './language-model/testing/analysis-result-schema.js';
 import { Test } from '@nestjs/testing';
 import { describe, expect, it } from 'vitest';
 import { AppModule } from '../app.module.js';
-import { FakeLanguageModel } from './language-model/fake-language-model.js';
+import { FakeLanguageModel } from './language-model/fake/fake-language-model.js';
 import { LanguageModelUnavailableError } from './language-model/language-model.errors.js';
 import { FakeSpeechRecognition } from './speech-recognition/fake/fake-speech-recognition.js';
 import { LANGUAGE_MODEL_PORT } from './language-model/language-model.port.js';

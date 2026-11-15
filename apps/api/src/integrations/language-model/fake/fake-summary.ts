@@ -1,6 +1,6 @@
 import { REPORT_SUMMARY_MAX, TOP_CATEGORIES_LIMIT } from '@gototalk/shared';
-import type { Summary } from './model-output.js';
-import type { SummarizeSessionInput } from './language-model.port.js';
+import type { Summary } from '../model-output.js';
+import type { SummarizeSessionInput } from '../language-model.port.js';
 
 const PLURALS = new Intl.PluralRules('uk');
 const TIMES: Record<string, string> = {

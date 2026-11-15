@@ -1,8 +1,8 @@
 import { MISTAKE_CATEGORY_CODES } from '@gototalk/shared';
-import { MistakeSchema } from './model-output.js';
+import { MistakeSchema } from '../model-output.js';
 import { describe, expect, it } from 'vitest';
 import { analyzeText } from './fake-analysis.js';
-import { RULE_CASES } from './fake-analysis-rule-cases.js';
+import { RULE_CASES } from './testing/fake-analysis-rule-cases.js';
 import { FAKE_ANALYSIS_RULES } from './fake-analysis-rules.js';
 
 describe('fake analysis rules', () => {

@@ -8,7 +8,7 @@ import {
 import { ERROR_CODES, PLAN_QUESTIONS } from '@gototalk/shared';
 import type { Goal, PlanSessionRequest, Profile } from '@gototalk/shared';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { FakeLanguageModel } from '../../integrations/language-model/fake-language-model.js';
+import { FakeLanguageModel } from '../../integrations/language-model/fake/fake-language-model.js';
 import { LanguageModelUnavailableError } from '../../integrations/language-model/language-model.errors.js';
 import type {
   LanguageModelPort,

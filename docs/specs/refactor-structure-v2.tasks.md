@@ -156,7 +156,7 @@
   - Новий тест `prompts/prompt-registry.test.ts` (TDD): кожен id із реєстру резолвиться; кожен `.md` у `packages/prompts` зареєстровано; у кожному шаблоні рівно один `{{input}}`.
   - Коміт: `refactor(api): move prompt loading and rendering into prompts with a registry test`
 
-- [ ] **10. `language-model/fake/` і `testing/`**
+- [x] **10. `language-model/fake/` і `testing/`**
   - `fake-language-model.ts`, `fake-analysis.ts`, `fake-analysis-rules.ts`, `fake-hints.ts`, `fake-next-turn.ts`, `fake-session-plans.ts`, `fake-summary.ts`, `fake-verb-forms.ts` і їхні тести (`fake-analysis.test.ts`, `fake-analysis-rules.test.ts`, `fake-summary.test.ts`, `fake-language-model-{analysis,hint,next-turn,plan,summary}.test.ts`) → `language-model/fake/`.
   - `fake-analysis-rule-cases.ts` → `language-model/fake/testing/`; `integrations/testing/analysis-result-schema.ts` → `language-model/testing/` (r.55: підключення до `AnalysisEnvelopeSchema` + `MistakeSchema` – окремо, лише якщо без зміни поведінки тесту).
   - LLM-кейси `fake-adapters.test.ts` і `fake-fail-modes.test.ts` → `language-model/fake/fake-language-model.adapter.test.ts`; після цього обидва старі файли видалити (кількість `it` 8 + 7 збережена).

@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { Logger } from '@nestjs/common';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { FakeLanguageModel } from '../../integrations/language-model/fake-language-model.js';
+import { FakeLanguageModel } from '../../integrations/language-model/fake/fake-language-model.js';
 import { LanguageModelUnavailableError } from '../../integrations/language-model/language-model.errors.js';
 import type { LanguageModelPort } from '../../integrations/language-model/language-model.port.js';
 import { MistakeAnalyzerService } from './mistake-analyzer.service.js';

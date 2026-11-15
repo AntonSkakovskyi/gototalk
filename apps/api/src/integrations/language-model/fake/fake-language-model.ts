@@ -1,5 +1,5 @@
-import type { FakeLlmFailMode } from '../../core/config/env.schema.js';
-import { LanguageModelUnavailableError } from './language-model.errors.js';
+import type { FakeLlmFailMode } from '../../../core/config/env.schema.js';
+import { LanguageModelUnavailableError } from '../language-model.errors.js';
 import type {
   AnalyzeUtteranceInput,
   AnalyzeUtteranceResponse,
@@ -9,7 +9,7 @@ import type {
   PlanSessionInput,
   SummarizeSessionInput,
   SummarizeSessionResponse,
-} from './language-model.port.js';
+} from '../language-model.port.js';
 import { analyzeText } from './fake-analysis.js';
 import {
   ERROR_ANALYSIS_PROMPT_ID,
@@ -19,7 +19,7 @@ import {
   renderSessionPlanPrompt,
   renderSessionSummaryPrompt,
   SESSION_SUMMARY_PROMPT_ID,
-} from './prompts/prompt-registry.js';
+} from '../prompts/prompt-registry.js';
 import { buildSummary } from './fake-summary.js';
 import { buildFakeHint } from './fake-hints.js';
 import { buildFakeTurn } from './fake-next-turn.js';

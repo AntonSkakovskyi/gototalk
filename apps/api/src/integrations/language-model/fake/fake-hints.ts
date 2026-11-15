@@ -1,5 +1,5 @@
-import type { Hint } from './model-output.js';
-import type { HintInput } from './language-model.port.js';
+import type { Hint } from '../model-output.js';
+import type { HintInput } from '../language-model.port.js';
 
 const PHRASE_STARTS: readonly [string, ...string[]] = [
   'I think that…',

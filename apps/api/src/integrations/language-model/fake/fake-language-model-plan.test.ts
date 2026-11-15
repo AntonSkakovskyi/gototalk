@@ -7,12 +7,12 @@ import {
 import type { MistakeCategoryCode } from '@gototalk/shared';
 import { describe, expect, it, vi } from 'vitest';
 import { FakeLanguageModel } from './fake-language-model.js';
-import type { PlanSessionInput } from './language-model.port.js';
-import { renderSessionPlanPrompt } from './prompts/prompt-registry.js';
+import type { PlanSessionInput } from '../language-model.port.js';
+import { renderSessionPlanPrompt } from '../prompts/prompt-registry.js';
 
-vi.mock('./prompts/prompt-registry.js', async (importOriginal) => {
+vi.mock('../prompts/prompt-registry.js', async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import('./prompts/prompt-registry.js')>();
+    await importOriginal<typeof import('../prompts/prompt-registry.js')>();
   return { renderSessionPlanPrompt: vi.fn(actual.renderSessionPlanPrompt) };
 });
 

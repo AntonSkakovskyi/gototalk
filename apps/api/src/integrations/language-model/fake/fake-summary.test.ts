@@ -1,9 +1,9 @@
 import { REPORT_SUMMARY_MAX } from '@gototalk/shared';
-import { SummarySchema } from './model-output.js';
+import { SummarySchema } from '../model-output.js';
 import type { MistakeCategoryCode } from '@gototalk/shared';
 import { describe, expect, it } from 'vitest';
 import { buildSummary } from './fake-summary.js';
-import type { SummarizeSessionInput } from './language-model.port.js';
+import type { SummarizeSessionInput } from '../language-model.port.js';
 
 const category = (
   title: string,
