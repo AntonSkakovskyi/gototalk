@@ -73,6 +73,7 @@
 | 4 | документи | 50–54 (лише `pnpm lint` і перевірка посилань; тести не запускати) |
 
 Пачки статуси перевірки:
+- Пачка dialogue-підобласті, сторінки, e2e, page-query (PR 3): перевірено (shared 91, web 971 у 127 файлах (+6 тестів `page-query`), api 1177; e2e 24/24; ESLint debt 12 warn; рев'ю PASS, низькі знахідки в backlog)
 - Пачка entities, моки, хелпери (PR 3): перевірено (shared 91, web 965 у 126 файлах, api 1177; списки назв `it`/`describe` (940) збігаються до й після; ESLint debt 12 warn (web: 9 тестів → `@/app`, 3 у shared); рев'ю PASS, низькі знахідки в backlog)
 - Пачка shared web і фікстури (PR 3): перевірено (shared 91, web 965 у 126 файлах, api 1177; `test-fixtures.ts` розщеплено без втрат: 205 рядків до й після, 20 експортів; рев'ю PASS, низькі знахідки в backlog)
 - PR 2 фінал: перевірено (`pnpm -r build` ок; `pnpm test:e2e` 24/24; `pnpm dev` без помилок, `/api/health` 200, `/api/docs-json` 200, 29 операцій; `pnpm db:pull` без diff; тести: shared 91, web 965, api 1177 (127 файлів) – без змін проти бази PR 1; ESLint 0 помилок, 13 warn (web-тести, до задачі 49); фінальне рев'ю гілки PASS)
