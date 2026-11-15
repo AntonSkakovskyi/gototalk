@@ -1,4 +1,4 @@
-import { testMistake } from '@/shared/testing/test-fixtures';
+import { testMistake } from '@/shared/testing/fixtures/session';
 import { buildSegments, type Segment } from './highlight-segments';
 
 const TEXT = 'I go to the offsite yesterday';

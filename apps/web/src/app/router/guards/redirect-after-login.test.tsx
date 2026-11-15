@@ -5,11 +5,10 @@ import type { RenderOptions } from '@/shared/testing/test-utils';
 import { mockApi } from '@/shared/testing/mock-api';
 import {
   EMPTY_SESSIONS_ROUTE,
-  TEST_PROFILE,
-  TEST_USER,
-  authResponse,
   jsonResponse,
-} from '@/shared/testing/test-fixtures';
+} from '@/shared/testing/http-responses';
+import { TEST_PROFILE } from '@/shared/testing/fixtures/profile';
+import { TEST_USER, authResponse } from '@/shared/testing/fixtures/auth';
 import {
   currentLocation,
   heading,

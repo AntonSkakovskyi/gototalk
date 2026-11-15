@@ -1,10 +1,7 @@
 import { ERROR_CODES } from '@gototalk/shared';
 import { mockApi } from '@/shared/testing/mock-api';
-import {
-  errorResponse,
-  jsonResponse,
-  testWord,
-} from '@/shared/testing/test-fixtures';
+import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
+import { testWord } from '@/shared/testing/fixtures/words';
 import { mockWordsApi } from '@/shared/testing/words-mocks';
 import { listWords, markWord } from './words-api';
 

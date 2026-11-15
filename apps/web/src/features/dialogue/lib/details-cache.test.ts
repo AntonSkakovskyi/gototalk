@@ -3,7 +3,7 @@ import {
   testSessionDetails,
   testTurnResult,
   testUtterance,
-} from '@/shared/testing/test-fixtures';
+} from '@/shared/testing/fixtures/session';
 import {
   findUnansweredUtteranceId,
   withSession,

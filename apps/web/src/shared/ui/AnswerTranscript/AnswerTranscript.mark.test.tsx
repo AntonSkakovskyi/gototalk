@@ -12,11 +12,11 @@ import {
   mockDialogueApi,
 } from '@/shared/testing/dialogue-mocks';
 import { createTestQueryClient } from '@/shared/testing/query-wrapper';
+import { errorResponse } from '@/shared/testing/http-responses';
 import {
-  errorResponse,
   testSessionDetails,
   testTurnResult,
-} from '@/shared/testing/test-fixtures';
+} from '@/shared/testing/fixtures/session';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 import { AnswerTranscript } from './AnswerTranscript';
 

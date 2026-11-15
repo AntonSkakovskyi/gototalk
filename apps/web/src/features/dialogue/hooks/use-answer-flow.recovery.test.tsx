@@ -6,16 +6,15 @@ import {
   PENDING,
   TURN,
   analysisRequests,
-  deferred,
   setup,
   withAnswered,
 } from '@/shared/testing/answer-flow-setup';
+import { deferred } from '@/shared/testing/deferred';
+import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
 import {
-  errorResponse,
-  jsonResponse,
   testSessionDetails,
   testUtterance,
-} from '@/shared/testing/test-fixtures';
+} from '@/shared/testing/fixtures/session';
 
 describe('useAnswerFlow recovery', () => {
   it('[TC-04-08] recovers an unanswered utterance on load with exactly one request under StrictMode', async () => {

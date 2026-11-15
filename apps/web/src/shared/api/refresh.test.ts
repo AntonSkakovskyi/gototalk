@@ -1,8 +1,5 @@
-import {
-  authResponse,
-  errorResponse,
-  jsonResponse,
-} from '@/shared/testing/test-fixtures';
+import { authResponse } from '@/shared/testing/fixtures/auth';
+import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
 import { logout } from '@/features/auth/api/auth-api';
 import { refreshSession } from './refresh';
 import {

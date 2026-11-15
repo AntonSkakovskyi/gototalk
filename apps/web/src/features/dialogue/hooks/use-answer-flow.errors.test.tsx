@@ -8,7 +8,7 @@ import {
   setup,
   withAnswered,
 } from '@/shared/testing/answer-flow-setup';
-import { errorResponse, jsonResponse } from '@/shared/testing/test-fixtures';
+import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
 
 const FINISHED = {
   ...withAnswered(),

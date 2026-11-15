@@ -3,12 +3,11 @@ import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import uk from '@/shared/i18n/uk.json';
 import { analysisOk, mockDialogueApi } from '@/shared/testing/dialogue-mocks';
+import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
 import {
-  errorResponse,
-  jsonResponse,
   testSessionDetails,
   testUtterance,
-} from '@/shared/testing/test-fixtures';
+} from '@/shared/testing/fixtures/session';
 import {
   FIRST_QUESTION,
   PENDING_ANSWER,

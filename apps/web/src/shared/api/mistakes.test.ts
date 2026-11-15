@@ -2,7 +2,8 @@ import {
   DIALOGUE_SESSION_ID,
   mockDialogueApi,
 } from '@/shared/testing/dialogue-mocks';
-import { jsonResponse, testMistake } from '@/shared/testing/test-fixtures';
+import { jsonResponse } from '@/shared/testing/http-responses';
+import { testMistake } from '@/shared/testing/fixtures/session';
 import { markMistakeFalse } from './mistakes';
 
 describe('mistakes api', () => {

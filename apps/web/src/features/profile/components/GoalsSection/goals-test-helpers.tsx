@@ -6,11 +6,8 @@ import {
 import { screen, within } from '@testing-library/react';
 import uk from '@/shared/i18n/uk.json';
 import { mockApi } from '@/shared/testing/mock-api';
-import {
-  emptyResponse,
-  jsonResponse,
-  testGoal,
-} from '@/shared/testing/test-fixtures';
+import { emptyResponse, jsonResponse } from '@/shared/testing/http-responses';
+import { testGoal } from '@/shared/testing/fixtures/profile';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 import { GoalsSection } from './GoalsSection';
 

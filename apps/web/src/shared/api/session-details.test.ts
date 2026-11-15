@@ -1,11 +1,8 @@
 import { ERROR_CODES } from '@gototalk/shared';
 import { QueryClient } from '@tanstack/react-query';
 import { mockApi } from '@/shared/testing/mock-api';
-import {
-  errorResponse,
-  jsonResponse,
-  testSessionDetails,
-} from '@/shared/testing/test-fixtures';
+import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
+import { testSessionDetails } from '@/shared/testing/fixtures/session';
 import {
   getSession,
   sessionDetailsQueryOptions,

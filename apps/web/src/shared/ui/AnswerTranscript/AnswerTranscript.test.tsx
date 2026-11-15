@@ -3,7 +3,7 @@ import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import uk from '@/shared/i18n/uk.json';
 import { DIALOGUE_SESSION_ID } from '@/shared/testing/dialogue-mocks';
-import { testMistake, testTurnResult } from '@/shared/testing/test-fixtures';
+import { testMistake, testTurnResult } from '@/shared/testing/fixtures/session';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 import { AnswerTranscript } from './AnswerTranscript';
 

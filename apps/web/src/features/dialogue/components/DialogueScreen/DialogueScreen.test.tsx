@@ -1,12 +1,10 @@
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import uk from '@/shared/i18n/uk.json';
-import { deferred } from '@/shared/testing/answer-flow-setup';
+import { deferred } from '@/shared/testing/deferred';
 import { analysisOk, mockDialogueApi } from '@/shared/testing/dialogue-mocks';
-import {
-  jsonResponse,
-  testSessionDetails,
-} from '@/shared/testing/test-fixtures';
+import { jsonResponse } from '@/shared/testing/http-responses';
+import { testSessionDetails } from '@/shared/testing/fixtures/session';
 import {
   PENDING_ANSWER,
   REPLY,

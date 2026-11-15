@@ -2,11 +2,8 @@ import { ERROR_CODES, GOAL_TITLE_MAX } from '@gototalk/shared';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import uk from '@/shared/i18n/uk.json';
-import {
-  errorResponse,
-  jsonResponse,
-  testGoal,
-} from '@/shared/testing/test-fixtures';
+import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
+import { testGoal } from '@/shared/testing/fixtures/profile';
 import {
   FLUENT,
   INTERVIEW,

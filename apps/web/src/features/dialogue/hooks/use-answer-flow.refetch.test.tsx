@@ -10,15 +10,15 @@ import {
   PENDING,
   TURN,
   analysisRequests,
-  deferred,
   setup,
   withAnswered,
 } from '@/shared/testing/answer-flow-setup';
+import { deferred } from '@/shared/testing/deferred';
+import { jsonResponse } from '@/shared/testing/http-responses';
 import {
-  jsonResponse,
   testSessionDetails,
   testUtterance,
-} from '@/shared/testing/test-fixtures';
+} from '@/shared/testing/fixtures/session';
 
 const DETAILS_KEY = sessionKeys.details(DIALOGUE_SESSION_ID);
 

@@ -5,12 +5,10 @@ import {
 } from '@/app/router/guards/guard-test-helpers';
 import uk from '@/shared/i18n/uk.json';
 import { mockApi } from '@/shared/testing/mock-api';
-import {
-  TEST_PROFILE,
-  TEST_USER,
-  jsonResponse,
-  testSessionPlan,
-} from '@/shared/testing/test-fixtures';
+import { TEST_PROFILE } from '@/shared/testing/fixtures/profile';
+import { TEST_USER } from '@/shared/testing/fixtures/auth';
+import { jsonResponse } from '@/shared/testing/http-responses';
+import { testSessionPlan } from '@/shared/testing/fixtures/session';
 
 const SESSION = {
   accessToken: 'access-1',

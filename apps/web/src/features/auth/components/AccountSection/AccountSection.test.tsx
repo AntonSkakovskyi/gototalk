@@ -7,11 +7,13 @@ import uk from '@/shared/i18n/uk.json';
 import {
   EMPTY_LEARNER_MODEL,
   TEST_PROFILE,
-  TEST_USER,
+} from '@/shared/testing/fixtures/profile';
+import { TEST_USER } from '@/shared/testing/fixtures/auth';
+import {
   emptyResponse,
   errorResponse,
   jsonResponse,
-} from '@/shared/testing/test-fixtures';
+} from '@/shared/testing/http-responses';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 import { clearQueryCacheOnSessionEnd } from '@/shared/auth-session/query-cache';
 import { getSession } from '@/shared/auth-session/session-store';

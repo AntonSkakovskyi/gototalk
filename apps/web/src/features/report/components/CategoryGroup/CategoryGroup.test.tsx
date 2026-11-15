@@ -5,7 +5,7 @@ import {
   testMistake,
   testSession,
   testUtterance,
-} from '@/shared/testing/test-fixtures';
+} from '@/shared/testing/fixtures/session';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 import { CategoryGroup } from './CategoryGroup';
 

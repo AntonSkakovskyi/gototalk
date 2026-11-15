@@ -6,12 +6,8 @@ import {
   type HintRequest,
 } from '@gototalk/shared';
 import { mockApi, type MockRequest } from './mock-api';
-import {
-  jsonResponse,
-  testMistake,
-  testSession,
-  testTurnResult,
-} from './test-fixtures';
+import { jsonResponse } from './http-responses';
+import { testMistake, testSession, testTurnResult } from './fixtures/session';
 
 type Reply = Response | Promise<Response>;
 

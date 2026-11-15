@@ -1,5 +1,5 @@
 import { act, renderHook } from '@testing-library/react';
-import { TEST_USER } from '@/shared/testing/test-fixtures';
+import { TEST_USER } from '@/shared/testing/fixtures/auth';
 import {
   clearSession,
   getSession,

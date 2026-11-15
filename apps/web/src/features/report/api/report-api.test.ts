@@ -4,11 +4,8 @@ import {
   REPORT_SESSION_ID,
 } from '@/shared/testing/report-mocks';
 import { mockApi } from '@/shared/testing/mock-api';
-import {
-  errorResponse,
-  jsonResponse,
-  testReport,
-} from '@/shared/testing/test-fixtures';
+import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
+import { testReport } from '@/shared/testing/fixtures/report';
 import { getReport } from './report-api';
 
 describe('report api', () => {

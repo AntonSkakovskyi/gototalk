@@ -3,17 +3,15 @@ import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { sessionKeys } from '@/shared/api/session-details';
 import uk from '@/shared/i18n/uk.json';
-import { deferred } from '@/shared/testing/answer-flow-setup';
+import { deferred } from '@/shared/testing/deferred';
 import {
   DIALOGUE_SESSION_ID,
   mockDialogueApi,
 } from '@/shared/testing/dialogue-mocks';
 import { LocationProbe } from '@/shared/testing/LocationProbe';
 import { createTestQueryClient } from '@/shared/testing/query-wrapper';
-import {
-  errorResponse,
-  testSessionDetails,
-} from '@/shared/testing/test-fixtures';
+import { errorResponse } from '@/shared/testing/http-responses';
+import { testSessionDetails } from '@/shared/testing/fixtures/session';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 import { FinishAction } from './FinishAction';
 

@@ -10,14 +10,11 @@ import {
   PENDING,
   TURN,
   analysisRequests,
-  deferred,
   setup,
 } from '@/shared/testing/answer-flow-setup';
-import {
-  errorResponse,
-  jsonResponse,
-  testUtterance,
-} from '@/shared/testing/test-fixtures';
+import { deferred } from '@/shared/testing/deferred';
+import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
+import { testUtterance } from '@/shared/testing/fixtures/session';
 
 const ANALYSIS_PATH = `/api/sessions/${DIALOGUE_SESSION_ID}/utterances/${PENDING.id}/analysis`;
 

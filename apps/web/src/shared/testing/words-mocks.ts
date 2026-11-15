@@ -4,7 +4,8 @@ import {
   type Word,
 } from '@gototalk/shared';
 import { mockApi } from './mock-api';
-import { jsonResponse, testReport } from './test-fixtures';
+import { jsonResponse } from './http-responses';
+import { testReport } from './fixtures/report';
 
 type Reply = Response | Promise<Response>;
 type Routes = Parameters<typeof mockApi>[0];

@@ -9,14 +9,13 @@ import {
   mockReportApi,
   reportOk,
 } from '@/shared/testing/report-mocks';
+import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
+import { testReport } from '@/shared/testing/fixtures/report';
 import {
-  errorResponse,
-  jsonResponse,
-  testReport,
   testSessionDetails,
   testTurnResult,
   testUtterance,
-} from '@/shared/testing/test-fixtures';
+} from '@/shared/testing/fixtures/session';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 import { ReportView } from './ReportView';
 

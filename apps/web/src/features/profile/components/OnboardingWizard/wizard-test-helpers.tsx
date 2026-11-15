@@ -5,11 +5,10 @@ import uk from '@/shared/i18n/uk.json';
 import { mockApi } from '@/shared/testing/mock-api';
 import {
   EMPTY_SESSIONS_ROUTE,
-  TEST_PROFILE,
   errorResponse,
   jsonResponse,
-  testGoal,
-} from '@/shared/testing/test-fixtures';
+} from '@/shared/testing/http-responses';
+import { TEST_PROFILE, testGoal } from '@/shared/testing/fixtures/profile';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 import { OnboardingWizard } from './OnboardingWizard';
 

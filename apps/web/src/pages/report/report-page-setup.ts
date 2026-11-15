@@ -1,14 +1,14 @@
 import { mockApi } from '@/shared/testing/mock-api';
 import { reportOk } from '@/shared/testing/report-mocks';
+import { TEST_PROFILE } from '@/shared/testing/fixtures/profile';
+import { TEST_USER } from '@/shared/testing/fixtures/auth';
+import { jsonResponse } from '@/shared/testing/http-responses';
 import {
-  TEST_PROFILE,
-  TEST_USER,
-  jsonResponse,
   testSessionDetails,
   testTurnResult,
   testUtterance,
-  testWord,
-} from '@/shared/testing/test-fixtures';
+} from '@/shared/testing/fixtures/session';
+import { testWord } from '@/shared/testing/fixtures/words';
 
 export const AUTH = {
   accessToken: 'access-1',

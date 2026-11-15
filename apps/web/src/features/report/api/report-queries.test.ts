@@ -5,7 +5,8 @@ import {
   mockReportApi,
   REPORT_SESSION_ID,
 } from '@/shared/testing/report-mocks';
-import { errorResponse, testReport } from '@/shared/testing/test-fixtures';
+import { errorResponse } from '@/shared/testing/http-responses';
+import { testReport } from '@/shared/testing/fixtures/report';
 import { reportQueryOptions } from './report-queries';
 
 describe('report queries', () => {

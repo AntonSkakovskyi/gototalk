@@ -388,8 +388,9 @@
   - `shared/session/{session-store,query-cache}.ts` (+tests) → `shared/auth-session/`; імпорти (`@/shared/session/…` → `@/shared/auth-session/…`) у `shared/api/*`, `app/*`, `features/auth`, `main.tsx`, `vitest.setup.ts`, `test-utils.tsx`; ESLint-зона `shared/session ↛ shared/api` → `shared/auth-session ↛ shared/api`. Експорти й назви без змін.
   - Коміт: `refactor(web): rename shared session store to auth-session`
 
-- [ ] **36. `shared/testing`: розщеплення `test-fixtures.ts` (W1)**
+- [x] **36. `shared/testing`: розщеплення `test-fixtures.ts` (W1)**
   - `shared/testing/test-fixtures.ts` (240 рядків) → `shared/testing/http-responses.ts` (`jsonResponse`, `errorResponse`), `shared/testing/fixtures/{auth,profile,session,words,report}.ts` (фабрики DTO, імпорт лише з `@gototalk/shared`), `shared/testing/deferred.ts` (`deferred()` з dialogue-моків, r.65); `test-fixtures.test.ts` розбити за файлами. Імпорти в ~100 тестах: `@/shared/testing/test-fixtures` → нові шляхи (механічно, codemod-скриптом у scratchpad із перевіркою `tsc`).
+  - Відхилення: `deferred()` жила в `shared/testing/answer-flow-setup.tsx` (не в dialogue-mocks); константи `EMPTY_SESSIONS_ROUTE`/`EMPTY_WORDS_ROUTE` і `emptyResponse` – у `http-responses.ts` (будуються на `jsonResponse`); `fixtures/report.ts` імпортує `./session` і `./words` (єдиний перехресний імпорт фікстур); константи learner-model – у `fixtures/profile.ts`; тести фікстур: `fixtures/report.test.ts` (2) і `fixtures/words.test.ts` (1), 3 `it` до й після.
   - Коміт: `refactor(web): split test fixtures into http responses and per-domain factories`
 
 - [ ] **37. `entities/session`: api і lib `[risk]` (W1)**

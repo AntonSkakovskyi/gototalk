@@ -10,11 +10,9 @@ import {
   createQueryWrapper,
   createTestQueryClient,
 } from '@/shared/testing/query-wrapper';
-import {
-  errorResponse,
-  testReport,
-  testWord,
-} from '@/shared/testing/test-fixtures';
+import { errorResponse } from '@/shared/testing/http-responses';
+import { testReport } from '@/shared/testing/fixtures/report';
+import { testWord } from '@/shared/testing/fixtures/words';
 import { mockWordsApi } from '@/shared/testing/words-mocks';
 import { wordKeys } from '@/features/vocabulary/api/words-queries';
 import { useMarkWord } from './use-mark-word';

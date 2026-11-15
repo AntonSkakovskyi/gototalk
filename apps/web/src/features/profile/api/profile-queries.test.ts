@@ -1,11 +1,8 @@
 import { QueryClient } from '@tanstack/react-query';
 import { ERROR_CODES } from '@gototalk/shared';
 import { mockApi } from '@/shared/testing/mock-api';
-import {
-  TEST_PROFILE,
-  errorResponse,
-  jsonResponse,
-} from '@/shared/testing/test-fixtures';
+import { TEST_PROFILE } from '@/shared/testing/fixtures/profile';
+import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
 import { profileKeys, profileQueryOptions } from './profile-queries';
 
 function fetchProfileWith(...responses: Response[]) {

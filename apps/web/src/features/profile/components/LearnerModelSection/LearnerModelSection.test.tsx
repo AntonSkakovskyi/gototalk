@@ -6,9 +6,8 @@ import { mockApi } from '@/shared/testing/mock-api';
 import {
   EMPTY_LEARNER_MODEL,
   TOP_FIVE_LEARNER_MODEL,
-  errorResponse,
-  jsonResponse,
-} from '@/shared/testing/test-fixtures';
+} from '@/shared/testing/fixtures/profile';
+import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 import { LearnerModelSection } from './LearnerModelSection';
 

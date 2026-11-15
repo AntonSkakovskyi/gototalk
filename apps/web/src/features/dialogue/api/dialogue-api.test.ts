@@ -6,12 +6,8 @@ import {
   mockDialogueApi,
 } from '@/shared/testing/dialogue-mocks';
 import { mockApi } from '@/shared/testing/mock-api';
-import {
-  errorResponse,
-  jsonResponse,
-  testSession,
-  testTurnResult,
-} from '@/shared/testing/test-fixtures';
+import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
+import { testSession, testTurnResult } from '@/shared/testing/fixtures/session';
 import {
   analyzeAnswer,
   finishSession,

@@ -14,11 +14,8 @@ import {
   planFor,
   startOk,
 } from '@/shared/testing/session-mocks';
-import {
-  errorResponse,
-  jsonResponse,
-  testSessionPlan,
-} from '@/shared/testing/test-fixtures';
+import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
+import { testSessionPlan } from '@/shared/testing/fixtures/session';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 import { SessionProposal } from './SessionProposal';
 

@@ -1,4 +1,4 @@
-import { jsonResponse } from '@/shared/testing/test-fixtures';
+import { jsonResponse } from './http-responses';
 import { mockApi } from './mock-api';
 
 describe('mockApi', () => {

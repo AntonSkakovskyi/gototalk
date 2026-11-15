@@ -2,7 +2,8 @@ import { GOAL_TITLE_MAX, MAX_ACTIVE_GOALS } from '@gototalk/shared';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import uk from '@/shared/i18n/uk.json';
-import { TEST_PROFILE, jsonResponse } from '@/shared/testing/test-fixtures';
+import { TEST_PROFILE } from '@/shared/testing/fixtures/profile';
+import { jsonResponse } from '@/shared/testing/http-responses';
 import {
   button,
   chip,

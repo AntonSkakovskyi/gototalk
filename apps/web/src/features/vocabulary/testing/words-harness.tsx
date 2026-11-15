@@ -8,11 +8,9 @@ import type { ReactNode } from 'react';
 import { apiFetch } from '@/shared/api/http';
 import { sessionKeys } from '@/shared/api/session-details';
 import { createTestQueryClient } from '@/shared/testing/query-wrapper';
-import {
-  jsonResponse,
-  testReport,
-  testSession,
-} from '@/shared/testing/test-fixtures';
+import { jsonResponse } from '@/shared/testing/http-responses';
+import { testReport } from '@/shared/testing/fixtures/report';
+import { testSession } from '@/shared/testing/fixtures/session';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 import { mockWordsApi } from '@/shared/testing/words-mocks';
 

@@ -3,10 +3,10 @@ import { screen } from '@testing-library/react';
 import uk from '@/shared/i18n/uk.json';
 import {
   testMistake,
-  testReport,
   testSessionDetails,
   testUtterance,
-} from '@/shared/testing/test-fixtures';
+} from '@/shared/testing/fixtures/session';
+import { testReport } from '@/shared/testing/fixtures/report';
 
 export const REPORT = testReport();
 export const SESSION_ID = REPORT.sessionId;

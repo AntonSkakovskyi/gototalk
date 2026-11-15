@@ -12,12 +12,11 @@ import {
   createQueryWrapper,
   createTestQueryClient,
 } from '@/shared/testing/query-wrapper';
+import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
 import {
-  errorResponse,
-  jsonResponse,
   testSessionDetails,
   testSessionPlan,
-} from '@/shared/testing/test-fixtures';
+} from '@/shared/testing/fixtures/session';
 import { useFinishSession } from './use-finish-session';
 
 const DETAILS = testSessionDetails();

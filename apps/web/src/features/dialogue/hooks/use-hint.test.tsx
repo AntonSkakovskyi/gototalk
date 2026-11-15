@@ -10,7 +10,7 @@ import {
   createQueryWrapper,
   createTestQueryClient,
 } from '@/shared/testing/query-wrapper';
-import { errorResponse, jsonResponse } from '@/shared/testing/test-fixtures';
+import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
 import { useHint } from './use-hint';
 
 function setup() {

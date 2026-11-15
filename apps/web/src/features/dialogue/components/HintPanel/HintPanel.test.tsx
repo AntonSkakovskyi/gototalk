@@ -8,7 +8,7 @@ import {
   HINT_TRANSLATION,
   mockDialogueApi,
 } from '@/shared/testing/dialogue-mocks';
-import { errorResponse, jsonResponse } from '@/shared/testing/test-fixtures';
+import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 import { HintPanel } from './HintPanel';
 

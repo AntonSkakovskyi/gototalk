@@ -9,12 +9,12 @@ import {
 import uk from '@/shared/i18n/uk.json';
 import { DIALOGUE_SESSION_ID } from '@/shared/testing/dialogue-mocks';
 import { createTestQueryClient } from '@/shared/testing/query-wrapper';
+import { jsonResponse } from '@/shared/testing/http-responses';
 import {
-  jsonResponse,
   testSessionDetails,
   testTurnResult,
   testUtterance,
-} from '@/shared/testing/test-fixtures';
+} from '@/shared/testing/fixtures/session';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 import { LocationProbe } from '@/shared/testing/LocationProbe';
 import { DialogueScreen } from './DialogueScreen';

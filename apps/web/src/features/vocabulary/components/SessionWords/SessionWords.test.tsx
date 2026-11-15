@@ -1,6 +1,6 @@
 import { screen, within } from '@testing-library/react';
 import uk from '@/shared/i18n/uk.json';
-import { testWord } from '@/shared/testing/test-fixtures';
+import { testWord } from '@/shared/testing/fixtures/words';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 import { SessionWords } from './SessionWords';
 

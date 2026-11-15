@@ -3,7 +3,7 @@ import {
   testSessionDetails,
   testTurnResult,
   testUtterance,
-} from '@/shared/testing/test-fixtures';
+} from '@/shared/testing/fixtures/session';
 import { withMistake } from './details-cache';
 
 function deepFreeze<T>(value: T): T {

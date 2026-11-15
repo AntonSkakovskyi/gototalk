@@ -10,7 +10,8 @@ import {
 import uk from '@/shared/i18n/uk.json';
 import { createTestQueryClient } from '@/shared/testing/query-wrapper';
 import { mockApi } from '@/shared/testing/mock-api';
-import { jsonResponse, testMistake } from '@/shared/testing/test-fixtures';
+import { jsonResponse } from '@/shared/testing/http-responses';
+import { testMistake } from '@/shared/testing/fixtures/session';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 import {
   ANSWER_1,

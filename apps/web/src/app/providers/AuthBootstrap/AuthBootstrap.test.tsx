@@ -2,12 +2,8 @@ import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { StrictMode } from 'react';
 import uk from '@/shared/i18n/uk.json';
-import {
-  TEST_USER,
-  authResponse,
-  errorResponse,
-  jsonResponse,
-} from '@/shared/testing/test-fixtures';
+import { TEST_USER, authResponse } from '@/shared/testing/fixtures/auth';
+import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 import { AuthBootstrap } from './AuthBootstrap';
 import { getSession } from '@/shared/auth-session/session-store';

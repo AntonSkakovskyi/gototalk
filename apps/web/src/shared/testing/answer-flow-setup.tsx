@@ -9,7 +9,7 @@ import {
   testSessionDetails,
   testTurnResult,
   testUtterance,
-} from './test-fixtures';
+} from './fixtures/session';
 
 export const TURN = testTurnResult();
 export const ANSWER_TEXT = TURN.utterance.text;
@@ -18,14 +18,6 @@ export const PENDING = {
   analysisStatus: 'pending' as const,
   mistakes: [],
 };
-
-export function deferred() {
-  let resolve: (response: Response) => void = () => undefined;
-  const promise = new Promise<Response>((done) => {
-    resolve = done;
-  });
-  return { promise, resolve };
-}
 
 export function setup(details: SessionDetails = testSessionDetails()) {
   const queryClient = createTestQueryClient();

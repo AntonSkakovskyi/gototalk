@@ -9,11 +9,8 @@ import {
 import uk from '@/shared/i18n/uk.json';
 import { mockApi } from '@/shared/testing/mock-api';
 import { createTestQueryClient } from '@/shared/testing/query-wrapper';
-import {
-  errorResponse,
-  jsonResponse,
-  testSessionDetails,
-} from '@/shared/testing/test-fixtures';
+import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
+import { testSessionDetails } from '@/shared/testing/fixtures/session';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 import { SessionOverview } from './SessionOverview';
 

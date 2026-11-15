@@ -9,7 +9,8 @@ import {
   createQueryWrapper,
   createTestQueryClient,
 } from '@/shared/testing/query-wrapper';
-import { errorResponse, testSessionPlan } from '@/shared/testing/test-fixtures';
+import { errorResponse } from '@/shared/testing/http-responses';
+import { testSessionPlan } from '@/shared/testing/fixtures/session';
 import { useSessionProposal } from './use-session-proposal';
 
 function setup(startReply?: () => Response) {
