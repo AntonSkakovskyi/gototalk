@@ -1,4 +1,4 @@
-import { loadPrompt } from './prompt-loader.js';
+import { loadPrompt } from './load-prompt.js';
 
 const INPUT_PLACEHOLDER = '{{input}}';
 const BACKTICK = /`/g;

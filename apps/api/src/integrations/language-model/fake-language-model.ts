@@ -16,14 +16,14 @@ import {
   renderErrorAnalysisPrompt,
   renderHintPrompt,
   renderNextTurnPrompt,
+  renderSessionPlanPrompt,
   renderSessionSummaryPrompt,
   SESSION_SUMMARY_PROMPT_ID,
-} from './prompts.js';
+} from './prompts/prompt-registry.js';
 import { buildSummary } from './fake-summary.js';
 import { buildFakeHint } from './fake-hints.js';
 import { buildFakeTurn } from './fake-next-turn.js';
 import { buildFakePlan } from './fake-session-plans.js';
-import { renderSessionPlanPrompt } from './session-plan-prompt.js';
 
 export interface FakeLanguageModelOptions {
   failMode?: FakeLlmFailMode;

@@ -4,10 +4,11 @@ import { FakeLanguageModel } from './fake-language-model.js';
 import {
   ERROR_ANALYSIS_PROMPT_ID,
   renderErrorAnalysisPrompt,
-} from './prompts.js';
+} from './prompts/prompt-registry.js';
 
-vi.mock('./prompts.js', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('./prompts.js')>();
+vi.mock('./prompts/prompt-registry.js', async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import('./prompts/prompt-registry.js')>();
   return {
     ...actual,
     renderErrorAnalysisPrompt: vi.fn(actual.renderErrorAnalysisPrompt),

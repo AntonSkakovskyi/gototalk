@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { loadPrompt } from './prompt-loader.js';
+import { loadPrompt } from './load-prompt.js';
 
 const reads = vi.hoisted(() => ({ count: 0 }));
 

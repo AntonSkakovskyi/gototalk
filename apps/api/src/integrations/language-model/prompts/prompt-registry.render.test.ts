@@ -3,7 +3,7 @@ import { createRequire } from 'node:module';
 import { basename, dirname, join } from 'node:path';
 import { MISTAKE_CATEGORY_CODES } from '@gototalk/shared';
 import { describe, expect, it } from 'vitest';
-import { loadPrompt } from './prompt-loader.js';
+import { loadPrompt } from './load-prompt.js';
 import {
   ERROR_ANALYSIS_PROMPT_ID,
   HINT_PROMPT_ID,
@@ -13,7 +13,7 @@ import {
   renderNextTurnPrompt,
   renderSessionSummaryPrompt,
   SESSION_SUMMARY_PROMPT_ID,
-} from './prompts.js';
+} from './prompt-registry.js';
 
 const escaped = (value: unknown): string =>
   JSON.stringify(value).replaceAll('`', '\x5Cu0060');

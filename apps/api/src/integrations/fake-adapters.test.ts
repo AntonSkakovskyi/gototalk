@@ -6,7 +6,7 @@ import {
   SummarySchema,
   TurnSchema,
 } from './language-model/model-output.js';
-import { ERROR_ANALYSIS_PROMPT_ID } from './language-model/prompts.js';
+import { ERROR_ANALYSIS_PROMPT_ID } from './language-model/prompts/prompt-registry.js';
 import { FakeLanguageModel } from './language-model/fake-language-model.js';
 import type { LanguageModelPort } from './language-model/language-model.port.js';
 import { FakeSpeechRecognition } from './speech-recognition/fake/fake-speech-recognition.js';

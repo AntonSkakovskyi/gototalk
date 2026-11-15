@@ -1,7 +1,7 @@
 import { PLAN_QUESTIONS, QUESTION_MAX, TOPIC_MAX } from '@gototalk/shared';
 import { describe, expect, it } from 'vitest';
-import { renderSessionPlanPrompt } from './session-plan-prompt.js';
-import type { PlanSessionInput } from './language-model.port.js';
+import { renderSessionPlanPrompt } from './prompt-registry.js';
+import type { PlanSessionInput } from '../language-model.port.js';
 
 const escaped = (value: unknown): string =>
   JSON.stringify(value).replaceAll('`', '\x5Cu0060');

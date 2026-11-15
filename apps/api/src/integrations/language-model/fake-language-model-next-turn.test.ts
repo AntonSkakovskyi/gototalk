@@ -3,10 +3,11 @@ import { describe, expect, it, vi } from 'vitest';
 import { FakeLanguageModel } from './fake-language-model.js';
 import { LanguageModelUnavailableError } from './language-model.errors.js';
 import type { NextTurnInput } from './language-model.port.js';
-import { renderNextTurnPrompt } from './prompts.js';
+import { renderNextTurnPrompt } from './prompts/prompt-registry.js';
 
-vi.mock('./prompts.js', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('./prompts.js')>();
+vi.mock('./prompts/prompt-registry.js', async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import('./prompts/prompt-registry.js')>();
   return {
     ...actual,
     renderNextTurnPrompt: vi.fn(actual.renderNextTurnPrompt),

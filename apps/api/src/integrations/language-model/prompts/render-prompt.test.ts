@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
-import { loadPrompt } from './prompt-loader.js';
+import { loadPrompt } from './load-prompt.js';
 import { renderPrompt } from './render-prompt.js';
 
-vi.mock('./prompt-loader.js', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('./prompt-loader.js')>();
+vi.mock('./load-prompt.js', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('./load-prompt.js')>();
   return { loadPrompt: vi.fn(actual.loadPrompt) };
 });
 

@@ -150,7 +150,7 @@
   - `integrations/fake-adapters.test.ts` (8 кейсів) і `fake-fail-modes.test.ts` (7): STT-кейси → `speech-recognition/fake/fake-speech-recognition.adapter.test.ts`; LLM-кейси лишаються до задачі 10.
   - Коміт: `refactor(api): group speech recognition fakes and move the invalid-response error`
 
-- [ ] **09. `language-model/prompts/` + реєстр `[risk]`**
+- [x] **09. `language-model/prompts/` + реєстр `[risk]`**
   - `prompts.ts` + `session-plan-prompt.ts` (+tests) → `prompts/prompt-registry.ts` (один реєстр: `PROMPT_IDS`, рендер за id; публічний API експортів зберегти або мапити 1:1); `prompt-loader.ts` (+test) → `prompts/load-prompt.ts`; `render-prompt.ts` (+test) → `prompts/render-prompt.ts`.
   - Рантайм: `require.resolve('@gototalk/prompts/${id}.md')` у `load-prompt.ts` працює з нової глибини; перевірити запуском `pnpm dev` + `POST /api/sessions` з Fake (план сесії рендериться).
   - Новий тест `prompts/prompt-registry.test.ts` (TDD): кожен id із реєстру резолвиться; кожен `.md` у `packages/prompts` зареєстровано; у кожному шаблоні рівно один `{{input}}`.
