@@ -5,6 +5,7 @@ import { Link } from 'react-router';
 import { sessionHistoryQueryOptions } from '@/features/session/api/session-queries';
 import { SessionListItem } from '@/features/session/components/RecentSessions/SessionListItem';
 import { LoadError } from '@/shared/ui/LoadError/LoadError';
+import { LoadMoreFooter } from '@/shared/ui/LoadMoreFooter/LoadMoreFooter';
 import { SectionSkeleton } from '@/shared/ui/SectionSkeleton/SectionSkeleton';
 import classes from './SessionHistory.module.scss';
 
@@ -20,8 +21,6 @@ export function SessionHistory() {
     );
   }
 
-  const nextPageFailed =
-    history.isFetchNextPageError && !history.isFetchingNextPage;
   const sessions = history.data.pages.flatMap((page) => page.items);
   if (sessions.length === 0) {
     return (
@@ -43,29 +42,15 @@ export function SessionHistory() {
           </li>
         ))}
       </Stack>
-      <div aria-live="polite">
-        <Text size="sm" c="dimmed">
-          {t('session.history.loaded', { count: sessions.length })}
-        </Text>
-      </div>
-      {nextPageFailed && (
-        <LoadError
-          message={t('session.history.loadMoreError')}
-          onRetry={() => void history.fetchNextPage()}
-        />
-      )}
-      {history.hasNextPage && !nextPageFailed && (
-        <Button
-          size="lg"
-          variant="light"
-          fullWidth
-          loading={history.isFetchingNextPage}
-          disabled={history.isFetchingNextPage}
-          onClick={() => void history.fetchNextPage()}
-        >
-          {t('session.history.loadMore')}
-        </Button>
-      )}
+      <LoadMoreFooter
+        loadedText={t('session.history.loaded', { count: sessions.length })}
+        loadMoreLabel={t('session.history.loadMore')}
+        errorMessage={t('session.history.loadMoreError')}
+        hasNextPage={history.hasNextPage}
+        isFetchingNextPage={history.isFetchingNextPage}
+        isFetchNextPageError={history.isFetchNextPageError}
+        onLoadMore={() => void history.fetchNextPage()}
+      />
     </Stack>
   );
 }

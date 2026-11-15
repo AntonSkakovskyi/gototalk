@@ -89,6 +89,10 @@ export const EMPTY_SESSIONS_ROUTE = {
   'GET /api/sessions': jsonResponse([]),
 };
 
+export const EMPTY_WORDS_ROUTE = {
+  'GET /api/words': jsonResponse({ items: [], nextCursor: null }),
+};
+
 export const EMPTY_LEARNER_MODEL: LearnerModel = {
   weakAreas: [],
   vocabulary: { new: 0, partial: 0, passive: 0, active: 0 },

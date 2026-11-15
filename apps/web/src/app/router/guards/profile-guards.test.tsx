@@ -12,6 +12,7 @@ import type { RenderOptions } from '@/shared/testing/test-utils';
 import { mockApi } from '@/shared/testing/mock-api';
 import {
   EMPTY_SESSIONS_ROUTE,
+  EMPTY_WORDS_ROUTE,
   TEST_PROFILE,
   TEST_USER,
   errorResponse,
@@ -58,6 +59,7 @@ async function failBackgroundRefetch(
   mockApi({
     'GET /api/profile': loadedThenFailing(status),
     ...EMPTY_SESSIONS_ROUTE,
+    ...EMPTY_WORDS_ROUTE,
   });
   renderAppWithProbe({ route, session: SESSION, queryClient });
   await heading(landedHeading);
@@ -114,6 +116,7 @@ describe('RequireProfile', () => {
   it('[TC-02-03] shows a retry screen instead of redirecting on a server error and recovers on retry', async () => {
     const { requests } = mockApi({
       'GET /api/profile': failingThenOk(2),
+      ...EMPTY_WORDS_ROUTE,
     });
     renderApp('/words');
 
@@ -129,7 +132,9 @@ describe('RequireProfile', () => {
 
     expect(await heading(uk.pages.words.title)).toBeInTheDocument();
     expect(currentLocation()).toBe('/words');
-    expect(requests).toHaveLength(3);
+    expect(
+      requests.filter((request) => request.path === '/api/profile'),
+    ).toHaveLength(3);
   });
 
   it('[TC-02-03] shows the retry screen on a 403 without redirecting or retrying', async () => {

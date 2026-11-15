@@ -6,7 +6,7 @@ import {
   testWord,
 } from '@/shared/testing/test-fixtures';
 import { mockWordsApi } from '@/shared/testing/words-mocks';
-import { markWord } from './words-api';
+import { listWords, markWord } from './words-api';
 
 describe('words api', () => {
   it('[TC-05-05] markWord patches the state and returns the validated word', async () => {
@@ -58,5 +58,42 @@ describe('words api', () => {
     });
 
     await expect(markWord(word.id, 'new')).rejects.toThrow();
+  });
+  it('[TC-05-05] listWords requests the first page without a query string', async () => {
+    const page = { items: [testWord()], nextCursor: 'c1' };
+    const { requests } = mockApi({ 'GET /api/words': jsonResponse(page) });
+
+    await expect(listWords()).resolves.toEqual(page);
+
+    expect(requests.map((request) => request.path)).toEqual(['/api/words']);
+  });
+
+  it('[TC-05-05] listWords sends only the defined params, URL-encoded', async () => {
+    const { requests } = mockApi({
+      'GET /api/words?cursor=a%2Bb%3D%26c&limit=5': jsonResponse({
+        items: [],
+        nextCursor: null,
+      }),
+    });
+
+    await listWords({ cursor: 'a+b=&c', limit: 5 });
+
+    expect(requests).toHaveLength(1);
+  });
+
+  it('[TC-05-05] listWords omits an undefined cursor', async () => {
+    const { requests } = mockApi({
+      'GET /api/words?limit=3': jsonResponse({ items: [], nextCursor: null }),
+    });
+
+    await listWords({ cursor: undefined, limit: 3 });
+
+    expect(requests).toHaveLength(1);
+  });
+
+  it('[TC-05-05] listWords rejects a response that breaks the contract', async () => {
+    mockApi({ 'GET /api/words': jsonResponse([testWord()]) });
+
+    await expect(listWords()).rejects.toThrow();
   });
 });
