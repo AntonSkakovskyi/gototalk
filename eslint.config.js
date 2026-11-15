@@ -208,7 +208,7 @@ export default defineConfig(
     languageOptions: { globals: { ...globals.browser } },
   },
   {
-    // Web debt zones stay warnings until web cleanup, so they use a second plugin name: severity is per rule, not per zone.
+    // Web debt zones are warnings, so they use a second plugin name: severity is per rule, not per zone.
     plugins: { 'import-x-debt': importX },
   },
   {

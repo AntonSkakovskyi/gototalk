@@ -73,6 +73,7 @@
 | 4 | документи | 50–54 (лише `pnpm lint` і перевірка посилань; тести не запускати) |
 
 Пачки статуси перевірки:
+- Пачка Swagger і правила: перевірено (shared 91, web 965, api 1177; рев'ю задачі 22 і пачки PASS, середні знахідки задачі 22 виправлено окремим комітом, низькі в backlog)
 - Пачка finish, turn, audio: перевірено (shared 91, web 965, api 1156; `pnpm dev` без помилок DI, curl: finish 200/ідемпотентний/404/401, звіт 200, `/api/docs-json` має `POST /api/sessions/{id}/finish` у тегу `sessions`; e2e 24/24 з другого прогону (перший прогін мав одне нестабільне падіння `toHaveURL`, як і на базовій лінії); ESLint debt 13 warn (лише web-тести); рев'ю задачі 19 і пачки PASS, низькі знахідки в backlog)
 - Пачка нові модулі hint, learner-model, me→auth: перевірено (shared 91, web 965, api 1155; `pnpm dev` без помилок DI, curl: me, consent, learner-model, підказки (200/404/409), finish, login, видалення акаунта; ESLint debt 17 warn; рев'ю PASS; примітка до задачі 17: `LearnerModelModule` без `imports`, бо `AuthModule` глобальний)
 - Пачка модулі session, vocabulary, analysis: перевірено (shared 91, web 965, api 1155; `pnpm dev` без помилок DI, curl: план, старт, підказки, відповідь, завершення, слова; ESLint debt 22 warn; рев'ю задачі 13 і пачки PASS, низькі знахідки в backlog)
@@ -258,6 +259,7 @@
   - `eslint.config.js`: api-зони приватності модулів, DAG і `import-x/no-cycle` → `error`. Лишається `warn` для web (до задачі 49). `test/` поза зонами.
   - Перевірка тимчасовими порушеннями: імпорт `modules/session/persistence/…` з `report`, імпорт `modules/dialogue` з `session`, цикл між двома файлами: кожне дає помилку lint; відкотити.
   - Фінальна перевірка PR1 (див. «Політика перевірок»): `pnpm build`, `pnpm test:e2e`, `pnpm dev`, DI, `docs-json`, `pnpm db:pull` без diff, кількості тестів.
+  - Виконано: зони приватності, DAG і `import-x/no-cycle` для `apps/api/src/**` – `error`; тимчасові порушення (приватний імпорт `session/persistence` з `report`, імпорт `dialogue` з `session`, цикл у `report`) дали помилку lint, дозволений імпорт і приватний імпорт у `apps/api/test` проходять; `import-x-debt` лишився лише для web-зон (`warn`); додано guard: каталог у `modules/` без запису в `API_MODULE_DEPS` кидає помилку. `eslint .`: 0 помилок, 13 warn (лише web-тести, до задачі 49).
   - Коміт: `refactor(api): enforce module boundaries and import cycles as errors`
 
 ---
