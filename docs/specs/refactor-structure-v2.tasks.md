@@ -277,7 +277,7 @@
   - Відхилення: проміжний `include` для integration – `['test/integration/**/*.test.ts', 'test/*.test.ts']`, щоб не зупинити ще не переміщені тести; запис `'test/*.test.ts'` прибирається в задачі 32.
   - Коміт: `refactor(api-test): move core integration tests`
 
-- [ ] **26. `integration/auth/`** – `auth`, `auth-guard`, `drizzle-refresh-tokens.repository`, `me`, `delete-account`.
+- [x] **26. `integration/auth/`** – `auth`, `auth-guard`, `drizzle-refresh-tokens.repository`, `me`, `delete-account`.
   - Коміт: `refactor(api-test): move auth integration tests`
 
 - [ ] **27. `integration/profile/`, `learner-model/`, `hint/`** – `profile`, `goals` → `profile/`; `learner-model` → `learner-model/`; `hints`, `hints-access`, `hints-failures` → `hint/`.

@@ -8,15 +8,15 @@ import {
 import type pg from 'pg';
 import request from 'supertest';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { PG_POOL } from '../src/core/db/db.tokens.js';
-import { createTestApp } from './support/test-app.js';
-import { resetUserData } from './support/test-db.js';
+import { PG_POOL } from '../../../src/core/db/db.tokens.js';
+import { createTestApp } from '../../support/test-app.js';
+import { resetUserData } from '../../support/test-db.js';
 import {
   USER_DATA_TABLES,
   countReferenceData,
   countUserData,
   insertUserData,
-} from './support/user-data.js';
+} from '../../support/user-data.js';
 
 const PASSWORD = 'correct-horse-battery';
 const WRONG_PASSWORD = 'zebra-wrong-9317-passphrase';
