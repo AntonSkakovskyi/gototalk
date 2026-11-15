@@ -6,7 +6,7 @@ PWA-тренер говоріння англійською для україно
 - `docs/product.md` — що будуємо, хід сесії, обсяг MVP.
 - `docs/tech-decisions.md` — ухвалені технічні рішення. Не переглядай їх без погодження.
 - `docs/specs/NN-*.md` — специфікації сценаріїв із критеріями готовності.
-- `KICKOFF.md` — порядок старту проєкту.
+- `docs/archive/KICKOFF.md` — порядок старту проєкту (архів).
 
 ## Стек (не змінювати без погодження)
 - Node 26 LTS (Active LTS з 28.10.2026), pnpm (встановлений окремо, без corepack), pnpm workspaces, TypeScript strict.
@@ -32,7 +32,7 @@ PWA-тренер говоріння англійською для україно
 ## Архітектура
 - Порти й адаптери (`apps/api/src/integrations/`): `SpeechRecognitionPort` і `LanguageModelPort` — лише через інтерфейси. Доменний код не імпортує SDK провайдерів.
 - Для кожного порту є Fake-адаптер (детерміновані відповіді). Тести й режим без ключів працюють на ньому. Адаптер обирається змінною env (`STT_PROVIDER=fake|deepgram`, `LLM_PROVIDER=fake|gemini`).
-- Модуль NestJS (`apps/api/src/modules/`) = доменна область: auth, profile, session, dialogue, analysis, vocabulary, cards, report.
+- Модуль NestJS (`apps/api/src/modules/`) = доменна область (перелік – у розділі «Структура коду»).
 - Запис голосу пакетний: MediaRecorder → файл → `POST` на бекенд → STT. Без WebSocket і стримінгу.
 - Аналіз кожної репліки запускається одразу після транскрипції; режим фідбеку (`immediate`/`deferred`) керує лише показом.
 - Відповідь мовної моделі — строгий JSON, перевірка Zod, один повтор при невалідній відповіді. Категорії помилок лише з таблиці `mistake_categories`. Зберігай `analysis_prompt_version` і `analysis_model` на репліці.
@@ -41,16 +41,17 @@ PWA-тренер говоріння англійською для україно
 ## Інтерфейс
 - Мобільний в'юпорт (360–412 px) — основний; десктоп має просто не ламатися.
 - Стандартні елементи — компоненти Mantine; власні стилі лише в `*.module.scss`. Тема Mantine — одна, у `apps/web/src/app/theme/theme.ts`.
-- Мова інтерфейсу українська; жодного тексту прямо в JSX, лише через i18n (`uk.json`).
+- Мова інтерфейсу українська; жодного тексту прямо в JSX, лише через i18n (`shared/i18n/uk/*.json`).
 - Пояснення помилок: основне англійською, короткий переклад українською.
 
 ## Структура коду
 Web (`apps/web/src`):
-- Шари `app → pages → features → shared`, імпорти лише вниз. Фіча не імпортує іншу фічу. Усередині `shared` залежність `api → session` односпрямована: `shared/session` – лише клієнтський стан без мережі, тому `refresh.ts` лежить у `shared/api`.
-- Новий компонент: потрібен одній фічі → `features/<f>/components/<Name>/`; двом і більше фічам → `shared/ui/` (папка створюється з першим таким компонентом).
+- Шари `app → pages → features → entities → shared`, імпорти лише вниз. Фіча не імпортує іншу фічу, сутність – іншу сутність. Сутність `entities/session` (сесія, репліка й агрегат помилок) має сегменти `api/ lib/ hooks/ components/ testing/`. Усередині `shared` залежність `api → auth-session` односпрямована: `shared/auth-session` – лише клієнтський стан без мережі, тому `refresh.ts` лежить у `shared/api`.
+- Підобласть фічі: самодостатня частина, що імпортує з решти фічі лише `api/` і кореневий `lib/`, при ≥ 6 файлах переїжджає в підпапку з тими самими сегментами (`features/dialogue/recording`, `features/dialogue/hint`). Підобласті не імпортують одна одну.
+- Новий компонент: потрібен одній фічі → `features/<f>/components/<Name>/`; двом і більше фічам → `shared/ui/` (лише універсальні `LoadError`, `LoadMoreFooter`, `SectionSkeleton`); компоненти домену сесії (транскрипт, помилки, кращі формулювання, питання, картка відповіді, стрілка заміни) лежать в `entities/session/components/`. Компонент, який імпортується поза своєю папкою, має власну папку; приватні підкомпоненти лежать у папці батька. Самотній файл без `.module.scss` і тесту лишається файлом.
 - Mantine – наша бібліотека атомів. Власного шару atoms/molecules і обгорток над Button/Card тощо не робимо; кастомізація через `theme.components` + `X.extend()` / `X.withProps()`.
-- Папка на компонент, коли поруч є `.module.scss` або тест; самотній файл лишається файлом.
-- Сторінка завжди в папці маршруту `pages/<route>/<Name>Page.tsx` і тонка (правило для нового коду): форми й логіка живуть у `features`.
+- Тестові хелпери лежать у `testing/` свого зрізу; `shared/testing` імпортує лише `shared` і `@gototalk/shared` (плюс `@/app/**` за винятком для тестів).
+- Сторінка завжди в папці маршруту `pages/<route>/<Name>Page.tsx` (home, dialogue, report, …) і тонка: форми й логіка живуть у `features`.
 - Без barrel-файлів `index.ts` (єдиний `index.ts` – справжній модуль `shared/i18n/index.ts`).
 - Імпорти між папками через `@/` (→ `apps/web/src`), відносні лише в межах однієї папки, ніколи `../../`. Суфікса `.js` в імпортах web немає.
 - Іменування: файли й папки компонентів PascalCase, усе інше kebab-case.
@@ -58,14 +59,18 @@ Web (`apps/web/src`):
 - Єдиний виняток: `*.test.*` і `testing/**` можуть імпортувати `@/app/**` (тести – корінь композиції: рендерять `App`, роутер і тему), решта меж діє і для тестів; у production-коді винятків немає.
 
 Api (`apps/api/src`): `core/`, `common/`, `integrations/`, `modules/`; у корені лише `main.ts`, `configure-app.ts`, `app.module.ts` та їхні тести.
-- Модуль NestJS = доменна область у `modules/<name>/` (auth, me, profile, session, dialogue, analysis, далі vocabulary, cards, report).
-- `core/` – інфраструктура застосунку (config, db, logger, errors, health). `common/` – спільні декоратори й pipe, потрібні кільком модулям і core (наприклад `@Public()`: його потребує health, тому він не може лежати в `modules/auth`). `integrations/` – порти й Fake-адаптери по можливостях (`speech-recognition/`, `language-model/`), SDK провайдерів лише тут. `core`, `common` і `integrations` не імпортують `modules`.
-- Усередині модуля підпапки за типом (`guards/`, `decorators/`, `persistence/`, `lib/`) лише коли файлів одного типу ≥2; корінь модуля тримає module, controller, service(s) і errors. Тестові дублі модуля лежать у `testing/`.
-- Імпорти відносні з суфіксом `.js` (ESM NodeNext), аліасу в api немає. `apps/api/test/` (інтеграційні тести й `support/`) не реорганізуємо.
+- Модуль NestJS = доменна область у `modules/<name>/`: auth (разом із `/me`), profile, learner-model, session, dialogue, hint, analysis, vocabulary, report. Нові модулі додаємо в цей список, коли вони з'являються. Самодостатня підобласть із власним контролером стає окремим модулем Nest (hint, learner-model). Ендпоінт `POST /sessions/:id/finish` живе в `report` (`SessionFinishController`).
+- Корінь модуля – його публічний API: module, контролери, сервіси, errors, типи й публічні чисті хелпери; `auth/decorators/` теж публічна. Підпапки (`persistence/`, `lib/`, `guards/`, `testing/`, підобласті на кшталт `audio/`) приватні – їх не імпортують інші модулі. Усі репозиторії лежать у `persistence/`, навіть якщо він один; правила «≥2 файлів» немає.
+- Хелпери блокувань лишаються чистими функціями в корені модуля, транзакційні записи із залежностями – методи експортованих сервісів (`VocabularyWriter`, `AnalysisWriter`).
+- Граф модулів (`auth` ← усі; `profile`, `learner-model`, `vocabulary` → `auth`; `session` → `profile`, `learner-model`; `analysis`, `hint` → `session`, `vocabulary`; `dialogue`, `report` → `session`, `analysis`, `vocabulary`) задано `API_MODULE_DEPS` в `eslint.config.js`, зони `import-x/no-restricted-paths` генеруються з нього; `import-x/no-cycle` – помилка.
+- `core/` – інфраструктура застосунку (config, db, logger, errors, health). `common/{pipes,decorators,pagination,errors,swagger}` – спільні декоратори, pipe й утиліти, потрібні кільком модулям і core (наприклад `@Public()`: його потребує health, тому він не може лежати в `modules/auth`). Swagger-схеми запитів і відповідей беруться з Zod через `ApiZodBody`/`ApiZodQuery`/`ApiZodResponse` (`common/swagger`). `integrations/` – `adapters.module.ts` (`AdaptersModule`), порти й Fake-адаптери по можливостях (`speech-recognition/{fake}`, `language-model/{prompts,fake,testing}`), SDK провайдерів лише тут. `core`, `common` і `integrations` не імпортують `modules`.
+- `packages/shared/src` згруповано за доменами (common, auth, profile, session, analysis, dialogue, report, vocabulary); єдина точка входу – `index.ts`. Схеми лише для API (вивід моделі, транскрипт) живуть в API.
+- Тестові дублі модуля лежать у `testing/`. Інтеграційні тести – в `apps/api/test/integration/<module>/`, спільні хелпери – в `apps/api/test/support/`, `global-setup.ts` лишається. Файл тестів ≲ 400 рядків.
+- Імпорти відносні з суфіксом `.js` (ESM NodeNext), аліасу в api немає.
 - Межі перевіряє ESLint (`import-x/no-restricted-paths`), порушення дають помилку.
 
 ## Мова коду й коментарі
-- Уся кодова база англійською: код, ідентифікатори, коментарі, назви тестів (`describe`/`it`), опис Swagger, повідомлення винятків і логів, вивід CLI-скриптів, метадані пакетів, README, повідомлення комітів. Українська лише в i18n-ресурсах (`uk.json`) і в користувацьких даних (`translation_uk`, українські зразки відповідей Fake-адаптера, очікувані українські підписи UI в тестах). `docs/`, `CLAUDE.md`, `KICKOFF.md` і скіли в `.claude/skills/` лишаються українською. Застосовані міграції (`db/migrations/0000`–`0002`) не редагуємо навіть заради коментарів; нові міграції пишемо англійською.
+- Уся кодова база англійською: код, ідентифікатори, коментарі, назви тестів (`describe`/`it`), опис Swagger, повідомлення винятків і логів, вивід CLI-скриптів, метадані пакетів, README, повідомлення комітів. Українська лише в i18n-ресурсах (`shared/i18n/uk/*.json`) і в користувацьких даних (`translation_uk`, українські зразки відповідей Fake-адаптера, очікувані українські підписи UI в тестах). `docs/` (разом з `docs/archive/KICKOFF.md`), `CLAUDE.md` і скіли в `.claude/skills/` лишаються українською. Застосовані міграції (`db/migrations/0000`–`0002`) не редагуємо навіть заради коментарів; нові міграції пишемо англійською.
 - Коментарів за замовчуванням немає. Коментар лише для неочевидного ЧОМУ (обмеження, особливість платформи, обхідний шлях, причина безпеки): один короткий рядок англійською. Не коментувати те, що видно з коду, не залишати нотаток про стан задачі («скелет, реалізація в spec 04»): це місце tasks.md.
 - JSDoc лише там, де він фіксує контракт, якого не передають типи (наприклад, «positions are offsets in `text_verbatim`»).
 - У промптах сабагентам завжди додавай ці два правила.
