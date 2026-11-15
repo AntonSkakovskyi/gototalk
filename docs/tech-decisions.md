@@ -97,6 +97,8 @@
 
 Більше плагінів не ставимо: кожен додає контекст до кожного запиту й виконує код із нашими правами.
 
+Нюанси середовища (з початкового старту проєкту, `docs/archive/KICKOFF.md`): якщо `podman compose version` скаржиться на відсутній compose provider, ставимо `pip install podman-compose`; змінна `ANTHROPIC_API_KEY` має бути порожньою (`Get-ChildItem Env:ANTHROPIC_API_KEY`), інакше Claude Code платить за API, а не з підписки Pro; якщо немає маркетплейсу `claude-plugins-official`, у сесії виконати `/plugin marketplace add anthropics/claude-plugins-official`.
+
 ## 6. Структура коду
 
 Рішення 29. Web (`apps/web/src`): гібрид Bulletproof React і мінімального Feature-Sliced Design. Шари `app → pages → features → shared`, імпорти лише вниз, фіча не імпортує іншу фічу. Api (`apps/api/src`): пласкі доменні модулі NestJS у `modules/`, інфраструктура окремо в `core/`, `common/`, `integrations/`.

@@ -183,23 +183,26 @@ e2e/             Playwright tests
 docs/            product, technical decisions, specifications
 ```
 
-Web (`apps/web/src`) is split into layers that import only downward: `app → pages → features → shared`. Cross-folder imports use the `@/` alias (→ `apps/web/src`); ESLint (`eslint-plugin-import-x`) enforces the boundaries.
+Web (`apps/web/src`) is split into layers that import only downward: `app → pages → features → entities → shared`. A feature never imports another feature, an entity never imports another entity, and the sub-areas of a feature (for example `dialogue/recording` and `dialogue/hint`) are independent of each other. Cross-folder imports use the `@/` alias (→ `apps/web/src`); ESLint (`eslint-plugin-import-x`) enforces the boundaries.
 
 ```
-app/       App, layout (AppLayout, BottomNav), providers (AuthBootstrap), router guards, Mantine theme
-pages/     one folder per route: login, register, consent, onboarding, session, new-session, dialog, report, words, history, profile
-features/  one folder per domain, e.g. auth/{api,lib,components}
-shared/    api (HTTP client, refresh), session (client state), i18n, testing
+app/       App, layout (AppLayout, BottomNav), providers (AuthBootstrap), router and guards, Mantine theme
+pages/     one thin folder per route: login, register, consent, onboarding, home, new-session, dialogue, report, words, history, profile
+features/  one folder per domain (auth, profile, session, dialogue, report, vocabulary), each with api, components, hooks, lib, testing; dialogue also has the sub-areas recording and hint
+entities/  session (session, utterance and mistake aggregate shared by several features)
+shared/    api (HTTP client, refresh), auth-session (client state), i18n (resources in uk/*.json), forms, hooks, router, styles, ui, testing
 ```
 
-Api (`apps/api/src`) keeps infrastructure apart from domain modules; imports are relative with a `.js` suffix (ESM). `core`, `common` and `integrations` never import `modules`, which ESLint enforces.
+Api (`apps/api/src`) keeps infrastructure apart from domain modules; imports are relative with a `.js` suffix (ESM). `core`, `common` and `integrations` never import `modules`. A module imports another one only through its root (module, services, errors, types) and never through its `persistence/`, `lib/`, `guards/`, `testing/` or sub-areas; the allowed dependencies between modules are the `API_MODULE_DEPS` graph in `eslint.config.js`. ESLint enforces all of this.
 
 ```
 core/          config, db (schema, relations), logger, errors, health
-common/        decorators and pipes shared by several modules and core (@Public, ZodBodyPipe)
-integrations/  ports with fake adapters per capability (speech-recognition, language-model); provider SDKs only here
-modules/       one folder per domain: auth (guards, decorators, persistence, lib), me, profile, session, dialogue, analysis, vocabulary, report
+common/        decorators, pipes, pagination, errors and Swagger helpers shared by several modules and core (@Public, ZodBodyPipe, ApiZod*)
+integrations/  adapters.module.ts and ports with fake adapters per capability (speech-recognition, language-model with prompts, fake and testing); provider SDKs only here
+modules/       one folder per domain: auth (with /me), profile, learner-model, session, dialogue, hint, analysis, vocabulary, report
 ```
+
+Tests: unit tests sit next to the code, API integration tests are in `apps/api/test/integration/<module>/` (shared helpers in `apps/api/test/support/`), and the Playwright scenarios are in `e2e/` (`auth`, `profile`, `session`, `dialogue`, `voice`, `report`, `smoke`). `packages/shared/src` is grouped by domain (analysis, auth, common, dialogue, profile, report, session, vocabulary).
 
 ## Database and migrations
 
@@ -211,3 +214,4 @@ The source of truth is the SQL migrations in `db/migrations` (drizzle-kit, custo
 - [docs/tech-decisions.md](docs/tech-decisions.md): accepted technical decisions
 - [docs/specs](docs/specs): scenario specifications and test cases
 - [CLAUDE.md](CLAUDE.md): rules for working with Claude Code
+- [docs/archive/KICKOFF.md](docs/archive/KICKOFF.md): the initial project kickoff (archive)

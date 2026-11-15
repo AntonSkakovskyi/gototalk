@@ -486,7 +486,7 @@
   - Доповнення рішення 29 (§6) таблицею «Структура v2»: чому `entities/session` (а не дві сутності), чому «finish» у report, чому промпти лишаються в API, чому приватні підпапки модулів і відмова від «≥2 файлів», чому `test/integration/<module>/`, що свідомо не робимо.
   - Коміт: `docs: record structure v2 decisions`
 
-- [ ] **52. README, WORKFLOW, reviewer, KICKOFF (R2)**
+- [x] **52. README, WORKFLOW, reviewer, KICKOFF (R2)**
   - `README.md` – дерево структури; `docs/WORKFLOW.md` – шляхи; `.claude/agents/reviewer.md` – перевірка меж модулів і шарів за новими правилами; `.claude/skills/db-migration/SKILL.md` – шляхи, якщо змінились; `KICKOFF.md` прочитати перед переносом (унікальне перенести в `docs/product.md`/`tech-decisions.md`), потім `git mv KICKOFF.md docs/archive/KICKOFF.md`; посилання в `CLAUDE.md` оновити.
   - Коміт: `docs: refresh README, workflow and reviewer rules, archive kickoff`
 
