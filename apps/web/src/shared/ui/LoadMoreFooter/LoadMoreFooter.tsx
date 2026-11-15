@@ -36,7 +36,7 @@ export function LoadMoreFooter({
           variant="light"
           fullWidth
           loading={isFetchingNextPage}
-          disabled={isFetchingNextPage}
+          aria-busy={isFetchingNextPage}
           onClick={onLoadMore}
         >
           {loadMoreLabel}

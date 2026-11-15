@@ -71,9 +71,10 @@ export async function finishFromDialogue(page: Page): Promise<void> {
 }
 
 export async function openDeepAnalysis(page: Page): Promise<void> {
-  const toggle = page.getByRole('button', { name: 'Детально', exact: true });
-  await toggle.click();
-  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+  await page.getByRole('button', { name: 'Детально', exact: true }).click();
+  await expect(
+    page.getByRole('button', { name: 'Згорнути', exact: true }),
+  ).toHaveAttribute('aria-expanded', 'true');
   await expect(
     page.getByRole('heading', { level: 2, name: 'Детальний розбір' }),
   ).toBeVisible();
