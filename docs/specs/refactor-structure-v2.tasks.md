@@ -89,7 +89,7 @@
   - Файли: `docs/specs/refactor-structure-v2.tasks.md`.
   - Коміт: `docs: record structure v2 test baseline`
 
-- [ ] **01. Хук `run-tests.ps1` (R3)**
+- [x] **01. Хук `run-tests.ps1` (R3)**
   - `.claude/hooks/run-tests.ps1`: блок «пропустити, якщо вже запущено vitest» (`-match 'vitest'`) уже в робочому дереві; закомітити як є. Додати коментар-«чому» одним рядком: вічно запущений Vitest у VS Code змушує хук пропускати перевірку, тож перед PR запускати `pnpm test` вручну.
   - Перевірка: ручний запуск хука з PowerShell (без запущеного vitest → тести виконуються).
   - Коміт: `chore(hooks): skip the test hook while another vitest process runs`
