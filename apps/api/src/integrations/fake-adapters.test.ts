@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { AnalysisResultSchema } from './testing/analysis-result-schema.js';
 import { PlanSchema } from '@gototalk/shared';
-import { TranscriptSchema } from './speech-recognition/transcript.js';
 import {
   HintSchema,
   SummarySchema,
@@ -10,33 +9,12 @@ import {
 import { ERROR_ANALYSIS_PROMPT_ID } from './language-model/prompts.js';
 import { FakeLanguageModel } from './language-model/fake-language-model.js';
 import type { LanguageModelPort } from './language-model/language-model.port.js';
+import { FakeSpeechRecognition } from './speech-recognition/fake/fake-speech-recognition.js';
 import type { SpeechRecognitionPort } from './speech-recognition/speech-recognition.port.js';
-import { FAKE_TRANSCRIPTS } from './speech-recognition/fake-transcripts.js';
-import { FakeSpeechRecognition } from './speech-recognition/fake-speech-recognition.js';
 
 const audio = Buffer.from([1, 2, 3]);
 
 const fakeStt = (): SpeechRecognitionPort => new FakeSpeechRecognition();
-
-describe('FakeSpeechRecognition', () => {
-  it('[TC-00-05] transcribe: the same index gives an identical result', async () => {
-    const stt = fakeStt();
-    const first = await stt.transcribe(audio, 'audio/webm', 2);
-    const second = await stt.transcribe(audio, 'audio/webm', 2);
-
-    expect(second).toEqual(first);
-    expect(TranscriptSchema.parse(first)).toEqual(first);
-  });
-
-  it('[TC-00-05] transcribe: a fresh adapter starts with transcript #0 and ignores the audio content', async () => {
-    const result = await fakeStt().transcribe(Buffer.alloc(0), 'audio/ogg');
-
-    expect(result.verbatim).toBe(FAKE_TRANSCRIPTS[0]);
-    expect(result.clean).toBe(
-      'Yesterday I go to the office and I have a meeting with my team. I very like my job.',
-    );
-  });
-});
 
 describe('FakeLanguageModel', () => {
   const llm: LanguageModelPort = new FakeLanguageModel();

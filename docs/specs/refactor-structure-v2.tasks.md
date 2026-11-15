@@ -144,7 +144,7 @@
 
 ## apps/api/src: integrations і common
 
-- [ ] **08. `integrations`: errors, speech-recognition/fake**
+- [x] **08. `integrations`: errors, speech-recognition/fake**
   - `LanguageModelInvalidResponseError`: `language-model/validated-call.ts` → `language-model/language-model.errors.ts` (імпорти в `validated-call.ts`, `report-generator.service.ts`, `turn.service.ts`, `hints.service.ts`, `mistake-analyzer.service.ts`, `session-planner.service.ts`, тести).
   - `speech-recognition/fake-speech-recognition.ts` (+test), `fake-transcripts.ts` → `speech-recognition/fake/`.
   - `integrations/fake-adapters.test.ts` (8 кейсів) і `fake-fail-modes.test.ts` (7): STT-кейси → `speech-recognition/fake/fake-speech-recognition.adapter.test.ts`; LLM-кейси лишаються до задачі 10.

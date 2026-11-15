@@ -1,8 +1,10 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import type { TurnResult } from '@gototalk/shared';
 import { toLanguageModelHttpError } from '../../common/language-model-http-errors.js';
-import { LanguageModelUnavailableError } from '../../integrations/language-model/language-model.errors.js';
-import { LanguageModelInvalidResponseError } from '../../integrations/language-model/validated-call.js';
+import {
+  LanguageModelInvalidResponseError,
+  LanguageModelUnavailableError,
+} from '../../integrations/language-model/language-model.errors.js';
 import { MistakeAnalyzerService } from '../analysis/mistake-analyzer.service.js';
 import { isSessionId, sessionNotFound } from '../session/session.errors.js';
 import { SessionsRepository } from '../session/sessions.repository.js';

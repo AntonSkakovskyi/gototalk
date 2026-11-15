@@ -1,4 +1,4 @@
-import { TranscriptSchema } from './transcript.js';
+import { TranscriptSchema } from '../transcript.js';
 import { describe, expect, it } from 'vitest';
 import { FakeSpeechRecognition } from './fake-speech-recognition.js';
 import { FAKE_TRANSCRIPTS } from './fake-transcripts.js';

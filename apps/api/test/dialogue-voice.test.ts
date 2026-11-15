@@ -1,7 +1,7 @@
 import { MAX_AUDIO_BYTES, UtteranceSchema } from '@gototalk/shared';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { cleanTranscript } from '../src/integrations/speech-recognition/clean-transcript.js';
-import { FAKE_TRANSCRIPTS } from '../src/integrations/speech-recognition/fake-transcripts.js';
+import { FAKE_TRANSCRIPTS } from '../src/integrations/speech-recognition/fake/fake-transcripts.js';
 import { postAudio, webmAudio } from './support/audio.js';
 import {
   analyse,

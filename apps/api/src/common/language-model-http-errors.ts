@@ -3,8 +3,10 @@ import {
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { ERROR_CODES } from '@gototalk/shared';
-import { LanguageModelUnavailableError } from '../integrations/language-model/language-model.errors.js';
-import { LanguageModelInvalidResponseError } from '../integrations/language-model/validated-call.js';
+import {
+  LanguageModelInvalidResponseError,
+  LanguageModelUnavailableError,
+} from '../integrations/language-model/language-model.errors.js';
 
 /** Returns the HTTP exception for a language model failure, or the error itself when it is not one. */
 export function toLanguageModelHttpError<E>(

@@ -8,10 +8,8 @@ import type { AnalysisEnvelope } from '../../integrations/language-model/model-o
 import type { z } from 'zod';
 import { LANGUAGE_MODEL_PORT } from '../../integrations/language-model/language-model.port.js';
 import type { LanguageModelPort } from '../../integrations/language-model/language-model.port.js';
-import {
-  LanguageModelInvalidResponseError,
-  requestValidated,
-} from '../../integrations/language-model/validated-call.js';
+import { LanguageModelInvalidResponseError } from '../../integrations/language-model/language-model.errors.js';
+import { requestValidated } from '../../integrations/language-model/validated-call.js';
 import { alignMistakes } from './lib/align-mistakes.js';
 import type { AnalysisOutcome } from './mistake-analyzer.types.js';
 

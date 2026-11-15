@@ -2,16 +2,16 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { TOP_CATEGORIES_LIMIT } from '@gototalk/shared';
 import { SummarySchema } from '../../integrations/language-model/model-output.js';
 import type { ReportSummary } from '@gototalk/shared';
-import { LanguageModelUnavailableError } from '../../integrations/language-model/language-model.errors.js';
+import {
+  LanguageModelInvalidResponseError,
+  LanguageModelUnavailableError,
+} from '../../integrations/language-model/language-model.errors.js';
 import { LANGUAGE_MODEL_PORT } from '../../integrations/language-model/language-model.port.js';
 import type {
   LanguageModelPort,
   SummarizeSessionInput,
 } from '../../integrations/language-model/language-model.port.js';
-import {
-  LanguageModelInvalidResponseError,
-  requestValidated,
-} from '../../integrations/language-model/validated-call.js';
+import { requestValidated } from '../../integrations/language-model/validated-call.js';
 import { PendingAnalysisService } from '../analysis/pending-analysis.service.js';
 import { buildSummaryInput } from './lib/summary-input.js';
 import { ReportRepository } from './persistence/report.repository.js';

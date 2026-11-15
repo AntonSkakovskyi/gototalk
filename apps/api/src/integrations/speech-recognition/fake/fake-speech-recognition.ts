@@ -1,9 +1,9 @@
-import type { Transcript } from './transcript.js';
-import type { FakeSttFailMode } from '../../core/config/env.schema.js';
-import { cleanTranscript } from './clean-transcript.js';
+import type { Transcript } from '../transcript.js';
+import type { FakeSttFailMode } from '../../../core/config/env.schema.js';
+import { cleanTranscript } from '../clean-transcript.js';
 import { FAKE_TRANSCRIPTS } from './fake-transcripts.js';
-import { SpeechRecognitionUnavailableError } from './speech-recognition.errors.js';
-import type { SpeechRecognitionPort } from './speech-recognition.port.js';
+import { SpeechRecognitionUnavailableError } from '../speech-recognition.errors.js';
+import type { SpeechRecognitionPort } from '../speech-recognition.port.js';
 
 export interface FakeSpeechRecognitionOptions {
   failMode?: FakeSttFailMode;

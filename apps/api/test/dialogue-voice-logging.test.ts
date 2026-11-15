@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { FAKE_TRANSCRIPTS } from '../src/integrations/speech-recognition/fake-transcripts.js';
+import { FAKE_TRANSCRIPTS } from '../src/integrations/speech-recognition/fake/fake-transcripts.js';
 import { postAudio } from './support/audio.js';
 import { captureLogs } from './support/capture-logs.js';
 import { startLearner } from './support/dialogue-flow.js';

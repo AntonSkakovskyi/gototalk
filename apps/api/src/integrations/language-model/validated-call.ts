@@ -1,16 +1,10 @@
 import type { z } from 'zod';
+import { LanguageModelInvalidResponseError } from './language-model.errors.js';
 
 const MAX_ATTEMPTS = 2;
 
 interface ValidationLogger {
   warn(context: object, message: string): void;
-}
-
-export class LanguageModelInvalidResponseError extends Error {
-  constructor() {
-    super('The language model returned an invalid response');
-    this.name = 'LanguageModelInvalidResponseError';
-  }
 }
 
 export async function requestValidated<T>(

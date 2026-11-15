@@ -5,11 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { FakeLanguageModel } from './language-model/fake-language-model.js';
 import { LanguageModelUnavailableError } from './language-model/language-model.errors.js';
 import type { LanguageModelPort } from './language-model/language-model.port.js';
-import { FakeSpeechRecognition } from './speech-recognition/fake-speech-recognition.js';
-import type { SpeechRecognitionPort } from './speech-recognition/speech-recognition.port.js';
-import { SpeechRecognitionUnavailableError } from './speech-recognition/speech-recognition.errors.js';
 
-const audio = Buffer.from([1, 2, 3]);
 const TEXT = 'yesterday I go to the office';
 
 const planInput = {
@@ -32,29 +28,6 @@ function everyMethod(llm: LanguageModelPort): Promise<unknown>[] {
     llm.summarizeSession(sessionInput),
   ];
 }
-
-describe('FakeSpeechRecognition fail modes', () => {
-  it('[TC-04-08] unavailable: transcribe rejects with SpeechRecognitionUnavailableError', async () => {
-    const stt: SpeechRecognitionPort = new FakeSpeechRecognition({
-      failMode: 'unavailable',
-    });
-
-    const error: unknown = await stt
-      .transcribe(audio, 'audio/webm')
-      .catch((caught: unknown) => caught);
-
-    expect(error).toBeInstanceOf(SpeechRecognitionUnavailableError);
-    expect((error as Error).name).toBe('SpeechRecognitionUnavailableError');
-  });
-
-  it('[TC-00-05] without a fail mode transcribe keeps working', async () => {
-    const stt: SpeechRecognitionPort = new FakeSpeechRecognition({});
-
-    const transcript = await stt.transcribe(audio, 'audio/webm');
-
-    expect(transcript.verbatim).toContain('yesterday I go');
-  });
-});
 
 describe('FakeLanguageModel fail modes', () => {
   it('[TC-04-08] unavailable: every method rejects with LanguageModelUnavailableError', async () => {

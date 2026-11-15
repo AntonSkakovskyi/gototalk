@@ -2,7 +2,7 @@ import { Global, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { Env } from '../core/config/env.schema.js';
 import { FakeLanguageModel } from './language-model/fake-language-model.js';
-import { FakeSpeechRecognition } from './speech-recognition/fake-speech-recognition.js';
+import { FakeSpeechRecognition } from './speech-recognition/fake/fake-speech-recognition.js';
 import { LANGUAGE_MODEL_PORT } from './language-model/language-model.port.js';
 import type { LanguageModelPort } from './language-model/language-model.port.js';
 import { SPEECH_RECOGNITION_PORT } from './speech-recognition/speech-recognition.port.js';

@@ -4,8 +4,10 @@ import {
 } from '@nestjs/common';
 import { ERROR_CODES } from '@gototalk/shared';
 import { describe, expect, it } from 'vitest';
-import { LanguageModelUnavailableError } from '../integrations/language-model/language-model.errors.js';
-import { LanguageModelInvalidResponseError } from '../integrations/language-model/validated-call.js';
+import {
+  LanguageModelInvalidResponseError,
+  LanguageModelUnavailableError,
+} from '../integrations/language-model/language-model.errors.js';
 import { toLanguageModelHttpError } from './language-model-http-errors.js';
 
 describe('toLanguageModelHttpError', () => {
