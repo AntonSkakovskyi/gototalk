@@ -1,4 +1,4 @@
-import { testUtterance } from '@/shared/testing/test-fixtures';
+import { testUtterance } from '@/shared/testing/fixtures/session';
 import { awaitingReply, currentQuestion, sortBySeq } from './turns';
 
 describe('currentQuestion', () => {

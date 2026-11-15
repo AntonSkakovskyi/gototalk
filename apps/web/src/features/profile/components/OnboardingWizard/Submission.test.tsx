@@ -1,13 +1,9 @@
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import uk from '@/shared/i18n/uk.json';
+import { uk } from '@/shared/i18n/resources';
 import { mockApi } from '@/shared/testing/mock-api';
-import {
-  TEST_PROFILE,
-  errorResponse,
-  jsonResponse,
-  testGoal,
-} from '@/shared/testing/test-fixtures';
+import { TEST_PROFILE, testGoal } from '@/shared/testing/fixtures/profile';
+import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
 import {
   button,
   goalField,
@@ -15,7 +11,7 @@ import {
   renderWizard,
   stubGoalsApi,
   text,
-} from './wizard-test-helpers';
+} from '@/features/profile/testing/wizard-test-helpers';
 
 describe('OnboardingWizard submission', () => {
   it('[TC-02-03] creates goals, saves the profile last and reports completion', async () => {
@@ -88,9 +84,7 @@ describe('OnboardingWizard submission', () => {
     await user.click(button(uk.common.actions.finish));
 
     const alert = await screen.findByRole('alert');
-    expect(
-      within(alert).getByText(uk.errors.generic),
-    ).toBeInTheDocument();
+    expect(within(alert).getByText(uk.errors.generic)).toBeInTheDocument();
     expect(onCompleted).not.toHaveBeenCalled();
     expect(goalField(1)).toHaveValue('Speak fluently');
 

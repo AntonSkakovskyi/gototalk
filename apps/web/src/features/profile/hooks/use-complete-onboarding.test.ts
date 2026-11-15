@@ -9,12 +9,8 @@ import {
   createQueryWrapper,
   createTestQueryClient,
 } from '@/shared/testing/query-wrapper';
-import {
-  TEST_PROFILE,
-  errorResponse,
-  jsonResponse,
-  testGoal,
-} from '@/shared/testing/test-fixtures';
+import { TEST_PROFILE, testGoal } from '@/shared/testing/fixtures/profile';
+import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
 import { profileKeys } from '@/features/profile/api/profile-queries';
 import { useCompleteOnboarding } from './use-complete-onboarding';
 

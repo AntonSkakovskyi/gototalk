@@ -8,13 +8,12 @@ import {
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { mockApi } from '@/shared/testing/mock-api';
 import { createQueryWrapper } from '@/shared/testing/query-wrapper';
+import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
 import {
-  errorResponse,
-  jsonResponse,
   testSession,
   testSessionPlan,
-} from '@/shared/testing/test-fixtures';
-import { sessionKeys } from '@/shared/api/session-details';
+} from '@/shared/testing/fixtures/session';
+import { sessionKeys } from '@/entities/session/api/session-details';
 import {
   sessionHistoryQueryOptions,
   sessionListQueryOptions,

@@ -1,4 +1,5 @@
-import { testReport, testWord } from '@/shared/testing/test-fixtures';
+import { testReport } from '@/shared/testing/fixtures/report';
+import { testWord } from '@/shared/testing/fixtures/words';
 import { withWordInPages, withWordInReport } from './words-cache';
 
 const OTHER = testWord({ id: '4a8d3e27-1b5c-4c9d-9e6f-7a2b8c1d0009' });

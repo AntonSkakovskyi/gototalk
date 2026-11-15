@@ -1,4 +1,4 @@
-import { testGoal } from '@/shared/testing/test-fixtures';
+import { testGoal } from '@/shared/testing/fixtures/profile';
 import { countActiveGoals, sortActiveFirst } from './goal-list';
 
 const FIRST_DONE = testGoal({ id: 'a', title: 'first done', status: 'done' });

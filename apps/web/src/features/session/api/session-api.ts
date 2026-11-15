@@ -11,6 +11,7 @@ import {
   type StartSessionRequest,
 } from '@gototalk/shared';
 import { apiFetch } from '@/shared/api/http';
+import { pageQueryString } from '@/shared/api/page-query';
 
 export function planSession(request: PlanSessionRequest): Promise<SessionPlan> {
   return apiFetch('/api/sessions/plan', {
@@ -43,15 +44,10 @@ export function listHistory({
   cursor,
   limit,
 }: HistoryQuery = {}): Promise<SessionPage> {
-  const params = new URLSearchParams();
-  if (cursor !== undefined) {
-    params.set('cursor', cursor);
-  }
-  if (limit !== undefined) {
-    params.set('limit', String(limit));
-  }
-  const query = params.toString();
-  return apiFetch(`/api/sessions/history${query === '' ? '' : `?${query}`}`, {
-    schema: SessionPageSchema,
-  });
+  return apiFetch(
+    `/api/sessions/history${pageQueryString({ cursor, limit })}`,
+    {
+      schema: SessionPageSchema,
+    },
+  );
 }

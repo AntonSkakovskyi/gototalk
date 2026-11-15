@@ -55,6 +55,7 @@ Web (`apps/web/src`):
 - Імпорти між папками через `@/` (→ `apps/web/src`), відносні лише в межах однієї папки, ніколи `../../`. Суфікса `.js` в імпортах web немає.
 - Іменування: файли й папки компонентів PascalCase, усе інше kebab-case.
 - Межі шарів, цикли й `../../` перевіряє ESLint (`eslint-plugin-import-x`), порушення дають помилку.
+- Єдиний виняток: `*.test.*` і `testing/**` можуть імпортувати `@/app/**` (тести – корінь композиції: рендерять `App`, роутер і тему), решта меж діє і для тестів; у production-коді винятків немає.
 
 Api (`apps/api/src`): `core/`, `common/`, `integrations/`, `modules/`; у корені лише `main.ts`, `configure-app.ts`, `app.module.ts` та їхні тести.
 - Модуль NestJS = доменна область у `modules/<name>/` (auth, me, profile, session, dialogue, analysis, далі vocabulary, cards, report).

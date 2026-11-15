@@ -5,13 +5,10 @@ import {
 } from '@gototalk/shared';
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import uk from '@/shared/i18n/uk.json';
-import { mockSessionApi } from '@/shared/testing/session-mocks';
-import {
-  errorResponse,
-  jsonResponse,
-  testSessionPlan,
-} from '@/shared/testing/test-fixtures';
+import { uk } from '@/shared/i18n/resources';
+import { mockSessionApi } from '@/features/session/testing/session-mocks';
+import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
+import { testSessionPlan } from '@/shared/testing/fixtures/session';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 import { SessionProposal } from './SessionProposal';
 

@@ -2,7 +2,7 @@ import { Paper, Stack, Text } from '@mantine/core';
 import { useId, type Ref } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ENGLISH_LANG } from '@/shared/i18n/languages';
-import { PastQuestion } from '@/shared/ui/PastQuestion/PastQuestion';
+import { PastQuestion } from '@/entities/session/components/PastQuestion/PastQuestion';
 
 interface QuestionCardProps {
   text: string;

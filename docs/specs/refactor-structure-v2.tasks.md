@@ -73,6 +73,11 @@
 | 4 | документи | 50–54 (лише `pnpm lint` і перевірка посилань; тести не запускати) |
 
 Пачки статуси перевірки:
+- PR 3 фінал: перевірено (`pnpm -r build` ок; `pnpm test:e2e` 24/24 двічі; `pnpm dev` без помилок, `/api/health` через проксі Vite 200, `/api/docs-json` 200, 29 операцій; `pnpm db:pull` без diff; Playwright MCP на 390 px: логін → старт сесії → текстова відповідь → підказка «Почати фразу» → завершення → звіт – без помилок, у консолі лише очікуваний 401 від `/auth/refresh` до входу; тести: shared 91, web 971 (127 файлів; +6 `page-query`), api 1177; `eslint .`: 0 помилок, 0 warn; фінальне рев'ю гілки PASS; назви `it`/`describe` не втрачено, зміни лише описані в задачах)
+- Пачка i18n і правила (PR 3): перевірено (shared 91, web 971 у 127 файлах, api 1177; `uk/*.json` дорівнює `main:uk.json` (deep equal, порядок ключів); назви `it`/`describe` (923) збігаються; `eslint .`: 0 помилок, 0 warn; рев'ю PASS, низькі знахідки в backlog)
+- Пачка dialogue-підобласті, сторінки, e2e, page-query (PR 3): перевірено (shared 91, web 971 у 127 файлах (+6 тестів `page-query`), api 1177; e2e 24/24; ESLint debt 12 warn; рев'ю PASS, низькі знахідки в backlog)
+- Пачка entities, моки, хелпери (PR 3): перевірено (shared 91, web 965 у 126 файлах, api 1177; списки назв `it`/`describe` (940) збігаються до й після; ESLint debt 12 warn (web: 9 тестів → `@/app`, 3 у shared); рев'ю PASS, низькі знахідки в backlog)
+- Пачка shared web і фікстури (PR 3): перевірено (shared 91, web 965 у 126 файлах, api 1177; `test-fixtures.ts` розщеплено без втрат: 205 рядків до й після, 20 експортів; рев'ю PASS, низькі знахідки в backlog)
 - PR 2 фінал: перевірено (`pnpm -r build` ок; `pnpm test:e2e` 24/24; `pnpm dev` без помилок, `/api/health` 200, `/api/docs-json` 200, 29 операцій; `pnpm db:pull` без diff; тести: shared 91, web 965, api 1177 (127 файлів) – без змін проти бази PR 1; ESLint 0 помилок, 13 warn (web-тести, до задачі 49); фінальне рев'ю гілки PASS)
 - Пачка розбиття й таблиця (PR 2): перевірено (shared 91, web 965, api 1177 тестів у 127 файлах (121 + 6 половин); назви `it` і тіла збігаються з оригіналами; рев'ю PASS, низькі знахідки в backlog)
 - Пачка тести dialogue, analysis, report, vocabulary (PR 2): перевірено (shared 91, web 965, api 1177; 30 перейменувань R080–R097, тіла тестів збігаються байт у байт після відкидання імпортів; рев'ю PASS)
@@ -384,79 +389,89 @@
 
 Шляхи нижче від `apps/web/src`, якщо не вказано інше.
 
-- [ ] **35. `shared/session` → `shared/auth-session` (W1)**
+- [x] **35. `shared/session` → `shared/auth-session` (W1)**
   - `shared/session/{session-store,query-cache}.ts` (+tests) → `shared/auth-session/`; імпорти (`@/shared/session/…` → `@/shared/auth-session/…`) у `shared/api/*`, `app/*`, `features/auth`, `main.tsx`, `vitest.setup.ts`, `test-utils.tsx`; ESLint-зона `shared/session ↛ shared/api` → `shared/auth-session ↛ shared/api`. Експорти й назви без змін.
   - Коміт: `refactor(web): rename shared session store to auth-session`
 
-- [ ] **36. `shared/testing`: розщеплення `test-fixtures.ts` (W1)**
+- [x] **36. `shared/testing`: розщеплення `test-fixtures.ts` (W1)**
   - `shared/testing/test-fixtures.ts` (240 рядків) → `shared/testing/http-responses.ts` (`jsonResponse`, `errorResponse`), `shared/testing/fixtures/{auth,profile,session,words,report}.ts` (фабрики DTO, імпорт лише з `@gototalk/shared`), `shared/testing/deferred.ts` (`deferred()` з dialogue-моків, r.65); `test-fixtures.test.ts` розбити за файлами. Імпорти в ~100 тестах: `@/shared/testing/test-fixtures` → нові шляхи (механічно, codemod-скриптом у scratchpad із перевіркою `tsc`).
+  - Відхилення: `deferred()` жила в `shared/testing/answer-flow-setup.tsx` (не в dialogue-mocks); константи `EMPTY_SESSIONS_ROUTE`/`EMPTY_WORDS_ROUTE` і `emptyResponse` – у `http-responses.ts` (будуються на `jsonResponse`); `fixtures/report.ts` імпортує `./session` і `./words` (єдиний перехресний імпорт фікстур); константи learner-model – у `fixtures/profile.ts`; тести фікстур: `fixtures/report.test.ts` (2) і `fixtures/words.test.ts` (1), 3 `it` до й після.
   - Коміт: `refactor(web): split test fixtures into http responses and per-domain factories`
 
-- [ ] **37. `entities/session`: api і lib `[risk]` (W1)**
+- [x] **37. `entities/session`: api і lib `[risk]` (W1)**
   - `shared/api/session-details.ts` (+test), `mistakes.ts` (+test), `mistake-errors.ts` (+test), `details-cache.ts` (+test) → `entities/session/api/` (перші два) і `entities/session/lib/` (останні два); `shared/router/session-paths.ts` (+test) → `entities/session/lib/session-paths.ts`.
   - ESLint: зони `entities` стають активними (`warn` з задачі 02): `entities ↛ features|pages|app`.
   - Перевірка: усі споживачі (4 фічі, 2 сторінки, ~30 імпортів) компілюються; `pnpm --filter web test`.
   - Коміт: `refactor(web): move session details api and cache helpers into entities/session`
 
-- [ ] **38. `entities/session/hooks`**
+- [x] **38. `entities/session/hooks`**
   - `shared/hooks/use-mark-mistake.ts` (+test), `use-update-details.ts` → `entities/session/hooks/`; `shared/hooks/use-focus-when.ts` лишається в `shared/`.
   - Коміт: `refactor(web): move session entity hooks into entities/session`
 
-- [ ] **39. `entities/session/components` `[risk]` (W1/W3)**
+- [x] **39. `entities/session/components` `[risk]` (W1/W3)**
   - Папки цілком: `shared/ui/AnswerCard`, `PastQuestion`, `BetterPhrasings`, `ReplaceArrow`, `AnswerTranscript` (+scss, +tests, `highlight-segments`), `MistakeDetails` → `entities/session/components/<Name>/`.
   - W3: `TranscriptText.tsx` → `components/TranscriptText/TranscriptText.tsx`, `Correction.tsx` + `.module.scss` → `components/Correction/` (власні папки, бо імпортуються поза папкою батька).
   - `shared/ui/` лишається з `LoadError`, `LoadMoreFooter`, `SectionSkeleton`.
+  - Відхилення (W3): `TranscriptText` імпортує лише `AnswerTranscript`, `Correction` – лише `MistakeDetails` (перевірено grep), тому за правилом «власна папка, лише якщо імпортують поза папкою батька» вони лишились у папках батьків (`AnswerTranscript/TranscriptText.tsx`, `MistakeDetails/Correction.tsx` + scss); у `shared/ui` лишились `LoadError`, `LoadMoreFooter`, `SectionSkeleton`; 26 `it` до й після.
   - Коміт: `refactor(web): move session transcript components into entities/session`
 
-- [ ] **40. Доменні моки з `shared/testing` у `testing/` зрізів (W1, r.65)**
+- [x] **40. Доменні моки з `shared/testing` у `testing/` зрізів (W1, r.65)**
   - `shared/testing/dialogue-mocks.ts`, `answer-flow-setup.tsx` → `features/dialogue/testing/`; `session-mocks.ts` → `features/session/testing/session-mocks.ts`; `report-mocks.ts` → `features/report/testing/`; `words-mocks.ts` → `features/vocabulary/testing/`; частину `dialogue-mocks`, потрібну сутності (`markMistakeOk` тощо) → `entities/session/testing/session-entity-mocks.ts`.
   - `shared/testing/**` після цього не імпортує `features`/`entities`; зона `shared ↛ features|entities` на тестах → працює.
+  - Відхилення: нова `entities/session/testing/session-entity-mocks.ts` (`DIALOGUE_SESSION_ID`, `SESSION_PATH`, `markMistakeOk`, `sessionEntityRoutes`, `markMistakeBodies`, `mockSessionEntityApi`); три entity-тести (`mistakes.test.ts`, `AnswerTranscript.mark.test.tsx`, `use-mark-mistake.test.ts`) перейшли з `mockDialogueApi` на `mockSessionEntityApi` (механічне перейменування викликів, бо сутність не імпортує фічу); `mockDialogueApi` розгортає `sessionEntityRoutes`; сторінки імпортують `testing/` фіч напряму (дозволено). Залишок warn (12): `shared/testing/test-utils.tsx` → `@/app/theme/theme`, `shared/api/refresh.test.ts` і `shared/auth-session/query-cache.test.ts` → `features/auth`, 9 page-тестів і `AccountSection.test` → `@/app/...`; вирішується в задачі 41/49.
   - Коміт: `refactor(web): move domain test mocks next to their slices`
 
-- [ ] **41. Тестові хелпери поруч із компонентами (W2)**
+- [x] **41. Тестові хелпери поруч із компонентами (W2)**
   - `pages/report/report-page-setup.ts` → `pages/report/testing/`; `features/dialogue/components/DialogueScreen/dialogue-screen-test-helpers.tsx` → `features/dialogue/testing/`; `features/profile/components/GoalsSection/goals-test-helpers.tsx`, `OnboardingWizard/wizard-test-helpers.tsx` → `features/profile/testing/`; `features/report/components/DeepAnalysis/deep-analysis-fixtures.ts` → `features/report/testing/`; `app/router/guards/guard-test-helpers.tsx` → `app/testing/`.
   - Коміт: `refactor(web): collect component test helpers in testing folders`
 
-- [ ] **42. `SessionListItem` у власну папку (W3)**
+- [x] **42. `SessionListItem` у власну папку (W3)**
   - `features/session/components/RecentSessions/SessionListItem.tsx` + `.module.scss` → `components/SessionListItem/` (імпортують `RecentSessions` і `SessionHistory`).
   - Коміт: `refactor(web): give shared session list item its own folder`
 
-- [ ] **43. `features/dialogue/recording/` (W4)**
+- [x] **43. `features/dialogue/recording/` (W4)**
   - `components/{RecordButton,RecordingIndicator,MicPermissionHelp}` (+tests) → `recording/components/`; `hooks/use-audio-recorder*.ts` (+3 тести) → `recording/hooks/`; `lib/{audio-level,recorder-mime,recording-session,mic-help,format-elapsed}` (+tests) → `recording/lib/`; `testing/{fake-media,recorder-harness}.ts` → `recording/testing/`.
   - `mic-help.ts` імпортує хук `use-audio-recorder` (lib → hooks): розв'язати переносом спільного типу/константи в `recording/lib/` без зміни поведінки.
   - Підобласті не імпортують одна одну (зона з задачі 02).
+  - Відхилення: `mic-help.ts` імпортував з хука лише тип `RecorderStatus` – перенесено дослівно в нову `recording/lib/recorder-status.ts`, хук, `mic-help`, `MicPermissionHelp` і `RecordingIndicator` (з тестами) імпортують його звідти; `api/dialogue-api.ts` імпортує `audioFileName` з `recording/lib/recorder-mime` (кореневий `api/` залежить від підобласті; правилами дозволено); Vitest `src/features/dialogue` + `src/pages` до й після: 382 тести в 46 файлах.
   - Коміт: `refactor(web): extract the recording area of the dialogue feature`
 
-- [ ] **44. `features/dialogue/hint/` і `turn-cache` (W4)**
+- [x] **44. `features/dialogue/hint/` і `turn-cache` (W4)**
   - `components/HintPanel/*` (HintPanel, HintOutcome, WordHintForm, тест) → `hint/components/HintPanel/`; `hooks/use-hint.ts` (+test) → `hint/hooks/`; `lib/hint-form.ts` (+test) → `hint/lib/`.
   - `features/dialogue/lib/details-cache.ts` (+test) → `lib/turn-cache.ts` (+test) (колізія назв із `entities/session/lib/details-cache.ts`); експорти й імена функцій без змін.
+  - Відхилення: у `turn-cache.test.ts` `describe('details-cache')` → `describe('turn-cache')` (мітка називала файл); тести `HintPanel` і `use-hint` імпортують кореневий `dialogue-mocks` (лише тести, правилами дозволено); Vitest `src/features/dialogue` + `src/pages` до й після: 382 тести в 46 файлах.
   - Коміт: `refactor(web): extract the hint area and rename the dialogue turn cache`
 
-- [ ] **45. Сторінки `home`/`dialogue` і e2e (W5, r.79) `[e2e]`**
+- [x] **45. Сторінки `home`/`dialogue` і e2e (W5, r.79) `[e2e]`**
   - `pages/session/SessionPage.tsx` (+test) → `pages/home/HomePage.tsx` (+test) (компонент `HomePage`); `pages/dialog/DialogPage.tsx` (+test) → `pages/dialogue/DialoguePage.tsx` (+test); оновити `app/App.tsx`, `App.test.tsx`.
   - `e2e/dialog.spec.ts` → `e2e/dialogue.spec.ts`; `e2e/support/dialog.ts` → `e2e/support/dialogue.ts`; `translateHint` з `report.spec.ts`/`voice.spec.ts` → `support/dialogue.ts`.
   - Перевірка: `pnpm test:e2e` (усі сценарії); Playwright MCP 390 px: головна й діалог.
+  - Відхилення: у `voice.spec.ts` не було локальної `translateHint`, а ті самі кроки були записані прямо в тесті (перевірено, що вони ідентичні кроками з `report.spec.ts`) – замінено викликом `translateHint(page)`; `pnpm test:e2e` 24/24 з першого прогону; Playwright MCP на 390 px робиться на фіналі PR (разом із сценарієм login → звіт).
   - Коміт: `refactor(web): align page names with routes and dedupe the e2e hint helper`
 
-- [ ] **46. `shared/api/page-query.ts` (W8, r.78)**
+- [x] **46. `shared/api/page-query.ts` (W8, r.78)**
   - Нове `shared/api/page-query.ts` (`pageQueryString({ cursor, limit })`) + тест; `features/session/api/session-api.ts` (`listHistory`) і `features/vocabulary/api/words-api.ts` (`listWords`) використовують його; вихідний рядок запиту ідентичний (перевірити наявними тестами API-клієнтів).
   - Коміт: `refactor(web): share the cursor page query builder`
 
-- [ ] **47. `uk.json` → `uk/*.json` (W6)**
+- [x] **47. `uk.json` → `uk/*.json` (W6)**
   - `shared/i18n/uk.json` → `shared/i18n/uk/{app,common,errors,auth,profile,session,dialogue,transcript,report,vocabulary,mistakeCategories,nav,pages}.json` (13 верхніх ключів; значення без змін); нове `shared/i18n/resources.ts` (збирає об'єкт `{ uk: { translation: {...} } }`, структура ідентична попередньому JSON); `shared/i18n/index.ts` імпортує `resources.ts`.
   - Перевірка: `i18n.test.ts` + порівняння: скрипт у scratchpad порівнює результат злиття з вмістом старого `uk.json` з `main` (deep equal, ключі в тому ж порядку) – має бути ідентичний; `pnpm --filter web build`.
+  - Відхилення: `resources.ts` експортує `resources` і тонкий акцесор `uk = resources.uk.translation` (імпортери змінили лише рядок імпорту: `import { uk } from '@/shared/i18n/resources'`; 68 файлів); `uk.json` перейменовано `git mv` у `uk/profile.json`, але git (поріг 50%) показує видалення + 13 додавань, тож `git log --follow` для JSON-файлів історію не веде; те саме для `test-fixtures.ts` → `fixtures/*`; файл `mistakeCategories.json` лишився camelCase, як названо в задачі (за ключем верхнього рівня); перевірка: злиття нових файлів дорівнює `main:uk.json` (deep equal, однаковий порядок ключів, 13 ключів, 297 рядків), `pnpm --filter web build` успішний.
   - Коміт: `refactor(web): split the uk translation into per-area json files`
 
-- [ ] **48. Типізація ключів i18n `[risk]` (W6)**
+- [x] **48. Типізація ключів i18n `[risk]` (W6)**
   - Context7 (react-i18next 18): `CustomTypeOptions { defaultNS, resources }`; `shared/i18n/i18next.d.ts`.
   - ~20 місць зі `string`-ключами (`dialogue-errors.ts`, `session-errors.ts`, `profile-errors.ts`, `report-errors.ts`, `word-errors.ts`, `mistake-errors.ts`, `use-error-text.ts` та ін.) типізувати ключем (`TranslationKey` або `Record<…, TranslationKey>`); без зміни поведінки.
   - Перевірка: `pnpm typecheck`; негативна перевірка: тимчасовий неіснуючий ключ дає помилку typecheck (відкотити).
+  - Відхилення: `TranslationKey` (`ParseKeys` з i18next 27) лежить у `shared/i18n/translation-key.ts`, а не в `resources.ts` (там рантайм-JSON); типізовано 13 файлів (таблиці помилок, форми, `submitError` у сторінках/діалозі), кастів немає; негативна перевірка: неіснуючий ключ у `session-errors.ts` і `t('nonexistent.key')` дали помилки typecheck (TS2418, TS2345), відкочено.
   - Коміт: `refactor(web): type translation keys from the uk resources`
 
-- [ ] **49. Web-правила в `error`, PR3 завершено**
+- [x] **49. Web-правила в `error`, PR3 завершено**
   - `eslint.config.js`: зони `entities`, підобласті фіч, `shared/testing`, `no-cycle` → `error`. Перевірка тимчасовими порушеннями: `shared → entities`, `entities/a → entities/b`, `features/dialogue/recording → features/dialogue/hint`, `shared/testing → features`; кожне дає помилку; відкотити.
   - Фінальна перевірка PR3 (повний набір, Playwright MCP 390 px: login → старт → відповідь → підказка → завершення → звіт).
   - Таблиця «старий шлях → новий» для тестів web (`git diff -M --name-status main HEAD -- apps/web e2e`) додається в задачі 54.
+  - Рішення власника (12 порушень у тестах): виняток лише для імпортів `@/app/**` у `*.test.*` і `testing/**`, решта меж діє й для тестів, у production-коді винятків немає; `refresh.test.ts` і `query-cache.test.ts` переписано без імпорту `features/auth` (локальний `logout()`: у `refresh.test.ts` через `apiFetch`, у `query-cache.test.ts` через `fetch`, бо `shared/auth-session` не імпортує `shared/api`); виняток задокументовано одним рядком у `CLAUDE.md`.
+  - Виконано: усі web-зони, підобласті, `shared/testing` і `no-cycle` – `error` (`import-x-debt` прибрано); тимчасові порушення (`shared → entities`, `entities/b → entities/a`, `recording → hint`, `shared/testing → features`, `feature → feature`, production-файл → `@/app`, shared-тест → feature) дали помилку, дозволені `@/app` у тестах/`testing` проходять; `no-cycle` і заборона `../..` тепер діють і для тестів та `shared/testing`; `eslint .`: 0 помилок, 0 warn.
   - Коміт: `refactor(web): enforce layer, entity and slice boundaries as errors`
 
 ---

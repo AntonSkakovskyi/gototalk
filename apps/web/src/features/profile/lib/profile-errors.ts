@@ -1,8 +1,9 @@
 import { ERROR_CODES, MAX_ACTIVE_GOALS } from '@gototalk/shared';
 import { ApiError } from '@/shared/api/http';
+import type { TranslationKey } from '@/shared/i18n/translation-key';
 
 export interface ProfileErrorMessage {
-  key: string;
+  key: TranslationKey;
   values?: { max: number };
 }
 

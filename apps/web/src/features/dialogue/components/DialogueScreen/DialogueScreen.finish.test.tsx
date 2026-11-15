@@ -1,15 +1,11 @@
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import uk from '@/shared/i18n/uk.json';
-import { deferred } from '@/shared/testing/answer-flow-setup';
-import {
-  DIALOGUE_SESSION_ID,
-  mockDialogueApi,
-} from '@/shared/testing/dialogue-mocks';
-import {
-  jsonResponse,
-  testSessionDetails,
-} from '@/shared/testing/test-fixtures';
+import { uk } from '@/shared/i18n/resources';
+import { deferred } from '@/shared/testing/deferred';
+import { mockDialogueApi } from '@/features/dialogue/testing/dialogue-mocks';
+import { DIALOGUE_SESSION_ID } from '@/entities/session/testing/session-entity-mocks';
+import { jsonResponse } from '@/shared/testing/http-responses';
+import { testSessionDetails } from '@/shared/testing/fixtures/session';
 import {
   FIRST_QUESTION,
   PENDING_ANSWER,
@@ -17,7 +13,7 @@ import {
   TURN,
   renderScreen,
   sendAnswer,
-} from './dialogue-screen-test-helpers';
+} from '@/features/dialogue/testing/dialogue-screen-test-helpers';
 
 const FINISHED = testSessionDetails({
   status: 'finished',

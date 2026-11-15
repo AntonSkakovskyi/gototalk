@@ -11,7 +11,7 @@ import {
   clearSession,
   setSession,
   updateUser,
-} from '@/shared/session/session-store';
+} from '@/shared/auth-session/session-store';
 
 export async function register(request: RegisterRequest): Promise<void> {
   const auth = await apiFetch('/api/auth/register', {

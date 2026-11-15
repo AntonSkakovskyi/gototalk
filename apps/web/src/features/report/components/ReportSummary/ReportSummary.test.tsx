@@ -1,8 +1,8 @@
 import type { SessionReport } from '@gototalk/shared';
 import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import uk from '@/shared/i18n/uk.json';
-import { testReport } from '@/shared/testing/test-fixtures';
+import { uk } from '@/shared/i18n/resources';
+import { testReport } from '@/shared/testing/fixtures/report';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 import { ReportSummary } from './ReportSummary';
 

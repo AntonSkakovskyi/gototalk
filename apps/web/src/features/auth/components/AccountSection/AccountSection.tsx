@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import classes from './AccountSection.module.scss';
 import { DeleteAccountDialog } from '@/features/auth/components/DeleteAccountDialog/DeleteAccountDialog';
 import { useLogout } from '@/features/auth/hooks/use-logout';
-import { useSession } from '@/shared/session/session-store';
+import { useSession } from '@/shared/auth-session/session-store';
 
 export function AccountSection() {
   const { t } = useTranslation();

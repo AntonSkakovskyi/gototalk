@@ -3,8 +3,8 @@ import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { StrictMode } from 'react';
 import { Route, Routes } from 'react-router';
-import { sessionKeys } from '@/shared/api/session-details';
-import uk from '@/shared/i18n/uk.json';
+import { sessionKeys } from '@/entities/session/api/session-details';
+import { uk } from '@/shared/i18n/resources';
 import { LocationProbe } from '@/shared/testing/LocationProbe';
 import { createTestQueryClient } from '@/shared/testing/query-wrapper';
 import i18n from '@/shared/i18n/index';
@@ -13,12 +13,9 @@ import {
   mockSessionApi,
   planFor,
   startOk,
-} from '@/shared/testing/session-mocks';
-import {
-  errorResponse,
-  jsonResponse,
-  testSessionPlan,
-} from '@/shared/testing/test-fixtures';
+} from '@/features/session/testing/session-mocks';
+import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
+import { testSessionPlan } from '@/shared/testing/fixtures/session';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 import { SessionProposal } from './SessionProposal';
 

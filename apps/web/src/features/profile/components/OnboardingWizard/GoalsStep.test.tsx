@@ -1,8 +1,9 @@
 import { GOAL_TITLE_MAX, MAX_ACTIVE_GOALS } from '@gototalk/shared';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import uk from '@/shared/i18n/uk.json';
-import { TEST_PROFILE, jsonResponse } from '@/shared/testing/test-fixtures';
+import { uk } from '@/shared/i18n/resources';
+import { TEST_PROFILE } from '@/shared/testing/fixtures/profile';
+import { jsonResponse } from '@/shared/testing/http-responses';
 import {
   button,
   chip,
@@ -15,7 +16,7 @@ import {
   progress,
   text,
   withMax,
-} from './wizard-test-helpers';
+} from '@/features/profile/testing/wizard-test-helpers';
 
 describe('OnboardingWizard goals step', () => {
   it('[TC-02-03] starts with one goal field and offers up to the active limit', async () => {

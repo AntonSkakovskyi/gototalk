@@ -1,12 +1,9 @@
 import { ERROR_CODES, GOAL_TITLE_MAX } from '@gototalk/shared';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import uk from '@/shared/i18n/uk.json';
-import {
-  errorResponse,
-  jsonResponse,
-  testGoal,
-} from '@/shared/testing/test-fixtures';
+import { uk } from '@/shared/i18n/resources';
+import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
+import { testGoal } from '@/shared/testing/fixtures/profile';
 import {
   FLUENT,
   INTERVIEW,
@@ -19,7 +16,7 @@ import {
   renderGoals,
   stubGoals,
   text,
-} from './goals-test-helpers';
+} from '@/features/profile/testing/goals-test-helpers';
 
 describe('GoalsSection add goal', () => {
   it('[TC-02-03] creates a trimmed goal, clears the field and lists the goal', async () => {

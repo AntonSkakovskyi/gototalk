@@ -4,18 +4,15 @@ import userEvent from '@testing-library/user-event';
 import {
   currentLocation,
   renderAppWithProbe,
-} from '@/app/router/guards/guard-test-helpers';
-import { sessionKeys } from '@/shared/api/session-details';
-import uk from '@/shared/i18n/uk.json';
-import { deferred } from '@/shared/testing/answer-flow-setup';
+} from '@/app/testing/guard-test-helpers';
+import { sessionKeys } from '@/entities/session/api/session-details';
+import { uk } from '@/shared/i18n/resources';
+import { deferred } from '@/shared/testing/deferred';
 import { createTestQueryClient } from '@/shared/testing/query-wrapper';
 import { mockApi } from '@/shared/testing/mock-api';
-import { reportOk } from '@/shared/testing/report-mocks';
-import {
-  TEST_PROFILE,
-  errorResponse,
-  jsonResponse,
-} from '@/shared/testing/test-fixtures';
+import { reportOk } from '@/features/report/testing/report-mocks';
+import { TEST_PROFILE } from '@/shared/testing/fixtures/profile';
+import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
 import {
   AUTH,
   DETAILS_ROUTE,
@@ -24,7 +21,7 @@ import {
   ROUTE,
   TURN,
   mockReportPage,
-} from './report-page-setup';
+} from '@/pages/report/testing/report-page-setup';
 
 function renderReport(...args: Parameters<typeof mockReportPage>) {
   const api = mockReportPage(...args);

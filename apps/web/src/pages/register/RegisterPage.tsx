@@ -20,10 +20,11 @@ import {
   passwordErrorKey,
 } from '@/features/auth/lib/auth-form';
 import { AuthLayout } from '@/features/auth/components/AuthLayout/AuthLayout';
+import type { TranslationKey } from '@/shared/i18n/translation-key';
 
 export function RegisterPage() {
   const { t } = useTranslation();
-  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<TranslationKey | null>(null);
   const {
     register,
     handleSubmit,

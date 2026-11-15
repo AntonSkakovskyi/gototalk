@@ -1,14 +1,14 @@
 import { Button, Stack } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MicPermissionHelp } from '@/features/dialogue/components/MicPermissionHelp/MicPermissionHelp';
-import { RecordButton } from '@/features/dialogue/components/RecordButton/RecordButton';
-import { RecordingIndicator } from '@/features/dialogue/components/RecordingIndicator/RecordingIndicator';
+import { MicPermissionHelp } from '@/features/dialogue/recording/components/MicPermissionHelp/MicPermissionHelp';
+import { RecordButton } from '@/features/dialogue/recording/components/RecordButton/RecordButton';
+import { RecordingIndicator } from '@/features/dialogue/recording/components/RecordingIndicator/RecordingIndicator';
 import { TextAnswerForm } from '@/features/dialogue/components/TextAnswerForm/TextAnswerForm';
 import type { AnswerPhase } from '@/features/dialogue/hooks/use-answer-flow';
-import { useAudioRecorder } from '@/features/dialogue/hooks/use-audio-recorder';
+import { useAudioRecorder } from '@/features/dialogue/recording/hooks/use-audio-recorder';
 import type { ComposerState } from '@/features/dialogue/hooks/use-composer-state';
-import { voiceUnavailable } from '@/features/dialogue/lib/mic-help';
+import { voiceUnavailable } from '@/features/dialogue/recording/lib/mic-help';
 
 interface AnswerComposerProps {
   phase: AnswerPhase;

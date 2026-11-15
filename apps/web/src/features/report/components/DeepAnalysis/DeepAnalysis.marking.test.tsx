@@ -6,11 +6,12 @@ import { reportQueryOptions } from '@/features/report/api/report-queries';
 import {
   sessionDetailsQueryOptions,
   sessionKeys,
-} from '@/shared/api/session-details';
-import uk from '@/shared/i18n/uk.json';
+} from '@/entities/session/api/session-details';
+import { uk } from '@/shared/i18n/resources';
 import { createTestQueryClient } from '@/shared/testing/query-wrapper';
 import { mockApi } from '@/shared/testing/mock-api';
-import { jsonResponse, testMistake } from '@/shared/testing/test-fixtures';
+import { jsonResponse } from '@/shared/testing/http-responses';
+import { testMistake } from '@/shared/testing/fixtures/session';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 import {
   ANSWER_1,
@@ -21,7 +22,7 @@ import {
   SESSION_PATH,
   details,
   groupNamed,
-} from './deep-analysis-fixtures';
+} from '@/features/report/testing/deep-analysis-fixtures';
 import { DeepAnalysis } from './DeepAnalysis';
 
 const MARK = uk.transcript.mistake.notMistake;

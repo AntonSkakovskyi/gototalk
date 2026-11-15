@@ -1,11 +1,8 @@
 import { ERROR_CODES } from '@gototalk/shared';
 import { QueryClient } from '@tanstack/react-query';
 import { mockApi } from '@/shared/testing/mock-api';
-import {
-  errorResponse,
-  jsonResponse,
-  testWord,
-} from '@/shared/testing/test-fixtures';
+import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
+import { testWord } from '@/shared/testing/fixtures/words';
 import { wordKeys, wordsListQueryOptions } from './words-queries';
 
 describe('words queries', () => {

@@ -1,14 +1,17 @@
 import { ERROR_CODES } from '@gototalk/shared';
 import { act, waitFor } from '@testing-library/react';
-import { analysisOk, mockDialogueApi } from '@/shared/testing/dialogue-mocks';
+import {
+  analysisOk,
+  mockDialogueApi,
+} from '@/features/dialogue/testing/dialogue-mocks';
 import {
   ANSWER_TEXT,
   PENDING,
   analysisRequests,
   setup,
   withAnswered,
-} from '@/shared/testing/answer-flow-setup';
-import { errorResponse, jsonResponse } from '@/shared/testing/test-fixtures';
+} from '@/features/dialogue/testing/answer-flow-setup';
+import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
 
 const FINISHED = {
   ...withAnswered(),

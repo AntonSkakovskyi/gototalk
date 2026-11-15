@@ -5,15 +5,12 @@ import { useQuery } from '@tanstack/react-query';
 import {
   sessionDetailsQueryOptions,
   sessionKeys,
-} from '@/shared/api/session-details';
-import uk from '@/shared/i18n/uk.json';
+} from '@/entities/session/api/session-details';
+import { uk } from '@/shared/i18n/resources';
 import { mockApi } from '@/shared/testing/mock-api';
 import { createTestQueryClient } from '@/shared/testing/query-wrapper';
-import {
-  errorResponse,
-  jsonResponse,
-  testSessionDetails,
-} from '@/shared/testing/test-fixtures';
+import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
+import { testSessionDetails } from '@/shared/testing/fixtures/session';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 import { SessionOverview } from './SessionOverview';
 

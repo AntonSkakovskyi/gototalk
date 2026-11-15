@@ -8,7 +8,7 @@ import {
   sortBySeq,
 } from '@/features/dialogue/lib/turns';
 import { useFocusWhen } from '@/shared/hooks/use-focus-when';
-import { AnswerCard } from '@/shared/ui/AnswerCard/AnswerCard';
+import { AnswerCard } from '@/entities/session/components/AnswerCard/AnswerCard';
 import { QuestionCard } from './QuestionCard';
 
 const NO_MARKERS = 'none';

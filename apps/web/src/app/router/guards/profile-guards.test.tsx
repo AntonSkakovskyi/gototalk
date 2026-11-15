@@ -5,24 +5,24 @@ import {
   completeOnboarding,
   stubNewUserApi,
   text,
-} from '@/features/profile/components/OnboardingWizard/wizard-test-helpers';
-import uk from '@/shared/i18n/uk.json';
+} from '@/features/profile/testing/wizard-test-helpers';
+import { uk } from '@/shared/i18n/resources';
 import { createTestQueryClient } from '@/shared/testing/query-wrapper';
 import type { RenderOptions } from '@/shared/testing/test-utils';
 import { mockApi } from '@/shared/testing/mock-api';
 import {
   EMPTY_SESSIONS_ROUTE,
   EMPTY_WORDS_ROUTE,
-  TEST_PROFILE,
-  TEST_USER,
   errorResponse,
   jsonResponse,
-} from '@/shared/testing/test-fixtures';
+} from '@/shared/testing/http-responses';
+import { TEST_PROFILE } from '@/shared/testing/fixtures/profile';
+import { TEST_USER } from '@/shared/testing/fixtures/auth';
 import {
   currentLocation,
   heading,
   renderAppWithProbe,
-} from './guard-test-helpers';
+} from '@/app/testing/guard-test-helpers';
 
 const SESSION = {
   accessToken: 'access-1',

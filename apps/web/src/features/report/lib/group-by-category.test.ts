@@ -3,7 +3,7 @@ import type {
   TheoryLink,
   Utterance,
 } from '@gototalk/shared';
-import { testMistake, testUtterance } from '@/shared/testing/test-fixtures';
+import { testMistake, testUtterance } from '@/shared/testing/fixtures/session';
 import { groupByCategory } from './group-by-category';
 
 const TENSE_LINK: TheoryLink = {

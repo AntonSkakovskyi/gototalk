@@ -1,6 +1,6 @@
 import { queryOptions } from '@tanstack/react-query';
 import { retryUnlessClientError } from '@/shared/api/retry-policy';
-import { sessionKeys } from '@/shared/api/session-details';
+import { sessionKeys } from '@/entities/session/api/session-details';
 import { getReport } from './report-api';
 
 const MAX_REPORT_RETRIES = 1;

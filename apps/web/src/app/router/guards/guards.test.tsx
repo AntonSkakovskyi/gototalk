@@ -1,15 +1,15 @@
 import { screen } from '@testing-library/react';
 import { App } from '@/app/App';
-import uk from '@/shared/i18n/uk.json';
+import { uk } from '@/shared/i18n/resources';
 import { mockApi } from '@/shared/testing/mock-api';
 import {
   EMPTY_SESSIONS_ROUTE,
-  TEST_PROFILE,
-  TEST_USER,
   jsonResponse,
-} from '@/shared/testing/test-fixtures';
+} from '@/shared/testing/http-responses';
+import { TEST_PROFILE } from '@/shared/testing/fixtures/profile';
+import { TEST_USER } from '@/shared/testing/fixtures/auth';
 import { renderWithProviders } from '@/shared/testing/test-utils';
-import { heading } from './guard-test-helpers';
+import { heading } from '@/app/testing/guard-test-helpers';
 
 const WITH_CONSENT = {
   accessToken: 'access-1',

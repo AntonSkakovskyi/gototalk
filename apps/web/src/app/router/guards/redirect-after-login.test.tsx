@@ -1,20 +1,19 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import uk from '@/shared/i18n/uk.json';
+import { uk } from '@/shared/i18n/resources';
 import type { RenderOptions } from '@/shared/testing/test-utils';
 import { mockApi } from '@/shared/testing/mock-api';
 import {
   EMPTY_SESSIONS_ROUTE,
-  TEST_PROFILE,
-  TEST_USER,
-  authResponse,
   jsonResponse,
-} from '@/shared/testing/test-fixtures';
+} from '@/shared/testing/http-responses';
+import { TEST_PROFILE } from '@/shared/testing/fixtures/profile';
+import { TEST_USER, authResponse } from '@/shared/testing/fixtures/auth';
 import {
   currentLocation,
   heading,
   renderAppWithProbe,
-} from './guard-test-helpers';
+} from '@/app/testing/guard-test-helpers';
 
 const CONSENT_DATE = '2026-01-01T10:00:00.000Z';
 const CONSENTED_USER = { ...TEST_USER, consentAt: CONSENT_DATE };

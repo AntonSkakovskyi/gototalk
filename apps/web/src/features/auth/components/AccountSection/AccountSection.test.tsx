@@ -3,18 +3,20 @@ import { QueryClient } from '@tanstack/react-query';
 import { act, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { App } from '@/app/App';
-import uk from '@/shared/i18n/uk.json';
+import { uk } from '@/shared/i18n/resources';
 import {
   EMPTY_LEARNER_MODEL,
   TEST_PROFILE,
-  TEST_USER,
+} from '@/shared/testing/fixtures/profile';
+import { TEST_USER } from '@/shared/testing/fixtures/auth';
+import {
   emptyResponse,
   errorResponse,
   jsonResponse,
-} from '@/shared/testing/test-fixtures';
+} from '@/shared/testing/http-responses';
 import { renderWithProviders } from '@/shared/testing/test-utils';
-import { clearQueryCacheOnSessionEnd } from '@/shared/session/query-cache';
-import { getSession } from '@/shared/session/session-store';
+import { clearQueryCacheOnSessionEnd } from '@/shared/auth-session/query-cache';
+import { getSession } from '@/shared/auth-session/session-store';
 
 const fetchMock = vi.fn<typeof fetch>();
 

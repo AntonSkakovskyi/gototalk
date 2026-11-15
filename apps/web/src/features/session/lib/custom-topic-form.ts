@@ -1,5 +1,6 @@
 import { TOPIC_MAX, TopicSchema } from '@gototalk/shared';
 import { z } from 'zod';
+import type { TranslationKey } from '@/shared/i18n/translation-key';
 
 export const customTopicSchema = z.object({ topic: TopicSchema });
 
@@ -10,7 +11,7 @@ interface FieldIssue {
 }
 
 interface TopicErrorMessage {
-  key: string;
+  key: TranslationKey;
   values?: { max: number };
 }
 

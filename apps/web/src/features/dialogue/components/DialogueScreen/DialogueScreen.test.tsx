@@ -1,12 +1,13 @@
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import uk from '@/shared/i18n/uk.json';
-import { deferred } from '@/shared/testing/answer-flow-setup';
-import { analysisOk, mockDialogueApi } from '@/shared/testing/dialogue-mocks';
+import { uk } from '@/shared/i18n/resources';
+import { deferred } from '@/shared/testing/deferred';
 import {
-  jsonResponse,
-  testSessionDetails,
-} from '@/shared/testing/test-fixtures';
+  analysisOk,
+  mockDialogueApi,
+} from '@/features/dialogue/testing/dialogue-mocks';
+import { jsonResponse } from '@/shared/testing/http-responses';
+import { testSessionDetails } from '@/shared/testing/fixtures/session';
 import {
   PENDING_ANSWER,
   REPLY,
@@ -15,7 +16,7 @@ import {
   currentCard,
   renderScreen,
   sendAnswer,
-} from './dialogue-screen-test-helpers';
+} from '@/features/dialogue/testing/dialogue-screen-test-helpers';
 
 describe('DialogueScreen answer flow', () => {
   it('[TC-04-04] takes a text answer through analysis, the mistake details and the next question', async () => {

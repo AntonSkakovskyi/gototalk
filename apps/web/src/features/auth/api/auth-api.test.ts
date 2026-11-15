@@ -1,11 +1,10 @@
 import { ERROR_CODES } from '@gototalk/shared';
+import { TEST_USER, authResponse } from '@/shared/testing/fixtures/auth';
 import {
-  TEST_USER,
-  authResponse,
   emptyResponse,
   errorResponse,
   jsonResponse,
-} from '@/shared/testing/test-fixtures';
+} from '@/shared/testing/http-responses';
 import {
   deleteAccount,
   getConsentInfo,
@@ -14,7 +13,7 @@ import {
   logout,
   register,
 } from './auth-api';
-import { getSession, setSession } from '@/shared/session/session-store';
+import { getSession, setSession } from '@/shared/auth-session/session-store';
 
 const fetchMock = vi.fn<typeof fetch>();
 

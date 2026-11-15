@@ -1,11 +1,11 @@
 import { screen, within } from '@testing-library/react';
 import type { CategoryGroupData } from '@/features/report/lib/group-by-category';
-import uk from '@/shared/i18n/uk.json';
+import { uk } from '@/shared/i18n/resources';
 import {
   testMistake,
   testSession,
   testUtterance,
-} from '@/shared/testing/test-fixtures';
+} from '@/shared/testing/fixtures/session';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 import { CategoryGroup } from './CategoryGroup';
 

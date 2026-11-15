@@ -2,7 +2,7 @@ import { ERROR_CODES } from '@gototalk/shared';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ApiError } from '@/shared/api/http';
-import uk from '@/shared/i18n/uk.json';
+import { uk } from '@/shared/i18n/resources';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 import { AnswerError } from './AnswerError';
 

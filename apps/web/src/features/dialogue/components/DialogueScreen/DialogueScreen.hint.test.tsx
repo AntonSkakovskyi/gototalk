@@ -1,21 +1,21 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { installFakeMedia } from '@/features/dialogue/testing/fake-media';
-import uk from '@/shared/i18n/uk.json';
-import { deferred } from '@/shared/testing/answer-flow-setup';
+import { installFakeMedia } from '@/features/dialogue/recording/testing/fake-media';
+import { uk } from '@/shared/i18n/resources';
+import { deferred } from '@/shared/testing/deferred';
 import {
   HINT_PHRASE,
   HINT_TRANSLATION,
   mockDialogueApi,
-} from '@/shared/testing/dialogue-mocks';
-import { testSessionDetails } from '@/shared/testing/test-fixtures';
+} from '@/features/dialogue/testing/dialogue-mocks';
+import { testSessionDetails } from '@/shared/testing/fixtures/session';
 import {
   FIRST_QUESTION,
   REPLY,
   TURN,
   renderScreen,
   sendAnswer,
-} from './dialogue-screen-test-helpers';
+} from '@/features/dialogue/testing/dialogue-screen-test-helpers';
 
 beforeEach(() => {
   installFakeMedia();

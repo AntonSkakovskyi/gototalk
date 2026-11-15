@@ -1,16 +1,15 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import uk from '@/shared/i18n/uk.json';
+import { uk } from '@/shared/i18n/resources';
 import { mockApi } from '@/shared/testing/mock-api';
 import {
   EMPTY_LEARNER_MODEL,
   TEST_PROFILE,
   TOP_FIVE_LEARNER_MODEL,
-  TEST_USER,
-  errorResponse,
-  jsonResponse,
   testGoal,
-} from '@/shared/testing/test-fixtures';
+} from '@/shared/testing/fixtures/profile';
+import { TEST_USER } from '@/shared/testing/fixtures/auth';
+import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 import { ProfilePage } from './ProfilePage';
 

@@ -1,14 +1,16 @@
 import { ERROR_CODES } from '@gototalk/shared';
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import uk from '@/shared/i18n/uk.json';
-import { analysisOk, mockDialogueApi } from '@/shared/testing/dialogue-mocks';
+import { uk } from '@/shared/i18n/resources';
 import {
-  errorResponse,
-  jsonResponse,
+  analysisOk,
+  mockDialogueApi,
+} from '@/features/dialogue/testing/dialogue-mocks';
+import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
+import {
   testSessionDetails,
   testUtterance,
-} from '@/shared/testing/test-fixtures';
+} from '@/shared/testing/fixtures/session';
 import {
   FIRST_QUESTION,
   PENDING_ANSWER,
@@ -18,7 +20,7 @@ import {
   currentCardElement,
   renderScreen,
   sendAnswer,
-} from './dialogue-screen-test-helpers';
+} from '@/features/dialogue/testing/dialogue-screen-test-helpers';
 
 describe('DialogueScreen states', () => {
   it('[TC-04-08] keeps the typed text and shows the mapped error when sending fails', async () => {

@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest';
 import { afterEach, vi } from 'vitest';
-import { resetSessionStore } from '@/shared/session/session-store';
+import { resetSessionStore } from '@/shared/auth-session/session-store';
 
 // jsdom lacks browser APIs that Mantine needs.
 Object.defineProperty(window, 'matchMedia', {

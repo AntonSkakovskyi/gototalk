@@ -3,11 +3,13 @@ import { mockApi } from '@/shared/testing/mock-api';
 import {
   TEST_LEARNER_MODEL,
   TEST_PROFILE,
+  testGoal,
+} from '@/shared/testing/fixtures/profile';
+import {
   emptyResponse,
   errorResponse,
   jsonResponse,
-  testGoal,
-} from '@/shared/testing/test-fixtures';
+} from '@/shared/testing/http-responses';
 import {
   createGoal,
   deleteGoal,

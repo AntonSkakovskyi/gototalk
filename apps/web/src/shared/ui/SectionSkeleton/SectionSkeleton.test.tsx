@@ -1,5 +1,5 @@
 import { screen } from '@testing-library/react';
-import uk from '@/shared/i18n/uk.json';
+import { uk } from '@/shared/i18n/resources';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 import { SectionSkeleton } from '@/shared/ui/SectionSkeleton/SectionSkeleton';
 

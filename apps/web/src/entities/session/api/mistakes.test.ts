@@ -1,0 +1,44 @@
+import {
+  DIALOGUE_SESSION_ID,
+  mockSessionEntityApi,
+} from '@/entities/session/testing/session-entity-mocks';
+import { jsonResponse } from '@/shared/testing/http-responses';
+import { testMistake } from '@/shared/testing/fixtures/session';
+import { markMistakeFalse } from './mistakes';
+
+describe('mistakes api', () => {
+  it('[TC-04-04] markMistakeFalse patches the mistake and returns the updated view', async () => {
+    const { requests } = mockSessionEntityApi();
+    const mistake = testMistake();
+
+    await expect(
+      markMistakeFalse(DIALOGUE_SESSION_ID, mistake.id),
+    ).resolves.toEqual({ ...mistake, isFalse: true });
+
+    expect(requests).toEqual([
+      {
+        method: 'PATCH',
+        path: `/api/sessions/${DIALOGUE_SESSION_ID}/mistakes/${mistake.id}`,
+        body: { isFalse: true },
+      },
+    ]);
+  });
+
+  it('[TC-04-04] markMistakeFalse rejects a response that breaks the contract', async () => {
+    mockSessionEntityApi({
+      markMistake: () => jsonResponse({ ...testMistake(), end: 0 }),
+    });
+
+    await expect(
+      markMistakeFalse(DIALOGUE_SESSION_ID, testMistake().id),
+    ).rejects.toThrow();
+  });
+
+  it('[TC-04-04] markMistakeFalse URL-encodes the ids', async () => {
+    const { requests } = mockSessionEntityApi();
+
+    await markMistakeFalse('a/b', 'c d').catch(() => undefined);
+
+    expect(requests[0]?.path).toBe('/api/sessions/a%2Fb/mistakes/c%20d');
+  });
+});

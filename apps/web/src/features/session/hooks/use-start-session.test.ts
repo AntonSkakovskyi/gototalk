@@ -6,15 +6,14 @@ import {
   createQueryWrapper,
   createTestQueryClient,
 } from '@/shared/testing/query-wrapper';
+import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
 import {
-  errorResponse,
-  jsonResponse,
   testSession,
   testSessionDetails,
   testSessionPlan,
-} from '@/shared/testing/test-fixtures';
+} from '@/shared/testing/fixtures/session';
 import { sessionListQueryOptions } from '@/features/session/api/session-queries';
-import { sessionKeys } from '@/shared/api/session-details';
+import { sessionKeys } from '@/entities/session/api/session-details';
 import { useStartSession } from './use-start-session';
 
 const REQUEST = { ...testSessionPlan(), feedbackMode: 'immediate' as const };

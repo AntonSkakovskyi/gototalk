@@ -1,7 +1,7 @@
 import { SCENE_PRESETS } from '@gototalk/shared';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import uk from '@/shared/i18n/uk.json';
+import { uk } from '@/shared/i18n/resources';
 import {
   button,
   chip,
@@ -10,7 +10,7 @@ import {
   progress,
   renderWizard,
   text,
-} from './wizard-test-helpers';
+} from '@/features/profile/testing/wizard-test-helpers';
 
 describe('OnboardingWizard level step', () => {
   it('[TC-02-03] explains that the level can be changed later in the profile', () => {

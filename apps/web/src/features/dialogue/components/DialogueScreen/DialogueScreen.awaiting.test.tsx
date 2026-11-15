@@ -1,12 +1,13 @@
 import { ERROR_CODES } from '@gototalk/shared';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import uk from '@/shared/i18n/uk.json';
-import { analysisOk, mockDialogueApi } from '@/shared/testing/dialogue-mocks';
+import { uk } from '@/shared/i18n/resources';
 import {
-  errorResponse,
-  testSessionDetails,
-} from '@/shared/testing/test-fixtures';
+  analysisOk,
+  mockDialogueApi,
+} from '@/features/dialogue/testing/dialogue-mocks';
+import { errorResponse } from '@/shared/testing/http-responses';
+import { testSessionDetails } from '@/shared/testing/fixtures/session';
 import {
   FIRST_QUESTION,
   PENDING_ANSWER,
@@ -14,7 +15,7 @@ import {
   currentCard,
   currentCardElement,
   renderScreen,
-} from './dialogue-screen-test-helpers';
+} from '@/features/dialogue/testing/dialogue-screen-test-helpers';
 
 const UNANSWERED = testSessionDetails({
   utterances: [FIRST_QUESTION, PENDING_ANSWER],

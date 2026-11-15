@@ -1,11 +1,14 @@
 import { ERROR_CODES } from '@gototalk/shared';
 import { configure, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { installFakeMedia } from '@/features/dialogue/testing/fake-media';
-import uk from '@/shared/i18n/uk.json';
-import { deferred } from '@/shared/testing/answer-flow-setup';
-import { analysisOk, mockDialogueApi } from '@/shared/testing/dialogue-mocks';
-import { errorResponse, jsonResponse } from '@/shared/testing/test-fixtures';
+import { installFakeMedia } from '@/features/dialogue/recording/testing/fake-media';
+import { uk } from '@/shared/i18n/resources';
+import { deferred } from '@/shared/testing/deferred';
+import {
+  analysisOk,
+  mockDialogueApi,
+} from '@/features/dialogue/testing/dialogue-mocks';
+import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
 import {
   PENDING_ANSWER,
   sendAnswer,
@@ -13,7 +16,7 @@ import {
   TURN,
   currentCard,
   renderScreen,
-} from './dialogue-screen-test-helpers';
+} from '@/features/dialogue/testing/dialogue-screen-test-helpers';
 
 const SLOW_MS = 5000;
 

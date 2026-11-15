@@ -1,15 +1,12 @@
-import {
-  authResponse,
-  errorResponse,
-  jsonResponse,
-} from '@/shared/testing/test-fixtures';
-import { logout } from '@/features/auth/api/auth-api';
+import { authResponse } from '@/shared/testing/fixtures/auth';
+import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
+import { apiFetch } from './http';
 import { refreshSession } from './refresh';
 import {
   clearSession,
   getSession,
   setSession,
-} from '@/shared/session/session-store';
+} from '@/shared/auth-session/session-store';
 
 const fetchMock = vi.fn<typeof fetch>();
 
@@ -21,6 +18,11 @@ beforeEach(() => {
 afterEach(() => {
   Reflect.deleteProperty(navigator, 'locks');
 });
+
+async function logout() {
+  await apiFetch('/api/auth/logout', { method: 'POST', auth: false });
+  clearSession();
+}
 
 function stubLocks() {
   let tail: Promise<unknown> = Promise.resolve();

@@ -4,16 +4,16 @@ import {
   PENDING,
   TURN,
   analysisRequests,
-  deferred,
   setup,
   withAnswered,
-} from '@/shared/testing/answer-flow-setup';
-import { analysisOk, mockDialogueApi } from '@/shared/testing/dialogue-mocks';
+} from '@/features/dialogue/testing/answer-flow-setup';
+import { deferred } from '@/shared/testing/deferred';
 import {
-  errorResponse,
-  jsonResponse,
-  testUtterance,
-} from '@/shared/testing/test-fixtures';
+  analysisOk,
+  mockDialogueApi,
+} from '@/features/dialogue/testing/dialogue-mocks';
+import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
+import { testUtterance } from '@/shared/testing/fixtures/session';
 
 const SLOW_MS = 5000;
 

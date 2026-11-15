@@ -1,4 +1,4 @@
-import { getSession } from '@/shared/session/session-store';
+import { getSession } from '@/shared/auth-session/session-store';
 import { refreshSession } from './refresh';
 import { toApiError } from './api-error';
 

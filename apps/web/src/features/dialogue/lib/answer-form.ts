@@ -1,11 +1,12 @@
 import { ANSWER_TEXT_MAX } from '@gototalk/shared';
+import type { TranslationKey } from '@/shared/i18n/translation-key';
 
 interface FieldIssue {
   type?: string;
 }
 
 interface AnswerErrorMessage {
-  key: string;
+  key: TranslationKey;
   values?: { max: number };
 }
 

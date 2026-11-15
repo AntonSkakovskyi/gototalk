@@ -2,16 +2,12 @@ import { ERROR_CODES } from '@gototalk/shared';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { App } from '@/app/App';
-import uk from '@/shared/i18n/uk.json';
-import {
-  TEST_PROFILE,
-  TEST_USER,
-  authResponse,
-  errorResponse,
-  jsonResponse,
-} from '@/shared/testing/test-fixtures';
+import { uk } from '@/shared/i18n/resources';
+import { TEST_PROFILE } from '@/shared/testing/fixtures/profile';
+import { TEST_USER, authResponse } from '@/shared/testing/fixtures/auth';
+import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
 import { renderWithProviders } from '@/shared/testing/test-utils';
-import { getSession } from '@/shared/session/session-store';
+import { getSession } from '@/shared/auth-session/session-store';
 
 const fetchMock = vi.fn<typeof fetch>();
 

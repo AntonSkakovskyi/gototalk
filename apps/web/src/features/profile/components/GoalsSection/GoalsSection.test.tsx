@@ -1,9 +1,9 @@
 import { ERROR_CODES } from '@gototalk/shared';
 import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import uk from '@/shared/i18n/uk.json';
+import { uk } from '@/shared/i18n/resources';
 import { mockApi } from '@/shared/testing/mock-api';
-import { errorResponse, jsonResponse } from '@/shared/testing/test-fixtures';
+import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
 import {
   FLUENT,
   INTERVIEW,
@@ -17,7 +17,7 @@ import {
   renderGoals,
   stubGoals,
   text,
-} from './goals-test-helpers';
+} from '@/features/profile/testing/goals-test-helpers';
 
 describe('GoalsSection list', () => {
   it('[TC-02-03] lists active goals first, then done ones, with status and counter', async () => {

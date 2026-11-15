@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { AnswerError } from '@/features/dialogue/components/AnswerError/AnswerError';
 import { useFinishSession } from '@/features/dialogue/hooks/use-finish-session';
-import { reportPath } from '@/shared/router/session-paths';
+import { reportPath } from '@/entities/session/lib/session-paths';
 
 interface FinishActionProps {
   details: SessionDetails;

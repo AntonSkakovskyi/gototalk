@@ -1,8 +1,8 @@
 import type { Utterance } from '@gototalk/shared';
 import { List, Stack, Text } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
-import { AnswerCard } from '@/shared/ui/AnswerCard/AnswerCard';
-import { PastQuestion } from '@/shared/ui/PastQuestion/PastQuestion';
+import { AnswerCard } from '@/entities/session/components/AnswerCard/AnswerCard';
+import { PastQuestion } from '@/entities/session/components/PastQuestion/PastQuestion';
 
 const NO_MARKERS = 'none';
 

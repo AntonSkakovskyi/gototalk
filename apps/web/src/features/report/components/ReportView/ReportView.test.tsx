@@ -3,20 +3,19 @@ import { useQuery } from '@tanstack/react-query';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { reportQueryOptions } from '@/features/report/api/report-queries';
-import uk from '@/shared/i18n/uk.json';
+import { uk } from '@/shared/i18n/resources';
 import {
   REPORT_SESSION_ID,
   mockReportApi,
   reportOk,
-} from '@/shared/testing/report-mocks';
+} from '@/features/report/testing/report-mocks';
+import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
+import { testReport } from '@/shared/testing/fixtures/report';
 import {
-  errorResponse,
-  jsonResponse,
-  testReport,
   testSessionDetails,
   testTurnResult,
   testUtterance,
-} from '@/shared/testing/test-fixtures';
+} from '@/shared/testing/fixtures/session';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 import { ReportView } from './ReportView';
 

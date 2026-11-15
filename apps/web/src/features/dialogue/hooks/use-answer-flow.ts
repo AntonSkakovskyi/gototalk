@@ -11,13 +11,13 @@ import {
   findUnansweredUtteranceId,
   withTurnResult,
   withUtterance,
-} from '@/features/dialogue/lib/details-cache';
+} from '@/features/dialogue/lib/turn-cache';
 import { ApiError } from '@/shared/api/http';
-import { useUpdateDetails } from '@/shared/hooks/use-update-details';
+import { useUpdateDetails } from '@/entities/session/hooks/use-update-details';
 import {
   sessionDetailsQueryOptions,
   sessionKeys,
-} from '@/shared/api/session-details';
+} from '@/entities/session/api/session-details';
 
 export type AnswerPhase = 'idle' | 'sending' | 'recognizing' | 'analyzing';
 

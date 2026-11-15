@@ -6,7 +6,7 @@ import { sessionListQueryOptions } from '@/features/session/api/session-queries'
 import { LoadError } from '@/shared/ui/LoadError/LoadError';
 import { SectionSkeleton } from '@/shared/ui/SectionSkeleton/SectionSkeleton';
 import classes from './RecentSessions.module.scss';
-import { SessionListItem } from './SessionListItem';
+import { SessionListItem } from '@/features/session/components/SessionListItem/SessionListItem';
 
 export function RecentSessions() {
   const { t } = useTranslation();

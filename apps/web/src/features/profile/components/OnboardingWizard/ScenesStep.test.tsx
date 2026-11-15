@@ -12,7 +12,7 @@ import {
   sceneInput,
   text,
   withMax,
-} from './wizard-test-helpers';
+} from '@/features/profile/testing/wizard-test-helpers';
 
 describe('OnboardingWizard scenes step', () => {
   it('[TC-02-03] blocks the step when nothing is selected', async () => {

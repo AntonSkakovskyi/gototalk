@@ -5,13 +5,10 @@ import {
 } from '@gototalk/shared';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import uk from '@/shared/i18n/uk.json';
+import { uk } from '@/shared/i18n/resources';
 import { mockApi } from '@/shared/testing/mock-api';
-import {
-  TEST_PROFILE,
-  errorResponse,
-  jsonResponse,
-} from '@/shared/testing/test-fixtures';
+import { TEST_PROFILE } from '@/shared/testing/fixtures/profile';
+import { errorResponse, jsonResponse } from '@/shared/testing/http-responses';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 import { ProfileDetails } from './ProfileDetails';
 
