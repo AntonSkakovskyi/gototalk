@@ -11,7 +11,7 @@ import {
   renderWizard,
   stubGoalsApi,
   text,
-} from './wizard-test-helpers';
+} from '@/features/profile/testing/wizard-test-helpers';
 
 describe('OnboardingWizard submission', () => {
   it('[TC-02-03] creates goals, saves the profile last and reports completion', async () => {

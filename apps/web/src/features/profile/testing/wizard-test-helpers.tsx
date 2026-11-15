@@ -10,7 +10,7 @@ import {
 } from '@/shared/testing/http-responses';
 import { TEST_PROFILE, testGoal } from '@/shared/testing/fixtures/profile';
 import { renderWithProviders } from '@/shared/testing/test-utils';
-import { OnboardingWizard } from './OnboardingWizard';
+import { OnboardingWizard } from '@/features/profile/components/OnboardingWizard/OnboardingWizard';
 
 export const text = uk.profile.onboarding;
 export const presets = uk.profile.scenes.presets;

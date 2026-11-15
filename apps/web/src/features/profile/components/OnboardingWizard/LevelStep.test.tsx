@@ -10,7 +10,7 @@ import {
   progress,
   renderWizard,
   text,
-} from './wizard-test-helpers';
+} from '@/features/profile/testing/wizard-test-helpers';
 
 describe('OnboardingWizard level step', () => {
   it('[TC-02-03] explains that the level can be changed later in the profile', () => {

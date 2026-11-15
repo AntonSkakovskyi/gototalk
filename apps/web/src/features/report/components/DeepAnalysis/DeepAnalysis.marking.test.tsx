@@ -22,7 +22,7 @@ import {
   SESSION_PATH,
   details,
   groupNamed,
-} from './deep-analysis-fixtures';
+} from '@/features/report/testing/deep-analysis-fixtures';
 import { DeepAnalysis } from './DeepAnalysis';
 
 const MARK = uk.transcript.mistake.notMistake;

@@ -17,7 +17,7 @@ import {
   renderGoals,
   stubGoals,
   text,
-} from './goals-test-helpers';
+} from '@/features/profile/testing/goals-test-helpers';
 
 describe('GoalsSection list', () => {
   it('[TC-02-03] lists active goals first, then done ones, with status and counter', async () => {

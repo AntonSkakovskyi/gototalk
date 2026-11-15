@@ -9,7 +9,7 @@ import { mockApi } from '@/shared/testing/mock-api';
 import { emptyResponse, jsonResponse } from '@/shared/testing/http-responses';
 import { testGoal } from '@/shared/testing/fixtures/profile';
 import { renderWithProviders } from '@/shared/testing/test-utils';
-import { GoalsSection } from './GoalsSection';
+import { GoalsSection } from '@/features/profile/components/GoalsSection/GoalsSection';
 
 export const text = uk.profile.goals;
 

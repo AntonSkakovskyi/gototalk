@@ -16,7 +16,7 @@ import {
   currentCard,
   renderScreen,
   sendAnswer,
-} from './dialogue-screen-test-helpers';
+} from '@/features/dialogue/testing/dialogue-screen-test-helpers';
 
 describe('DialogueScreen answer flow', () => {
   it('[TC-04-04] takes a text answer through analysis, the mistake details and the next question', async () => {

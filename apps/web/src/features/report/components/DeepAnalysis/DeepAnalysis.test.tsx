@@ -12,7 +12,7 @@ import {
   REPORT,
   details,
   groupNamed,
-} from './deep-analysis-fixtures';
+} from '@/features/report/testing/deep-analysis-fixtures';
 import { DeepAnalysis } from './DeepAnalysis';
 
 function renderDeep(session: SessionDetails = details()) {

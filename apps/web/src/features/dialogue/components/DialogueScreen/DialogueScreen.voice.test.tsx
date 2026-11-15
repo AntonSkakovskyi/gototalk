@@ -16,7 +16,7 @@ import {
   TURN,
   currentCard,
   renderScreen,
-} from './dialogue-screen-test-helpers';
+} from '@/features/dialogue/testing/dialogue-screen-test-helpers';
 
 const SLOW_MS = 5000;
 

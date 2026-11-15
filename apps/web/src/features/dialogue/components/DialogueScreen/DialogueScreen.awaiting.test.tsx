@@ -15,7 +15,7 @@ import {
   currentCard,
   currentCardElement,
   renderScreen,
-} from './dialogue-screen-test-helpers';
+} from '@/features/dialogue/testing/dialogue-screen-test-helpers';
 
 const UNANSWERED = testSessionDetails({
   utterances: [FIRST_QUESTION, PENDING_ANSWER],

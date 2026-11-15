@@ -13,7 +13,7 @@ import {
   TURN,
   renderScreen,
   sendAnswer,
-} from './dialogue-screen-test-helpers';
+} from '@/features/dialogue/testing/dialogue-screen-test-helpers';
 
 const FINISHED = testSessionDetails({
   status: 'finished',

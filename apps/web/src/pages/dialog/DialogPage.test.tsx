@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import {
   currentLocation,
   renderAppWithProbe,
-} from '@/app/router/guards/guard-test-helpers';
+} from '@/app/testing/guard-test-helpers';
 import uk from '@/shared/i18n/uk.json';
 import { mockApi } from '@/shared/testing/mock-api';
 import { STARTED_SESSION } from '@/features/session/testing/session-mocks';

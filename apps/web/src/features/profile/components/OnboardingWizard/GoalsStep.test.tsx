@@ -16,7 +16,7 @@ import {
   progress,
   text,
   withMax,
-} from './wizard-test-helpers';
+} from '@/features/profile/testing/wizard-test-helpers';
 
 describe('OnboardingWizard goals step', () => {
   it('[TC-02-03] starts with one goal field and offers up to the active limit', async () => {

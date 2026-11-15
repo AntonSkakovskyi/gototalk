@@ -16,7 +16,7 @@ import {
   renderGoals,
   stubGoals,
   text,
-} from './goals-test-helpers';
+} from '@/features/profile/testing/goals-test-helpers';
 
 describe('GoalsSection add goal', () => {
   it('[TC-02-03] creates a trimmed goal, clears the field and lists the goal', async () => {

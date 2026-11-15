@@ -13,7 +13,7 @@ import {
   currentLocation,
   heading,
   renderAppWithProbe,
-} from './guard-test-helpers';
+} from '@/app/testing/guard-test-helpers';
 
 const CONSENT_DATE = '2026-01-01T10:00:00.000Z';
 const CONSENTED_USER = { ...TEST_USER, consentAt: CONSENT_DATE };

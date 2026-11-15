@@ -417,7 +417,7 @@
   - Відхилення: нова `entities/session/testing/session-entity-mocks.ts` (`DIALOGUE_SESSION_ID`, `SESSION_PATH`, `markMistakeOk`, `sessionEntityRoutes`, `markMistakeBodies`, `mockSessionEntityApi`); три entity-тести (`mistakes.test.ts`, `AnswerTranscript.mark.test.tsx`, `use-mark-mistake.test.ts`) перейшли з `mockDialogueApi` на `mockSessionEntityApi` (механічне перейменування викликів, бо сутність не імпортує фічу); `mockDialogueApi` розгортає `sessionEntityRoutes`; сторінки імпортують `testing/` фіч напряму (дозволено). Залишок warn (12): `shared/testing/test-utils.tsx` → `@/app/theme/theme`, `shared/api/refresh.test.ts` і `shared/auth-session/query-cache.test.ts` → `features/auth`, 9 page-тестів і `AccountSection.test` → `@/app/...`; вирішується в задачі 41/49.
   - Коміт: `refactor(web): move domain test mocks next to their slices`
 
-- [ ] **41. Тестові хелпери поруч із компонентами (W2)**
+- [x] **41. Тестові хелпери поруч із компонентами (W2)**
   - `pages/report/report-page-setup.ts` → `pages/report/testing/`; `features/dialogue/components/DialogueScreen/dialogue-screen-test-helpers.tsx` → `features/dialogue/testing/`; `features/profile/components/GoalsSection/goals-test-helpers.tsx`, `OnboardingWizard/wizard-test-helpers.tsx` → `features/profile/testing/`; `features/report/components/DeepAnalysis/deep-analysis-fixtures.ts` → `features/report/testing/`; `app/router/guards/guard-test-helpers.tsx` → `app/testing/`.
   - Коміт: `refactor(web): collect component test helpers in testing folders`
 

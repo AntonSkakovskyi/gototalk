@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import {
   currentLocation,
   renderAppWithProbe,
-} from '@/app/router/guards/guard-test-helpers';
+} from '@/app/testing/guard-test-helpers';
 import { sessionKeys } from '@/entities/session/api/session-details';
 import uk from '@/shared/i18n/uk.json';
 import { deferred } from '@/shared/testing/deferred';
@@ -21,7 +21,7 @@ import {
   ROUTE,
   TURN,
   mockReportPage,
-} from './report-page-setup';
+} from '@/pages/report/testing/report-page-setup';
 
 function renderReport(...args: Parameters<typeof mockReportPage>) {
   const api = mockReportPage(...args);

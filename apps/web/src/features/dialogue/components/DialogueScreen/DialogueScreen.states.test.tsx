@@ -20,7 +20,7 @@ import {
   currentCardElement,
   renderScreen,
   sendAnswer,
-} from './dialogue-screen-test-helpers';
+} from '@/features/dialogue/testing/dialogue-screen-test-helpers';
 
 describe('DialogueScreen states', () => {
   it('[TC-04-08] keeps the typed text and shows the mapped error when sending fails', async () => {

@@ -12,7 +12,7 @@ import {
   renderGoals,
   stubGoals,
   text,
-} from './goals-test-helpers';
+} from '@/features/profile/testing/goals-test-helpers';
 
 function titleField() {
   return screen.getByLabelText(text.edit.label);

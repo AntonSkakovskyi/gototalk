@@ -1,10 +1,15 @@
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { renderAppWithProbe } from '@/app/router/guards/guard-test-helpers';
+import { renderAppWithProbe } from '@/app/testing/guard-test-helpers';
 import uk from '@/shared/i18n/uk.json';
 import { jsonResponse } from '@/shared/testing/http-responses';
 import { testWord } from '@/shared/testing/fixtures/words';
-import { AUTH, FINISHED, ROUTE, mockReportPage } from './report-page-setup';
+import {
+  AUTH,
+  FINISHED,
+  ROUTE,
+  mockReportPage,
+} from '@/pages/report/testing/report-page-setup';
 
 function renderReport(...args: Parameters<typeof mockReportPage>) {
   const api = mockReportPage(...args);

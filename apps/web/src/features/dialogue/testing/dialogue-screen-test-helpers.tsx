@@ -17,7 +17,7 @@ import {
 } from '@/shared/testing/fixtures/session';
 import { renderWithProviders } from '@/shared/testing/test-utils';
 import { LocationProbe } from '@/shared/testing/LocationProbe';
-import { DialogueScreen } from './DialogueScreen';
+import { DialogueScreen } from '@/features/dialogue/components/DialogueScreen/DialogueScreen';
 
 export const TURN = testTurnResult();
 export const REPLY = TURN.reply ?? testUtterance();

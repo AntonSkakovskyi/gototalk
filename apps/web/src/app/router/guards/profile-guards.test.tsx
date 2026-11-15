@@ -5,7 +5,7 @@ import {
   completeOnboarding,
   stubNewUserApi,
   text,
-} from '@/features/profile/components/OnboardingWizard/wizard-test-helpers';
+} from '@/features/profile/testing/wizard-test-helpers';
 import uk from '@/shared/i18n/uk.json';
 import { createTestQueryClient } from '@/shared/testing/query-wrapper';
 import type { RenderOptions } from '@/shared/testing/test-utils';
@@ -22,7 +22,7 @@ import {
   currentLocation,
   heading,
   renderAppWithProbe,
-} from './guard-test-helpers';
+} from '@/app/testing/guard-test-helpers';
 
 const SESSION = {
   accessToken: 'access-1',
