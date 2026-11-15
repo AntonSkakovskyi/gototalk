@@ -4,7 +4,7 @@ import { MistakeAnalyzerService } from './mistake-analyzer.service.js';
 import { MistakesController } from './mistakes.controller.js';
 import { MistakesService } from './mistakes.service.js';
 import { PendingAnalysisService } from './pending-analysis.service.js';
-import { AnalysisWriter } from './persistence/analysis-writer.js';
+import { AnalysisWriter } from './analysis-writer.service.js';
 import { MistakesRepository } from './persistence/mistakes.repository.js';
 import { PendingAnalysisRepository } from './persistence/pending-analysis.repository.js';
 import { PatternsRepository } from './persistence/patterns.repository.js';

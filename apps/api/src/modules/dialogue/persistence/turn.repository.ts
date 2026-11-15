@@ -14,7 +14,7 @@ import type { AnalysisOutcome } from '../../analysis/mistake-analyzer.types.js';
 import { UtteranceNotFoundError } from '../dialogue.errors.js';
 import { SessionNotFoundError } from '../../session/session.errors.js';
 import type { StoredUtterance, TurnState } from '../lib/turn-state.js';
-import { AnalysisWriter } from '../../analysis/persistence/analysis-writer.js';
+import { AnalysisWriter } from '../../analysis/analysis-writer.service.js';
 
 export interface TurnWrites {
   analysis: AnalysisOutcome | null;

@@ -193,7 +193,7 @@
   - Відхилення: `addFromHint(tx, userId, sessionId, word)` сам робить `sessionWords.link`; зв'язок тепер створюється до вставки підказки (в тій самій транзакції; кінцевий стан той самий). `HintsRepository.resolve` приймає `(tx, { userId, sessionId, record })`. `VocabularyWriter` без `@Inject` (як сусідні сервіси vocabulary).
   - Коміт: `refactor(api): route cross-module word writes through VocabularyWriter`
 
-- [ ] **15. `analysis`: `AnalysisWriter` як сервіс (A1)**
+- [x] **15. `analysis`: `AnalysisWriter` як сервіс (A1)**
   - `analysis/persistence/analysis-writer.ts` → `analysis/analysis-writer.service.ts` (клас `AnalysisWriter`, `@Injectable()`, експорт з `AnalysisModule`); `TurnService`/`turn.repository` і `pending-analysis.repository` отримують його через DI, а не імпортом файлу з `persistence/`. Транзакція (`tx`) передається параметром, як зараз.
   - Якщо `new AnalysisWriter(...)` створюється вручну в інтеграційних тестах, оновити створення (перелік у `grep -rn "AnalysisWriter" apps/api`).
   - Перевірка: інтеграційні `dialogue-analysis*`, `pending-analysis`, `dialogue-answer*`; DI-smoke.

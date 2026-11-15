@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { and, eq, sql } from 'drizzle-orm';
-import type { Mistake } from '../../../integrations/language-model/model-output.js';
-import type { DbTransaction } from '../../../core/db/db.tokens.js';
-import { mistakes, utterances } from '../../../core/db/schema.js';
-import { VocabularyWriter } from '../../vocabulary/vocabulary-writer.service.js';
-import { patternIncrements } from '../lib/pattern-increments.js';
-import type { AnalysisOutcome } from '../mistake-analyzer.types.js';
-import { PatternsRepository } from './patterns.repository.js';
+import type { Mistake } from '../../integrations/language-model/model-output.js';
+import type { DbTransaction } from '../../core/db/db.tokens.js';
+import { mistakes, utterances } from '../../core/db/schema.js';
+import { VocabularyWriter } from '../vocabulary/vocabulary-writer.service.js';
+import { patternIncrements } from './lib/pattern-increments.js';
+import type { AnalysisOutcome } from './mistake-analyzer.types.js';
+import { PatternsRepository } from './persistence/patterns.repository.js';
 
 @Injectable()
 export class AnalysisWriter {
