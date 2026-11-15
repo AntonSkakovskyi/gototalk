@@ -1,4 +1,5 @@
 import { existsSync, readdirSync } from 'node:fs';
+import path from 'node:path';
 import js from '@eslint/js';
 import globals from 'globals';
 import prettier from 'eslint-config-prettier';
@@ -24,15 +25,21 @@ const API_MODULE_DEPS = {
   report: ['auth', 'session', 'analysis', 'vocabulary'],
 };
 
-const listDirs = (dir) =>
-  existsSync(dir)
-    ? readdirSync(dir, { withFileTypes: true })
-        .filter((entry) => entry.isDirectory())
-        .map((entry) => entry.name)
-    : [];
+const listDirs = (dir, { required = true } = {}) => {
+  const absolute = path.join(import.meta.dirname, dir);
+  if (!existsSync(absolute)) {
+    if (required) {
+      throw new Error(`eslint.config.js: directory not found: ${absolute}`);
+    }
+    return [];
+  }
+  return readdirSync(absolute, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name);
+};
 
 const WEB_FEATURES = listDirs(`${WEB_SRC}/features`);
-const WEB_ENTITIES = listDirs(`${WEB_SRC}/entities`);
+const WEB_ENTITIES = listDirs(`${WEB_SRC}/entities`, { required: false });
 const API_MODULES = [
   ...new Set([
     ...listDirs(`${API_SRC}/modules`),
@@ -41,13 +48,15 @@ const API_MODULES = [
 ];
 
 const sliceZones = (root, names, message) =>
-  names.map((name) => ({
-    target: `${root}/${name}`,
-    from: names
-      .filter((other) => other !== name)
-      .map((other) => `${root}/${other}`),
-    message,
-  }));
+  names.length < 2
+    ? []
+    : names.map((name) => ({
+        target: `${root}/${name}`,
+        from: names
+          .filter((other) => other !== name)
+          .map((other) => `${root}/${other}`),
+        message,
+      }));
 
 const featureSubareaZones = WEB_FEATURES.flatMap((feature) => {
   const subareas = listDirs(`${WEB_SRC}/features/${feature}`).filter(

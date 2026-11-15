@@ -16,8 +16,6 @@ const env = {
   JWT_ACCESS_SECRET: 'test-only-access-secret-0123456789abcdef',
   PORT: '3456',
   LOG_LEVEL: 'silent',
-  STT_PROVIDER: 'fake',
-  LLM_PROVIDER: 'fake',
 };
 
 describe('AppModule', () => {
@@ -57,15 +55,19 @@ describe('AppModule', () => {
       imports: [AppModule.register({ env }), DiscoveryModule],
     }).compile();
     const discovery = moduleRef.get(DiscoveryService);
-    const wrappers = [
-      ...discovery.getControllers(),
-      ...discovery.getProviders(),
-    ].filter(
+    const all = [...discovery.getControllers(), ...discovery.getProviders()];
+    const wrappers = all.filter(
       (wrapper) => wrapper.isDependencyTreeStatic() && !wrapper.isTransient,
     );
 
     expect(discovery.getControllers().length).toBeGreaterThan(0);
     expect(discovery.getProviders().length).toBeGreaterThan(0);
+    expect(
+      all
+        .filter((wrapper) => !wrappers.includes(wrapper))
+        .map((wrapper) => String(wrapper.name))
+        .sort(),
+    ).toEqual(['INQUIRER', 'PinoLogger', 'REQUEST']);
     for (const wrapper of wrappers) {
       expect(
         () => moduleRef.get(wrapper.token, { strict: false }),

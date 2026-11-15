@@ -11,7 +11,7 @@ if (-not (Test-Path "package.json")) { exit 0 }
 $changes = git status --porcelain -- apps packages 2>$null
 if (-not $changes) { exit 0 }
 
-# A Vitest process that VS Code keeps running makes this skip the check, so run `pnpm test` manually before a PR.
+# A running Vitest process (e.g. one VS Code keeps alive) skips all checks (typecheck, lint, test), so run `pnpm test` manually before a PR.
 $vitest = Get-CimInstance Win32_Process -Filter "Name='node.exe'" | Where-Object { $_.CommandLine -match 'vitest' }
 if ($vitest) { exit 0 }
 
