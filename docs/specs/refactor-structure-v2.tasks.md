@@ -73,6 +73,10 @@
 | 4 | документи | 50–54 (лише `pnpm lint` і перевірка посилань; тести не запускати) |
 
 Пачки статуси перевірки:
+- PR 2 фінал: перевірено (`pnpm -r build` ок; `pnpm test:e2e` 24/24; `pnpm dev` без помилок, `/api/health` 200, `/api/docs-json` 200, 29 операцій; `pnpm db:pull` без diff; тести: shared 91, web 965, api 1177 (127 файлів) – без змін проти бази PR 1; ESLint 0 помилок, 13 warn (web-тести, до задачі 49); фінальне рев'ю гілки PASS)
+- Пачка розбиття й таблиця (PR 2): перевірено (shared 91, web 965, api 1177 тестів у 127 файлах (121 + 6 половин); назви `it` і тіла збігаються з оригіналами; рев'ю PASS, низькі знахідки в backlog)
+- Пачка тести dialogue, analysis, report, vocabulary (PR 2): перевірено (shared 91, web 965, api 1177; 30 перейменувань R080–R097, тіла тестів збігаються байт у байт після відкидання імпортів; рев'ю PASS)
+- Пачка тести core, auth, profile, session (PR 2): перевірено (shared 91, web 965, api 1177; 24 з 24 файли – перейменування R085–R099; рев'ю PASS)
 - PR 1 фінал: перевірено (`pnpm -r build` ок (кореневого скрипта `build` немає); `pnpm test:e2e` 24/24 двічі; `pnpm dev` без помилок DI, `/api/health` 200, `/api/docs-json` 200, 29 операцій; `pnpm db:pull` без diff у `apps/api/src/core/db/`; тести: shared 91, web 965, api 1177 (shared + api 1268 проти бази 1239: 24 тести shared переїхали в api разом із `llm.ts`, 29 нових); ESLint 0 помилок, 13 warn (лише web-тести, до задачі 49); фінальне рев'ю всієї гілки PASS, середні знахідки (`VocabularyWriter` до ≤ 3 параметрів) виправлено)
 - Пачка Swagger і правила: перевірено (shared 91, web 965, api 1177; рев'ю задачі 22 і пачки PASS, середні знахідки задачі 22 виправлено окремим комітом, низькі в backlog)
 - Пачка finish, turn, audio: перевірено (shared 91, web 965, api 1156; `pnpm dev` без помилок DI, curl: finish 200/ідемпотентний/404/401, звіт 200, `/api/docs-json` має `POST /api/sessions/{id}/finish` у тегу `sessions`; e2e 24/24 з другого прогону (перший прогін мав одне нестабільне падіння `toHaveURL`, як і на базовій лінії); ESLint debt 13 warn (лише web-тести); рев'ю задачі 19 і пачки PASS, низькі знахідки в backlog)
@@ -271,39 +275,42 @@
 
 Усі файли переїжджають за таблицею «api/test» нижче; відносні імпорти `../src/…` → `../../../src/…`, `./support/…` → `../../support/…`. `global-setup.ts` і `support/` не рухаються. Перевірка кожної задачі: `pnpm --filter api exec vitest run --project integration test/integration/<module>` + typecheck + lint.
 
-- [ ] **25. `integration/core/` + `vitest.config.ts`**
+- [x] **25. `integration/core/` + `vitest.config.ts`**
   - `db-schema`, `error-format`, `health`, `mistake-categories`, `user-data-fixture`, `reset-user-data`, `openapi` → `test/integration/core/`.
   - `apps/api/vitest.config.ts`: integration `include: ['test/integration/**/*.test.ts']`; unit-проєкт лишається (`src/**`, `test/support/**`).
+  - Відхилення: проміжний `include` для integration – `['test/integration/**/*.test.ts', 'test/*.test.ts']`, щоб не зупинити ще не переміщені тести; запис `'test/*.test.ts'` прибирається в задачі 32.
   - Коміт: `refactor(api-test): move core integration tests`
 
-- [ ] **26. `integration/auth/`** – `auth`, `auth-guard`, `drizzle-refresh-tokens.repository`, `me`, `delete-account`.
+- [x] **26. `integration/auth/`** – `auth`, `auth-guard`, `drizzle-refresh-tokens.repository`, `me`, `delete-account`.
   - Коміт: `refactor(api-test): move auth integration tests`
 
-- [ ] **27. `integration/profile/`, `learner-model/`, `hint/`** – `profile`, `goals` → `profile/`; `learner-model` → `learner-model/`; `hints`, `hints-access`, `hints-failures` → `hint/`.
+- [x] **27. `integration/profile/`, `learner-model/`, `hint/`** – `profile`, `goals` → `profile/`; `learner-model` → `learner-model/`; `hints`, `hints-access`, `hints-failures` → `hint/`.
   - Коміт: `refactor(api-test): move profile, learner-model and hint integration tests`
 
-- [ ] **28. `integration/session/`** – `sessions`, `sessions-plan`, `sessions-plan-unavailable`, `sessions-read`, `sessions-history`, `sessions-analysis-read`.
+- [x] **28. `integration/session/`** – `sessions`, `sessions-plan`, `sessions-plan-unavailable`, `sessions-read`, `sessions-history`, `sessions-analysis-read`.
   - Коміт: `refactor(api-test): move session integration tests`
 
-- [ ] **29. `integration/dialogue/` (відповіді й голос)** – `dialogue-answer`, `dialogue-answer-locking`, `dialogue-voice`, `dialogue-voice-access`, `dialogue-voice-errors`, `dialogue-voice-logging`, `audio-retention`.
+- [x] **29. `integration/dialogue/` (відповіді й голос)** – `dialogue-answer`, `dialogue-answer-locking`, `dialogue-voice`, `dialogue-voice-access`, `dialogue-voice-errors`, `dialogue-voice-logging`, `audio-retention`.
   - Коміт: `refactor(api-test): move dialogue answer and voice integration tests`
 
-- [ ] **30. `integration/dialogue/` (аналіз) і `analysis/`** – `dialogue-analysis`, `-access`, `-failures`, `-idempotency`, `-locking`, `-words` → `dialogue/`; `mistakes`, `mistakes-access`, `patterns-repository`, `pending-analysis` → `analysis/`.
+- [x] **30. `integration/dialogue/` (аналіз) і `analysis/`** – `dialogue-analysis`, `-access`, `-failures`, `-idempotency`, `-locking`, `-words` → `dialogue/`; `mistakes`, `mistakes-access`, `patterns-repository`, `pending-analysis` → `analysis/`.
   - Коміт: `refactor(api-test): move dialogue analysis and analysis integration tests`
 
-- [ ] **31. `integration/report/`** – `report-aggregates`, `report-aggregates-session`, `report-finish`, `report-read`, `report-read-access`, `report-store`, `report-unavailable`, `sessions-finish`, `sessions-finish-locking`.
+- [x] **31. `integration/report/`** – `report-aggregates`, `report-aggregates-session`, `report-finish`, `report-read`, `report-read-access`, `report-store`, `report-unavailable`, `sessions-finish`, `sessions-finish-locking`.
   - Коміт: `refactor(api-test): move report and finish integration tests`
 
-- [ ] **32. `integration/vocabulary/`** – `session-words`, `vocabulary-usage`, `words-list`, `words-mark`.
+- [x] **32. `integration/vocabulary/`** – `session-words`, `vocabulary-usage`, `words-list`, `words-mark`.
+  - Додатково: з `apps/api/vitest.config.ts` прибрано проміжний запис `'test/*.test.ts'` (задача 25); у `test/` лишились лише `global-setup.ts`, `support/`, `integration/`; 54 integration-файли, 481 тест.
   - Коміт: `refactor(api-test): move vocabulary integration tests`
 
-- [ ] **33. Розбиття довгих тестів (A7, r.54, r.60, r.67)**
+- [x] **33. Розбиття довгих тестів (A7, r.54, r.60, r.67)**
   - `integration/auth/auth.test.ts` (449) → `auth.test.ts` + `auth-refresh.test.ts` (за `describe`: реєстрація/логін vs refresh/logout); `integration/profile/goals.test.ts` (432) → `goals.test.ts` + `goals-limit.test.ts`; `integration/core/db-schema.test.ts` (402) → `db-schema.test.ts` + `db-schema-constraints.test.ts`; `src/core/errors/all-exceptions.filter.test.ts` (413) → `all-exceptions.filter.test.ts` + `all-exceptions.filter.zod.test.ts` (кейси `RequestValidationError`/сирого `ZodError`); `integration/dialogue/dialogue-answer.test.ts` (327) → `-validation` і `-access`.
   - Точні межі за `describe`; допоміжні константи – у `test/support/` лише якщо використовуються обома половинами. `grep -c "it(" ` до й після однаковий.
   - Лише розбиття: теми з r.60/62/67 про недетермінованість і додаткові тести – окремо, поза цим рефакторингом.
+  - Відхилення: файли `auth`, `goals`, `dialogue-answer` мають один зовнішній `describe`, тож розрізано за групами тестів (зовнішня назва однакова в обох половинах); спільні хелпери >10 рядків винесено в `test/support/{auth-api,goals-api,answer-api}.ts` (фабрики `createAuthClient` тощо) і `src/core/errors/testing/filter-harness.ts`; `-validation`/`-access` для відповідей використовують звичайний `createTestApp()` без мока `transcribe`. Кількість тестів Vitest по файлах до/після: auth 22/11+11, goals 27/21+6, db-schema 21/14+7, dialogue-answer 16/6+5+5, all-exceptions.filter 24/20+4.
   - Коміт: `test(api): split the longest integration and unit tests by concern`
 
-- [ ] **34. Таблиця «старий шлях → новий» і перевірка PR2**
+- [x] **34. Таблиця «старий шлях → новий» і перевірка PR2**
   - Звірити таблицю нижче з `git diff -M --name-status main HEAD -- apps/api/test`; виправити розбіжності. Фінальна перевірка PR (повний набір), кількість тестів = база задачі 00.
   - Коміт: `docs: record api test move table`
 
@@ -319,7 +326,7 @@
 | `mistake-categories.test.ts` | `integration/core/mistake-categories.test.ts` |
 | `user-data-fixture.test.ts` | `integration/core/user-data-fixture.test.ts` |
 | `reset-user-data.test.ts` | `integration/core/reset-user-data.test.ts` |
-| (нове, задача 22) `openapi.test.ts` | `integration/core/openapi.test.ts` |
+| `openapi.test.ts` (додано в задачі 22, PR 1) | `integration/core/openapi.test.ts` |
 | `auth.test.ts` | `integration/auth/auth.test.ts` (+ `auth-refresh.test.ts`) |
 | `auth-guard.test.ts` | `integration/auth/auth-guard.test.ts` |
 | `drizzle-refresh-tokens.repository.test.ts` | `integration/auth/drizzle-refresh-tokens.repository.test.ts` |
@@ -367,7 +374,9 @@
 | `vocabulary-usage.test.ts` | `integration/vocabulary/vocabulary-usage.test.ts` |
 | `words-list.test.ts` | `integration/vocabulary/words-list.test.ts` |
 | `words-mark.test.ts` | `integration/vocabulary/words-mark.test.ts` |
-| `global-setup.ts`, `support/*` | без змін |
+| `global-setup.ts`, `support/*` | без змін (нові хелпери задачі 33: `support/answer-api.ts`, `auth-api.ts`, `goals-api.ts`) |
+
+Звірено в задачі 34 (`git diff -M --name-status main HEAD -- apps/api/test`): 53 перейменування збігаються з таблицею. Розбиті файли (задача 33): `auth.test.ts` → `auth.test.ts` + `auth-refresh.test.ts` (git за порогом 50% показує `auth.test.ts` як видалений, а новий `integration/auth/auth.test.ts` як доданий; `-M30%` бачить `auth.test.ts` → `auth-refresh.test.ts` R044), `goals.test.ts` + `goals-limit.test.ts`, `db-schema.test.ts` + `db-schema-constraints.test.ts`, `dialogue-answer.test.ts` + `-validation` + `-access`.
 
 ---
 
