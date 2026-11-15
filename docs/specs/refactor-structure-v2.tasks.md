@@ -135,7 +135,7 @@
   - Відхилення: ліміт 200 для `BetterPhrasingSchema` тепер константа `BETTER_PHRASING_TEXT_MAX` (не експортована) у shared, `MISTAKE_TEXT_MAX = 200` лишився в api; окремого `plan.test.ts` немає (у `llm.test.ts` не було самостійного тесту плану); змішані тести TC-00-05 лишились цілими в `model-output.test.ts`, бо розбиття змінило б їхні назви. Сума `it(` shared + api: 1028 до й після.
   - Коміт: `refactor(shared): move model output and transcript schemas to the api`
 
-- [ ] **07. Розбиття `session.test.ts`, чистка `schemas.test.ts` (r.50)**
+- [x] **07. Розбиття `session.test.ts`, чистка `schemas.test.ts` (r.50)**
   - `session/session.test.ts` (345 рядків) → `session.test.ts` + `session-plan.test.ts` за `describe` (план сесії окремо); `schemas.test.ts` розподілено в задачах 04–06, залишок (якщо є) – у доменні файли; файл видалити, коли порожній.
   - `index.ts` лишається єдиним входом, перевірити `package.json` `exports` (єдина точка `.`).
   - Перевірка: кількість `it` у shared до/після однакова (`pnpm --filter @gototalk/shared test` – число з задачі 00 + нічого не втрачено).
