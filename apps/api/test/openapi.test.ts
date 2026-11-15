@@ -55,9 +55,17 @@ const OPERATIONS_WITH_QUERY: Record<string, string[]> = {
   'GET /api/words': ['cursor', 'limit'],
 };
 
+interface OpenApiSchema {
+  type?: string;
+  minimum?: number;
+  maximum?: number;
+  required?: string[];
+  oneOf?: { properties?: Record<string, { enum?: string[] }> }[];
+}
+
 interface OpenApiOperation {
-  requestBody?: { content?: Record<string, { schema?: object }> };
-  parameters?: { name: string; in: string; schema?: object }[];
+  requestBody?: { content?: Record<string, { schema?: OpenApiSchema }> };
+  parameters?: { name: string; in: string; schema?: OpenApiSchema }[];
 }
 
 type OpenApiPaths = Record<string, Record<string, OpenApiOperation>>;
@@ -109,6 +117,48 @@ describe('GET /api/docs-json', () => {
         key,
       ).toBe(true);
     }
+  });
+
+  it('documents the bounds of the paginated limit query parameter', () => {
+    for (const key of Object.keys(OPERATIONS_WITH_QUERY)) {
+      const limit = operations
+        .get(key)
+        ?.parameters?.find((parameter) => parameter.name === 'limit');
+
+      expect(limit?.schema, key).toMatchObject({
+        type: 'integer',
+        minimum: 1,
+        maximum: 50,
+      });
+    }
+  });
+
+  it('documents the required fields of the request bodies', () => {
+    const requiredOf = (key: string): string[] | undefined =>
+      operations.get(key)?.requestBody?.content?.['application/json']?.schema
+        ?.required;
+
+    expect(requiredOf('POST /api/auth/register')).toEqual([
+      'email',
+      'password',
+    ]);
+    expect(requiredOf('POST /api/sessions')).toEqual([
+      'topic',
+      'topicSource',
+      'questions',
+    ]);
+  });
+
+  it('documents the hint request body as one schema per hint kind', () => {
+    const variants =
+      operations.get('POST /api/sessions/{id}/hints')?.requestBody?.content?.[
+        'application/json'
+      ]?.schema?.oneOf ?? [];
+
+    expect(variants.map((variant) => variant.properties?.kind?.enum)).toEqual([
+      ['phrase_start'],
+      ['translation'],
+    ]);
   });
 
   it('documents no request body for operations that take none', () => {

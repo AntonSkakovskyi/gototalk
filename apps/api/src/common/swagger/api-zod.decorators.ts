@@ -5,13 +5,11 @@ import { z } from 'zod';
 
 type OpenApiSchema = Extract<ApiBodyOptions, { schema: unknown }>['schema'];
 
-interface ObjectJsonSchema {
-  properties?: Record<string, unknown>;
-  required?: string[];
-}
-
-function toJsonSchema(schema: z.ZodType, io: 'input' | 'output'): object {
-  const jsonSchema: Record<string, unknown> = {
+function toJsonSchema(
+  schema: z.ZodType,
+  io: 'input' | 'output',
+): z.core.JSONSchema.BaseSchema {
+  const jsonSchema = {
     ...z.toJSONSchema(schema, {
       target: 'openapi-3.0',
       io,
@@ -33,18 +31,22 @@ export function ApiZodBody(schema: z.ZodType): MethodDecorator {
 
 // Properties come from the output side so a coerced limit is documented as a bounded number
 export function ApiZodQuery(schema: z.ZodType): MethodDecorator {
-  const { properties = {} } = toJsonSchema(
-    schema,
-    'output',
-  ) as ObjectJsonSchema;
-  const { required = [] } = toJsonSchema(schema, 'input') as ObjectJsonSchema;
+  const { properties } = toJsonSchema(schema, 'output');
+  if (!properties) {
+    throw new Error('ApiZodQuery requires a Zod object schema');
+  }
+  const { required = [] } = toJsonSchema(schema, 'input');
   return applyDecorators(
-    ...Object.entries(properties).map(([name, property]) =>
-      ApiQuery({
-        name,
-        required: required.includes(name),
-        schema: asOpenApi(property as object),
-      }),
+    ...Object.entries(properties).flatMap(([name, property]) =>
+      typeof property === 'object'
+        ? [
+            ApiQuery({
+              name,
+              required: required.includes(name),
+              schema: asOpenApi(property),
+            }),
+          ]
+        : [],
     ),
   );
 }

@@ -10,23 +10,28 @@ import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 import { ApiZodBody, ApiZodQuery } from './api-zod.decorators.js';
 
-interface DocumentedParameter {
-  name: string;
-  in: string;
-  required: boolean;
-  schema: Record<string, unknown>;
-}
+const DocumentedParametersSchema = z.array(
+  z.object({
+    name: z.string().optional(),
+    in: z.string(),
+    required: z.boolean().optional(),
+    schema: z.record(z.string(), z.unknown()).optional(),
+  }),
+);
+
+type DocumentedParameter = z.infer<typeof DocumentedParametersSchema>[number];
 
 function parametersOf(decorator: MethodDecorator): DocumentedParameter[] {
   class Probe {
     handler(): void {}
   }
-  const descriptor = Object.getOwnPropertyDescriptor(
-    Probe.prototype,
-    'handler',
-  ) as PropertyDescriptor;
+  const descriptor: TypedPropertyDescriptor<() => void> = {
+    value: Probe.prototype.handler,
+  };
   decorator(Probe.prototype, 'handler', descriptor);
-  return Reflect.getMetadata('swagger/apiParameters', descriptor.value);
+  return DocumentedParametersSchema.parse(
+    Reflect.getMetadata('swagger/apiParameters', Probe.prototype.handler),
+  );
 }
 
 function bodySchemaOf(schema: z.ZodType): Record<string, unknown> {
@@ -120,6 +125,12 @@ describe('ApiZodQuery', () => {
       maximum: PAGE_SIZE_MAX,
       default: PAGE_SIZE_DEFAULT,
     });
+  });
+
+  it('throws when the schema is not an object schema', () => {
+    expect(() => ApiZodQuery(z.string())).toThrow(
+      'ApiZodQuery requires a Zod object schema',
+    );
   });
 
   it('marks a property without a default or optional as required', () => {
